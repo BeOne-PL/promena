@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>promena-core</artifactId>
+        <groupId>pl.beone.promena.core</groupId>
+        <version>3.0.0-alpha</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>promena-core-internal</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.core</groupId>
+            <artifactId>promena-core-contract</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>promena-transformer-internal</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.javakaffee</groupId>
+            <artifactId>kryo-serializers</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.core</groupId>
+            <artifactId>promena-core-common</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

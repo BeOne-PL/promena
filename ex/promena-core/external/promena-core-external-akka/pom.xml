@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>pl.beone.promena.core</groupId>
+        <artifactId>promena-core</artifactId>
+        <version>3.0.0-alpha</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>promena-core-external-akka</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.core</groupId>
+            <artifactId>promena-core-contract</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.core</groupId>
+            <artifactId>promena-core-contract-akka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.core</groupId>
+            <artifactId>promena-core-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-cluster-metrics_2.12</artifactId>
+        </dependency>
+    </dependencies>
+</project>
