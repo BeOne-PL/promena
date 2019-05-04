@@ -7,11 +7,11 @@ data class MediaType(val mimeType: String,
 
     companion object {
 
-        fun create(rawData: String, charset: Charset = Charsets.UTF_8): MediaType =
-                MediaType(MimeType(rawData).baseType, charset)
+        fun create(mimeType: String, charset: Charset = Charsets.UTF_8): MediaType =
+                MediaType(mimeType, charset)
 
-        fun create(rawData: String, charset: String = Charsets.UTF_8.name()): MediaType =
-                MediaType(MimeType(rawData).baseType, Charset.forName(charset))
+        fun create(mimeType: String, charset: String = Charsets.UTF_8.name()): MediaType =
+                MediaType(mimeType, Charset.forName(charset))
 
     }
 

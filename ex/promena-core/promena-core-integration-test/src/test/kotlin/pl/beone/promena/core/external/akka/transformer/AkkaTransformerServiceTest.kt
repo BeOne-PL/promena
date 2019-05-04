@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.After

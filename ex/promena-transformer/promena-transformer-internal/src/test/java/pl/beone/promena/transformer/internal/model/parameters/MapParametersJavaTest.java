@@ -1,8 +1,8 @@
 package pl.beone.promena.transformer.internal.model.parameters;
 
 import kotlin.ranges.IntRange;
-import org.junit.Test;
-import pl.beone.promena.transformer.applicationmodel.exception.general.ConversionException;
+import org.junit.jupiter.api.Test;
+import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException;
 import pl.beone.promena.transformer.contract.model.Parameters;
 
 import java.util.Arrays;
@@ -75,14 +75,14 @@ public class MapParametersJavaTest {
         assertThat(parameters.get("stringInt", Integer.class)).isEqualTo(3);
 
         assertThatThrownBy(() -> parameters.get("string", Boolean.class))
-                .isExactlyInstanceOf(ConversionException.class)
+                .isExactlyInstanceOf(TypeConversionException.class)
                 .hasMessage("Couldn't convert <value> (java.lang.String) to <java.lang.Boolean>");
 
         assertThatThrownBy(() -> parameters.get("stringBoolean", Long.class))
-                .isExactlyInstanceOf(ConversionException.class)
+                .isExactlyInstanceOf(TypeConversionException.class)
                 .hasMessage("Couldn't convert <true> (java.lang.String) to <java.lang.Long>");
         assertThatThrownBy(() -> parameters.get("stringInt", IntRange.class))
-                .isExactlyInstanceOf(ConversionException.class)
+                .isExactlyInstanceOf(TypeConversionException.class)
                 .hasMessage("Converting from <java.lang.String> to <kotlin.ranges.IntRange> isn't supported");
 
         assertThatThrownBy(() -> parameters.get("absent", String.class))
@@ -98,11 +98,11 @@ public class MapParametersJavaTest {
                 }}));
 
         assertThatThrownBy(() -> parameters.getParameters("stringBoolean"))
-                .isExactlyInstanceOf(ConversionException.class)
+                .isExactlyInstanceOf(TypeConversionException.class)
                 .hasMessage(
                         "Converting from <java.lang.String> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported");
         assertThatThrownBy(() -> parameters.getParameters("mapParameters"))
-                .isExactlyInstanceOf(ConversionException.class)
+                .isExactlyInstanceOf(TypeConversionException.class)
                 .hasMessage(
                         "Converting from <pl.beone.promena.transformer.internal.model.parameters.MapParametersJavaTest$1$2> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported");
 
@@ -118,7 +118,7 @@ public class MapParametersJavaTest {
         assertThat(parameters.getList("stringList")).isEqualTo(Arrays.asList("1", "2", "3"));
 
         assertThatThrownBy(() -> parameters.getList("stringBoolean"))
-                .isExactlyInstanceOf(ConversionException.class)
+                .isExactlyInstanceOf(TypeConversionException.class)
                 .hasMessage("Converting from <java.lang.String> to <java.util.List> isn't supported");
 
         assertThatThrownBy(() -> parameters.getList("absent"))
@@ -133,7 +133,7 @@ public class MapParametersJavaTest {
         assertThat(parameters.getList("stringList", Long.class)).isEqualTo(Arrays.asList(1L, 2L, 3L));
 
         assertThatThrownBy(() -> parameters.getList("mixList", Integer.class))
-                .isExactlyInstanceOf(ConversionException.class)
+                .isExactlyInstanceOf(TypeConversionException.class)
                 .hasMessage("Couldn't convert <[1, string, true]> to List<java.lang.Integer>");
 
         assertThatThrownBy(() -> parameters.getList("absent"))
@@ -149,7 +149,7 @@ public class MapParametersJavaTest {
                 .containsEntry("int", 3)
                 .containsEntry("boolean", true)
                 .containsEntry("stringFloat", "4.1")
-                .containsEntry("parameters", new MapParameters(new HashMap<String, Object>() {{
+                .containsEntry("parameters", new MapParameters(new HashMap<>() {{
                     put("key", "value");
                 }}))
                 .containsEntry("mixList", Arrays.asList(1, "string", true));

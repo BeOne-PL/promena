@@ -5,8 +5,8 @@ import akka.actor.Props
 import akka.routing.SmallestMailboxPool
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import com.typesafe.config.ConfigFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -63,7 +63,7 @@ class DefaultTransformationUseCaseTest {
     fun `transform _ run Akka and transform using memory communication and simple data classes _ should perform transformation`() {
         val transformationUseCase = init()
 
-        val data = InMemoryData(Thread::class.java.getResource("/file/test.txt").readBytes())
+        val data = InMemoryData(this::class.java.getResourceAsStream("/file/test.txt").readBytes())
         transform(transformationUseCase, data)
                 .forEach {
                     assertThat(it).hasSize(1)

@@ -1,7 +1,7 @@
 package pl.beone.promena.core.external.akka.actor
 
 import akka.actor.ActorRef
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -18,7 +18,7 @@ class DefaultActorServiceTest {
 
         val actorService =
                 DefaultActorService(listOf(emptyActorWithTransformerId),
-                                                                              serializerActorRef)
+                                    serializerActorRef)
 
         assertThat(actorService.getTransformationActor("emptyTransformer")).isSameAs(emptyActorWithTransformerId.ref)
 

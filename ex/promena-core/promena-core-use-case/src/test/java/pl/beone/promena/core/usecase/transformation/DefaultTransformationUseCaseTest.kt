@@ -1,7 +1,7 @@
 package pl.beone.promena.core.usecase.transformation
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import pl.beone.promena.core.contract.communication.CommunicationParameters

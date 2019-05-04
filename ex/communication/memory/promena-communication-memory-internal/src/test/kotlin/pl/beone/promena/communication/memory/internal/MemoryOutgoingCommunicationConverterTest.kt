@@ -1,6 +1,6 @@
 package pl.beone.promena.communication.memory.internal
 
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor

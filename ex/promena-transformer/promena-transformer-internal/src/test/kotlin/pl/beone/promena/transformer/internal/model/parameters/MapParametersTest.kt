@@ -2,8 +2,8 @@ package pl.beone.promena.transformer.internal.model.parameters
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
-import pl.beone.promena.transformer.applicationmodel.exception.general.ConversionException
+import org.junit.jupiter.api.Test
+import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
 
 class MapParametersTest {
 
@@ -69,14 +69,14 @@ class MapParametersTest {
         assertThat(parameters.get("stringInt", Int::class.java)).isEqualTo(3)
 
         assertThatThrownBy { parameters.get("string", Boolean::class.java) }
-                .isExactlyInstanceOf(ConversionException::class.java)
+                .isExactlyInstanceOf(TypeConversionException::class.java)
                 .hasMessage("Couldn't convert <value> (java.lang.String) to <boolean>")
 
         assertThatThrownBy { parameters.get("stringBoolean", Long::class.java) }
-                .isExactlyInstanceOf(ConversionException::class.java)
+                .isExactlyInstanceOf(TypeConversionException::class.java)
                 .hasMessage("Couldn't convert <true> (java.lang.String) to <long>")
         assertThatThrownBy { parameters.get("stringInt", IntRange::class.java) }
-                .isExactlyInstanceOf(ConversionException::class.java)
+                .isExactlyInstanceOf(TypeConversionException::class.java)
                 .hasMessage("Converting from <java.lang.String> to <kotlin.ranges.IntRange> isn't supported")
 
         assertThatThrownBy { parameters.get("absent", String::class.java) }
@@ -99,10 +99,10 @@ class MapParametersTest {
         assertThat(parameters.getParameters("parameters")).isEqualTo(MapParameters(mapOf("key" to "value")))
 
         assertThatThrownBy { parameters.getParameters("stringBoolean") }
-                .isExactlyInstanceOf(ConversionException::class.java)
+                .isExactlyInstanceOf(TypeConversionException::class.java)
                 .hasMessage("Converting from <java.lang.String> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported")
         assertThatThrownBy { parameters.getParameters("mapParameters") }
-                .isExactlyInstanceOf(ConversionException::class.java)
+                .isExactlyInstanceOf(TypeConversionException::class.java)
                 .hasMessage("Converting from <java.util.Collections\$SingletonMap> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported")
 
         assertThatThrownBy { parameters.getParameters("absent") }
@@ -117,7 +117,7 @@ class MapParametersTest {
         assertThat(parameters.getList("stringList")).isEqualTo(listOf("1", "2", "3"))
 
         assertThatThrownBy { parameters.getList("stringBoolean") }
-                .isExactlyInstanceOf(ConversionException::class.java)
+                .isExactlyInstanceOf(TypeConversionException::class.java)
                 .hasMessage("Converting from <java.lang.String> to <java.util.List> isn't supported")
 
         assertThatThrownBy { parameters.getList("absent") }
@@ -132,7 +132,7 @@ class MapParametersTest {
         assertThat(parameters.getList("stringList", Long::class.java)).isEqualTo(listOf(1L, 2L, 3L))
 
         assertThatThrownBy { parameters.getList("mixList", Int::class.java) }
-                .isExactlyInstanceOf(ConversionException::class.java)
+                .isExactlyInstanceOf(TypeConversionException::class.java)
                 .hasMessage("Couldn't convert <[1, string, true]> to List<int>")
 
         assertThatThrownBy { parameters.getList("absent") }

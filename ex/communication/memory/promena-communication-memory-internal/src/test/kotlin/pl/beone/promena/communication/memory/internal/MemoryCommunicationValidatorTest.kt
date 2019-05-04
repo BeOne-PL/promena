@@ -1,8 +1,8 @@
 package pl.beone.promena.communication.memory.internal
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.doThrow
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationValidationException

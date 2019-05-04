@@ -1,7 +1,7 @@
 package pl.beone.promena.module.http.client.external.alfresco
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import org.alfresco.model.ContentModel
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.alfresco.service.cmr.repository.NodeRef
