@@ -12,7 +12,7 @@ fun Map<String, Any>._get(key: String): Any =
 fun <T> Map<String, Any>.get(key: String, clazz: Class<T>): T {
     val element = this._get(key)
 
-    return castOrConvert(element, clazz)
+    return element.castOrConvert(clazz)
 }
 
 fun Map<String, Any>.getListWithoutType(key: String): List<Any> =
@@ -23,7 +23,7 @@ fun <T> Map<String, Any>.getList(key: String, clazz: Class<T>): List<T> {
 
     return list.map {
         try {
-            castOrConvert(it, clazz)
+            it.castOrConvert(clazz)
         } catch (e: TypeConversionException) {
             throw TypeConversionException("Couldn't convert <$list> to List<${clazz.name}>")
         }
