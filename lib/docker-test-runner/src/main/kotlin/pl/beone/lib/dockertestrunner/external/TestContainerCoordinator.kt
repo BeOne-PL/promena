@@ -1,0 +1,85 @@
+package pl.beone.lib.dockertestrunner.external
+
+import com.github.dockerjava.api.model.ExposedPort
+import com.github.dockerjava.api.model.PortBinding
+import com.github.dockerjava.api.model.Ports
+import org.testcontainers.containers.Container
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.images.builder.ImageFromDockerfile
+import java.io.File
+
+class TestContainerCoordinator(private val imageName: String,
+                               private val imageCustomEnabled: Boolean,
+                               private val imageCustomName: String,
+                               private val imageCustomDockerfilePath: String,
+                               private val imageCustomDockerfileTransformerPath: String,
+                               private val imageCustomDeleteOnExit: Boolean,
+                               private val projectPath: String,
+                               private val m2MountEnabled: Boolean,
+                               private val m2MountPath: String,
+                               private val debuggerEnabled: Boolean,
+                               private val debuggerPort: Int) {
+
+    private lateinit var container: GenericContainer<*>
+
+    fun init() {
+        container = createContainer().apply {
+            withFileSystemBind(projectPath, "/test")
+
+            if (m2MountEnabled) {
+                withFileSystemBind(m2MountPath, "/root/.m2")
+            }
+
+            if (debuggerEnabled) {
+                val debuggerPort = debuggerPort
+                withExposedPorts(debuggerPort)
+                withCreateContainerCmdModifier {
+                    it.withPortBindings(PortBinding(Ports.Binding.bindPort(debuggerPort),
+                                                    ExposedPort(debuggerPort)))
+                }
+            }
+
+            withCommand("sleep", "infinity")
+        }
+    }
+
+    private fun createContainer(): GenericContainer<Nothing> =
+            if (imageCustomEnabled) {
+                GenericContainer(
+                        ImageFromDockerfile(imageCustomName, imageCustomDeleteOnExit)
+                                .withFileFromString("Dockerfile", createDockerfileWithReplacedTransformerPlaceholder()))
+            } else {
+                GenericContainer(imageName)
+            }
+
+    fun start() {
+        verifyIfContainerWasInitialized()
+
+        container.start()
+    }
+
+    fun stop() {
+        verifyIfContainerWasInitialized()
+
+        container.stop()
+    }
+
+    fun execInContainer(vararg command: String): Container.ExecResult {
+        verifyIfContainerWasInitialized()
+
+        return container.execInContainer(*command)
+    }
+
+    private fun verifyIfContainerWasInitialized() {
+        if (!::container.isInitialized) {
+            throw RuntimeException("Container isn't initialized. Did you call init() method?")
+        }
+    }
+
+    private fun createDockerfileWithReplacedTransformerPlaceholder(): String {
+        val dockerfileContent = File(imageCustomDockerfilePath).readText()
+        val dockerfileTransformerContent = File(imageCustomDockerfileTransformerPath).readText()
+
+        return dockerfileContent.replace("\${TRANFORMER-DOCKERFILE}", dockerfileTransformerContent)
+    }
+}
