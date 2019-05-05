@@ -16,7 +16,7 @@ class DockerTestRunner(private val testClass: Class<*>) : BlockJUnit4ClassRunner
             configuration.getProperty("docker.test.image.custom.enabled", Boolean::class.java),
             configuration.getProperty("docker.test.image.custom.name"),
             configuration.getProperty("docker.test.image.custom.dockerfile.path"),
-            configuration.getProperty("docker.test.image.custom.dockerfile-transformer.path"),
+            configuration.getProperty("docker.test.image.custom.dockerfile-fragment.path"),
             configuration.getProperty("docker.test.image.custom.deleteOnExit", Boolean::class.java),
             configuration.getProperty("docker.test.project.path"),
             configuration.getProperty("docker.test.m2.mount.enabled", Boolean::class.java),

@@ -34,7 +34,7 @@ class MavenOnTestContainerRunner(private val testContainerCoordinator: TestConta
     private fun runContainerWithMavenForGivenMethodAndSaveOutputInLogFile(mavenTestClassifier: String,
                                                                           logFilePath: String): Container.ExecResult {
         val command = listOfNotNull("mvn", "-f", "/test/pom.xml", "-Dtest=$mavenTestClassifier",
-//                               determineDebuggerParameters(),
+                                    determineDebuggerParameters(),
                                     "--log-file", logFilePath,
                                     "surefire:test")
                 .joinToString(" ")

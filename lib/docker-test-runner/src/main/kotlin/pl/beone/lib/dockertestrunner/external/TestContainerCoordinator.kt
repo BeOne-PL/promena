@@ -12,7 +12,7 @@ class TestContainerCoordinator(private val imageName: String,
                                private val imageCustomEnabled: Boolean,
                                private val imageCustomName: String,
                                private val imageCustomDockerfilePath: String,
-                               private val imageCustomDockerfileTransformerPath: String,
+                               private val imageCustomDockerfileFragmentPath: String,
                                private val imageCustomDeleteOnExit: Boolean,
                                private val projectPath: String,
                                private val m2MountEnabled: Boolean,
@@ -78,8 +78,8 @@ class TestContainerCoordinator(private val imageName: String,
 
     private fun createDockerfileWithReplacedTransformerPlaceholder(): String {
         val dockerfileContent = File(imageCustomDockerfilePath).readText()
-        val dockerfileTransformerContent = File(imageCustomDockerfileTransformerPath).readText()
+        val dockerfileTransformerContent = File(imageCustomDockerfileFragmentPath).readText()
 
-        return dockerfileContent.replace("\${TRANFORMER-DOCKERFILE}", dockerfileTransformerContent)
+        return dockerfileContent.replace("\${DOCKERFILE-FRAGMENT}", dockerfileTransformerContent)
     }
 }
