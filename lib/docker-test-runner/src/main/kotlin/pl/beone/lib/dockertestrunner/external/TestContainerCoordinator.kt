@@ -5,6 +5,7 @@ import com.github.dockerjava.api.model.PortBinding
 import com.github.dockerjava.api.model.Ports
 import org.testcontainers.containers.Container
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy
 import org.testcontainers.images.builder.ImageFromDockerfile
 import java.io.File
 
@@ -38,6 +39,8 @@ class TestContainerCoordinator(private val imageName: String,
                                                     ExposedPort(debuggerPort)))
                 }
             }
+
+            setEmptyWaitStrategy()
 
             withCommand("sleep", "infinity")
         }
@@ -81,5 +84,14 @@ class TestContainerCoordinator(private val imageName: String,
         val dockerfileTransformerContent = File(imageCustomDockerfileFragmentPath).readText()
 
         return dockerfileContent.replace("\${DOCKERFILE-FRAGMENT}", dockerfileTransformerContent)
+    }
+
+    // at startup, Maven isn't run so you can't wait to start listening on given port
+    // port is open when test is executed
+    private fun GenericContainer<Nothing>.setEmptyWaitStrategy() {
+        setWaitStrategy(object : AbstractWaitStrategy() {
+            override fun waitUntilReady() {
+            }
+        })
     }
 }

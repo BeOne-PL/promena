@@ -45,11 +45,7 @@ class DockerTestRunner(private val testClass: Class<*>) : BlockJUnit4ClassRunner
             super.run(notifier)
         } finally {
             runOnHost {
-                try {
-                    testContainerCoordinator.stop()
-                } catch (e: Exception) {
-                    throw RuntimeException("Couldn't stop container. Check logs for more details", e)
-                }
+                testContainerCoordinator.stop()
             }
         }
     }

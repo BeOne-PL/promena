@@ -44,7 +44,7 @@ class MavenOnTestContainerRunner(private val testContainerCoordinator: TestConta
 
     private fun determineDebuggerParameters(): String? {
         return if (debuggerEnabled) {
-            """ -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:#$debuggerPort -Xnoagent -Djava.compiler=NONE" """.trim()
+            """ -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:$debuggerPort -Xnoagent -Djava.compiler=NONE" """.trim()
         } else {
             null
         }
