@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>${groupId}</groupId>
-        <artifactId>${rootArtifactId}-root</artifactId>
-        <version>${version}</version>
+        <groupId>to-delete</groupId>
+        <artifactId>to-delete</artifactId>
+        <version>to-delete</version>
     </parent>
 
+    <groupId>${groupId}</groupId>
     <artifactId>${artifactId}</artifactId>
     <version>${version}</version>
 
