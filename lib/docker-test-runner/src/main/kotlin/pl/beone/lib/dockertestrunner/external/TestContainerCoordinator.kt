@@ -62,7 +62,11 @@ class TestContainerCoordinator(private val imageName: String,
     }
 
     fun stop() {
-        verifyIfContainerWasInitialized()
+        try {
+            verifyIfContainerWasInitialized()
+        } catch (e: Exception) {
+            return
+        }
 
         container.stop()
     }

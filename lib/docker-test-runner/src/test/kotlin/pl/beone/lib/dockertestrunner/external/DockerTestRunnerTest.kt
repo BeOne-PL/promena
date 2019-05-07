@@ -8,7 +8,13 @@ import org.junit.runner.RunWith
 class DockerTestRunnerTest {
 
     @Test
-    fun test() {
+    fun simpleTest() {
         assertThat(true).isEqualTo(true)
+    }
+
+    @Test
+    fun checkIfDockerFragmentWasUsedToBuildImage() {
+        String(Runtime.getRuntime().exec("cat /tmp/test").inputStream.readAllBytes()).trim()
+                .let { assertThat(it).isEqualTo("test") }
     }
 }
