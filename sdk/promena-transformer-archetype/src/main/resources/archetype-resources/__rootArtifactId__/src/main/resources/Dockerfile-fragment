@@ -1,0 +1,1 @@
+RUN echo "I'm ${rootArtifactId} transformer! Install additional dependencies if this transformer requires them."
