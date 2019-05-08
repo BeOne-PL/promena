@@ -15,20 +15,11 @@
         <dependency>
             <groupId>pl.beone.promena.transformer</groupId>
             <artifactId>promena-transformer-contract</artifactId>
-            <version>${promena.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.lib</groupId>
             <artifactId>type-converter</artifactId>
             <version>${type-converter.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit-jupiter-api.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
 </project>

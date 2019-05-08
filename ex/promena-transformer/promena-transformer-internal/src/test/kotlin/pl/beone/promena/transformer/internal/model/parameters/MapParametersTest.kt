@@ -2,7 +2,7 @@ package pl.beone.promena.transformer.internal.model.parameters
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
 
 class MapParametersTest {

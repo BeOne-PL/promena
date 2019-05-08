@@ -1,7 +1,7 @@
 package pl.beone.promena.transformer.internal.model.metadata
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
+import org.junit.Test
 
 class MapMetadataTest {
 

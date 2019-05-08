@@ -15,7 +15,6 @@
         <dependency>
             <groupId>pl.beone.promena.transformer</groupId>
             <artifactId>promena-transformer-application-model</artifactId>
-            <version>${promena.version}</version>
         </dependency>
     </dependencies>
 </project>
