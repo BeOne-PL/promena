@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>pl.beone.promena.sdk</groupId>
+        <artifactId>promena-parent</artifactId>
+        <version>3.0.0-alpha</version>
+    </parent>
+
+    <artifactId>promena-extension-parent</artifactId>
+    <version>3.0.0-alpha</version>
+    <packaging>pom</packaging>
+
+    <name>[SDK][POM] Promena extension</name>
+
+    <properties>
+        <promena-core.version>3.0.0-alpha</promena-core.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-application-model</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-application-model-akka</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-configuration</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-contract</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-contract-akka</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-external-akka</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-external-spring</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-common</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-internal</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-use-case</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
