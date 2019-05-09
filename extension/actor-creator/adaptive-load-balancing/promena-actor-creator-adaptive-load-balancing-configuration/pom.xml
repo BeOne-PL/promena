@@ -16,13 +16,12 @@
         <dependency>
             <groupId>pl.beone.promena.actor-creator</groupId>
             <artifactId>promena-actor-creator-adaptive-load-balancing-external-akka</artifactId>
-            <version>${promena-core.version}</version>
+            <version>${promena-actor-creator-adaptive-load-balancing.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>${spring-boot.version}</version>
         </dependency>
     </dependencies>
 </project>

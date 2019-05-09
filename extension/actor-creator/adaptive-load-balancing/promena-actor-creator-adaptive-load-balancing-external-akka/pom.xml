@@ -16,18 +16,15 @@
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-contract-akka</artifactId>
-            <version>${promena-core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor_2.12</artifactId>
-            <version>${akka.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-cluster-metrics_2.12</artifactId>
-            <version>${akka.version}</version>
         </dependency>
     </dependencies>
 </project>
