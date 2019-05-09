@@ -7,6 +7,8 @@ import pl.beone.promena.core.contract.communication.OutgoingCommunicationConvert
 import pl.beone.promena.core.contract.serialization.DescriptorSerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.contract.transformer.TransformerService
+import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
+import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 
 class DefaultTransformationUseCase(private val descriptorSerializationService: DescriptorSerializationService,
                                    private val communicationValidator: CommunicationValidator,
@@ -15,23 +17,33 @@ class DefaultTransformationUseCase(private val descriptorSerializationService: D
                                    private val outgoingCommunicationConverter: OutgoingCommunicationConverter)
     : TransformationUseCase {
 
-    override fun transform(transformerId: String, bytes: ByteArray, communicationParameters: CommunicationParameters): ByteArray {
+    override fun transform(transformerId: String,
+                           bytes: ByteArray,
+                           communicationParameters: CommunicationParameters): ByteArray {
         val transformationDescriptor = descriptorSerializationService.deserialize(bytes)
 
+        val convertedTransformedDataDescriptors =
+                transform(transformerId, communicationParameters, transformationDescriptor)
+
+        return descriptorSerializationService.serialize(convertedTransformedDataDescriptors)
+    }
+
+    override fun transform(transformerId: String,
+                           communicationParameters: CommunicationParameters,
+                           transformationDescriptor: TransformationDescriptor): List<TransformedDataDescriptor> {
         communicationValidator.validate(transformationDescriptor.dataDescriptors, communicationParameters)
 
         val convertedDataDescriptors =
-                transformationDescriptor.dataDescriptors.map { incomingCommunicationConverter.convert(it, communicationParameters) }
+                transformationDescriptor.dataDescriptors.map {
+                    incomingCommunicationConverter.convert(it, communicationParameters)
+                }
 
         val transformedDataDescriptors = transformerService.transform(transformerId,
                                                                       convertedDataDescriptors,
                                                                       transformationDescriptor.targetMediaType,
                                                                       transformationDescriptor.parameters)
 
-        val convertedTransformedDataDescriptors =
-                transformedDataDescriptors.map { outgoingCommunicationConverter.convert(it, communicationParameters) }
-
-        return descriptorSerializationService.serialize(convertedTransformedDataDescriptors)
+        return transformedDataDescriptors.map { outgoingCommunicationConverter.convert(it, communicationParameters) }
     }
 
 }

@@ -14,7 +14,7 @@
     <artifactId>promena-core</artifactId>
     <version>3.0.0-alpha</version>
 
-    <name>[SERVER] Core</name>
+    <name>Core</name>
 
     <packaging>pom</packaging>
     <modules>

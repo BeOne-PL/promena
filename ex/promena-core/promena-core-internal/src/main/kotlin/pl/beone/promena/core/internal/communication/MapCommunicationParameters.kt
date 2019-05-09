@@ -5,7 +5,7 @@ import pl.beone.promena.transformer.internal.model._get
 import pl.beone.promena.transformer.internal.model.get
 import java.net.URI
 
-class MapCommunicationParameters(private val parameters: Map<String, Any>) : CommunicationParameters {
+data class MapCommunicationParameters(private val parameters: Map<String, Any>) : CommunicationParameters {
 
     companion object {
         fun empty(): CommunicationParameters = MapCommunicationParameters(
