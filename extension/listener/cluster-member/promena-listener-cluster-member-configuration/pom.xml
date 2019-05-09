@@ -15,6 +15,7 @@
         <dependency>
             <groupId>pl.beone.promena.listener</groupId>
             <artifactId>promena-listener-cluster-member-external-akka</artifactId>
+            <version>${promena-listener-cluster-member.version}</version>
         </dependency>
 
         <dependency>
