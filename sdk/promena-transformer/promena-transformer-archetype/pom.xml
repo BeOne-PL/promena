@@ -9,7 +9,7 @@
     <version>1.0.0-alpha</version>
     <packaging>maven-archetype</packaging>
 
-    <name>[SDK][ARCHETYPE] Promena Transformer</name>
+    <name>[SDK][ARCHETYPE] Promena transformer</name>
 
     <build>
         <extensions>

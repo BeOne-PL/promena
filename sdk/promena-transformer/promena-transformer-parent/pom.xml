@@ -51,6 +51,16 @@
 
             <dependency>
                 <groupId>pl.beone.promena.transformer</groupId>
+                <artifactId>promena-transformer-application-model</artifactId>
+                <version>${promena-transformer.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.transformer</groupId>
+                <artifactId>promena-transformer-contract</artifactId>
+                <version>${promena-transformer.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.transformer</groupId>
                 <artifactId>promena-transformer-internal</artifactId>
                 <version>${promena-transformer.version}</version>
             </dependency>
