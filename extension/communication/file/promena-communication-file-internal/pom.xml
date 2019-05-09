@@ -16,17 +16,14 @@
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-contract</artifactId>
-            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-internal</artifactId>
-            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-common</artifactId>
-            <version>${promena-core.version}</version>
         </dependency>
     </dependencies>
 </project>
