@@ -14,7 +14,7 @@
     <artifactId>promena-transformer</artifactId>
     <version>3.0.0-alpha</version>
 
-    <name>[TS] Transformer</name>
+    <name>Transformer</name>
 
     <packaging>pom</packaging>
     <modules>

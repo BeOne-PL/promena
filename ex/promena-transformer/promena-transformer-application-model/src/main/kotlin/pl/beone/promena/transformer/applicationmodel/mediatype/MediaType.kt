@@ -10,9 +10,6 @@ data class MediaType(val mimeType: String,
         fun create(mimeType: String, charset: Charset = Charsets.UTF_8): MediaType =
                 MediaType(mimeType, charset)
 
-        fun create(mimeType: String, charset: String = Charsets.UTF_8.name()): MediaType =
-                MediaType(mimeType, Charset.forName(charset))
-
     }
 
 }
