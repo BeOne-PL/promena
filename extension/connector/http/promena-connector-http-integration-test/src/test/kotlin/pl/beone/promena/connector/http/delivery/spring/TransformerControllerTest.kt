@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import pl.beone.promena.connector.http.configuration.internal.communication.FromSpringMvcParametersMapToCommunicationParametersConverterContext
 import pl.beone.promena.connector.http.contract.communication.FromMapToCommunicationParametersConverter
+import pl.beone.promena.core.contract.communication.CommunicationParameters
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerException
@@ -58,7 +59,8 @@ class TransformerControllerTest {
     fun `transform _ with location in communication parameters`() {
         val communicationParameters = MapCommunicationParameters(mapOf("location" to "file:/tmp"))
 
-        `when`(fromMapToCommunicationParametersConverter.convert(mapOf("location" to "file:/tmp"))).thenReturn(communicationParameters)
+        `when`(fromMapToCommunicationParametersConverter.convert(mapOf("location" to "file:/tmp"))).thenReturn(
+                communicationParameters)
         `when`(transformationUseCase.transform(eq("default"),
                                                eq("request body".toByteArray()),
                                                eq(communicationParameters)))
@@ -72,7 +74,7 @@ class TransformerControllerTest {
 
     @Test
     fun `transform _ throw TransformerNotFoundException _ should return BadRequest`() {
-        `when`(transformationUseCase.transform(any(), any(), anyOrNull()))
+        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
                 .thenThrow(TransformerNotFoundException("exception message"))
 
         mockMvc.perform(post("/transform/default")
@@ -83,7 +85,7 @@ class TransformerControllerTest {
 
     @Test
     fun `transform _ throw TransformerTimeoutException _ should return RequestTimeout`() {
-        `when`(transformationUseCase.transform(any(), any(), anyOrNull()))
+        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
                 .thenThrow(TransformerTimeoutException("exception message"))
 
         mockMvc.perform(post("/transform/default")
@@ -94,7 +96,7 @@ class TransformerControllerTest {
 
     @Test
     fun `transform _ throw TransformerException _ should return InternalServerError`() {
-        `when`(transformationUseCase.transform(any(), any(), anyOrNull()))
+        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
                 .thenThrow(TransformerException("exception message"))
 
         mockMvc.perform(post("/transform/default")
@@ -105,7 +107,7 @@ class TransformerControllerTest {
 
     @Test
     fun `transform _ throw unhandled IllegalArgumentException _ should return InternalServerError`() {
-        `when`(transformationUseCase.transform(any(), any(), anyOrNull()))
+        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
                 .thenThrow(IllegalArgumentException("exception message"))
 
         mockMvc.perform(post("/transform/default")

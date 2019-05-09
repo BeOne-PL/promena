@@ -16,7 +16,6 @@
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-internal</artifactId>
-            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
@@ -27,7 +26,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
         </dependency>
 
         <dependency>
