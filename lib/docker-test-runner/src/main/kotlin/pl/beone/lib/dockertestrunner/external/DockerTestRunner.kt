@@ -32,6 +32,8 @@ class DockerTestRunner(private val testClass: Class<*>) : BlockJUnit4ClassRunner
 
     private val mavenOnTestContainerRunner = MavenOnTestContainerRunner(
             testContainerCoordinator,
+            configuration.getProperty("docker.test.maven.container.test.command"),
+            configuration.getProperty("docker.test.project.container.path"),
             configuration.getProperty("docker.test.debugger.enabled", Boolean::class.java),
             configuration.getProperty("docker.test.debugger.port", Int::class.java)
     )
@@ -56,7 +58,7 @@ class DockerTestRunner(private val testClass: Class<*>) : BlockJUnit4ClassRunner
 
     override fun runChild(method: FrameworkMethod, notifier: RunNotifier) {
         if (method.isSpecialKotlinName() || method.hasIgnoreAnnotation()) {
-            notifier.fireTestIgnored(testClass, method)
+            notifier.fireTestIgnored(method)
         } else {
             runOnDocker {
                 super.runChild(method, notifier)
@@ -84,7 +86,7 @@ class DockerTestRunner(private val testClass: Class<*>) : BlockJUnit4ClassRunner
     private fun FrameworkMethod.hasIgnoreAnnotation(): Boolean =
             this.getAnnotation(Ignore::class.java) != null
 
-    private fun RunNotifier.fireTestIgnored(clazz: Class<*>, method: FrameworkMethod) {
+    private fun RunNotifier.fireTestIgnored(method: FrameworkMethod) {
         this.fireTestIgnored(Description.createTestDescription(testClass, method.name))
     }
 

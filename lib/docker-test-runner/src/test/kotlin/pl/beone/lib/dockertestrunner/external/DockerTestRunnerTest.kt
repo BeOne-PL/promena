@@ -15,7 +15,7 @@ class DockerTestRunnerTest {
 
     @Test
     fun checkIfDockerFragmentWasUsedToBuildImage() {
-        String(Runtime.getRuntime().exec("cat /tmp/test").inputStream.readAllBytes()).trim()
+        String(Runtime.getRuntime().exec("cat /test.txt").inputStream.readAllBytes()).trim()
                 .let { assertThat(it).isEqualTo("test") }
     }
 

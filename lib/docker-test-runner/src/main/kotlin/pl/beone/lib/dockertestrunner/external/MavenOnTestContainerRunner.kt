@@ -6,6 +6,8 @@ import pl.beone.lib.dockertestrunner.applicationmodel.DockerTestException
 
 
 class MavenOnTestContainerRunner(private val testContainerCoordinator: TestContainerCoordinator,
+                                 private val mavenContainerTestCommand: String,
+                                 private val containerProjectPath: String,
                                  private val debuggerEnabled: Boolean,
                                  private val debuggerPort: Int) {
 
@@ -36,10 +38,10 @@ class MavenOnTestContainerRunner(private val testContainerCoordinator: TestConta
 
     private fun runContainerWithMavenForGivenMethodAndSaveOutputInLogFile(mavenTestClassifier: String,
                                                                           logFilePath: String): Container.ExecResult {
-        val command = listOfNotNull("mvn", "-f", "/test/pom.xml", "-Dtest=$mavenTestClassifier",
+        val command = listOfNotNull("mvn", "-f", "$containerProjectPath/pom.xml", "-Dtest=$mavenTestClassifier",
                                     determineDebuggerParameters(),
                                     "--log-file", logFilePath,
-                                    "surefire:test")
+                                    mavenContainerTestCommand)
                 .joinToString(" ")
 
         return testContainerCoordinator.execInContainer("bash", "-c", command)
