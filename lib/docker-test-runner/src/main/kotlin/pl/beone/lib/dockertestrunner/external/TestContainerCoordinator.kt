@@ -16,8 +16,10 @@ class TestContainerCoordinator(private val imageName: String,
                                private val imageCustomDockerfileFragmentPath: String,
                                private val imageCustomDeleteOnExit: Boolean,
                                private val projectPath: String,
+                               private val containerProjectPath: String,
                                private val m2MountEnabled: Boolean,
                                private val m2MountPath: String,
+                               private val containerM2MountPath: String,
                                private val debuggerEnabled: Boolean,
                                private val debuggerPort: Int) {
 
@@ -25,10 +27,10 @@ class TestContainerCoordinator(private val imageName: String,
 
     fun init() {
         container = createContainer().apply {
-            withFileSystemBind(projectPath, "/test")
+            withFileSystemBind(projectPath, containerProjectPath)
 
             if (m2MountEnabled) {
-                withFileSystemBind(m2MountPath, "/root/.m2")
+                withFileSystemBind(m2MountPath, containerM2MountPath)
             }
 
             if (debuggerEnabled) {

@@ -35,7 +35,7 @@
 
     <properties>
         <kotlin.version>1.3.31</kotlin.version>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
 
         <type-converter.version>1.0.0</type-converter.version>
         <testcontainers.version>1.11.2</testcontainers.version>

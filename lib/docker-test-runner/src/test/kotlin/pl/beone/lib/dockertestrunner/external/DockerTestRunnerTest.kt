@@ -1,6 +1,7 @@
 package pl.beone.lib.dockertestrunner.external
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -16,5 +17,16 @@ class DockerTestRunnerTest {
     fun checkIfDockerFragmentWasUsedToBuildImage() {
         String(Runtime.getRuntime().exec("cat /tmp/test").inputStream.readAllBytes()).trim()
                 .let { assertThat(it).isEqualTo("test") }
+    }
+
+    @Test
+    fun `name with spaces _ should be ignored`() {
+        assertThat(true).isEqualTo(false)
+    }
+
+    @Ignore
+    @Test
+    fun ignoreAnnotation_shouldBeIgnored() {
+        assertThat(true).isEqualTo(false)
     }
 }

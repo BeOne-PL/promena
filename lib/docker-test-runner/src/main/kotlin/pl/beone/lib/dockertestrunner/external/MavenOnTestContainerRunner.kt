@@ -16,12 +16,15 @@ class MavenOnTestContainerRunner(private val testContainerCoordinator: TestConta
         val result =
                 runContainerWithMavenForGivenMethodAndSaveOutputInLogFile(mavenTestClassifier, logFilePath)
 
-        val mavenLog = readOutputFromContainerMavenLogFile(logFilePath)
-
-        if (result.exitCode != 0) {
-            throw DockerTestException(mavenLog)
+        if (checkIfLogFileExists(logFilePath)) {
+            val mavenLog = readOutputFromContainerMavenLogFile(logFilePath)
+            if (result.exitCode != 0) {
+                throw DockerTestException(mavenLog)
+            } else {
+                println(mavenLog)
+            }
         } else {
-            println(mavenLog)
+            throw DockerTestException(result.stderr)
         }
     }
 
@@ -50,12 +53,10 @@ class MavenOnTestContainerRunner(private val testContainerCoordinator: TestConta
         }
     }
 
-    private fun readOutputFromContainerMavenLogFile(logFilePath: String): String {
-        if (testContainerCoordinator.execInContainer("test", "-e", logFilePath).exitCode != 0) {
-            throw DockerTestException("There is no Maven log file. Maybe Maven isn't installed in given image")
-        }
+    private fun checkIfLogFileExists(logFilePath: String): Boolean =
+            testContainerCoordinator.execInContainer("test", "-e", logFilePath).exitCode == 0
 
-        return testContainerCoordinator.execInContainer("cat", logFilePath)
-                .stdout
-    }
+    private fun readOutputFromContainerMavenLogFile(logFilePath: String): String =
+            testContainerCoordinator.execInContainer("cat", logFilePath)
+                    .stdout
 }
