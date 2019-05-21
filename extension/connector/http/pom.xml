@@ -18,11 +18,9 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>delivery/promena-connector-http-delivery-akka</module>
+        <module>delivery/promena-connector-http-delivery-http</module>
         <module>promena-connector-http-configuration</module>
         <module>promena-connector-http-integration-test</module>
-        <module>promena-connector-http-internal</module>
-        <module>promena-connector-http-contract</module>
     </modules>
 
     <repositories>
