@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>promena-connector-activemq</artifactId>
+        <groupId>pl.beone.promena.connector</groupId>
+        <version>3.0.0-alpha</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>promena-connector-activemq-integration-test</artifactId>
+    <version>3.0.0-alpha</version>
+
+    <properties>
+        <testcontainers.version>1.11.2</testcontainers.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.connector</groupId>
+            <artifactId>promena-connector-activemq-configuration</artifactId>
+            <version>${promena-connector-activemq.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

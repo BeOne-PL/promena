@@ -3,13 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>promena-connector-http</artifactId>
+        <artifactId>promena-connector-activemq</artifactId>
         <groupId>pl.beone.promena.connector</groupId>
         <version>3.0.0-alpha</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>promena-connector-http-internal</artifactId>
+    <artifactId>promena-connector-activemq-external-spring-jms</artifactId>
     <version>3.0.0-alpha</version>
 
     <dependencies>
@@ -17,10 +18,14 @@
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-internal</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-http-contract</artifactId>
-            <version>${promena-connector-http.version}</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
         </dependency>
     </dependencies>
 </project>
