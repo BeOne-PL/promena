@@ -9,6 +9,6 @@ interface TransformationUseCase {
     fun transform(transformerId: String, bytes: ByteArray, communicationParameters: CommunicationParameters): ByteArray
 
     fun transform(transformerId: String,
-                  communicationParameters: CommunicationParameters,
-                  transformationDescriptor: TransformationDescriptor): List<TransformedDataDescriptor>
+                  transformationDescriptor: TransformationDescriptor,
+                  communicationParameters: CommunicationParameters): List<TransformedDataDescriptor>
 }

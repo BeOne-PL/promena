@@ -23,14 +23,14 @@ class DefaultTransformationUseCase(private val descriptorSerializationService: D
         val transformationDescriptor = descriptorSerializationService.deserialize(bytes)
 
         val convertedTransformedDataDescriptors =
-                transform(transformerId, communicationParameters, transformationDescriptor)
+                transform(transformerId, transformationDescriptor, communicationParameters)
 
         return descriptorSerializationService.serialize(convertedTransformedDataDescriptors)
     }
 
     override fun transform(transformerId: String,
-                           communicationParameters: CommunicationParameters,
-                           transformationDescriptor: TransformationDescriptor): List<TransformedDataDescriptor> {
+                           transformationDescriptor: TransformationDescriptor,
+                           communicationParameters: CommunicationParameters): List<TransformedDataDescriptor> {
         communicationValidator.validate(transformationDescriptor.dataDescriptors, communicationParameters)
 
         val convertedDataDescriptors =
