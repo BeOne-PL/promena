@@ -37,10 +37,10 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
 
     private fun Message.getClassFromProperties(): Class<*> =
             try {
-                Class.forName(getStringProperty(pl.beone.lib.jms.message.converter.KryoMessageConverter.Companion.PROPERTY_SERIALIZATION_CLASS))
-                        ?: throw NoSuchElementException("Properties doesn't contain <${pl.beone.lib.jms.message.converter.KryoMessageConverter.Companion.PROPERTY_SERIALIZATION_CLASS}> value")
+                Class.forName(getStringProperty(PROPERTY_SERIALIZATION_CLASS))
+                        ?: throw NoSuchElementException("Properties doesn't contain <$PROPERTY_SERIALIZATION_CLASS> value")
             } catch (e: ClassNotFoundException) {
-                throw IllegalArgumentException("Class determined in <${pl.beone.lib.jms.message.converter.KryoMessageConverter.Companion.PROPERTY_SERIALIZATION_CLASS}> message property isn't available", e)
+                throw IllegalArgumentException("Class determined in <$PROPERTY_SERIALIZATION_CLASS> message property isn't available", e)
             }
 
 }
