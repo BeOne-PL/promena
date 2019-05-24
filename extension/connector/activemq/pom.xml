@@ -21,7 +21,6 @@
         <module>delivery/promena-connector-activemq-delivery-jms</module>
         <module>promena-connector-activemq-configuration</module>
         <module>promena-connector-activemq-integration-test</module>
-        <module>external/promena-connector-activemq-external-spring-jms</module>
     </modules>
 
     <repositories>
@@ -49,6 +48,8 @@
 
     <properties>
         <promena-connector-activemq.version>3.0.0-alpha</promena-connector-activemq.version>
+
+        <kryo-message-converter.version>1.0.0</kryo-message-converter.version>
     </properties>
 
     <dependencies>

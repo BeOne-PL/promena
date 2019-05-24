@@ -2,7 +2,7 @@ package pl.beone.promena.connector.activemq.configuration.external.springmessagi
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.connector.activemq.external.springmessaging.KryoMessageConverter
+import pl.beone.lib.jms.message.converter.KryoMessageConverter
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 
 @Configuration

@@ -11,7 +11,6 @@ import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import java.lang.RuntimeException
 
 class TransformerConsumer(jmsTemplate: JmsTemplate,
                           private val responseQueue: ActiveMQQueue,
@@ -26,10 +25,10 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
     private val headersToSentBackDeterminer = HeadersToSentBackDeterminer()
     private val transformerProducer = TransformerProducer(jmsTemplate)
 
-    @JmsListener(destination = "\${activemq.promena.consumer.queue.request}",
-                 selector = "\${activemq.promena.consumer.selector}")
+    @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.request}",
+                 selector = "\${promena.connector.activemq.consumer.queue.request.selector}")
     fun receiveQueue(@Header(JmsHeaders.CORRELATION_ID) correlationId: String,
-                     @Header(TransformerJmsHeader.PROMENA_TRANSFORMER_ID) transformerId: String,
+                     @Header(PromenaJmsHeader.PROMENA_TRANSFORMER_ID) transformerId: String,
                      @Headers headers: Map<String, Any>,
                      @Payload transformationDescriptor: TransformationDescriptor) {
         val startTimestamp = getTimestamp()
@@ -37,9 +36,7 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
         val (queue, payload) = try {
             val communicationParameters = communicationParametersConverter.convert(headers)
 
-            responseQueue to transformationUseCase.transform(transformerId,
-                                                             transformationDescriptor,
-                                                             communicationParameters)
+            responseQueue to transformationUseCase.transform(transformerId, transformationDescriptor, communicationParameters)
         } catch (e: Exception) {
             logException(e, transformerId, transformationDescriptor)
 
@@ -47,13 +44,10 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
         }
 
         val headersToSend = headersToSentBackDeterminer.determine(headers) +
-                            (TransformerJmsHeader.PROMENA_TRANSFORMER_ID to transformerId) +
+                            (PromenaJmsHeader.PROMENA_TRANSFORMER_ID to transformerId) +
                             determineTimestampHeaders(startTimestamp, getTimestamp())
 
-        transformerProducer.send(queue,
-                                 correlationId,
-                                 headersToSend,
-                                 payload)
+        transformerProducer.send(queue, correlationId, headersToSend, payload)
     }
 
     private fun logException(e: Exception, transformerId: String, transformationDescriptor: TransformationDescriptor) {
@@ -74,10 +68,9 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
                 }
             }
 
-
     private fun determineTimestampHeaders(startTimestamp: Long, endTimestamp: Long): Map<String, Long> =
-            mapOf(TransformerJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP to startTimestamp,
-                  TransformerJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP to endTimestamp)
+            mapOf(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP to startTimestamp,
+                  PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP to endTimestamp)
 
     private fun getTimestamp(): Long =
             System.currentTimeMillis()

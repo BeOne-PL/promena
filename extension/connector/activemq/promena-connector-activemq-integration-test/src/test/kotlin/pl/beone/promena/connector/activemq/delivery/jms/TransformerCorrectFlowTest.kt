@@ -47,7 +47,7 @@ class TransformerCorrectFlowTest {
     @Autowired
     private lateinit var jmsTemplate: JmsTemplate
 
-    @Value("\${activemq.promena.consumer.queue.request}")
+    @Value("\${promena.connector.activemq.consumer.queue.request}")
     private lateinit var queueRequest: String
 
     @Autowired
@@ -63,7 +63,6 @@ class TransformerCorrectFlowTest {
 
     @Test
     fun `send data to transformation request queue _ should transform and send result to response queue`() {
-        //
         val transformerId = "test-transformer"
         val location = "file:/tmp"
         val correlationId = UUID.randomUUID().toString()
@@ -80,18 +79,22 @@ class TransformerCorrectFlowTest {
         //
         val startTimestamp = getTimestamp()
         sendRequestMessage(transformerId, location, transformationDescriptor, correlationId)
-        val (headers, transformedDataDescriptors) = transformerResponseConsumer.getMessage(3000)
+        val (headers, transformedDataDescriptors) = try {
+            transformerResponseConsumer.getMessage(3000)
+        } catch (e: IllegalStateException) {
+            throw AssertionError("Couldn't get message from response queue")
+        }
         val endTimestamp = getTimestamp()
 
         //
         assertThat(headers)
                 .containsEntry(CORRELATION_ID, correlationId)
-                .containsEntry(TransformerJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
-                .containsKey(TransformerJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP)
-                .containsKey(TransformerJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP)
+                .containsEntry(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
+                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP)
+                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP)
 
-        val transformationStartTimestamp = headers[TransformerJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP] as Long
-        val transformationEndTimestamp = headers[TransformerJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP] as Long
+        val transformationStartTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP] as Long
+        val transformationEndTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP] as Long
         assertThat(transformationStartTimestamp)
                 .isBetween(startTimestamp, endTimestamp)
                 .isLessThan(transformationEndTimestamp)
@@ -107,17 +110,17 @@ class TransformerCorrectFlowTest {
         }
     }
 
-    fun sendRequestMessage(transformerId: String,
-                           location: String,
-                           transformationDescriptor: TransformationDescriptor,
-                           correlationId: String) {
+    private fun sendRequestMessage(transformerId: String,
+                                   location: String,
+                                   transformationDescriptor: TransformationDescriptor,
+                                   correlationId: String) {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), listOf(transformationDescriptor)) { message ->
-            message.jmsCorrelationID = correlationId
-            message.setStringProperty(TransformerJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
+            message.apply {
+                jmsCorrelationID = correlationId
+                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
 
-            message.setStringProperty(TransformerJmsHeader.PROMENA_COMMUNICATION_LOCATION, location)
-
-            message
+                setStringProperty(PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION, location)
+            }
         }
     }
 }

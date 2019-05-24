@@ -45,7 +45,7 @@ class TransformerIncorrectFlowTest {
     @Autowired
     private lateinit var jmsTemplate: JmsTemplate
 
-    @Value("\${activemq.promena.consumer.queue.request}")
+    @Value("\${promena.connector.activemq.consumer.queue.request}")
     private lateinit var queueRequest: String
 
     @Autowired
@@ -61,7 +61,6 @@ class TransformerIncorrectFlowTest {
 
     @Test
     fun `send data to transformation request queue _ should handle exception to response error queue`() {
-        //
         val transformerId = "test-transformer"
         val correlationId = UUID.randomUUID().toString()
         val expectException = TransformerTimeoutException("Time expired")
@@ -71,24 +70,28 @@ class TransformerIncorrectFlowTest {
         //
         val startTimestamp = getTimestamp()
         sendRequestMessage(transformerId, correlationId)
-        val (headers, exception) = transformerResponseConsumer.getErrorMessage(3000)
+        val (headers, exception) = try {
+            transformerResponseConsumer.getErrorMessage(3000)
+        } catch (e: IllegalStateException) {
+            throw AssertionError("Couldn't get message from response error queue")
+        }
         val endTimestamp = getTimestamp()
 
         //
         assertThat(headers)
                 .containsEntry(CORRELATION_ID, correlationId)
-                .containsEntry(TransformerJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
-                .containsEntry("send_back_alf_node", listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
+                .containsEntry(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
+                .containsEntry("send_back_nodeRefs", listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
                                                             "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
                 .containsEntry("send_back_targetMediaType_mimeType", TEXT_PLAIN.mimeType)
                 .containsEntry("send_back_targetMediaType_charset", TEXT_PLAIN.charset.toString())
                 .containsEntry("send_back_parameters", MapParameters(mapOf("key" to "value")).getAll())
                 .containsEntry("send_back_timeout", 3000)
-                .containsKey(TransformerJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP)
-                .containsKey(TransformerJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP)
+                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP)
+                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP)
 
-        val transformationStartTimestamp = headers[TransformerJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP] as Long
-        val transformationEndTimestamp = headers[TransformerJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP] as Long
+        val transformationStartTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP] as Long
+        val transformationEndTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP] as Long
         assertThat(transformationStartTimestamp)
                 .isBetween(startTimestamp, endTimestamp)
                 .isLessThan(transformationEndTimestamp)
@@ -104,22 +107,22 @@ class TransformerIncorrectFlowTest {
         }
     }
 
-    fun sendRequestMessage(transformerId: String, correlationId: String) {
+    private fun sendRequestMessage(transformerId: String, correlationId: String) {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
                                    TransformationDescriptor(listOf(DataDescriptor("".toInMemoryData(), TEXT_PLAIN)),
                                                             MediaTypeConstants.APPLICATION_JSON,
                                                             MapParameters.empty())) { message ->
-            message.jmsCorrelationID = correlationId
-            message.setStringProperty(TransformerJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
+            message.apply {
+                jmsCorrelationID = correlationId
+                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
 
-            message.setObjectProperty("send_back_alf_node", listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
-                                                                   "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
-            message.setObjectProperty("send_back_targetMediaType_mimeType", MediaTypeConstants.TEXT_PLAIN.mimeType)
-            message.setObjectProperty("send_back_targetMediaType_charset", MediaTypeConstants.TEXT_PLAIN.charset.toString())
-            message.setObjectProperty("send_back_parameters", MapParameters(mapOf("key" to "value")).getAll())
-            message.setObjectProperty("send_back_timeout", 3000)
-
-            message
+                setObjectProperty("send_back_nodeRefs", listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
+                                                               "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
+                setObjectProperty("send_back_targetMediaType_mimeType", MediaTypeConstants.TEXT_PLAIN.mimeType)
+                setObjectProperty("send_back_targetMediaType_charset", MediaTypeConstants.TEXT_PLAIN.charset.toString())
+                setObjectProperty("send_back_parameters", MapParameters(mapOf("key" to "value")).getAll())
+                setObjectProperty("send_back_timeout", 3000)
+            }
         }
     }
 }
