@@ -41,7 +41,7 @@ class TransformerController {
                     else -> INTERNAL_SERVER_ERROR
                 }
 
-                logger.error("An error occurred during processing <{}> <{}> request", transformerId, parameters, e)
+                logger.error("An error occurred during transforming <{}> <{}>", transformerId, parameters, e)
 
                 throw ResponseStatusException(status, e.message, e)
             }

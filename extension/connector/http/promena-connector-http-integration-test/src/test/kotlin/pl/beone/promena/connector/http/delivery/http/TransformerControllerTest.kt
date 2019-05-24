@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import pl.beone.promena.connector.http.delivery.spring.TransformerController
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerException
