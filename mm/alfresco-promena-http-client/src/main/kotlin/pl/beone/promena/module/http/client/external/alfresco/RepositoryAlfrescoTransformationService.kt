@@ -19,6 +19,7 @@ import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescripto
 import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.model.Parameters
 import java.io.Serializable
+import java.nio.charset.Charset
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.system.measureTimeMillis
@@ -45,12 +46,12 @@ class RepositoryAlfrescoTransformationService(private val transformationServerSe
                                   parameters: Parameters,
                                   timeout: Long?) {
         logger.info("Transforming <{}> <{}, {}, {}> from nodes <{}> to nodes <{}>...",
-                                                                                                                            transformerId,
-                                                                                                                            targetMediaType,
-                                                                                                                            parameters.getAll(),
-                                                                                                                            timeout,
-                                                                                                                            nodeDescriptors,
-                                                                                                                            targetNodeDescriptors)
+                    transformerId,
+                    targetMediaType,
+                    parameters.getAll(),
+                    timeout,
+                    nodeDescriptors,
+                    targetNodeDescriptors)
 
         val measuredTimeMs = measureTimeMillis {
             targetNodeDescriptors.throwIfAnyNodeDoesNotExist { TransformationValidationException("Target node <$it> doesn't exist") }
@@ -66,13 +67,13 @@ class RepositoryAlfrescoTransformationService(private val transformationServerSe
         }
 
         logger.info("Transformed <{}> <{}, {}, {}> from nodes <{}> to nodes <{}> in <{} s>",
-                                                                                                                            transformerId,
-                                                                                                                            targetMediaType,
-                                                                                                                            parameters.getAll(),
-                                                                                                                            timeout,
-                                                                                                                            nodeDescriptors,
-                                                                                                                            targetNodeDescriptors,
-                                                                                                                            measuredTimeMs)
+                    transformerId,
+                    targetMediaType,
+                    parameters.getAll(),
+                    timeout,
+                    nodeDescriptors,
+                    targetNodeDescriptors,
+                    measuredTimeMs)
     }
 
     override fun transformToFolder(transformerId: String,
@@ -85,15 +86,15 @@ class RepositoryAlfrescoTransformationService(private val transformationServerSe
                                    targetContentProperty: QName?,
                                    namePattern: String?): List<NodeRef> {
         logger.info("Transforming <{}> <{}, {}, {}> from nodes <{}> to folder <{}> <{}, {}, {}>...",
-                                                                                                                            transformerId,
-                                                                                                                            targetMediaType,
-                                                                                                                            parameters.getAll(),
-                                                                                                                            timeout,
-                                                                                                                            nodeDescriptors,
-                                                                                                                            targetFolderNodeRef,
-                                                                                                                            targetType,
-                                                                                                                            targetContentProperty,
-                                                                                                                            namePattern)
+                    transformerId,
+                    targetMediaType,
+                    parameters.getAll(),
+                    timeout,
+                    nodeDescriptors,
+                    targetFolderNodeRef,
+                    targetType,
+                    targetContentProperty,
+                    namePattern)
 
         val determinedNamePattern =
                 namePattern ?: "Result ($transformerId) [${LocalDateTime.now().format(dateTimeFormatter)}] - \${index}"
@@ -118,16 +119,16 @@ class RepositoryAlfrescoTransformationService(private val transformationServerSe
         }
 
         logger.info("Transformed <{}> <{}, {}, {}> from nodes <{}> to folder <{}> <{}, {}, {}> in <{} s>",
-                                                                                                                            transformerId,
-                                                                                                                            targetMediaType,
-                                                                                                                            parameters.getAll(),
-                                                                                                                            timeout,
-                                                                                                                            nodeDescriptors,
-                                                                                                                            targetFolderNodeRef,
-                                                                                                                            targetType,
-                                                                                                                            targetContentProperty,
-                                                                                                                            namePattern,
-                                                                                                                            measuredTimeMs)
+                    transformerId,
+                    targetMediaType,
+                    parameters.getAll(),
+                    timeout,
+                    nodeDescriptors,
+                    targetFolderNodeRef,
+                    targetType,
+                    targetContentProperty,
+                    namePattern,
+                    measuredTimeMs)
 
         return targetNodeDescriptors.map { it.nodeRef }
     }
@@ -169,7 +170,7 @@ class RepositoryAlfrescoTransformationService(private val transformationServerSe
     private fun List<NodeDescriptor>.toDataDescriptors(): List<DataDescriptor> =
             this.map {
                 val contentReader = contentService.getReader(it.nodeRef, it.contentProperty)
-                val mediaType = MediaType.create(contentReader.mimetype, contentReader.encoding)
+                val mediaType = MediaType.create(contentReader.mimetype, Charset.forName(contentReader.encoding))
 
                 DataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType)
             }
@@ -187,7 +188,7 @@ class RepositoryAlfrescoTransformationService(private val transformationServerSe
                     .nodeRef
 
             NodeDescriptor(targetNodeRef,
-                                                                                           targetContentProperty)
+                           targetContentProperty)
         }
     }
 
