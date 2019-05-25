@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getAndVerifyLocation
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getPropertyWithEmptySupport
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getRequiredProperty
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
@@ -27,7 +28,9 @@ class ActiveMQAlfrescoPromenaServiceContext {
                                        alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
                                        jmsTemplate: JmsTemplate) =
             ActiveMQAlfrescoPromenaService(properties.getAndVerifyLocation(logger),
-                                           properties.getProperty("promena.client.message-broker.waitMax")?.let { Duration.parse(it) },
+                                           properties.getPropertyWithEmptySupport("promena.client.message-broker.waitMax")?.let {
+                                               Duration.parse(it)
+                                           },
                                            completedTransformationManager,
                                            alfrescoDataDescriptorGetter,
                                            ActiveMQQueue(properties.getRequiredProperty("promena.client.message-broker.consumer.queue.request")),

@@ -24,6 +24,17 @@ down() {
     fi
 }
 
+stop_acs() {
+    docker-compose -f $COMPOSE_FILE_PATH stop alfresco-promena-message-broker-client-acs
+    docker-compose -f $COMPOSE_FILE_PATH rm -f alfresco-promena-message-broker-client-acs
+}
+
+start_acs() {
+    docker-compose -f $COMPOSE_FILE_PATH up --build -d
+    docker-compose -f $COMPOSE_FILE_PATH create alfresco-promena-message-broker-client-acs
+    docker-compose -f $COMPOSE_FILE_PATH start alfresco-promena-message-broker-client-acs
+}
+
 purge() {
     docker volume rm -f alfresco-promena-message-broker-client-acs-volume
     docker volume rm -f alfresco-promena-message-broker-client-db-volume
@@ -34,7 +45,7 @@ purge() {
 }
 
 build() {
-    $MVN_EXEC clean package
+    $MVN_EXEC -DskipTests=true clean package
 }
 
 tail() {
@@ -58,6 +69,12 @@ case "$1" in
     down
     build
     start
+    tail
+    ;;
+  build_acs)
+    stop_acs
+    build
+    start_acs
     tail
     ;;
   build_start_it_supported)
@@ -94,5 +111,5 @@ case "$1" in
     test
     ;;
   *)
-    echo "Usage: $0 {build_start|build_start_it_supported|start|stop|purge|tail|build_test|test}"
+    echo "Usage: $0 {build_start|build_acs|build_start_it_supported|start|stop|purge|tail|build_test|test}"
 esac

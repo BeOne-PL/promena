@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.JmsProperties
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getPropertyWithResolvedPlaceholders
+import java.time.Duration
 import java.util.*
 
 @Configuration
@@ -33,5 +34,23 @@ class JmsPropertiesContext {
                         ?.toInt()?.let { listener.maxConcurrency = it }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.listener.max-concurrency")
                         ?.toInt()?.let { listener.maxConcurrency = it }
+
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.default-destination")
+                        ?.let { template.defaultDestination = it }
+
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.default-destination")
+                        ?.let { template.defaultDestination = it }
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.delivery-delay")
+                        ?.let { template.deliveryDelay = Duration.parse(it) }
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.delivery-mode")
+                        ?.let { template.deliveryMode = JmsProperties.DeliveryMode.valueOf(it) }
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.priority")
+                        ?.toInt()?.let { template.priority = it }
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.qos-enabled")
+                        ?.toBoolean()?.let { template.qosEnabled = it }
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.receive-timeout")
+                        ?.let { template.receiveTimeout = Duration.parse(it) }
+                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.time-to-live")
+                        ?.let { template.timeToLive = Duration.parse(it) }
             }
 }
