@@ -88,10 +88,6 @@
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-jms</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>javax.jms</groupId>
-                    <artifactId>javax.jms-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
