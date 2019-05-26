@@ -50,7 +50,8 @@ class TransformerConsumer(private val alfrescoTransformedDataDescriptorSaver: Al
         val mediaType = mediaTypeConverter.convert(rawMimeType, rawCharset)
         val parameters = parametersConverter.convert(rawParameters)
 
-        val transformedNodeRefs = alfrescoTransformedDataDescriptorSaver.save(transformerId, nodeRefs, mediaType, transformedDataDescriptors)
+        val transformedNodeRefs =
+                alfrescoTransformedDataDescriptorSaver.save(transformerId, nodeRefs, mediaType, transformedDataDescriptors)
         completedTransformationManager.completeTransformation(correlationId, transformedNodeRefs)
 
         logger.info("Transformed <{}> <{}> nodes <{}> to <{}> in <{} s>",

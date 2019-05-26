@@ -50,6 +50,8 @@
         <promena-connector-activemq.version>3.0.0-alpha</promena-connector-activemq.version>
 
         <kryo-message-converter.version>1.0.0</kryo-message-converter.version>
+
+        <mockk.version>1.9.3</mockk.version>
     </properties>
 
     <dependencies>
@@ -75,7 +77,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
-            <version>1.9.3</version>
+            <version>${mockk.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
