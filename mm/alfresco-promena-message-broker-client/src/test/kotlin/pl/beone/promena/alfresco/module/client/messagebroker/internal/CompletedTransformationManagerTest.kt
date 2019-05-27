@@ -21,15 +21,11 @@ class CompletedTransformationManagerTest : StringSpec() {
     init {
         "should wait for completion of all transformation" {
             val exceptionList = CopyOnWriteArrayList<Exception>()
-
             val completedTransformationManager = CompletedTransformationManager()
-
             val idWithNodeRef = (0..100)
                     .map { IdWithNodeRefs(it.toString(), listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}"))) }
 
-            //
             idWithNodeRef.forEach { (id, _) -> completedTransformationManager.startTransformation(id) }
-
             listOf(
                     thread {
                         try {
@@ -53,21 +49,17 @@ class CompletedTransformationManagerTest : StringSpec() {
                     }
             ).forEach { it.join() }
 
-            //
             withClue("Something went wrong. Check exception: ${toArrayOfString(exceptionList)}") { exceptionList.shouldBeEmpty() }
         }
 
         "should exceed waiting time and throw TimeoutException" {
             val exceptionList = CopyOnWriteArrayList<Exception>()
-
             val completedTransformationManager = CompletedTransformationManager()
 
             val id = "1"
             val nodeRefs = listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}"))
 
-            //
             completedTransformationManager.startTransformation(id)
-
             listOf(
                     thread {
                         try {
@@ -87,7 +79,6 @@ class CompletedTransformationManagerTest : StringSpec() {
                     }
             ).forEach { it.join() }
 
-            //
             withClue("Something went wrong. List shouldn't be empty and should contain only TimeoutException exceptions: : " +
                      "${toArrayOfString(exceptionList)}") {
                 exceptionList.map { it.javaClass.name } shouldHaveSingleElement TimeoutException::class.java.name
