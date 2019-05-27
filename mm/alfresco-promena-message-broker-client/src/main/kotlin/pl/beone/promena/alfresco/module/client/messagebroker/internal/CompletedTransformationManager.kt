@@ -16,6 +16,7 @@ class CompletedTransformationManager {
 
     private val semaphoresMap = ConcurrentHashMap<String, Semaphore>()
     private val nodeRefsMap = ConcurrentHashMap<String, List<NodeRef>>()
+    private val exceptionMap = ConcurrentHashMap<String, Exception>()
 
     fun startTransformation(id: String) {
         val semaphore = Semaphore(0)
@@ -32,14 +33,24 @@ class CompletedTransformationManager {
             throw TimeoutException()
         }
 
-        return nodeRefsMap.remove(id) ?: throw RuntimeException("Node refs for transaction <$id> aren't available")
+        return nodeRefsMap.remove(id)
+               ?: exceptionMap.remove(id)?.let { throw it }
+               ?: throw RuntimeException("Node refs for transaction <$id> aren't available")
     }
 
     fun completeTransformation(id: String, nodeRefs: List<NodeRef>) {
+        completeTransformation(id) { nodeRefsMap[id] = nodeRefs }
+    }
+
+    fun completeErrorTransformation(id: String, exception: Exception) {
+        completeTransformation(id) { exceptionMap[id] = exception }
+    }
+
+    private fun completeTransformation(id: String, toRun: () -> Unit) {
         val semaphore = semaphoresMap[id]
 
         if (semaphore != null) {
-            nodeRefsMap[id] = nodeRefs
+            toRun()
             semaphore.release()
         } else {
             logger.debug("Couldn't mark transformation <{}> as complete. Semaphore was removed earlier", id)
