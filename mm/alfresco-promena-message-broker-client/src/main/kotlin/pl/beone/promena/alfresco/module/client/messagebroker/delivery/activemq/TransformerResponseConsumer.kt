@@ -22,11 +22,11 @@ import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescripto
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class TransformerConsumer(private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
-                          private val completedTransformationManager: CompletedTransformationManager) {
+class TransformerResponseConsumer(private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
+                                  private val completedTransformationManager: CompletedTransformationManager) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(TransformerConsumer::class.java)
+        private val logger = LoggerFactory.getLogger(TransformerResponseConsumer::class.java)
     }
 
     private val timestampConverter = TimestampConverter()

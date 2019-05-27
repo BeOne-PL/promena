@@ -18,10 +18,10 @@ import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.c
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.ParametersConverter
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.TimestampConverter
 
-class TransformerErrorConsumer {
+class TransformerResponseErrorConsumer {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(TransformerErrorConsumer::class.java)
+        private val logger = LoggerFactory.getLogger(TransformerResponseErrorConsumer::class.java)
     }
 
     private val timestampConverter = TimestampConverter()
