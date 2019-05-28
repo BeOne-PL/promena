@@ -63,13 +63,15 @@ class TransformerResponseFlowTest : StringSpec() {
         private val transformedDataDescriptors = listOf(
                 TransformedDataDescriptor(InMemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value")))
         )
+
+        private const val transformerId = "transformer-test"
     }
 
     init {
         "should receive transformed data from response queue and save it in ACS" {
             val id = UUID.randomUUID().toString()
             every {
-                alfrescoTransformedDataDescriptorSaver.save("transformer-test",
+                alfrescoTransformedDataDescriptorSaver.save(transformerId,
                                                             listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
                                                                    NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
                                                             MediaTypeConstants.TEXT_PLAIN,
@@ -92,7 +94,7 @@ class TransformerResponseFlowTest : StringSpec() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueResponse), transformedDataDescriptors) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, "transformer-test")
+                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
 
                 setLongProperty(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP, System.currentTimeMillis())
                 setLongProperty(PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP,
