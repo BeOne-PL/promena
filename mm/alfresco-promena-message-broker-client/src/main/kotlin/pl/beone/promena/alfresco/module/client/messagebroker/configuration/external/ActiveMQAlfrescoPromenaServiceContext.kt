@@ -9,10 +9,10 @@ import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getAndVerifyLocation
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getPropertyWithEmptySupport
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getRequiredProperty
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.toDuration
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
-import java.time.Duration
 import java.util.*
 
 @Configuration
@@ -29,7 +29,7 @@ class ActiveMQAlfrescoPromenaServiceContext {
                                        jmsTemplate: JmsTemplate) =
             ActiveMQAlfrescoPromenaService(properties.getAndVerifyLocation(logger),
                                            properties.getPropertyWithEmptySupport("promena.client.message-broker.waitMax")?.let {
-                                               Duration.parse(it)
+                                               it.toDuration()
                                            },
                                            completedTransformationManager,
                                            alfrescoDataDescriptorGetter,

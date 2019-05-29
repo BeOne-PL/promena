@@ -4,7 +4,13 @@ import org.slf4j.Logger
 import org.springframework.util.PropertyPlaceholderHelper
 import java.io.File
 import java.net.URI
+import java.time.Duration
 import java.util.*
+import org.joda.time.MutablePeriod
+import org.joda.time.format.PeriodFormatterBuilder
+import org.joda.time.format.PeriodParser
+
+
 
 internal fun Properties.getPropertyWithResolvedPlaceholders(key: String): String? {
     val property = getPropertyWithEmptySupport(key) ?: return null
@@ -23,7 +29,7 @@ internal fun Properties.getPropertyWithEmptySupport(key: String): String? =
         }
 
 internal fun Properties.getRequiredProperty(key: String): String =
-        getProperty(key) ?: throw IllegalStateException("Required key '$key' not found")
+        getPropertyWithEmptySupport(key) ?: throw IllegalStateException("Required key '$key' not found")
 
 internal fun Properties.getAndVerifyLocation(logger: Logger): URI? {
     val property = this.getPropertyWithEmptySupport("promena.communication.file.location")
@@ -43,4 +49,16 @@ internal fun Properties.getAndVerifyLocation(logger: Logger): URI? {
     }
 
     return uri
+}
+
+internal fun String.toDuration(): Duration {
+    val formatter = PeriodFormatterBuilder()
+            .appendDays().appendSuffix("d ")
+            .appendHours().appendSuffix("h ")
+            .appendMinutes().appendSuffix("m")
+            .appendSeconds().appendSuffix("s")
+            .appendMillis().appendSuffix("ms")
+            .toFormatter()
+
+    return Duration.ofMillis(formatter.parsePeriod(this).toStandardDuration().millis)
 }

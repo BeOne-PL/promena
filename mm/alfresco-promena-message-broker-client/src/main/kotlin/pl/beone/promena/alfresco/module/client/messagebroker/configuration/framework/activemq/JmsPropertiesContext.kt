@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.JmsProperties
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getPropertyWithResolvedPlaceholders
-import java.time.Duration
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.toDuration
 import java.util.*
 
 @Configuration
@@ -41,7 +41,7 @@ class JmsPropertiesContext {
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.default-destination")
                         ?.let { template.defaultDestination = it }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.delivery-delay")
-                        ?.let { template.deliveryDelay = Duration.parse(it) }
+                        ?.let { template.deliveryDelay = it.toDuration() }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.delivery-mode")
                         ?.let { template.deliveryMode = JmsProperties.DeliveryMode.valueOf(it) }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.priority")
@@ -49,8 +49,8 @@ class JmsPropertiesContext {
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.qos-enabled")
                         ?.toBoolean()?.let { template.qosEnabled = it }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.receive-timeout")
-                        ?.let { template.receiveTimeout = Duration.parse(it) }
+                        ?.let { template.receiveTimeout = it.toDuration() }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.time-to-live")
-                        ?.let { template.timeToLive = Duration.parse(it) }
+                        ?.let { template.timeToLive = it.toDuration() }
             }
 }

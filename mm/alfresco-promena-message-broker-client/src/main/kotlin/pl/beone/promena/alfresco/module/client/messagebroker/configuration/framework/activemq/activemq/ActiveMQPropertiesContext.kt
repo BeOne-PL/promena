@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.activemq.ActiveMQProperties
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getPropertyWithResolvedPlaceholders
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.toDuration
 import java.time.Duration
 import java.util.*
 
@@ -17,7 +18,7 @@ class ActiveMQPropertiesContext {
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.activemq.broker-url")
                         ?.let { brokerUrl = it }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.activemq.close-timeout")
-                        ?.let { closeTimeout = Duration.parse(it) }
+                        ?.let { closeTimeout = it.toDuration() }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.activemq.in-memory")
                         ?.toBoolean()?.let { isInMemory = it }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.activemq.non-blocking-redelivery")
@@ -25,7 +26,7 @@ class ActiveMQPropertiesContext {
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.activemq.password")
                         ?.let { password = it }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.activemq.send-timeout")
-                        ?.let { sendTimeout = Duration.parse(it) }
+                        ?.let { sendTimeout = it.toDuration() }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.activemq.user")
                         ?.let { user = it }
 
