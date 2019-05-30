@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.activemq;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.CachingConnectionFactory;
-import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.JmsProperties;
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.JmsProperties;
 
 import javax.jms.ConnectionFactory;
 import java.util.List;

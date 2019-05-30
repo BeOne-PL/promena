@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.context.properties;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.context.properties;
+
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -22,9 +25,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Utility that can be used to map values from a supplied source to a destination.
@@ -70,6 +70,7 @@ public final class PropertyMapper {
     /**
      * Return a new {@link PropertyMapper} instance that applies
      * {@link Source#whenNonNull() whenNonNull} to every source.
+     *
      * @return a new property mapper instance
      */
     public PropertyMapper alwaysApplyingWhenNonNull() {
@@ -83,6 +84,7 @@ public final class PropertyMapper {
     /**
      * Return a new {@link PropertyMapper} instance that applies the given
      * {@link SourceOperator} to every source.
+     *
      * @param operator the source operator to apply
      * @return a new property mapper instance
      */
@@ -94,7 +96,8 @@ public final class PropertyMapper {
     /**
      * Return a new {@link Source} from the specified value supplier that can be used to
      * perform the mapping.
-     * @param <T> the source type
+     *
+     * @param <T>      the source type
      * @param supplier the value supplier
      * @return a {@link Source} that can be used to complete the mapping
      * @see #from(Object)
@@ -111,7 +114,8 @@ public final class PropertyMapper {
     /**
      * Return a new {@link Source} from the specified value that can be used to perform
      * the mapping.
-     * @param <T> the source type
+     *
+     * @param <T>   the source type
      * @param value the value
      * @return a {@link Source} that can be used to complete the mapping
      */
@@ -129,6 +133,7 @@ public final class PropertyMapper {
 
     /**
      * Return the property mapper.
+     *
      * @return the property mapper
      */
     public static PropertyMapper get() {
@@ -169,7 +174,8 @@ public final class PropertyMapper {
 
         /**
          * Apply the operation to the given source.
-         * @param <T> the source type
+         *
+         * @param <T>    the source type
          * @param source the source to operate on
          * @return the updated source
          */
@@ -196,7 +202,8 @@ public final class PropertyMapper {
 
         /**
          * Return an adapted version of the source with {@link Integer} type.
-         * @param <R> the resulting type
+         *
+         * @param <R>     the resulting type
          * @param adapter an adapter to convert the current value to a number.
          * @return a new adapted source instance
          */
@@ -206,7 +213,8 @@ public final class PropertyMapper {
 
         /**
          * Return an adapted version of the source changed via the given adapter function.
-         * @param <R> the resulting type
+         *
+         * @param <R>     the resulting type
          * @param adapter the adapter to apply
          * @return a new adapted source instance
          */
@@ -226,6 +234,7 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that won't map non-null values or
          * suppliers that throw a {@link NullPointerException}.
+         *
          * @return a new filtered source instance
          */
         public Source<T> whenNonNull() {
@@ -236,6 +245,7 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that will only map values that are
          * {@code true}.
+         *
          * @return a new filtered source instance
          */
         public Source<T> whenTrue() {
@@ -245,6 +255,7 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that will only map values that are
          * {@code false}.
+         *
          * @return a new filtered source instance
          */
         public Source<T> whenFalse() {
@@ -254,6 +265,7 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that will only map values that have a
          * {@code toString()} containing actual text.
+         *
          * @return a new filtered source instance
          */
         public Source<T> whenHasText() {
@@ -263,6 +275,7 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that will only map values equal to the
          * specified {@code object}.
+         *
          * @param object the object to match
          * @return a new filtered source instance
          */
@@ -273,7 +286,8 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that will only map values that are an
          * instance of the given type.
-         * @param <R> the target type
+         *
+         * @param <R>    the target type
          * @param target the target type to match
          * @return a new filtered source instance
          */
@@ -284,6 +298,7 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that won't map values that match the
          * given predicate.
+         *
          * @param predicate the predicate used to filter values
          * @return a new filtered source instance
          */
@@ -295,6 +310,7 @@ public final class PropertyMapper {
         /**
          * Return a filtered version of the source that won't map values that don't match
          * the given predicate.
+         *
          * @param predicate the predicate used to filter values
          * @return a new filtered source instance
          */
@@ -306,8 +322,9 @@ public final class PropertyMapper {
         /**
          * Complete the mapping by passing any non-filtered value to the specified
          * consumer.
+         *
          * @param consumer the consumer that should accept the value if it's not been
-         * filtered
+         *                 filtered
          */
         public void to(Consumer<T> consumer) {
             Assert.notNull(consumer, "Consumer must not be null");
@@ -319,7 +336,8 @@ public final class PropertyMapper {
 
         /**
          * Complete the mapping by creating a new instance from the non-filtered value.
-         * @param <R> the resulting type
+         *
+         * @param <R>     the resulting type
          * @param factory the factory used to create the instance
          * @return the instance
          * @throws NoSuchElementException if the value has been filtered
@@ -336,6 +354,7 @@ public final class PropertyMapper {
         /**
          * Complete the mapping by calling the specified method when the value has not
          * been filtered.
+         *
          * @param runnable the method to call if the value has not been filtered
          */
         public void toCall(Runnable runnable) {
@@ -363,8 +382,7 @@ public final class PropertyMapper {
         public T get() {
             try {
                 return this.supplier.get();
-            }
-            catch (NullPointerException ex) {
+            } catch (NullPointerException ex) {
                 return null;
             }
         }

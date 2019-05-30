@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.activemq;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.activemq;
 
 import java.time.Duration;
 import java.util.ArrayList;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;

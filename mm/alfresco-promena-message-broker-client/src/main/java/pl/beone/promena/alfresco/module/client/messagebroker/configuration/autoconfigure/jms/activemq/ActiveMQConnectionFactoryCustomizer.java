@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.activemq;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
@@ -30,6 +30,7 @@ public interface ActiveMQConnectionFactoryCustomizer {
 
     /**
      * Customize the {@link ActiveMQConnectionFactory}.
+     *
      * @param factory the factory to customize
      */
     void customize(ActiveMQConnectionFactory factory);

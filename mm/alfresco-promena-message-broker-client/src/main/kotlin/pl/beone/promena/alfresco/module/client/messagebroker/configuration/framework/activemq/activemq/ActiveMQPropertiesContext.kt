@@ -3,10 +3,9 @@ package pl.beone.promena.alfresco.module.client.messagebroker.configuration.fram
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.activemq.ActiveMQProperties
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.activemq.ActiveMQProperties
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.toDuration
-import java.time.Duration
 import java.util.*
 
 @Configuration

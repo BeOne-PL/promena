@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.activemq;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.activemq.ActiveMQProperties.Packages;
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.activemq.ActiveMQProperties.Packages;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -55,8 +55,7 @@ class ActiveMQConnectionFactoryFactory {
             Class<T> factoryClass) {
         try {
             return doCreateConnectionFactory(factoryClass);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(
                     "Unable to create " + "ActiveMQConnectionFactory", ex);
         }

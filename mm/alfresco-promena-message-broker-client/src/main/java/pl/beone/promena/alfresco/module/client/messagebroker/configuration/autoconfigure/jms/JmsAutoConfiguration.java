@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -24,9 +24,9 @@ import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
-import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.JmsProperties.Template;
-import pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms.JmsProperties.DeliveryMode;
-import pl.beone.promena.alfresco.module.client.messagebroker.boot.context.properties.PropertyMapper;
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.JmsProperties.DeliveryMode;
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms.JmsProperties.Template;
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.context.properties.PropertyMapper;
 
 import javax.jms.ConnectionFactory;
 import java.time.Duration;

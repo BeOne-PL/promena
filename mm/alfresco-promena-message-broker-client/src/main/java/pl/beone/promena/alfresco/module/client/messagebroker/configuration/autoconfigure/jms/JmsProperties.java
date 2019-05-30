@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms;
 
 /*
  * Copyright 2012-2018 the original author or authors.
@@ -29,7 +29,7 @@ public class JmsProperties {
 
     private final Cache cache = new Cache();
     private final Listener listener = new Listener();
-    	private final Template template = new Template();
+    private final Template template = new Template();
 
     /**
      * Whether the default destination type is topic.

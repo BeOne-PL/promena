@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.beone.promena.alfresco.module.client.messagebroker.boot.autoconfigure.jms;
+package pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure.jms;
 
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;
@@ -43,6 +43,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
     /**
      * Set the {@link DestinationResolver} to use or {@code null} if no destination
      * resolver should be associated with the factory by default.
+     *
      * @param destinationResolver the {@link DestinationResolver}
      */
     void setDestinationResolver(DestinationResolver destinationResolver) {
@@ -52,6 +53,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
     /**
      * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
      * converter should be used.
+     *
      * @param messageConverter the {@link MessageConverter}
      */
     void setMessageConverter(MessageConverter messageConverter) {
@@ -61,6 +63,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
     /**
      * Set the {@link JtaTransactionManager} to use or {@code null} if the JTA support
      * should not be used.
+     *
      * @param transactionManager the {@link JtaTransactionManager}
      */
     void setTransactionManager(JtaTransactionManager transactionManager) {
@@ -69,6 +72,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 
     /**
      * Set the {@link JmsProperties} to use.
+     *
      * @param jmsProperties the {@link JmsProperties}
      */
     void setJmsProperties(JmsProperties jmsProperties) {
@@ -78,7 +82,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
     /**
      * Configure the specified jms listener container factory. The factory can be further
      * tuned and default settings can be overridden.
-     * @param factory the {@link DefaultJmsListenerContainerFactory} instance to configure
+     *
+     * @param factory           the {@link DefaultJmsListenerContainerFactory} instance to configure
      * @param connectionFactory the {@link ConnectionFactory} to use
      */
     public void configure(DefaultJmsListenerContainerFactory factory,
@@ -89,8 +94,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
         factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
         if (this.transactionManager != null) {
             factory.setTransactionManager(this.transactionManager);
-        }
-        else {
+        } else {
             factory.setSessionTransacted(true);
         }
         if (this.destinationResolver != null) {
