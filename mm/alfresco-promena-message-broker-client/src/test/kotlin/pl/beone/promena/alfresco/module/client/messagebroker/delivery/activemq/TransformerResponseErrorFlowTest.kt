@@ -1,13 +1,18 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 
-import io.kotlintest.matchers.collections.shouldContainExactly
+import io.kotlintest.properties.verifyNone
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
 import io.kotlintest.spring.SpringListener
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
+import io.mockk.verify
+import kotlinx.coroutines.delay
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
-import org.assertj.core.api.Assertions.fail
-import org.junit.ClassRule
+import org.assertj.core.api.Assertions
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -16,16 +21,12 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
-import org.testcontainers.containers.FixedHostPortGenericContainer
 import pl.beone.promena.alfresco.module.client.messagebroker.GlobalPropertiesContext
-import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.SetupContext
+import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.time.Duration
 import java.util.*
@@ -37,33 +38,24 @@ import java.util.concurrent.TimeoutException
         ContextConfiguration(classes = [ActiveMQContainerContext::class, GlobalPropertiesContext::class]),
         ContextConfiguration(classes = [SetupContext::class])
 )
-class TransformerResponseFlowTest : StringSpec() {
+class TransformerResponseErrorFlowTest : StringSpec() {
 
     override fun listeners() = listOf(SpringListener)
 
     @Autowired
     private lateinit var jmsTemplate: JmsTemplate
 
-    @Value("\${promena.client.message-broker.consumer.queue.response}")
-    private lateinit var queueResponse: String
+    @Value("\${promena.client.message-broker.consumer.queue.response.error}")
+    private lateinit var queueResponseError: String
 
     @Autowired
     private lateinit var completedTransformationManager: CompletedTransformationManager
 
     @Autowired
-    private lateinit var alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver
+    private lateinit var activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService
 
     companion object {
-        @get:ClassRule
-        @JvmStatic
-        val activemq = FixedHostPortGenericContainer<Nothing>("rmohr/activemq:5.15.6-alpine").apply {
-            withFixedExposedPort(61616, 61616)
-            start()
-        }
-
-        private val transformedDataDescriptors = listOf(
-                TransformedDataDescriptor(InMemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value")))
-        )
+        private val exception = RuntimeException("Exception")
         private const val transformerId = "transformer-test"
     }
 
@@ -71,27 +63,42 @@ class TransformerResponseFlowTest : StringSpec() {
         "should receive transformed data from response queue and save it in ACS" {
             val id = UUID.randomUUID().toString()
             every {
-                alfrescoTransformedDataDescriptorSaver.save(transformerId,
-                                                            listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
-                                                                   NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
-                                                            MediaTypeConstants.TEXT_PLAIN,
-                                                            transformedDataDescriptors)
-            } returns listOf(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
+                activeMQAlfrescoPromenaService.transformAsync(transformerId,
+                                                              listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
+                                                                     NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
+                                                              MediaTypeConstants.TEXT_PLAIN,
+                                                              MapParameters(mapOf("key" to "value")))
+            } just Runs
 
             completedTransformationManager.startTransformation(id)
-            sendResponseMessage(id)
+            sendResponseErrorMessage(id)
 
-            try {
-                completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2)) shouldContainExactly
-                        listOf(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
-            } catch (e: TimeoutException) {
-                fail("Waiting time for transformation passed. Check logs for more details")
+            shouldThrow<RuntimeException> {
+                completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2))
+            }.apply {
+                message shouldBe "Exception"
+            }
+
+            verify(exactly = 0) {
+                activeMQAlfrescoPromenaService.transformAsync(transformerId,
+                                                              listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
+                                                                     NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
+                                                              MediaTypeConstants.TEXT_PLAIN,
+                                                              MapParameters(mapOf("key" to "value")))
+            }
+            delay(120)
+            verify(exactly = 1) {
+                activeMQAlfrescoPromenaService.transformAsync(transformerId,
+                                                              listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
+                                                                     NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
+                                                              MediaTypeConstants.TEXT_PLAIN,
+                                                              MapParameters(mapOf("key" to "value")))
             }
         }
     }
 
-    private fun sendResponseMessage(correlationId: String) {
-        jmsTemplate.convertAndSend(ActiveMQQueue(queueResponse), transformedDataDescriptors) { message ->
+    private fun sendResponseErrorMessage(correlationId: String) {
+        jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
                 setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)

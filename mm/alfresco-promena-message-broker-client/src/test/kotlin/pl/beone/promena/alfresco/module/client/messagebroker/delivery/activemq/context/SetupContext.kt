@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 
 @Configuration
 @ComponentScan(
@@ -18,4 +19,8 @@ class SetupContext {
     @Bean
     fun alfrescoTransformedDataDescriptorSaver() =
             mockk<AlfrescoTransformedDataDescriptorSaver>()
+
+    @Bean
+    fun activeMQAlfrescoPromenaService() =
+            mockk<ActiveMQAlfrescoPromenaService>()
 }

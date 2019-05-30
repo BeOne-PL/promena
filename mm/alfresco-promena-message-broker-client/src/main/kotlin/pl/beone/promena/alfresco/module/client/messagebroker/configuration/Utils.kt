@@ -1,15 +1,12 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.configuration
 
+import org.joda.time.format.PeriodFormatterBuilder
 import org.slf4j.Logger
 import org.springframework.util.PropertyPlaceholderHelper
 import java.io.File
 import java.net.URI
 import java.time.Duration
 import java.util.*
-import org.joda.time.MutablePeriod
-import org.joda.time.format.PeriodFormatterBuilder
-import org.joda.time.format.PeriodParser
-
 
 
 internal fun Properties.getPropertyWithResolvedPlaceholders(key: String): String? {
