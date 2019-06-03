@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import pl.beone.promena.alfresco.module.client.messagebroker.applicationmodel.exception.NodeDoesNotExist
+import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
@@ -12,7 +13,7 @@ import java.nio.charset.Charset
 
 class ContentPropertyAlfrescoDataDescriptorGetter(private val nodeService: NodeService,
                                                   private val contentService: ContentService,
-                                                  private val alfrescoDataConverter: FileAlfrescoDataConverter) : AlfrescoDataDescriptorGetter {
+                                                  private val alfrescoDataConverter: AlfrescoDataConverter) : AlfrescoDataDescriptorGetter {
 
     override fun get(nodeRefs: List<NodeRef>): List<DataDescriptor> {
         nodeRefs.forEach { it.checkIfExists() }

@@ -11,6 +11,7 @@ import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter
 import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.QName
 import org.slf4j.LoggerFactory
+import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
@@ -22,12 +23,11 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
                                                       private val nodeService: NodeService,
                                                       private val contentService: ContentService,
                                                       private val namespaceService: NamespaceService,
-                                                      private val alfrescoDataConverter: FileAlfrescoDataConverter)
+                                                      private val alfrescoDataConverter: AlfrescoDataConverter)
     : AlfrescoTransformedDataDescriptorSaver {
 
     companion object {
-        private val logger =
-                LoggerFactory.getLogger(RenditionAlfrescoTransformedDataDescriptorSaver::class.java)
+        private val logger = LoggerFactory.getLogger(RenditionAlfrescoTransformedDataDescriptorSaver::class.java)
     }
 
     override fun save(transformerId: String,
@@ -94,9 +94,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
         })
     }
 
-    private fun handleZero(sourceNodeRef: NodeRef,
-                           sourceNodeRefContentHashCode: Int,
-                           transformerId: String): List<NodeRef> {
+    private fun handleZero(sourceNodeRef: NodeRef, sourceNodeRefContentHashCode: Int, transformerId: String): List<NodeRef> {
         val properties = createRenditionPropertiesWithoutContent(transformerId,
                                                                  sourceNodeRefContentHashCode)
 
@@ -117,9 +115,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
         }
     }
 
-    private fun createRenditionNode(sourceNodeRef: NodeRef,
-                                    name: String,
-                                    properties: Map<QName, Serializable?>): NodeRef =
+    private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =
             nodeService.createNode(
                     sourceNodeRef,
                     RenditionModel.ASSOC_RENDITION,
@@ -135,11 +131,10 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
                                                   sourceNodeRefContentHashCode: Int,
                                                   transformedDataDescriptor: TransformedDataDescriptor): Map<QName, Serializable?> =
             createRenditionPropertiesWithoutContent(transformerId, sourceNodeRefContentHashCode) +
-                    mapOf(ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT) +
-                    transformedDataDescriptor.metadata.getAlfrescoProperties()
+            mapOf(ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT) +
+            transformedDataDescriptor.metadata.getAlfrescoProperties()
 
-    private fun createRenditionPropertiesWithoutContent(transformerId: String,
-                                                        sourceNodeContentHashCode: Int): Map<QName, Serializable> {
+    private fun createRenditionPropertiesWithoutContent(transformerId: String, sourceNodeContentHashCode: Int): Map<QName, Serializable> {
         return mapOf(ContentModel.PROP_NAME to transformerId,
                      ContentModel.PROP_THUMBNAIL_NAME to transformerId,
                      ContentModel.PROP_IS_INDEXED to false,
@@ -153,8 +148,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
                     .map { QName.createQName(it.first, namespaceService) to it.second as Serializable? }
                     .toMap()
 
-    private fun NodeRef.saveContent(targetMediaType: MediaType,
-                                    data: Data) {
+    private fun NodeRef.saveContent(targetMediaType: MediaType, data: Data) {
         contentService.getWriter(this, ContentModel.PROP_CONTENT, true).apply {
             mimetype = targetMediaType.mimeType
             alfrescoDataConverter.saveDataInContentWriter(data, this)

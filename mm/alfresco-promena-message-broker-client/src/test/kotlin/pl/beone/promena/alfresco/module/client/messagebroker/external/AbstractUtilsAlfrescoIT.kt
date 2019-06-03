@@ -1,6 +1,7 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.external
 
 import org.alfresco.model.ContentModel
+import org.alfresco.model.RenditionModel
 import org.alfresco.rad.test.AbstractAlfrescoIT
 import org.alfresco.repo.nodelocator.CompanyHomeNodeLocator
 import org.alfresco.service.cmr.model.FileExistsException
@@ -79,6 +80,15 @@ abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
 
     protected fun NodeRef.getProperty(qname: QName): Serializable =
             serviceRegistry.nodeService.getProperty(this, qname)
+
+    protected fun NodeRef.getAspects(): List<QName> =
+            serviceRegistry.nodeService.getAspects(this).toList()
+
+    protected fun NodeRef.getRenditionAssociations(): List<NodeRef> =
+            serviceRegistry.nodeService.getChildAssocs(this)
+                    .filter { it.typeQName == RenditionModel.ASSOC_RENDITION }
+                    .map { it.childRef }
+                    .toList()
 
     protected fun NodeRef.getMimeType(contentProperty: QName = ContentModel.PROP_CONTENT): String =
             serviceRegistry.contentService.getReader(this, contentProperty)
