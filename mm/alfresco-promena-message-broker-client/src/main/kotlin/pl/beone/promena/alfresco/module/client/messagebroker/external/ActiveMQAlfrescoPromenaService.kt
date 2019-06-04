@@ -19,7 +19,6 @@ import java.util.*
 import java.util.concurrent.TimeoutException
 
 class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
-                                     private val waitMax: Duration?,
                                      private val completedTransformationManager: CompletedTransformationManager,
                                      private val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
                                      private val queueRequest: ActiveMQQueue,
@@ -36,14 +35,13 @@ class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
                            parameters: Parameters?,
                            waitMax: Duration?): List<NodeRef> {
         val determinedParameters = parameters ?: MapParameters.empty()
-        val determinedWaitMax = waitMax ?: this.waitMax
 
         logger.info("Transforming <{}> <{}> nodes <{}> to <{}>. Waiting <{}> for response...",
                     transformerId,
                     determinedParameters.getAll(),
                     nodeRefs,
                     targetMediaType,
-                    determinedWaitMax)
+                    waitMax)
 
         val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeRefs)
 
@@ -53,9 +51,9 @@ class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
 
         completedTransformationManager.startTransformation(id)
         return try {
-            completedTransformationManager.getTransformedNodeRefs(id, determinedWaitMax)
+            completedTransformationManager.getTransformedNodeRefs(id, waitMax)
         } catch (e: TimeoutException) {
-            throw TransformationSynchronizationException(transformerId, nodeRefs, targetMediaType, determinedParameters, determinedWaitMax)
+            throw TransformationSynchronizationException(transformerId, nodeRefs, targetMediaType, determinedParameters, waitMax)
         }
     }
 

@@ -16,8 +16,6 @@ class GlobalPropertiesContext(private val environment: Environment,
                 "promena.transformation.error.tryAgain".let { setProperty(it, environment.getProperty(it)) }
                 "promena.transformation.error.delay".let { setProperty(it, environment.getProperty(it)) }
 
-                "promena.client.message-broker.waitMax".let { setProperty(it, environment.getProperty(it)) }
-
                 "promena.client.message-broker.consumer.queue.request".let { setProperty(it, environment.getProperty(it)) }
                 "promena.client.message-broker.consumer.queue.response".let { setProperty(it, environment.getProperty(it)) }
                 "promena.client.message-broker.consumer.queue.response.error".let { setProperty(it, environment.getProperty(it)) }
