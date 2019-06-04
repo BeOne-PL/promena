@@ -1,28 +1,22 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.external
 
 import org.alfresco.service.cmr.repository.NodeRef
-import org.apache.activemq.command.ActiveMQQueue
 import org.slf4j.LoggerFactory
-import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.messagebroker.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoPromenaService
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
-import java.net.URI
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeoutException
 
-class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
-                                     private val completedTransformationManager: CompletedTransformationManager,
+class ActiveMQAlfrescoPromenaService(private val completedTransformationManager: CompletedTransformationManager,
                                      private val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
-                                     private val queueRequest: ActiveMQQueue,
-                                     private val jmsTemplate: JmsTemplate)
+                                     private val transformerSender: TransformerSender)
     : AlfrescoPromenaService {
 
     companion object {
@@ -34,7 +28,7 @@ class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
                            targetMediaType: MediaType,
                            parameters: Parameters?,
                            waitMax: Duration?): List<NodeRef> {
-        val determinedParameters = parameters ?: MapParameters.empty()
+        val determinedParameters = determineParameters(parameters)
 
         logger.info("Transforming <{}> <{}> nodes <{}> to <{}>. Waiting <{}> for response...",
                     transformerId,
@@ -47,9 +41,9 @@ class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
 
         val id = generateId()
 
-        sendMessageToActiveMQ(dataDescriptors, id, transformerId, nodeRefs, targetMediaType, determinedParameters)
-
         completedTransformationManager.startTransformation(id)
+        transformerSender.send(dataDescriptors, id, transformerId, nodeRefs, targetMediaType, determinedParameters)
+
         return try {
             completedTransformationManager.getTransformedNodeRefs(id, waitMax)
         } catch (e: TimeoutException) {
@@ -61,7 +55,7 @@ class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
                                 nodeRefs: List<NodeRef>,
                                 targetMediaType: MediaType,
                                 parameters: Parameters?) {
-        val determinedParameters = parameters ?: MapParameters.empty()
+        val determinedParameters = determineParameters(parameters)
 
         logger.info("Transforming <{}> <{}> nodes <{}> to <{}>...",
                     transformerId,
@@ -71,29 +65,11 @@ class ActiveMQAlfrescoPromenaService(private val communicationLocation: URI?,
 
         val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeRefs)
 
-        sendMessageToActiveMQ(dataDescriptors, generateId(), transformerId, nodeRefs, targetMediaType, determinedParameters)
+        transformerSender.send(dataDescriptors, generateId(), transformerId, nodeRefs, targetMediaType, determinedParameters)
     }
 
-    private fun sendMessageToActiveMQ(dataDescriptors: List<DataDescriptor>,
-                                      id: String,
-                                      transformerId: String,
-                                      nodeRefs: List<NodeRef>,
-                                      targetMediaType: MediaType,
-                                      parameters: Parameters) {
-        jmsTemplate.convertAndSend(queueRequest, dataDescriptors) { message ->
-            message.apply {
-                jmsCorrelationID = id
-                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
-
-                communicationLocation?.let { setObjectProperty(PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION, communicationLocation) }
-
-                setObjectProperty(PromenaJmsHeader.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
-                setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, targetMediaType.mimeType)
-                setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, targetMediaType.charset.name())
-                setObjectProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())
-            }
-        }
-    }
+    private fun determineParameters(parameters: Parameters?): Parameters =
+            parameters ?: MapParameters.empty()
 
     private fun generateId(): String =
             UUID.randomUUID().toString()

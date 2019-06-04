@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter
 import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.QName
+import org.alfresco.service.transaction.TransactionService
 import org.slf4j.LoggerFactory
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoTransformedDataDescriptorSaver
@@ -23,6 +24,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
                                                       private val nodeService: NodeService,
                                                       private val contentService: ContentService,
                                                       private val namespaceService: NamespaceService,
+                                                      private val transactionService: TransactionService,
                                                       private val alfrescoDataConverter: AlfrescoDataConverter)
     : AlfrescoTransformedDataDescriptorSaver {
 
@@ -33,37 +35,38 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
     override fun save(transformerId: String,
                       nodeRefs: List<NodeRef>,
                       targetMediaType: MediaType,
-                      transformedDataDescriptors: List<TransformedDataDescriptor>): List<NodeRef> {
-        val sourceNodeRef = nodeRefs.first()
-        val sourceNodeRefContentHashCode = sourceNodeRef.getSourceContentHashCode()
+                      transformedDataDescriptors: List<TransformedDataDescriptor>): List<NodeRef> =
+            transactionService.retryingTransactionHelper.doInTransaction {
+                val sourceNodeRef = nodeRefs.first()
+                val sourceNodeRefContentHashCode = sourceNodeRef.getSourceContentHashCode()
 
-        val renditionsNodeRefs = if (transformedDataDescriptors.size > 1) {
-            handleMany(sourceNodeRef,
-                       sourceNodeRefContentHashCode,
-                       transformerId,
-                       targetMediaType,
-                       transformedDataDescriptors)
-        } else if (transformedDataDescriptors.size == 1) {
-            handleOne(sourceNodeRef,
-                      sourceNodeRefContentHashCode,
-                      transformerId,
-                      targetMediaType,
-                      transformedDataDescriptors.first())
-        } else {
-            if (saveIfZero) {
-                handleZero(sourceNodeRef, sourceNodeRefContentHashCode, transformerId)
-            } else {
-                emptyList()
+                val renditionsNodeRefs = if (transformedDataDescriptors.size > 1) {
+                    handleMany(sourceNodeRef,
+                               sourceNodeRefContentHashCode,
+                               transformerId,
+                               targetMediaType,
+                               transformedDataDescriptors)
+                } else if (transformedDataDescriptors.size == 1) {
+                    handleOne(sourceNodeRef,
+                              sourceNodeRefContentHashCode,
+                              transformerId,
+                              targetMediaType,
+                              transformedDataDescriptors.first())
+                } else {
+                    if (saveIfZero) {
+                        handleZero(sourceNodeRef, sourceNodeRefContentHashCode, transformerId)
+                    } else {
+                        emptyList()
+                    }
+                }
+
+                logger.debug("Created <{}> rendition nodes <{}> as a child of <{}>",
+                             transformerId,
+                             renditionsNodeRefs,
+                             sourceNodeRef)
+
+                renditionsNodeRefs
             }
-        }
-
-        logger.debug("Created <{}> rendition nodes <{}> as a child of <{}>",
-                     transformerId,
-                     renditionsNodeRefs,
-                     sourceNodeRef)
-
-        return renditionsNodeRefs
-    }
 
     private fun handleMany(sourceNodeRef: NodeRef,
                            sourceNodeRefContentHashCode: Int,
