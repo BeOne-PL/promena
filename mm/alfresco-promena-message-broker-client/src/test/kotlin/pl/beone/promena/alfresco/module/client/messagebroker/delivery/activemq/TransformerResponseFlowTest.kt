@@ -63,7 +63,7 @@ class TransformerResponseFlowTest {
     }
 
     @Test
-    fun `should receive transformed data from response queue and save it in ACS`() {
+    fun `should receive transformed data from response queue and persist it`() {
         val id = UUID.randomUUID().toString()
         every {
             alfrescoTransformedDataDescriptorSaver.save(transformerId,
