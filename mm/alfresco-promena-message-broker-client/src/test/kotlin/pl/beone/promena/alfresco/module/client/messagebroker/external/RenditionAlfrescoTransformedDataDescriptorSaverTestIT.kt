@@ -14,6 +14,7 @@ import org.alfresco.model.ContentModel
 import org.alfresco.model.RenditionModel
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.alfresco.service.cmr.repository.NodeRef
+import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -92,7 +93,10 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
             it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
         }
 
-        nodes shouldBe integrationNode.getRenditionAssociations()
+        nodes shouldBe integrationNode.getRenditionAssociations().map { it.childRef }
+        integrationNode.getRenditionAssociations().map { it.qName } shouldBe
+                listOf(QName.createQName(CONTENT_MODEL_1_0_URI, "transformer-test-1"),
+                       QName.createQName(CONTENT_MODEL_1_0_URI, "transformer-test-2"))
     }
 
     @Test
@@ -128,7 +132,9 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
             it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
         }
 
-        nodes shouldBe integrationNode.getRenditionAssociations()
+        nodes shouldBe integrationNode.getRenditionAssociations().map { it.childRef }
+        integrationNode.getRenditionAssociations().map { it.qName } shouldBe
+                listOf(QName.createQName(CONTENT_MODEL_1_0_URI, "transformer-test"))
     }
 
     @Test
@@ -163,7 +169,9 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
             it shouldNotContainKey ContentModel.PROP_CONTENT_PROPERTY_NAME
         }
 
-        nodes shouldBe integrationNode.getRenditionAssociations()
+        nodes shouldBe integrationNode.getRenditionAssociations().map { it.childRef }
+        integrationNode.getRenditionAssociations().map { it.qName } shouldBe
+                listOf(QName.createQName(CONTENT_MODEL_1_0_URI, "transformer-test"))
     }
 
     @Test

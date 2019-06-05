@@ -5,10 +5,7 @@ import org.alfresco.model.RenditionModel
 import org.alfresco.rad.test.AbstractAlfrescoIT
 import org.alfresco.repo.nodelocator.CompanyHomeNodeLocator
 import org.alfresco.service.cmr.model.FileExistsException
-import org.alfresco.service.cmr.repository.ContentReader
-import org.alfresco.service.cmr.repository.ContentWriter
-import org.alfresco.service.cmr.repository.InvalidNodeRefException
-import org.alfresco.service.cmr.repository.NodeRef
+import org.alfresco.service.cmr.repository.*
 import org.alfresco.service.namespace.QName
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import java.io.Serializable
@@ -84,10 +81,9 @@ abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
     protected fun NodeRef.getAspects(): List<QName> =
             serviceRegistry.nodeService.getAspects(this).toList()
 
-    protected fun NodeRef.getRenditionAssociations(): List<NodeRef> =
+    protected fun NodeRef.getRenditionAssociations(): List<ChildAssociationRef> =
             serviceRegistry.nodeService.getChildAssocs(this)
                     .filter { it.typeQName == RenditionModel.ASSOC_RENDITION }
-                    .map { it.childRef }
                     .toList()
 
     protected fun NodeRef.getMimeType(contentProperty: QName = ContentModel.PROP_CONTENT): String =
