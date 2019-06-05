@@ -5,6 +5,7 @@ import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
+import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import java.net.URI
 
@@ -18,7 +19,7 @@ class TransformerSender(private val communicationLocation: URI?,
              nodeRefs: List<NodeRef>,
              targetMediaType: MediaType,
              parameters: Parameters) {
-        jmsTemplate.convertAndSend(queueRequest, dataDescriptors) { message ->
+        jmsTemplate.convertAndSend(queueRequest, TransformationDescriptor(dataDescriptors, targetMediaType, parameters)) { message ->
             message.apply {
                 jmsCorrelationID = id
                 setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)

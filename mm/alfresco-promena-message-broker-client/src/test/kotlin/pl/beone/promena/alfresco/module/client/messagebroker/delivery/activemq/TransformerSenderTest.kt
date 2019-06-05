@@ -22,6 +22,7 @@ import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.c
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
+import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.util.*
@@ -50,6 +51,7 @@ class TransformerSenderTest {
         val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
         val targetMediaType = MediaTypeConstants.APPLICATION_PDF
         val parameters = MapParameters(mapOf("key" to "value"))
+        val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
 
         transformerSender.send(dataDescriptors,
                                id,
@@ -59,7 +61,7 @@ class TransformerSenderTest {
                                parameters)
 
         validateHeaders(id, nodeRefs, targetMediaType, parameters)
-        validateContent(dataDescriptors)
+        validateContent(transformationDescriptor)
     }
 
     private fun validateHeaders(id: String, nodeRefs: List<NodeRef>, targetMediaType: MediaType, parameters: MapParameters) {
@@ -82,11 +84,11 @@ class TransformerSenderTest {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun validateContent(dataDescriptors: List<DataDescriptor>) {
+    private fun validateContent(transformationDescriptor: TransformationDescriptor) {
         try {
-            jmsTemplate.receiveAndConvert(queueRequest) as List<DataDescriptor> shouldBe dataDescriptors
+            jmsTemplate.receiveAndConvert(queueRequest) as TransformationDescriptor shouldBe transformationDescriptor
         } catch (e: Exception) {
-            fail("Message should be type of <List<DataDescriptor>>", e)
+            fail("Message should be type of <TransformationDescriptor>", e)
         }
     }
 
