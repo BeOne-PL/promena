@@ -1,11 +1,12 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 
+import io.kotlintest.Failures
+import io.kotlintest.fail
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.matchers.maps.shouldNotContainKey
 import io.kotlintest.shouldBe
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQMessage
-import org.assertj.core.api.Assertions.fail
 import org.fusesource.hawtbuf.UTF8Buffer
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -88,7 +89,7 @@ class TransformerSenderTest {
         try {
             jmsTemplate.receiveAndConvert(queueRequest) as TransformationDescriptor shouldBe transformationDescriptor
         } catch (e: Exception) {
-            fail("Message should be type of <TransformationDescriptor>", e)
+            Failures.failure("Message should be type of <TransformationDescriptor>", e)
         }
     }
 

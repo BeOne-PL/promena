@@ -2,9 +2,9 @@ package pl.beone.promena.alfresco.module.client.messagebroker.external
 
 import org.alfresco.service.cmr.repository.NodeRef
 import org.slf4j.LoggerFactory
-import pl.beone.promena.alfresco.module.client.messagebroker.applicationmodel.exception.TransformationSynchronizationException
-import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataDescriptorGetter
-import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoPromenaService
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaService
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType

@@ -3,7 +3,7 @@ package pl.beone.promena.alfresco.module.client.messagebroker.configuration.exte
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataDescriptorGetter
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager

@@ -1,10 +1,10 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 
+import io.kotlintest.Failures
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.mockk.every
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
-import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,8 +14,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.messagebroker.GlobalPropertiesContext
-import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
@@ -80,7 +80,7 @@ class TransformerResponseFlowTest {
             completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2)) shouldContainExactly
                     listOf(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
         } catch (e: TimeoutException) {
-            fail("Waiting time for transformation passed. Check logs for more details")
+            Failures.failure("Waiting time for transformation passed. Check logs for more details")
         }
     }
 

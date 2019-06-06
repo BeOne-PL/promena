@@ -2,7 +2,7 @@ package pl.beone.promena.alfresco.module.client.messagebroker.configuration.deli
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerResponseConsumer
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
 

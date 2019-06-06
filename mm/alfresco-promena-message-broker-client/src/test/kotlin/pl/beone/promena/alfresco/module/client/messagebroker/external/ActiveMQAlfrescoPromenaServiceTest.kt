@@ -8,8 +8,8 @@ import io.mockk.just
 import io.mockk.mockk
 import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Test
-import pl.beone.promena.alfresco.module.client.messagebroker.applicationmodel.exception.TransformationSynchronizationException
-import pl.beone.promena.alfresco.module.client.messagebroker.contract.AlfrescoDataDescriptorGetter
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF

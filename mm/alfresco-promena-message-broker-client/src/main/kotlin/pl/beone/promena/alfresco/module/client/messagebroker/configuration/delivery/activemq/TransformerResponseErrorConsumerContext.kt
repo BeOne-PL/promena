@@ -8,7 +8,6 @@ import pl.beone.promena.alfresco.module.client.messagebroker.configuration.toDur
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerResponseErrorConsumer
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
-import java.time.Duration
 import java.util.*
 
 @Configuration
