@@ -41,6 +41,11 @@
             <artifactId>promena-connector-http-configuration</artifactId>
             <version>3.0.0-alpha</version>
         </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.connector</groupId>
+            <artifactId>promena-connector-activemq-configuration</artifactId>
+            <version>3.0.0-alpha</version>
+        </dependency>
 
         <dependency>
             <groupId>pl.beone.transformer</groupId>
@@ -68,11 +73,6 @@
             <groupId>pl.beone.promena.actor-creator</groupId>
             <artifactId>promena-actor-creator-adaptive-load-balancing-configuration</artifactId>
             <version>3.0.0-alpha</version>
-        </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>silly-transformer-configuration</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

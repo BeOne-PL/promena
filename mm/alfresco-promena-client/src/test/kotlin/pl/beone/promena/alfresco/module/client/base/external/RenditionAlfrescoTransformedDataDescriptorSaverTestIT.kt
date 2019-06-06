@@ -18,6 +18,7 @@ import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
@@ -67,7 +68,9 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
             it shouldContainAll mapOf(ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
                                       ContentModel.PROP_NAME to transformerId,
                                       ContentModel.PROP_THUMBNAIL_NAME to transformerId,
-                                      ContentModel.PROP_IS_INDEXED to false)
+                                      ContentModel.PROP_IS_INDEXED to false,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to 0,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to 2)
             it shouldNotContainKey QName.createQName("string")
             it shouldNotContainKey QName.createQName("int")
             it shouldNotContainKey QName.createQName("long")
@@ -84,6 +87,8 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                       ContentModel.PROP_NAME to transformerId,
                                       ContentModel.PROP_THUMBNAIL_NAME to transformerId,
                                       ContentModel.PROP_IS_INDEXED to false,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to 1,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to 2,
                                       QName.createQName("string") to "string",
                                       QName.createQName("int") to 10,
                                       QName.createQName("long") to 20L,
@@ -128,6 +133,8 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                       ContentModel.PROP_NAME to transformerId,
                                       ContentModel.PROP_THUMBNAIL_NAME to transformerId,
                                       ContentModel.PROP_IS_INDEXED to false,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to 0,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to 1,
                                       QName.createQName("string") to "string")
             it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
         }
@@ -164,7 +171,9 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
         node.getProperties().let {
             it shouldContainAll mapOf(ContentModel.PROP_NAME to transformerId,
                                       ContentModel.PROP_THUMBNAIL_NAME to transformerId,
-                                      ContentModel.PROP_IS_INDEXED to false)
+                                      ContentModel.PROP_IS_INDEXED to false,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to null,
+                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to 0)
             it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
             it shouldNotContainKey ContentModel.PROP_CONTENT_PROPERTY_NAME
         }
