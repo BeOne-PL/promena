@@ -2,12 +2,9 @@ package pl.beone.promena.alfresco.module.client.base.external
 
 import org.alfresco.model.ContentModel
 import org.alfresco.model.RenditionModel
-import org.alfresco.repo.rendition2.RenditionService2Impl
-import org.alfresco.service.cmr.repository.ContentData
 import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
-import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter
 import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.transaction.TransactionService
@@ -39,16 +36,15 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
                       transformedDataDescriptors: List<TransformedDataDescriptor>): List<NodeRef> =
             transactionService.retryingTransactionHelper.doInTransaction {
                 val sourceNodeRef = nodeRefs.first()
-                val sourceNodeRefContentHashCode = sourceNodeRef.getSourceContentHashCode()
 
                 val renditionsNodeRefs = when {
                     transformedDataDescriptors.size > 1  ->
-                        handleMany(sourceNodeRef, sourceNodeRefContentHashCode, transformerId, targetMediaType, transformedDataDescriptors)
+                        handleMany(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors)
                     transformedDataDescriptors.size == 1 ->
-                        handleOne(sourceNodeRef, sourceNodeRefContentHashCode, transformerId, targetMediaType, transformedDataDescriptors.first())
+                        handleOne(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors.first())
                     else                                 ->
                         if (saveIfZero) {
-                            handleZero(sourceNodeRef, sourceNodeRefContentHashCode, transformerId)
+                            handleZero(sourceNodeRef, transformerId)
                         } else {
                             emptyList()
                         }
@@ -60,13 +56,12 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
             }
 
     private fun handleMany(sourceNodeRef: NodeRef,
-                           sourceNodeRefContentHashCode: Int,
                            transformerId: String,
                            targetMediaType: MediaType,
                            transformedDataDescriptors: List<TransformedDataDescriptor>): List<NodeRef> =
             transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
                 val properties =
-                        determineTransformationProperties(transformerId, sourceNodeRefContentHashCode, index, transformedDataDescriptors.size) +
+                        determineTransformationProperties(transformerId, index, transformedDataDescriptors.size) +
                         createContentProperty() +
                         transformedDataDescriptor.metadata.getAlfrescoProperties()
 
@@ -76,11 +71,10 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
             }
 
     private fun handleOne(sourceNodeRef: NodeRef,
-                          sourceNodeRefContentHashCode: Int,
                           transformerId: String,
                           targetMediaType: MediaType,
                           transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> {
-        val properties = determineTransformationProperties(transformerId, sourceNodeRefContentHashCode, 0, 1) +
+        val properties = determineTransformationProperties(transformerId, 0, 1) +
                          createContentProperty() +
                          transformedDataDescriptor.metadata.getAlfrescoProperties()
 
@@ -89,38 +83,22 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
         })
     }
 
-    private fun handleZero(sourceNodeRef: NodeRef, sourceNodeRefContentHashCode: Int, transformerId: String): List<NodeRef> {
+    private fun handleZero(sourceNodeRef: NodeRef, transformerId: String): List<NodeRef> {
         val properties =
-                determineTransformationProperties(transformerId, sourceNodeRefContentHashCode, null, 0)
+                determineTransformationProperties(transformerId, null, 0)
 
         return listOf(createRenditionNode(sourceNodeRef, transformerId, properties))
-    }
-
-    private fun NodeRef.getSourceContentHashCode(): Int {
-        val contentData = DefaultTypeConverter.INSTANCE.convert(
-                ContentData::class.java,
-                nodeService.getProperty(this, ContentModel.PROP_CONTENT)
-        )
-
-        return if (contentData != null) {
-            // Originally we used the contentData URL, but that is not enough if the mimetype changes.
-            (contentData.contentUrl + contentData.mimetype).hashCode()
-        } else {
-            RenditionService2Impl.SOURCE_HAS_NO_CONTENT
-        }
     }
 
     private fun createContentProperty(): Map<QName, QName> =
             mapOf(ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT)
 
     private fun determineTransformationProperties(transformerId: String,
-                                                  sourceNodeContentHashCode: Int,
                                                   transformationIndex: Int?,
                                                   transformationSize: Int): Map<QName, Serializable?> =
             mapOf(ContentModel.PROP_NAME to transformerId,
                   ContentModel.PROP_THUMBNAIL_NAME to transformerId,
                   ContentModel.PROP_IS_INDEXED to false,
-                  RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE to sourceNodeContentHashCode,
                   PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to transformationIndex,
                   PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to transformationSize)
 

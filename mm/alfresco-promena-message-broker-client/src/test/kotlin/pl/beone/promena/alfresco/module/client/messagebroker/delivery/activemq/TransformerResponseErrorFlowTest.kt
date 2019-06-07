@@ -17,10 +17,13 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.messagebroker.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODE_REFS
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE
@@ -49,6 +52,9 @@ class TransformerResponseErrorFlowTest {
     private lateinit var queueResponseError: String
 
     @Autowired
+    private lateinit var alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator
+
+    @Autowired
     private lateinit var completedTransformationManager: CompletedTransformationManager
 
     @Autowired
@@ -57,17 +63,25 @@ class TransformerResponseErrorFlowTest {
     companion object {
         private val exception = RuntimeException("Exception")
         private const val transformerId = "transformer-test"
+        private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
+                                      NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
+        private const val nodesChecksum = "123456789"
+        private val parameters = MapParameters(mapOf("key" to "value"))
     }
 
     @Test
     fun `should receive transformed data from response queue and persist it`() {
         val id = UUID.randomUUID().toString()
+
+        every {
+            alfrescoNodesChecksumGenerator.generateChecksum(TransformerResponseFlowTest.nodeRefs)
+        } returns nodesChecksum
+
         every {
             activeMQAlfrescoPromenaService.transformAsync(transformerId,
-                                                          listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
-                                                                 NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
+                                                          nodeRefs,
                                                           TEXT_PLAIN,
-                                                          MapParameters(mapOf("key" to "value")))
+                                                          parameters)
         } just Runs
 
         completedTransformationManager.startTransformation(id)
@@ -81,18 +95,32 @@ class TransformerResponseErrorFlowTest {
 
         verify(exactly = 0) {
             activeMQAlfrescoPromenaService.transformAsync(transformerId,
-                                                          listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
-                                                                 NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
+                                                          nodeRefs,
                                                           TEXT_PLAIN,
-                                                          MapParameters(mapOf("key" to "value")))
+                                                          parameters)
         }
-        Thread.sleep(150)
+        Thread.sleep(500)
         verify(exactly = 1) {
             activeMQAlfrescoPromenaService.transformAsync(transformerId,
-                                                          listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
-                                                                 NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")),
+                                                          nodeRefs,
                                                           TEXT_PLAIN,
-                                                          MapParameters(mapOf("key" to "value")))
+                                                          parameters)
+        }
+    }
+
+    @Test
+    fun `should detect the difference between nodes checksums and throw AnotherTransformationIsInProgressException`() {
+        val id = UUID.randomUUID().toString()
+
+        every {
+            alfrescoNodesChecksumGenerator.generateChecksum(TransformerResponseFlowTest.nodeRefs)
+        } returns "not equals"
+
+        completedTransformationManager.startTransformation(id)
+        sendResponseErrorMessage(id)
+
+        shouldThrow<AnotherTransformationIsInProgressException> {
+            completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2))
         }
     }
 
@@ -105,11 +133,11 @@ class TransformerResponseErrorFlowTest {
                 setLongProperty(PROMENA_TRANSFORMATION_START_TIMESTAMP, System.currentTimeMillis())
                 setLongProperty(PROMENA_TRANSFORMATION_END_TIMESTAMP, System.currentTimeMillis() + Duration.ofDays(1).toMillis())
 
-                setObjectProperty(SEND_BACK_NODE_REFS, listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
-                                                              "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
+                setObjectProperty(SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
+                setObjectProperty(SEND_BACK_NODES_CHECKSUM, nodesChecksum)
                 setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, TEXT_PLAIN.mimeType)
                 setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, TEXT_PLAIN.charset.toString())
-                setObjectProperty(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, MapParameters(mapOf("key" to "value")).getAll())
+                setObjectProperty(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())
             }
         }
     }

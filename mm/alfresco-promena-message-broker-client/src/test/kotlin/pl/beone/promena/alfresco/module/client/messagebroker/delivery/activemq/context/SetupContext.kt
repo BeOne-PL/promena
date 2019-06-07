@@ -4,6 +4,7 @@ import io.mockk.mockk
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 
@@ -15,6 +16,10 @@ import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAl
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.delivery.activemq"
 )
 class SetupContext {
+
+    @Bean
+    fun alfrescoNodesChecksumGenerator() =
+            mockk<AlfrescoNodesChecksumGenerator>()
 
     @Bean
     fun alfrescoTransformedDataDescriptorSaver() =

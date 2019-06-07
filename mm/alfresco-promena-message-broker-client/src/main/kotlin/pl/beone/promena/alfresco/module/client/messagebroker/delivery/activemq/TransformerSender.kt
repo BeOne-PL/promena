@@ -17,6 +17,7 @@ class TransformerSender(private val communicationLocation: URI?,
              id: String,
              transformerId: String,
              nodeRefs: List<NodeRef>,
+             nodesChecksum: String,
              targetMediaType: MediaType,
              parameters: Parameters) {
         jmsTemplate.convertAndSend(queueRequest, TransformationDescriptor(dataDescriptors, targetMediaType, parameters)) { message ->
@@ -27,6 +28,7 @@ class TransformerSender(private val communicationLocation: URI?,
                 communicationLocation?.let { setObjectProperty(PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION, communicationLocation) }
 
                 setObjectProperty(PromenaJmsHeader.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
+                setObjectProperty(PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
                 setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, targetMediaType.mimeType)
                 setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, targetMediaType.charset.name())
                 setObjectProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())

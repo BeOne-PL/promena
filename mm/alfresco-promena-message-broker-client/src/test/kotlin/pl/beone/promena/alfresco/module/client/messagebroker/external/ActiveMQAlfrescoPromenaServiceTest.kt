@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Test
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
@@ -24,6 +25,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
     companion object {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"),
                                       NodeRef("workspace://SpacesStore/a36d5c1a-e32c-478b-ad8b-14b2882115d1"))
+        private const val nodesChecksum = "123456789"
         private val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), TEXT_PLAIN))
         private const val transformerId = "transformer-test"
         private val targetMediaType = APPLICATION_PDF
@@ -36,6 +38,10 @@ class ActiveMQAlfrescoPromenaServiceTest {
         val parameters = MapParameters(mapOf("key" to "value"))
         val duration = Duration.ofSeconds(5)
 
+        val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
+            every { generateChecksum(nodeRefs) } returns nodesChecksum
+        }
+
         val completedTransformationManager = mockk<CompletedTransformationManager> {
             every { getTransformedNodeRefs(any(), duration) } returns resultNodeRefs
 
@@ -47,10 +53,13 @@ class ActiveMQAlfrescoPromenaServiceTest {
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(dataDescriptors, any(), transformerId, nodeRefs, targetMediaType, parameters) } just Runs
+            every { send(dataDescriptors, any(), transformerId, nodeRefs, nodesChecksum, targetMediaType, parameters) } just Runs
         }
 
-        ActiveMQAlfrescoPromenaService(completedTransformationManager, alfrescoDataDescriptorGetter, transformerSender)
+        ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
+                                       alfrescoDataDescriptorGetter,
+                                       completedTransformationManager,
+                                       transformerSender)
                 .transform(transformerId, nodeRefs, targetMediaType, parameters, duration) shouldBe resultNodeRefs
     }
 
@@ -58,6 +67,10 @@ class ActiveMQAlfrescoPromenaServiceTest {
     fun `transform _ null parameters`() {
         val duration = Duration.ofSeconds(5)
 
+        val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
+            every { generateChecksum(nodeRefs) } returns nodesChecksum
+        }
+
         val completedTransformationManager = mockk<CompletedTransformationManager> {
             every { getTransformedNodeRefs(any(), duration) } returns resultNodeRefs
 
@@ -69,16 +82,23 @@ class ActiveMQAlfrescoPromenaServiceTest {
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(dataDescriptors, any(), transformerId, nodeRefs, targetMediaType, MapParameters.empty()) } just Runs
+            every { send(dataDescriptors, any(), transformerId, nodeRefs, nodesChecksum, targetMediaType, MapParameters.empty()) } just Runs
         }
 
-        ActiveMQAlfrescoPromenaService(completedTransformationManager, alfrescoDataDescriptorGetter, transformerSender)
+        ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
+                                       alfrescoDataDescriptorGetter,
+                                       completedTransformationManager,
+                                       transformerSender)
                 .transform(transformerId, nodeRefs, targetMediaType, null, duration) shouldBe resultNodeRefs
     }
 
     @Test
     fun `transform _ throw TransformationSynchronizationException`() {
         val parameters = MapParameters.empty()
+
+        val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
+            every { generateChecksum(nodeRefs) } returns nodesChecksum
+        }
 
         val completedTransformationManager = mockk<CompletedTransformationManager> {
             every { getTransformedNodeRefs(any(), null) } throws
@@ -92,11 +112,14 @@ class ActiveMQAlfrescoPromenaServiceTest {
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(dataDescriptors, any(), transformerId, nodeRefs, targetMediaType, parameters) } just Runs
+            every { send(dataDescriptors, any(), transformerId, nodeRefs, nodesChecksum, targetMediaType, parameters) } just Runs
         }
 
         shouldThrow<TransformationSynchronizationException> {
-            ActiveMQAlfrescoPromenaService(completedTransformationManager, alfrescoDataDescriptorGetter, transformerSender)
+            ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
+                                           alfrescoDataDescriptorGetter,
+                                           completedTransformationManager,
+                                           transformerSender)
                     .transform(transformerId, nodeRefs, targetMediaType, parameters, null)
         }
     }
@@ -105,15 +128,22 @@ class ActiveMQAlfrescoPromenaServiceTest {
     fun transformAsync() {
         val completedTransformationManager = mockk<CompletedTransformationManager>()
 
+        val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
+            every { generateChecksum(nodeRefs) } returns nodesChecksum
+        }
+
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
             every { get(nodeRefs) } returns dataDescriptors
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(dataDescriptors, any(), transformerId, nodeRefs, targetMediaType, MapParameters.empty()) } just Runs
+            every { send(dataDescriptors, any(), transformerId, nodeRefs, nodesChecksum, targetMediaType, MapParameters.empty()) } just Runs
         }
 
-        ActiveMQAlfrescoPromenaService(completedTransformationManager, alfrescoDataDescriptorGetter, transformerSender)
+        ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
+                                       alfrescoDataDescriptorGetter,
+                                       completedTransformationManager,
+                                       transformerSender)
                 .transformAsync(transformerId, nodeRefs, targetMediaType, null)
     }
 }

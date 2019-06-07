@@ -77,7 +77,6 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
             it shouldNotContainKey QName.createQName("float")
             it shouldNotContainKey QName.createQName("double")
             it shouldNotContainKey QName.createQName("boolean")
-            it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
         }
 
         node2.getType() shouldBe ContentModel.TYPE_THUMBNAIL
@@ -95,7 +94,6 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                       QName.createQName("float") to 30.0f,
                                       QName.createQName("double") to 40.0,
                                       QName.createQName("boolean") to true)
-            it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
         }
 
         nodes shouldBe integrationNode.getRenditionAssociations().map { it.childRef }
@@ -136,7 +134,6 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                       PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to 0,
                                       PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to 1,
                                       QName.createQName("string") to "string")
-            it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
         }
 
         nodes shouldBe integrationNode.getRenditionAssociations().map { it.childRef }
@@ -158,10 +155,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                                                     serviceRegistry.namespaceService,
                                                                     serviceRegistry.transactionService,
                                                                     alfrescoDataConverter)
-                .save(transformerId,
-                      listOf(integrationNode),
-                      targetMediaType,
-                      listOf())
+                .save(transformerId, listOf(integrationNode), targetMediaType, listOf())
 
         nodes shouldHaveSize 1
         val (node) = nodes
@@ -174,7 +168,6 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                       ContentModel.PROP_IS_INDEXED to false,
                                       PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to null,
                                       PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to 0)
-            it shouldContainKey RenditionModel.PROP_RENDITION_CONTENT_HASH_CODE
             it shouldNotContainKey ContentModel.PROP_CONTENT_PROPERTY_NAME
         }
 
@@ -197,10 +190,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                                                     serviceRegistry.namespaceService,
                                                                     serviceRegistry.transactionService,
                                                                     alfrescoDataConverter)
-                .save(transformerId,
-                      listOf(integrationNode),
-                      targetMediaType,
-                      listOf())
+                .save(transformerId, listOf(integrationNode), targetMediaType, emptyList())
 
         nodes shouldHaveSize 0
         nodes shouldBe integrationNode.getRenditionAssociations()

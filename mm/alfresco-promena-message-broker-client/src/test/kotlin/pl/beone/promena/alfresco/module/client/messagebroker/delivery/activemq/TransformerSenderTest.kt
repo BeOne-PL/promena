@@ -50,6 +50,7 @@ class TransformerSenderTest {
         val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.TEXT_PLAIN))
         val id = UUID.randomUUID().toString()
         val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
+        val nodesChecksum = "123456789"
         val targetMediaType = MediaTypeConstants.APPLICATION_PDF
         val parameters = MapParameters(mapOf("key" to "value"))
         val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
@@ -58,14 +59,15 @@ class TransformerSenderTest {
                                id,
                                "transformer-test",
                                nodeRefs,
+                               nodesChecksum,
                                targetMediaType,
                                parameters)
 
-        validateHeaders(id, nodeRefs, targetMediaType, parameters)
+        validateHeaders(id, nodeRefs, nodesChecksum, targetMediaType, parameters)
         validateContent(transformationDescriptor)
     }
 
-    private fun validateHeaders(id: String, nodeRefs: List<NodeRef>, targetMediaType: MediaType, parameters: MapParameters) {
+    private fun validateHeaders(id: String, nodeRefs: List<NodeRef>, nodesChecksum: String, targetMediaType: MediaType, parameters: MapParameters) {
         jmsTemplate.browse(queueRequest) { _, queueBrowser ->
             val messages = queueBrowser.enumeration.asIterator().asSequence().toList()
 
@@ -77,6 +79,7 @@ class TransformerSenderTest {
             activeMQMessage.jmsCorrelationID shouldBe id
             activeMQMessage.properties shouldContainAll
                     mapOf(PromenaJmsHeader.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
+                          PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM to UTF8Buffer(nodesChecksum),
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE to UTF8Buffer(targetMediaType.mimeType),
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET to UTF8Buffer(targetMediaType.charset.name()),
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS to parameters.getAll())
@@ -89,7 +92,7 @@ class TransformerSenderTest {
         try {
             jmsTemplate.receiveAndConvert(queueRequest) as TransformationDescriptor shouldBe transformationDescriptor
         } catch (e: Exception) {
-            Failures.failure("Message should be type of <TransformationDescriptor>", e)
+            throw AssertionError("Message should be type of <TransformationDescriptor>", e)
         }
     }
 

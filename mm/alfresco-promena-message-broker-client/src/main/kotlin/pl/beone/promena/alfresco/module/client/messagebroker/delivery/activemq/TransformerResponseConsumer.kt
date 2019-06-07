@@ -5,10 +5,13 @@ import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODE_REFS
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE
@@ -22,7 +25,8 @@ import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescripto
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class TransformerResponseConsumer(private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
+class TransformerResponseConsumer(private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
+                                  private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
                                   private val completedTransformationManager: CompletedTransformationManager) {
 
     companion object {
@@ -40,6 +44,7 @@ class TransformerResponseConsumer(private val alfrescoTransformedDataDescriptorS
                      @Header(PROMENA_TRANSFORMATION_START_TIMESTAMP) rawTransformationStartTimestamp: Long,
                      @Header(PROMENA_TRANSFORMATION_END_TIMESTAMP) rawTransformationEndTimestamp: Long,
                      @Header(SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
+                     @Header(SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
                      @Header(SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE) rawMimeType: String,
                      @Header(SEND_BACK_TARGET_MEDIA_TYPE_CHARSET) rawCharset: String,
                      @Header(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS) rawParameters: Map<String, Any>,
@@ -50,16 +55,33 @@ class TransformerResponseConsumer(private val alfrescoTransformedDataDescriptorS
         val mediaType = mediaTypeConverter.convert(rawMimeType, rawCharset)
         val parameters = parametersConverter.convert(rawParameters)
 
-        val transformedNodeRefs =
-                alfrescoTransformedDataDescriptorSaver.save(transformerId, nodeRefs, mediaType, transformedDataDescriptors)
-        completedTransformationManager.completeTransformation(correlationId, transformedNodeRefs)
+        val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
+        if (nodesChecksum != currentNodesChecksum) {
+            completedTransformationManager.completeErrorTransformation(
+                    correlationId,
+                    AnotherTransformationIsInProgressException(transformerId, nodeRefs, mediaType, parameters, nodesChecksum, currentNodesChecksum)
+            )
 
-        logger.info("Transformed <{}> <{}> nodes <{}> to <{}> in <{} s>",
-                    transformerId,
-                    parameters.getAll(),
-                    nodeRefs,
-                    mediaType,
-                    calculateExecutionTimeInSeconds(transformationStartTimestamp, transformationEndTimestamp))
+            logger.warn("Skipped saving result of <{}> transformation <{}> nodes <{}> to <{}> in <{} s> because nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress",
+                        transformerId,
+                        parameters.getAll(),
+                        nodeRefs,
+                        mediaType,
+                        calculateExecutionTimeInSeconds(transformationStartTimestamp, transformationEndTimestamp),
+                        nodesChecksum,
+                        currentNodesChecksum)
+        } else {
+            val transformedNodeRefs =
+                    alfrescoTransformedDataDescriptorSaver.save(transformerId, nodeRefs, mediaType, transformedDataDescriptors)
+            completedTransformationManager.completeTransformation(correlationId, transformedNodeRefs)
+
+            logger.info("Transformed <{}> <{}> nodes <{}> to <{}> in <{} s>",
+                        transformerId,
+                        parameters.getAll(),
+                        nodeRefs,
+                        mediaType,
+                        calculateExecutionTimeInSeconds(transformationStartTimestamp, transformationEndTimestamp))
+        }
     }
 
     private fun calculateExecutionTimeInSeconds(first: LocalDateTime, second: LocalDateTime): Long =

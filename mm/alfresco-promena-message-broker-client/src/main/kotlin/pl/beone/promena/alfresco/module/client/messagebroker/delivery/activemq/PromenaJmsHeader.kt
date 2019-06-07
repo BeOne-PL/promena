@@ -6,6 +6,7 @@ object PromenaJmsHeader {
     const val PROMENA_TRANSFORMATION_END_TIMESTAMP = "promena_transformation_timestamp_end"
     const val PROMENA_COMMUNICATION_LOCATION = "promena_com_location"
     const val SEND_BACK_NODE_REFS = "send_back_nodeRefs"
+    const val SEND_BACK_NODES_CHECKSUM = "send_back_nodesChecksum"
     const val SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE = "send_back_targetMediaType_mimeType"
     const val SEND_BACK_TARGET_MEDIA_TYPE_CHARSET = "send_back_targetMediaType_charset"
     const val SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS = "send_back_parameters"

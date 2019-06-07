@@ -2,6 +2,7 @@ package pl.beone.promena.alfresco.module.client.messagebroker.configuration.deli
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerResponseConsumer
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
@@ -10,7 +11,8 @@ import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedT
 class TransformerResponseConsumerContext {
 
     @Bean
-    fun transformerResponseConsumer(alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
+    fun transformerResponseConsumer(alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
+                                    alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
                                     completedTransformationManager: CompletedTransformationManager): TransformerResponseConsumer =
-            TransformerResponseConsumer(alfrescoTransformedDataDescriptorSaver, completedTransformationManager)
+            TransformerResponseConsumer(alfrescoNodesChecksumGenerator, alfrescoTransformedDataDescriptorSaver, completedTransformationManager)
 }

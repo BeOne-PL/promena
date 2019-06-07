@@ -4,6 +4,7 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.slf4j.LoggerFactory
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaService
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
@@ -14,8 +15,9 @@ import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeoutException
 
-class ActiveMQAlfrescoPromenaService(private val completedTransformationManager: CompletedTransformationManager,
+class ActiveMQAlfrescoPromenaService(private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
                                      private val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
+                                     private val completedTransformationManager: CompletedTransformationManager,
                                      private val transformerSender: TransformerSender)
     : AlfrescoPromenaService {
 
@@ -42,7 +44,13 @@ class ActiveMQAlfrescoPromenaService(private val completedTransformationManager:
         val id = generateId()
 
         completedTransformationManager.startTransformation(id)
-        transformerSender.send(dataDescriptors, id, transformerId, nodeRefs, targetMediaType, determinedParameters)
+        transformerSender.send(dataDescriptors,
+                               id,
+                               transformerId,
+                               nodeRefs,
+                               alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs),
+                               targetMediaType,
+                               determinedParameters)
 
         return try {
             completedTransformationManager.getTransformedNodeRefs(id, waitMax)
@@ -65,7 +73,13 @@ class ActiveMQAlfrescoPromenaService(private val completedTransformationManager:
 
         val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeRefs)
 
-        transformerSender.send(dataDescriptors, generateId(), transformerId, nodeRefs, targetMediaType, determinedParameters)
+        transformerSender.send(dataDescriptors,
+                               generateId(),
+                               transformerId,
+                               nodeRefs,
+                               alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs),
+                               targetMediaType,
+                               determinedParameters)
     }
 
     private fun determineParameters(parameters: Parameters?): Parameters =
