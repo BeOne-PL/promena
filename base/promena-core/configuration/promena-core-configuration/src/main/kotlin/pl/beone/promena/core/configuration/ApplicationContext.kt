@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource
 @ComponentScan(basePackages = [
     "pl.beone.promena"
 ])
-@PropertySource("application-ts.properties",
-                "application-akka.properties",
-                "application-kryo-classes.properties")
+@PropertySource("classpath:application-ts.properties",
+                "classpath:application-akka.properties",
+                "classpath:application-kryo-classes.properties")
 class ApplicationContext

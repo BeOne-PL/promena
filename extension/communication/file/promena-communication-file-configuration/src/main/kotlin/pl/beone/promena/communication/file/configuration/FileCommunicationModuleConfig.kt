@@ -4,5 +4,5 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 
 @Configuration
-@PropertySource("module-communication-file.properties")
+@PropertySource("classpath:module-communication-file.properties")
 class FileCommunicationModuleConfig

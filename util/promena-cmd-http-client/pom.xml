@@ -8,7 +8,7 @@
     <artifactId>promena-cmd-http-client</artifactId>
     <version>3.0.0-alpha</version>
 
-    <name>[UTIL] CMD HTTP client</name>
+    <name>[UTIL] CMD client</name>
 
     <repositories>
         <repository>
@@ -38,7 +38,7 @@
         <java.version>1.8</java.version>
 
         <promena-core.version>3.0.0-alpha</promena-core.version>
-        <promena-http-client.version>3.0.0-alpha</promena-http-client.version>
+        <promena-transformer.version>3.0.0-alpha</promena-transformer.version>
 
         <tika-core.version>1.20</tika-core.version>
         <picocli.version>3.9.5</picocli.version>
@@ -59,14 +59,9 @@
         </dependency>
 
         <dependency>
-            <groupId>pl.beone.promena.core</groupId>
-            <artifactId>promena-core-common</artifactId>
-            <version>${promena-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.lib</groupId>
-            <artifactId>promena-http-client</artifactId>
-            <version>${promena-http-client.version}</version>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>promena-transformer-internal</artifactId>
+            <version>${promena-transformer.version}</version>
         </dependency>
 
         <dependency>

@@ -107,12 +107,12 @@ class App(private val cmdArguments: CmdArguments) {
     private fun Array<File>.convertToDataDescriptors(location: URI?): List<DataDescriptor> =
             // memory communication
             if (location == null) {
-                this.map { DataDescriptor(InMemoryData(it.readBytes()), it.getMimeType()) }
+                this.map { DataDescriptor(InMemoryData(it.readBytes()), it.getMediaType()) }
             } else { // file communication
                 val locationDirectory = File(location)
 
                 this.map { it.copyTo(createTempFile(directory = locationDirectory), true) }
-                        .map { DataDescriptor(FileData(it.toURI()), it.getMimeType()) }
+                        .map { DataDescriptor(FileData(it.toURI()), it.getMediaType()) }
             }
 
     private fun List<TransformedDataDescriptor>.saveInFiles(targetMediaType: MediaType): List<File> {
@@ -126,7 +126,7 @@ class App(private val cmdArguments: CmdArguments) {
         }
     }
 
-    private fun File.getMimeType(): MediaType =
+    private fun File.getMediaType(): MediaType =
             MediaType.create(Tika().detect(this), Charsets.UTF_8)
 
     private fun MediaType.getExtension(): String =

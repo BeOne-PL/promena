@@ -48,8 +48,7 @@ class SerializerActor(private val serializationService: SerializationService) : 
 
     private fun deserialize(bytes: ByteArray): TransformationDescriptor {
         val (transformationDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
-            serializationService.deserialize<TransformationDescriptor>(bytes,
-                                                                       getClazz())
+            serializationService.deserialize<TransformationDescriptor>(bytes, getClazz())
         }
 
         if (log().isDebugEnabled) {
