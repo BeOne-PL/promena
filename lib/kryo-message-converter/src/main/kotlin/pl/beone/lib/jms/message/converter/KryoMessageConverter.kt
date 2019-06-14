@@ -38,7 +38,7 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
     private fun Message.getClassFromProperties(): Class<*> =
             try {
                 Class.forName(getStringProperty(PROPERTY_SERIALIZATION_CLASS))
-                        ?: throw NoSuchElementException("Properties doesn't contain <$PROPERTY_SERIALIZATION_CLASS> value")
+                        ?: throw NoSuchElementException("Properties don't contain <$PROPERTY_SERIALIZATION_CLASS> entry")
             } catch (e: ClassNotFoundException) {
                 throw IllegalArgumentException("Class determined in <$PROPERTY_SERIALIZATION_CLASS> message property isn't available", e)
             }
