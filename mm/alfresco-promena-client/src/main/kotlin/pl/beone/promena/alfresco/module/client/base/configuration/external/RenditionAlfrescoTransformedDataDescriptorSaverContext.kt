@@ -7,7 +7,7 @@ import org.alfresco.service.transaction.TransactionService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.client.base.configuration.getRequiredProperty
+import pl.beone.promena.alfresco.module.client.base.configuration.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.external.RenditionAlfrescoTransformedDataDescriptorSaver
 import java.util.*
@@ -22,7 +22,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverContext {
                                                         namespaceService: NamespaceService,
                                                         transactionService: TransactionService,
                                                         alfrescoDataConverter: AlfrescoDataConverter) =
-            RenditionAlfrescoTransformedDataDescriptorSaver(properties.getRequiredProperty("promena.transformation.saveIfZero").toBoolean(),
+            RenditionAlfrescoTransformedDataDescriptorSaver(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.saveIfZero").toBoolean(),
                                                             nodeService,
                                                             contentService,
                                                             namespaceService,
