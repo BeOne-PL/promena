@@ -1,5 +1,6 @@
 version: '3.4'
 services:
+#  Optional
   alfresco-promena-http-client-share:
     image: ${docker.share.image}:${alfresco.share.version}
     environment:
@@ -14,14 +15,11 @@ services:
       context: ../../../target
     environment:
       CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
-    command: ["catalina.sh", "run"]
     ports:
       - "${acs.port}:8080"
       - "${acs.debug.port}:8888"
     volumes:
       - alfresco-promena-http-client-acs-volume:/usr/local/tomcat/alf_data
-      - ./..:/usr/local/tomcat/hotswap-agent/alfresco-promena-http-client/target/classes
-      - ./../../test-classes/:/usr/local/tomcat/hotswap-agent/alfresco-promena-http-client/target/test-classes
     depends_on:
       - alfresco-promena-http-client-postgres
   alfresco-promena-http-client-postgres:
@@ -48,9 +46,8 @@ services:
     volumes:
       - alfresco-promena-http-client-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-http-client-ass-volume:/opt/alfresco-search-services/data
-
-  promena:
-    image: docker.office.beone.pl/promena:3.0.0-alpha
+#  promena:
+#    image: promena-executable:3.0.0-alpha
 
 volumes:
   alfresco-promena-http-client-acs-volume:

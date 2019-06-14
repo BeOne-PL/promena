@@ -2,25 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>pl.beone.promena.module.client</groupId>
+
+    <groupId>pl.beone.promena.alfresco.module</groupId>
     <artifactId>alfresco-promena-http-client</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <name>[MM] alfresco-promena-http-client</name>
-    <description>Platform/Repo JAR Module (to be included in the alfresco.war)</description>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
+    <name>[MM] alfresco-promena-http-client</name>
+
     <properties>
-        <kotlin.version>1.3.11</kotlin.version>
-        <java.version>1.8</java.version>
+        <!--        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>-->
+        <kotlin.version>1.3.31</kotlin.version>
+        <java.version>11</java.version>
 
-        <promena-http-client.version>3.0.0-alpha</promena-http-client.version>
+        <reactor-netty.version>0.8.9.RELEASE</reactor-netty.version>
+        <reactor-extra.version>3.2.3.RELEASE</reactor-extra.version>
 
-<!--        <rxjava.version>2.1.14</rxjava.version>-->
-        <versions.reflectasm>1.11.3</versions.reflectasm>
-
-        <junit.version>4.12</junit.version>
-        <assertj.version>3.10.0</assertj.version>
-        <mockito-kotlin.version>2.1.0</mockito-kotlin.version>
+        <alfresco-promena-client.version>1.0.0</alfresco-promena-client.version>
+        <kryo-message-converter.version>1.0.0</kryo-message-converter.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
@@ -40,6 +39,13 @@
         <!-- JRebel Hot reloading of classpath stuff and web resource stuff -->
         <jrebel.version>1.1.8</jrebel.version>
 
+        <mockk.version>1.9.3</mockk.version>
+        <spring.version>5.1.3.RELEASE</spring.version>
+        <testcontainers.version>1.11.2</testcontainers.version>
+        <kotlintest-runner-junit5.version>3.3.2</kotlintest-runner-junit5.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
+        <reactor-test.version>3.2.10.RELEASE</reactor-test.version>
+
         <!-- Environment configuration properties -->
         <share.port>8180</share.port>
         <acs.host>alfresco-promena-http-client-acs</acs.host>
@@ -49,6 +55,14 @@
         <!-- This parameter is only required for those cases in which ACS is not exposed in http://localhost:8080/alfresco (i.e. Windows Docker) -->
         <test.acs.endpoint.path></test.acs.endpoint.path>
 
+        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
+        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+        <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M1</maven-failsafe-plugin.version>
+        <yuicompressor-maven-plugin.version>1.5.1</yuicompressor-maven-plugin.version>
     </properties>
 
     <!-- Libs used in Unit and Integration tests -->
@@ -62,57 +76,60 @@
         </dependency>
 
         <dependency>
-            <groupId>org.alfresco</groupId>
-            <artifactId>alfresco-repository</artifactId>
-            <scope>provided</scope>
+            <groupId>pl.beone.promena.alfresco.module</groupId>
+            <artifactId>alfresco-promena-client</artifactId>
+            <version>${alfresco-promena-client.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>pl.beone.promena.lib</groupId>
-            <artifactId>promena-http-client</artifactId>
-            <version>${promena-http-client.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>reflectasm</artifactId>
-            <version>${versions.reflectasm}</version>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
+            <version>${reactor-netty.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>reflectasm</artifactId>
-            <classifier>shaded</classifier>
-            <version>${versions.reflectasm}</version>
-        </dependency>
-
-        <!-- To fix java.lang.NoClassDefFoundError: org/w3c/dom/ElementTraversal error -->
-        <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>1.4.01</version>
+            <groupId>io.projectreactor.addons</groupId>
+            <artifactId>reactor-extra</artifactId>
+            <version>${reactor-extra.version}</version>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${assertj.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nhaarman.mockitokotlin2</groupId>
-            <artifactId>mockito-kotlin</artifactId>
-            <version>${mockito-kotlin.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.kotlintest</groupId>
+            <artifactId>kotlintest-runner-junit5</artifactId>
+            <version>${kotlintest-runner-junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <version>${mockk.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -128,6 +145,12 @@
             <groupId>org.alfresco.maven</groupId>
             <artifactId>alfresco-rad</artifactId>
             <version>${alfresco.sdk.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <version>${reactor-test.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -202,6 +225,42 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${build-helper-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/kotlin</source>
+                                <source>${project.basedir}/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!--
                     Build an AMP if 3rd party libs are needed by the extensions
                     JARs are the default artifact produced in your modules, if you want to build an amp for each module
@@ -209,11 +268,10 @@
                     the layout of your AMP. The end result is that Maven will produce both a JAR file and an AMP with your
                     module.
                 -->
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven-assembly-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>build-amp-file</id>
@@ -235,14 +293,13 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            -->
 
             <!-- Filter the test resource files in the AIO parent project, and do property substitutions.
                  We need this config so this is done before the Alfresco Maven Plugin 'run' is executed. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${maven-resources-plugin.version}</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <nonFilteredFileExtensions> <!-- jpg, jpeg, gif, bmp and png are added automatically -->
@@ -395,7 +452,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>${maven-dependency-plugin.version}</version>
                 <executions>
                     <!-- Copy the dependencies required for execute integration tests -->
                     <execution>
@@ -420,6 +477,7 @@
                             <outputDirectory>${project.build.directory}/extensions</outputDirectory>
                             <includeScope>runtime</includeScope>
                             <!-- IMPORTANT: if using amp dependencies only, add <includeTypes>amp</includeTypes> -->
+                            <!--                            <includeTypes>amp</includeTypes>-->
                         </configuration>
                     </execution>
                 </executions>
@@ -429,7 +487,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${maven-jar-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -444,7 +502,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>${maven-failsafe-plugin.version}</version>
                 <configuration>
                     <systemPropertyVariables>
                         <acs.endpoint.path>${test.acs.endpoint.path}</acs.endpoint.path>
@@ -479,7 +537,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.5.1</version>
+                <version>${yuicompressor-maven-plugin.version}</version>
                 <executions>
                     <!-- Compress the JS files under the assembly folder -->
                     <execution>
@@ -594,6 +652,32 @@
                             <source>1.8</source>
                             <target>1.8</target>
                         </configuration>
+                        <executions>
+                            <!-- Replacing default-compile as it is treated specially by maven -->
+                            <execution>
+                                <id>default-compile</id>
+                                <phase>none</phase>
+                            </execution>
+                            <!-- Replacing default-testCompile as it is treated specially by maven -->
+                            <execution>
+                                <id>default-testCompile</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>java-compile</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>java-test-compile</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -612,6 +696,32 @@
                         <configuration>
                             <release>11</release>
                         </configuration>
+                        <executions>
+                            <!-- Replacing default-compile as it is treated specially by maven -->
+                            <execution>
+                                <id>default-compile</id>
+                                <phase>none</phase>
+                            </execution>
+                            <!-- Replacing default-testCompile as it is treated specially by maven -->
+                            <execution>
+                                <id>default-testCompile</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>java-compile</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>java-test-compile</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -638,6 +748,11 @@
         <repository>
             <id>alfresco-private-repository</id>
             <url>https://artifacts.alfresco.com/nexus/content/groups/private</url>
+        </repository>
+
+        <repository>
+            <id>spring-milestone</id>
+            <url>https://repo.spring.io/milestone</url>
         </repository>
     </repositories>
 
