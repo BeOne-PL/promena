@@ -9,6 +9,6 @@ import pl.beone.promena.core.internal.serialization.KryoSerializationService
 class KryoMessageConverterContext {
 
     @Bean
-    fun kryoMessageConverter() =
-            KryoMessageConverter(KryoSerializationService())
+    fun kryoMessageConverter(kryoSerializationService: KryoSerializationService) =
+            KryoMessageConverter(kryoSerializationService)
 }

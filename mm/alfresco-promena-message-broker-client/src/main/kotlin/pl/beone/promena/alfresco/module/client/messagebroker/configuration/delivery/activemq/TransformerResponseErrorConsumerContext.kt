@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
-import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getRequiredProperty
+import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.toDuration
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerResponseErrorConsumer
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
@@ -19,8 +19,8 @@ class TransformerResponseErrorConsumerContext {
                                          alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
                                          completedTransformationManager: CompletedTransformationManager,
                                          activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService): TransformerResponseErrorConsumer =
-            TransformerResponseErrorConsumer(properties.getRequiredProperty("promena.transformation.error.tryAgain").toBoolean(),
-                                             properties.getRequiredProperty("promena.transformation.error.delay").let { it.toDuration() },
+            TransformerResponseErrorConsumer(properties.getRequiredPropertyWithResolvedPlaceholders("promena.transformation.error.tryAgain").toBoolean(),
+                                             properties.getRequiredPropertyWithResolvedPlaceholders("promena.transformation.error.delay").let { it.toDuration() },
                                              alfrescoNodesChecksumGenerator,
                                              completedTransformationManager,
                                              activeMQAlfrescoPromenaService)
