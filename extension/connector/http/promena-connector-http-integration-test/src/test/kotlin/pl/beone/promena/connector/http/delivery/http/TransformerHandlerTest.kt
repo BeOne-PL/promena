@@ -16,11 +16,19 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
 import pl.beone.promena.connector.http.configuration.HttpConnectorModuleConfig
+import pl.beone.promena.core.contract.serialization.DescriptorSerializationService
+import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerTimeoutException
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
+import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
+import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 
 @RunWith(SpringRunner::class)
 @EnableAutoConfiguration
@@ -32,94 +40,91 @@ class TransformerHandlerTest {
     private lateinit var webTestClient: WebTestClient
 
     @MockBean
+    private lateinit var serializationService: SerializationService
+
+    @MockBean
+    private lateinit var descriptorSerializationService: DescriptorSerializationService
+
+    @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
+
+    companion object {
+        private const val transformerId = "default"
+        private val requestBody = "request body".toByteArray()
+        private val transformationDescriptor = TransformationDescriptor(emptyList(), MediaTypeConstants.TEXT_PLAIN, MapParameters.empty())
+        private val transformedDataDescriptors = listOf(TransformedDataDescriptor(InMemoryData(ByteArray(0)), MapMetadata.empty()))
+        private val responseBody = "response body".toByteArray()
+    }
 
     @Test
     fun `transform _ with empty communication parameters`() {
-        `when`(transformationUseCase.transform(eq("default"),
-                                               eq("request body".toByteArray()),
-                                               eq(MapCommunicationParameters.empty())))
-                .thenReturn("processed request body".toByteArray())
+        `when`(descriptorSerializationService.deserialize(requestBody))
+                .thenReturn(transformationDescriptor)
 
-        webTestClient.post().uri("/transform/default")
-                .body(BodyInserters.fromObject("request body".toByteArray()))
+        `when`(transformationUseCase.transform(eq(transformerId),
+                                               eq(transformationDescriptor),
+                                               eq(MapCommunicationParameters.empty())))
+                .thenReturn(transformedDataDescriptors)
+
+        `when`(descriptorSerializationService.serialize(transformedDataDescriptors))
+                .thenReturn(responseBody)
+
+        webTestClient.post().uri("/transform/$transformerId")
+                .body(BodyInserters.fromObject(requestBody))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody<ByteArray>().isEqualTo("processed request body".toByteArray())
+                .expectBody<ByteArray>().isEqualTo(responseBody)
     }
 
     @Test
     fun `transform _ with location in communication parameters`() {
-        `when`(transformationUseCase.transform(eq("default"),
-                                               eq("request body".toByteArray()),
-                                               eq(MapCommunicationParameters(mapOf("location" to "file:/tmp")))))
-                .thenReturn("processed request body".toByteArray())
+        `when`(descriptorSerializationService.deserialize(requestBody))
+                .thenReturn(transformationDescriptor)
 
-        webTestClient.post().uri("/transform/default?location=file:/tmp")
-                .body(BodyInserters.fromObject("request body".toByteArray()))
+        `when`(transformationUseCase.transform(eq(transformerId),
+                                               eq(transformationDescriptor),
+                                               eq(MapCommunicationParameters(mapOf("location" to "file:/tmp")))))
+                .thenReturn(transformedDataDescriptors)
+
+        `when`(descriptorSerializationService.serialize(transformedDataDescriptors))
+                .thenReturn(responseBody)
+
+        webTestClient.post().uri("/transform/$transformerId?location=file:/tmp")
+                .body(BodyInserters.fromObject(requestBody))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody<ByteArray>().isEqualTo("processed request body".toByteArray())
+                .expectBody<ByteArray>().isEqualTo(responseBody)
     }
 
     @Test
-    fun `transform _ throw TransformerNotFoundException _ should return BadRequest`() {
-        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
-                .thenThrow(TransformerNotFoundException("exception message"))
+    fun `transform _ throw TransformerNotFoundException _ should return InternalServerError with serialized exception`() {
+        val exceptionMessage = "exception".toByteArray()
 
-        webTestClient.post().uri("/transform/default")
-                .body(BodyInserters.fromObject("noMatter".toByteArray()))
+        `when`(descriptorSerializationService.deserialize(requestBody))
+                .thenReturn(transformationDescriptor)
+
+        `when`(serializationService.serialize(any<TransformerNotFoundException>()))
+                .thenReturn(exceptionMessage)
+
+        `when`(transformationUseCase.transform(eq(transformerId),
+                                               eq(transformationDescriptor),
+                                               eq(MapCommunicationParameters.empty())))
+                .thenThrow(TransformerNotFoundException("exception"))
+
+        webTestClient.post().uri("/transform/$transformerId")
+                .body(BodyInserters.fromObject(requestBody))
                 .exchange()
-                .expectStatus().isBadRequest
-                .expectBody()
-                .jsonPath("message").isEqualTo("exception message")
+                .expectHeader().valueEquals("serialization-class", "pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException")
+                .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+                .expectBody<ByteArray>().isEqualTo(exceptionMessage)
     }
 
     @Test
     fun `transform _ bad url _ should return NotFound`() {
         webTestClient.post().uri("/transform")
-                .body(BodyInserters.fromObject("noMatter".toByteArray()))
+                .body(BodyInserters.fromObject(requestBody))
                 .exchange()
                 .expectStatus().isNotFound
                 .expectBody()
-    }
-
-    @Test
-    fun `transform _ throw TransformerTimeoutException _ should return RequestTimeout`() {
-        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
-                .thenThrow(TransformerTimeoutException("exception message"))
-
-        webTestClient.post().uri("/transform/default")
-                .body(BodyInserters.fromObject("noMatter".toByteArray()))
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.REQUEST_TIMEOUT)
-                .expectBody()
-                .jsonPath("message").isEqualTo("exception message")
-    }
-
-    @Test
-    fun `transform _ throw TransformerException _ should return InternalServerError`() {
-        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
-                .thenThrow(TransformerException("exception message"))
-
-        webTestClient.post().uri("/transform/default")
-                .body(BodyInserters.fromObject("noMatter".toByteArray()))
-                .exchange()
-                .expectStatus().is5xxServerError
-                .expectBody()
-                .jsonPath("message").isEqualTo("exception message")
-    }
-
-    @Test
-    fun `transform _ throw unhandled IllegalArgumentException _ should return InternalServerError`() {
-        `when`(transformationUseCase.transform(any(), any<ByteArray>(), anyOrNull()))
-                .thenThrow(IllegalArgumentException("exception message"))
-
-        webTestClient.post().uri("/transform/default")
-                .body(BodyInserters.fromObject("noMatter".toByteArray()))
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-                .expectBody()
-                .jsonPath("message").isEqualTo("exception message")
     }
 }
