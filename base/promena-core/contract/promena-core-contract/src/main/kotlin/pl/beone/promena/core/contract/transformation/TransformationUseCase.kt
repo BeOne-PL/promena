@@ -6,8 +6,6 @@ import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescripto
 
 interface TransformationUseCase {
 
-    fun transform(transformerId: String, bytes: ByteArray, communicationParameters: CommunicationParameters): ByteArray
-
     fun transform(transformerId: String,
                   transformationDescriptor: TransformationDescriptor,
                   communicationParameters: CommunicationParameters): List<TransformedDataDescriptor>
