@@ -19,27 +19,20 @@ class DefaultTransformationUseCaseTest {
 
     @Test
     fun transform() {
+        val communicationParameters = mock<CommunicationParameters>()
         val dataDescriptor = DataDescriptor(mock(), MediaTypeConstants.TEXT_PLAIN)
         val targetMediaType = MediaTypeConstants.APPLICATION_PDF
         val parameters = mock<Parameters>()
         val transformationDescriptor = TransformationDescriptor(listOf(dataDescriptor), targetMediaType, parameters)
-
         val transformedDataDescriptor = TransformedDataDescriptor(mock(), mock())
+        val transformedDataDescriptors = listOf(transformedDataDescriptor)
 
-        val communicationParameters = mock<CommunicationParameters>()
-
-        //
-        val descriptorSerializationService =
-                mock<DescriptorSerializationService> {
-                    on { deserialize("test".toByteArray()) } doReturn transformationDescriptor
-                    on { serialize(listOf(transformedDataDescriptor)) } doReturn "transformed test".toByteArray()
-                }
         val incomingCommunicationConverter =
                 mock<IncomingCommunicationConverter> {
                     on { convert(dataDescriptor, communicationParameters) } doReturn dataDescriptor
                 }
         val transformerService = mock<TransformerService> {
-            on { transform("default", listOf(dataDescriptor), targetMediaType, parameters) } doReturn listOf(transformedDataDescriptor)
+            on { transform("default", listOf(dataDescriptor), targetMediaType, parameters) } doReturn transformedDataDescriptors
         }
         val outgoingCommunicationConverter =
                 mock<OutgoingCommunicationConverter> {
@@ -47,13 +40,12 @@ class DefaultTransformationUseCaseTest {
                 }
 
         val bytes = DefaultTransformationUseCase(
-                descriptorSerializationService,
                 mock(),
                 incomingCommunicationConverter,
                 transformerService,
                 outgoingCommunicationConverter)
-                .transform("default", "test".toByteArray(), communicationParameters)
+                .transform("default", transformationDescriptor, communicationParameters)
 
-        assertThat(bytes).isEqualTo("transformed test".toByteArray())
+        assertThat(bytes).isEqualTo(transformedDataDescriptors)
     }
 }
