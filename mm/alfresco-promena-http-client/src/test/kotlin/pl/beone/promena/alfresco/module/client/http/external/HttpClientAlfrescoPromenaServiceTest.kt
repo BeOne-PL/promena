@@ -1,5 +1,6 @@
 package pl.beone.promena.alfresco.module.client.http.external
 
+import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
@@ -28,10 +29,9 @@ import reactor.netty.ByteBufFlux
 import reactor.netty.DisposableServer
 import reactor.netty.http.client.HttpClient
 import reactor.netty.http.server.HttpServer
-import reactor.retry.RetryExhaustedException
 import reactor.test.StepVerifier
+import reactor.test.expectError
 import java.time.Duration
-
 
 private data class Mocks(val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
                          val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
@@ -140,7 +140,10 @@ class HttpClientAlfrescoPromenaServiceTest {
                                                              serializationService,
                                                              httpServer.createHttpClient())
                                     .transformAsync("exception", nodeRefs, targetMediaType, parameters))
-                .expectErrorMatches { it.javaClass == serverException.javaClass && it.message == serverException.message }
+                .expectErrorSatisfies {
+                    it shouldBeSameInstanceAs serverException
+                    it.message shouldBe serverException.message
+                }
                 .verify()
     }
 
@@ -161,7 +164,7 @@ class HttpClientAlfrescoPromenaServiceTest {
                                                              serializationService,
                                                              httpServer.createHttpClient())
                                     .transformAsync("success", nodeRefs, targetMediaType, parameters))
-                .expectErrorMatches { it is AnotherTransformationIsInProgressException }
+                .expectError(AnotherTransformationIsInProgressException::class)
                 .verify()
     }
 
@@ -182,7 +185,7 @@ class HttpClientAlfrescoPromenaServiceTest {
                                                              serializationService,
                                                              httpServer.createHttpClient())
                                     .transformAsync("exception", nodeRefs, targetMediaType, parameters))
-                .expectErrorMatches { it is AnotherTransformationIsInProgressException }
+                .expectError(AnotherTransformationIsInProgressException::class)
                 .verify()
     }
 
@@ -205,10 +208,11 @@ class HttpClientAlfrescoPromenaServiceTest {
                                     .transformAsync("exception", nodeRefs, targetMediaType, parameters))
                 .expectSubscription()
                 .expectNoEvent(Duration.ofMillis(600))
-                .verifyErrorMatches { exception ->
-                    exception is RetryExhaustedException &&
-                    exception.cause!!.let { it.javaClass == serverException.javaClass && it.message == serverException.message }
+                .expectErrorSatisfies {
+                    it shouldBeSameInstanceAs serverException
+                    it.message shouldBe serverException.message
                 }
+                .verify()
     }
 
     private fun startServer(): DisposableServer =

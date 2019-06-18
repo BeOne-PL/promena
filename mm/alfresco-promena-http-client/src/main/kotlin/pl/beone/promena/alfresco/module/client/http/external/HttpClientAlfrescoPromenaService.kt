@@ -27,6 +27,7 @@ import reactor.netty.ByteBufMono
 import reactor.netty.http.client.HttpClient
 import reactor.netty.http.client.HttpClientResponse
 import reactor.retry.Retry
+import reactor.retry.RetryExhaustedException
 import reactor.util.function.Tuple2
 import java.time.Duration
 
@@ -112,6 +113,7 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
                 .doOnNext { logger.transformedSuccessful(transformerId, nodeRefs, targetMediaType, parameters, it, millisStart) }
                 .doOnError { handleError(transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, it) }
                 .retryOnError()
+                .onErrorMap { unwrapRetryExhaustedException(it) }
                 .cache() // to prevent making request many times - another subscribers will receive only list of node refs
     }
 
@@ -195,7 +197,7 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
         }
     }
 
-    private fun Mono<List<NodeRef>>.retryOnError() =
+    private fun Mono<List<NodeRef>>.retryOnError(): Mono<List<NodeRef>> =
             if (retryOnError) {
                 retryWhen(Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
                                   .fixedBackoff(retryOnErrorNextAttemptsDelay)
@@ -203,4 +205,8 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
             } else {
                 this
             }
+
+
+    private fun unwrapRetryExhaustedException(exception: Throwable): Throwable =
+            if (exception is RetryExhaustedException) exception.cause!! else exception
 }
