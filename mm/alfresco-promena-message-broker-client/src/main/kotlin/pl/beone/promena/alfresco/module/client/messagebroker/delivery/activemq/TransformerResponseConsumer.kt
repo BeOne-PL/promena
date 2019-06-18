@@ -59,12 +59,10 @@ class TransformerResponseConsumer(private val alfrescoNodesChecksumGenerator: Al
                             transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum
                     )
             )
-
             logger.skippedSavingResult(transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum)
         } else {
             val targetNodeRefs = alfrescoTransformedDataDescriptorSaver.save(transformerId, nodeRefs, targetMediaType, transformedDataDescriptors)
             reactiveTransformationManager.completeTransformation(correlationId, targetNodeRefs)
-
             logger.transformedSuccessfully(transformerId, nodeRefs, targetMediaType, parameters, targetNodeRefs, startTimestamp, endTimestamp)
         }
     }

@@ -7,15 +7,27 @@ import java.util.concurrent.ConcurrentHashMap
 
 class ReactiveTransformationManager {
 
+    private val monoMap = ConcurrentHashMap<String, Mono<List<NodeRef>>>()
     private val completableFutureMap = ConcurrentHashMap<String, CompletableFuture<List<NodeRef>>>()
 
     fun startTransformation(id: String): Mono<List<NodeRef>> {
-        val completableFuture = CompletableFuture<List<NodeRef>>()
-                .apply { completableFutureMap[id] = this }
+        val mono = monoMap[id]
+        return if (mono != null) {
+            mono
+        } else {
+            val completableFuture = CompletableFuture<List<NodeRef>>()
+                    .apply { completableFutureMap[id] = this }
 
-        return Mono.fromFuture(completableFuture)
-                .doOnCancel { }
-                .apply { subscribe({}, {}, { completableFutureMap.remove(id) }) }
+            Mono.fromFuture(completableFuture)
+                    .doOnCancel { }
+                    .apply {
+                        monoMap[id] = this
+                        subscribe({}, {}, {
+                            monoMap.remove(id)
+                            completableFutureMap.remove(id)
+                        })
+                    }
+        }
     }
 
     fun completeTransformation(id: String, nodeRefs: List<NodeRef>) {

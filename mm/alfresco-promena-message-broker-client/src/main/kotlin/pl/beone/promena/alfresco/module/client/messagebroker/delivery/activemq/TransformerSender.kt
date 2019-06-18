@@ -19,7 +19,8 @@ class TransformerSender(private val communicationLocation: URI?,
              nodeRefs: List<NodeRef>,
              nodesChecksum: String,
              targetMediaType: MediaType,
-             parameters: Parameters) {
+             parameters: Parameters,
+             attempt: Long) {
         jmsTemplate.convertAndSend(queueRequest, TransformationDescriptor(dataDescriptors, targetMediaType, parameters)) { message ->
             message.apply {
                 jmsCorrelationID = id
@@ -32,6 +33,7 @@ class TransformerSender(private val communicationLocation: URI?,
                 setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, targetMediaType.mimeType)
                 setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, targetMediaType.charset.name())
                 setObjectProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())
+                setObjectProperty(PromenaJmsHeader.SEND_BACK_ATTEMPT, attempt)
             }
         }
     }

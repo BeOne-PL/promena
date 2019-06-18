@@ -10,4 +10,5 @@ object PromenaJmsHeader {
     const val SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE = "send_back_targetMediaType_mimeType"
     const val SEND_BACK_TARGET_MEDIA_TYPE_CHARSET = "send_back_targetMediaType_charset"
     const val SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS = "send_back_parameters"
+    const val SEND_BACK_ATTEMPT = "send_back_attempt"
 }

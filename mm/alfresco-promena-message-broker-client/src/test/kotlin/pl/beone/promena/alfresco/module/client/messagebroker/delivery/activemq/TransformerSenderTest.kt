@@ -1,6 +1,5 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 
-import io.kotlintest.Failures
 import io.kotlintest.fail
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.matchers.maps.shouldNotContainKey
@@ -20,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.client.messagebroker.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.SetupContext
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
@@ -45,29 +43,33 @@ class TransformerSenderTest {
     @Autowired
     private lateinit var transformerSender: TransformerSender
 
+    companion object {
+        private val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.TEXT_PLAIN))
+        private val id = UUID.randomUUID().toString()
+        private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
+        private const val nodesChecksum = "123456789"
+        private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
+        private val parameters = MapParameters(mapOf("key" to "value"))
+        private const val attempt = 1L
+        private val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
+    }
+
     @Test
     fun `should send transformation descriptor data to queue`() {
-        val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.TEXT_PLAIN))
-        val id = UUID.randomUUID().toString()
-        val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
-        val nodesChecksum = "123456789"
-        val targetMediaType = MediaTypeConstants.APPLICATION_PDF
-        val parameters = MapParameters(mapOf("key" to "value"))
-        val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
-
         transformerSender.send(dataDescriptors,
                                id,
                                "transformer-test",
                                nodeRefs,
                                nodesChecksum,
                                targetMediaType,
-                               parameters)
+                               parameters,
+                               attempt)
 
-        validateHeaders(id, nodeRefs, nodesChecksum, targetMediaType, parameters)
-        validateContent(transformationDescriptor)
+        validateHeaders()
+        validateContent()
     }
 
-    private fun validateHeaders(id: String, nodeRefs: List<NodeRef>, nodesChecksum: String, targetMediaType: MediaType, parameters: MapParameters) {
+    private fun validateHeaders() {
         jmsTemplate.browse(queueRequest) { _, queueBrowser ->
             val messages = queueBrowser.enumeration.asIterator().asSequence().toList()
 
@@ -82,13 +84,14 @@ class TransformerSenderTest {
                           PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM to UTF8Buffer(nodesChecksum),
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE to UTF8Buffer(targetMediaType.mimeType),
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET to UTF8Buffer(targetMediaType.charset.name()),
-                          PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS to parameters.getAll())
+                          PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS to parameters.getAll(),
+                          PromenaJmsHeader.SEND_BACK_ATTEMPT to attempt)
             activeMQMessage.properties shouldNotContainKey PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun validateContent(transformationDescriptor: TransformationDescriptor) {
+    private fun validateContent() {
         try {
             jmsTemplate.receiveAndConvert(queueRequest) as TransformationDescriptor shouldBe transformationDescriptor
         } catch (e: Exception) {

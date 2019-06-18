@@ -3,7 +3,6 @@ package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
-import io.mockk.verify
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.Test
@@ -21,6 +20,7 @@ import pl.beone.promena.alfresco.module.client.messagebroker.GlobalPropertiesCon
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_ATTEMPT
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODE_REFS
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET
@@ -69,7 +69,7 @@ class TransformerResponseErrorFlowTest {
     }
 
     @Test
-    fun `should receive transformed data from response queue and persist it`() {
+    fun `should receive exception and throw it`() {
         val id = UUID.randomUUID().toString()
 
         every {
@@ -77,11 +77,8 @@ class TransformerResponseErrorFlowTest {
         } returns nodesChecksum
 
         every {
-            activeMQAlfrescoPromenaService.transformAsync(transformerId,
-                                                          nodeRefs,
-                                                          TEXT_PLAIN,
-                                                          parameters)
-        } returns Mono.just(listOf())
+            activeMQAlfrescoPromenaService.transformAsync(transformerId, nodeRefs, TEXT_PLAIN, parameters)
+        } returns Mono.error(exception)
 
         val transformation = reactiveTransformationManager.startTransformation(id)
         sendResponseErrorMessage(id)
@@ -90,20 +87,6 @@ class TransformerResponseErrorFlowTest {
             transformation.block(Duration.ofSeconds(2))
         }.apply {
             message shouldBe exception.message
-        }
-
-        verify(exactly = 0) {
-            activeMQAlfrescoPromenaService.transformAsync(transformerId,
-                                                          nodeRefs,
-                                                          TEXT_PLAIN,
-                                                          parameters)
-        }
-        Thread.sleep(500)
-        verify(exactly = 1) {
-            activeMQAlfrescoPromenaService.transformAsync(transformerId,
-                                                          nodeRefs,
-                                                          TEXT_PLAIN,
-                                                          parameters)
         }
     }
 
@@ -137,6 +120,7 @@ class TransformerResponseErrorFlowTest {
                 setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, TEXT_PLAIN.mimeType)
                 setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, TEXT_PLAIN.charset.toString())
                 setObjectProperty(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())
+                setObjectProperty(SEND_BACK_ATTEMPT, 0)
             }
         }
     }
