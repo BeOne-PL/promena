@@ -97,13 +97,13 @@ fun Logger.logOnRetry(attempt: Long,
                       parameters: Parameters,
                       nodeRefs: List<NodeRef>,
                       targetMediaType: MediaType) {
-    debug("Attempt ({}/{}). Transforming <{}> <{}> nodes <{}> to <{}>...",
-          attempt,
-          retryOnErrorMaxAttempts,
-          transformerId,
-          parameters,
-          nodeRefs,
-          targetMediaType)
+    warn("Attempt ({}/{}). Transforming <{}> <{}> nodes <{}> to <{}>...",
+         attempt,
+         retryOnErrorMaxAttempts,
+         transformerId,
+         parameters,
+         nodeRefs,
+         targetMediaType)
 }
 
 private fun calculateExecutionTimeInSeconds(millisStart: Long, millisEnd: Long): String =
