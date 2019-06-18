@@ -12,12 +12,13 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.T
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
-import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
+import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import reactor.core.publisher.Mono
 import java.time.Duration
 
 class ActiveMQAlfrescoPromenaServiceTest {
@@ -42,10 +43,8 @@ class ActiveMQAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns nodesChecksum
         }
 
-        val completedTransformationManager = mockk<CompletedTransformationManager> {
-            every { getTransformedNodeRefs(any(), duration) } returns resultNodeRefs
-
-            every { startTransformation(any()) } just Runs
+        val reactiveTransformationManager = mockk<ReactiveTransformationManager> {
+            every { startTransformation(any()) } returns Mono.just(resultNodeRefs)
         }
 
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
@@ -58,7 +57,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
 
         ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
                                        alfrescoDataDescriptorGetter,
-                                       completedTransformationManager,
+                                       reactiveTransformationManager,
                                        transformerSender)
                 .transform(transformerId, nodeRefs, targetMediaType, parameters, duration) shouldBe resultNodeRefs
     }
@@ -71,10 +70,8 @@ class ActiveMQAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns nodesChecksum
         }
 
-        val completedTransformationManager = mockk<CompletedTransformationManager> {
-            every { getTransformedNodeRefs(any(), duration) } returns resultNodeRefs
-
-            every { startTransformation(any()) } just Runs
+        val reactiveTransformationManager = mockk<ReactiveTransformationManager> {
+            every { startTransformation(any()) } returns Mono.just(resultNodeRefs)
         }
 
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
@@ -87,7 +84,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
 
         ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
                                        alfrescoDataDescriptorGetter,
-                                       completedTransformationManager,
+                                       reactiveTransformationManager,
                                        transformerSender)
                 .transform(transformerId, nodeRefs, targetMediaType, null, duration) shouldBe resultNodeRefs
     }
@@ -100,11 +97,9 @@ class ActiveMQAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns nodesChecksum
         }
 
-        val completedTransformationManager = mockk<CompletedTransformationManager> {
-            every { getTransformedNodeRefs(any(), null) } throws
-                    TransformationSynchronizationException(transformerId, nodeRefs, targetMediaType, parameters, null)
-
-            every { startTransformation(any()) } just Runs
+        val reactiveTransformationManager = mockk<ReactiveTransformationManager> {
+            every { startTransformation(any()) } returns
+                    Mono.error(TransformationSynchronizationException(transformerId, nodeRefs, targetMediaType, parameters, null))
         }
 
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
@@ -118,7 +113,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
         shouldThrow<TransformationSynchronizationException> {
             ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
                                            alfrescoDataDescriptorGetter,
-                                           completedTransformationManager,
+                                           reactiveTransformationManager,
                                            transformerSender)
                     .transform(transformerId, nodeRefs, targetMediaType, parameters, null)
         }
@@ -126,7 +121,9 @@ class ActiveMQAlfrescoPromenaServiceTest {
 
     @Test
     fun transformAsync() {
-        val completedTransformationManager = mockk<CompletedTransformationManager>()
+        val reactiveTransformationManager = mockk<ReactiveTransformationManager> {
+            every { startTransformation(any()) } returns Mono.just(resultNodeRefs)
+        }
 
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns nodesChecksum
@@ -142,7 +139,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
 
         ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
                                        alfrescoDataDescriptorGetter,
-                                       completedTransformationManager,
+                                       reactiveTransformationManager,
                                        transformerSender)
                 .transformAsync(transformerId, nodeRefs, targetMediaType, null)
     }

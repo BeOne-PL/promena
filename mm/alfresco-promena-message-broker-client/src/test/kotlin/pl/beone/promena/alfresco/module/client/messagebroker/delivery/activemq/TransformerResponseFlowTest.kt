@@ -28,7 +28,7 @@ import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.P
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.SetupContext
-import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
+import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
@@ -55,7 +55,7 @@ class TransformerResponseFlowTest {
     private lateinit var alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator
 
     @Autowired
-    private lateinit var completedTransformationManager: CompletedTransformationManager
+    private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
     @Autowired
     private lateinit var alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver
@@ -83,11 +83,10 @@ class TransformerResponseFlowTest {
             alfrescoTransformedDataDescriptorSaver.save(transformerId, nodeRefs, TEXT_PLAIN, transformedDataDescriptors)
         } returns listOf(resultNodeRef)
 
-        completedTransformationManager.startTransformation(id)
+        val transformation = reactiveTransformationManager.startTransformation(id)
         sendResponseMessage(id)
 
-        completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2)) shouldContainExactly
-                listOf(resultNodeRef)
+        transformation.block(Duration.ofSeconds(2)) shouldContainExactly listOf(resultNodeRef)
     }
 
     @Test
@@ -96,13 +95,13 @@ class TransformerResponseFlowTest {
 
         every {
             alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
-        } returns "not equals"
+        } returns "not equal"
 
-        completedTransformationManager.startTransformation(id)
+        val transformation = reactiveTransformationManager.startTransformation(id)
         sendResponseMessage(id)
 
         shouldThrow<AnotherTransformationIsInProgressException> {
-            completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2))
+            transformation.block(Duration.ofSeconds(2))
         }
     }
 

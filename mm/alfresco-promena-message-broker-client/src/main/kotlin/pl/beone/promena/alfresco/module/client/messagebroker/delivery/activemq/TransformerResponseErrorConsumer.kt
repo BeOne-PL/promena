@@ -19,13 +19,13 @@ import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.c
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.NodeRefsConverter
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.ParametersConverter
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
-import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
+import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import java.time.Duration
 
 class TransformerResponseErrorConsumer(private val tryAgain: Boolean,
                                        private val tryAgainDelay: Duration,
                                        private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-                                       private val completedTransformationManager: CompletedTransformationManager,
+                                       private val reactiveTransformationManager: ReactiveTransformationManager,
                                        private val activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService) {
 
     companion object {
@@ -46,27 +46,37 @@ class TransformerResponseErrorConsumer(private val tryAgain: Boolean,
                      @Header(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS) rawParameters: Map<String, Any>,
                      @Payload exception: Exception) {
         val nodeRefs = nodeRefsConverter.convert(rawNodeRefs)
-        val mediaType = mediaTypeConverter.convert(rawMimeType, rawCharset)
+        val targetMediaType = mediaTypeConverter.convert(rawMimeType, rawCharset)
         val parameters = parametersConverter.convert(rawParameters)
 
         val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
         if (nodesChecksum != currentNodesChecksum) {
-            completedTransformationManager.completeErrorTransformation(
-                    correlationId,
-                    AnotherTransformationIsInProgressException(transformerId, nodeRefs, mediaType, parameters, nodesChecksum, currentNodesChecksum)
-            )
+            reactiveTransformationManager.completeErrorTransformation(correlationId,
+                                                                      AnotherTransformationIsInProgressException(transformerId,
+                                                                                                                 nodeRefs,
+                                                                                                                 targetMediaType,
+                                                                                                                 parameters,
+                                                                                                                 nodesChecksum,
+                                                                                                                 currentNodesChecksum))
 
-            logger.warn("Couldn't transform <{}> <{}> nodes <{}> to <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress",
-                        correlationId,
+            logger.warn("Couldn't transform <{}> <{}> nodes <{}> to <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
                         transformerId,
-                        nodeRefs,
-                        mediaType,
                         parameters,
+                        nodeRefs,
+                        targetMediaType,
+                        nodesChecksum,
+                        currentNodesChecksum,
                         exception)
         } else {
-            completedTransformationManager.completeErrorTransformation(correlationId, exception)
+            reactiveTransformationManager.completeErrorTransformation(correlationId, exception)
 
-            logger.error("Couldn't transform <{}> <{}> nodes <{}> to <{}>", correlationId, transformerId, nodeRefs, mediaType, parameters, exception)
+            logger.error("Couldn't transform <{}> <{}> nodes <{}> to <{}>",
+                         correlationId,
+                         transformerId,
+                         nodeRefs,
+                         targetMediaType,
+                         parameters,
+                         exception)
 
             if (tryAgain) {
                 GlobalScope.launch {
@@ -76,10 +86,10 @@ class TransformerResponseErrorConsumer(private val tryAgain: Boolean,
                                 correlationId,
                                 transformerId,
                                 nodeRefs,
-                                mediaType,
+                                targetMediaType,
                                 parameters,
                                 exception)
-                    activeMQAlfrescoPromenaService.transformAsync(transformerId, nodeRefs, mediaType, parameters)
+                    activeMQAlfrescoPromenaService.transformAsync(transformerId, nodeRefs, targetMediaType, parameters)
                 }
             }
         }

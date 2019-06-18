@@ -7,7 +7,7 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescrip
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
-import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
+import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import java.util.*
 
 @Configuration
@@ -18,10 +18,10 @@ class ActiveMQAlfrescoPromenaServiceContext {
     fun activeMQAlfrescoPromenaService(@Qualifier("global-properties") properties: Properties,
                                        alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
                                        alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
-                                       completedTransformationManager: CompletedTransformationManager,
+                                       reactiveTransformationManager: ReactiveTransformationManager,
                                        transformerSender: TransformerSender) =
             ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
                                            alfrescoDataDescriptorGetter,
-                                           completedTransformationManager,
+                                           reactiveTransformationManager,
                                            transformerSender)
 }

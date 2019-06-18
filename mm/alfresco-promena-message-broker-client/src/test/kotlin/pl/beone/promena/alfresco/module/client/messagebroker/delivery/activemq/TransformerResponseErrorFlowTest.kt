@@ -2,9 +2,7 @@ package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.verify
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
@@ -31,9 +29,10 @@ import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.P
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
-import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
+import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import reactor.core.publisher.Mono
 import java.time.Duration
 import java.util.*
 
@@ -55,7 +54,7 @@ class TransformerResponseErrorFlowTest {
     private lateinit var alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator
 
     @Autowired
-    private lateinit var completedTransformationManager: CompletedTransformationManager
+    private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
     @Autowired
     private lateinit var activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService
@@ -82,15 +81,15 @@ class TransformerResponseErrorFlowTest {
                                                           nodeRefs,
                                                           TEXT_PLAIN,
                                                           parameters)
-        } just Runs
+        } returns Mono.just(listOf())
 
-        completedTransformationManager.startTransformation(id)
+        val transformation = reactiveTransformationManager.startTransformation(id)
         sendResponseErrorMessage(id)
 
         shouldThrow<RuntimeException> {
-            completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2))
+            transformation.block(Duration.ofSeconds(2))
         }.apply {
-            message shouldBe "Exception"
+            message shouldBe exception.message
         }
 
         verify(exactly = 0) {
@@ -116,11 +115,11 @@ class TransformerResponseErrorFlowTest {
             alfrescoNodesChecksumGenerator.generateChecksum(TransformerResponseFlowTest.nodeRefs)
         } returns "not equals"
 
-        completedTransformationManager.startTransformation(id)
+        val transformation = reactiveTransformationManager.startTransformation(id)
         sendResponseErrorMessage(id)
 
         shouldThrow<AnotherTransformationIsInProgressException> {
-            completedTransformationManager.getTransformedNodeRefs(id, Duration.ofSeconds(2))
+            transformation.block(Duration.ofSeconds(2))
         }
     }
 

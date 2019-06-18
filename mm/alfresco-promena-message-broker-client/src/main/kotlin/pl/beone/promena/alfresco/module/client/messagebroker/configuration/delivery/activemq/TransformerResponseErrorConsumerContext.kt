@@ -8,7 +8,7 @@ import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getRe
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.toDuration
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerResponseErrorConsumer
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
-import pl.beone.promena.alfresco.module.client.messagebroker.internal.CompletedTransformationManager
+import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import java.util.*
 
 @Configuration
@@ -17,11 +17,11 @@ class TransformerResponseErrorConsumerContext {
     @Bean
     fun transformerResponseErrorConsumer(@Qualifier("global-properties") properties: Properties,
                                          alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-                                         completedTransformationManager: CompletedTransformationManager,
+                                         reactiveTransformationManager: ReactiveTransformationManager,
                                          activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService): TransformerResponseErrorConsumer =
-            TransformerResponseErrorConsumer(properties.getRequiredPropertyWithResolvedPlaceholders("promena.transformation.error.tryAgain").toBoolean(),
-                                             properties.getRequiredPropertyWithResolvedPlaceholders("promena.transformation.error.delay").let { it.toDuration() },
+            TransformerResponseErrorConsumer(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.enabled").toBoolean(),
+                                             properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.nextAttemptDelay").toDuration(),
                                              alfrescoNodesChecksumGenerator,
-                                             completedTransformationManager,
+                                             reactiveTransformationManager,
                                              activeMQAlfrescoPromenaService)
 }
