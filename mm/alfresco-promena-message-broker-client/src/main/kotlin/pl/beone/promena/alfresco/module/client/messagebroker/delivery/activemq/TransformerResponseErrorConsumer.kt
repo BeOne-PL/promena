@@ -1,14 +1,13 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
+import pl.beone.promena.alfresco.module.client.base.common.couldNotTransform
+import pl.beone.promena.alfresco.module.client.base.common.couldNotTransformButChecksumsAreDifferent
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODE_REFS
@@ -22,8 +21,9 @@ import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAl
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import java.time.Duration
 
-class TransformerResponseErrorConsumer(private val tryAgain: Boolean,
-                                       private val tryAgainDelay: Duration,
+class TransformerResponseErrorConsumer(private val retryOnError: Boolean,
+                                       private val retryOnErrorMaxAttempts: Long,
+                                       private val retryOnErrorNextAttemptsDelay: Duration,
                                        private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
                                        private val reactiveTransformationManager: ReactiveTransformationManager,
                                        private val activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService) {
@@ -51,47 +51,35 @@ class TransformerResponseErrorConsumer(private val tryAgain: Boolean,
 
         val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
         if (nodesChecksum != currentNodesChecksum) {
-            reactiveTransformationManager.completeErrorTransformation(correlationId,
-                                                                      AnotherTransformationIsInProgressException(transformerId,
-                                                                                                                 nodeRefs,
-                                                                                                                 targetMediaType,
-                                                                                                                 parameters,
-                                                                                                                 nodesChecksum,
-                                                                                                                 currentNodesChecksum))
+            reactiveTransformationManager.completeErrorTransformation(
+                    correlationId,
+                    AnotherTransformationIsInProgressException(
+                            transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum
+                    )
+            )
 
-            logger.warn("Couldn't transform <{}> <{}> nodes <{}> to <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
-                        transformerId,
-                        parameters,
-                        nodeRefs,
-                        targetMediaType,
-                        nodesChecksum,
-                        currentNodesChecksum,
-                        exception)
+            logger.couldNotTransformButChecksumsAreDifferent(
+                    transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum, exception
+            )
         } else {
             reactiveTransformationManager.completeErrorTransformation(correlationId, exception)
 
-            logger.error("Couldn't transform <{}> <{}> nodes <{}> to <{}>",
-                         correlationId,
-                         transformerId,
-                         nodeRefs,
-                         targetMediaType,
-                         parameters,
-                         exception)
+            logger.couldNotTransform(transformerId, nodeRefs, targetMediaType, parameters, exception)
 
-            if (tryAgain) {
-                GlobalScope.launch {
-                    delay(tryAgainDelay.toMillis())
-
-                    logger.info("Trying to transform <{}> <{}> nodes <{}> to <{}>...",
-                                correlationId,
-                                transformerId,
-                                nodeRefs,
-                                targetMediaType,
-                                parameters,
-                                exception)
-                    activeMQAlfrescoPromenaService.transformAsync(transformerId, nodeRefs, targetMediaType, parameters)
-                }
-            }
+//            if (retryOnError) {
+//                GlobalScope.launch {
+//                    delay(tryAgainDelay.toMillis())
+//
+//                    logger.info("Trying to transform <{}> <{}> nodes <{}> to <{}>...",
+//                                correlationId,
+//                                transformerId,
+//                                nodeRefs,
+//                                targetMediaType,
+//                                parameters,
+//                                exception)
+//                    activeMQAlfrescoPromenaService.transformAsync(transformerId, nodeRefs, targetMediaType, parameters)
+//                }
+//            }
         }
     }
 

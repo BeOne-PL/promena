@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.NodesInconsistencyException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
+import pl.beone.promena.alfresco.module.client.base.common.*
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaService
@@ -29,6 +30,7 @@ import reactor.netty.http.client.HttpClientResponse
 import reactor.retry.Retry
 import reactor.retry.RetryExhaustedException
 import reactor.util.function.Tuple2
+import java.lang.System.currentTimeMillis
 import java.time.Duration
 
 class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
@@ -92,7 +94,7 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
                                   nodeRefs: List<NodeRef>,
                                   targetMediaType: MediaType,
                                   parameters: Parameters): Mono<List<NodeRef>> {
-        val millisStart = System.currentTimeMillis()
+        val startTimestamp = currentTimeMillis()
 
         val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
 
@@ -110,9 +112,11 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
                 .map { handleTransformationResult(it.t2, it.t1) }
                 .doOnNext { verifyConsistency(nodeRefs, nodesChecksum) }
                 .map { alfrescoTransformedDataDescriptorSaver.save(transformerId, nodeRefs, targetMediaType, it) }
-                .doOnNext { logger.transformedSuccessful(transformerId, nodeRefs, targetMediaType, parameters, it, millisStart) }
+                .doOnNext {
+                    logger.transformedSuccessfully(transformerId, nodeRefs, targetMediaType, parameters, it, startTimestamp, currentTimeMillis())
+                }
                 .doOnError { handleError(transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, it) }
-                .retryOnError()
+                .retryOnError(transformerId, parameters, nodeRefs, targetMediaType)
                 .onErrorMap { unwrapRetryExhaustedException(it) }
                 .cache() // to prevent making request many times - another subscribers will receive only list of node refs
     }
@@ -163,33 +167,24 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
                             nodesChecksum: String,
                             exception: Throwable) {
         if (exception is NodesInconsistencyException) {
-            logger.skippedSavingResult(transformerId, nodeRefs, targetMediaType, parameters, exception)
+            logger.skippedSavingResult(
+                    transformerId, nodeRefs, targetMediaType, parameters, exception.oldNodesChecksum, exception.currentNodesChecksum
+            )
 
-            throw AnotherTransformationIsInProgressException(transformerId,
-                                                             nodeRefs,
-                                                             targetMediaType,
-                                                             parameters,
-                                                             exception.oldNodesChecksum,
-                                                             exception.currentNodesChecksum)
-
+            throw AnotherTransformationIsInProgressException(
+                    transformerId, nodeRefs, targetMediaType, parameters, exception.oldNodesChecksum, exception.currentNodesChecksum
+            )
         }
 
         val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
         if (nodesChecksum != currentNodesChecksum) {
-            logger.couldNotTransformButChecksumsAreDifferent(transformerId,
-                                                             nodeRefs,
-                                                             targetMediaType,
-                                                             parameters,
-                                                             nodesChecksum,
-                                                             currentNodesChecksum,
-                                                             exception)
+            logger.couldNotTransformButChecksumsAreDifferent(
+                    transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum, exception
+            )
 
-            throw AnotherTransformationIsInProgressException(transformerId,
-                                                             nodeRefs,
-                                                             targetMediaType,
-                                                             parameters,
-                                                             nodesChecksum,
-                                                             currentNodesChecksum)
+            throw AnotherTransformationIsInProgressException(
+                    transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum
+            )
         } else {
             logger.couldNotTransform(transformerId, nodeRefs, targetMediaType, parameters, exception)
 
@@ -197,11 +192,17 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
         }
     }
 
-    private fun Mono<List<NodeRef>>.retryOnError(): Mono<List<NodeRef>> =
+    private fun Mono<List<NodeRef>>.retryOnError(transformerId: String,
+                                                 parameters: Parameters,
+                                                 nodeRefs: List<NodeRef>,
+                                                 targetMediaType: MediaType): Mono<List<NodeRef>> =
             if (retryOnError) {
                 retryWhen(Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
                                   .fixedBackoff(retryOnErrorNextAttemptsDelay)
-                                  .retryMax(retryOnErrorMaxAttempts))
+                                  .retryMax(retryOnErrorMaxAttempts)
+                                  .doOnRetry {
+                                      logger.logOnRetry(it.iteration(), retryOnErrorMaxAttempts, transformerId, parameters, nodeRefs, targetMediaType)
+                                  })
             } else {
                 this
             }

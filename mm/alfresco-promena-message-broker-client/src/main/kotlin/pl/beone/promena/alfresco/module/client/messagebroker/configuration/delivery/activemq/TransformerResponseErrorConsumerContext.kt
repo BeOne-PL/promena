@@ -20,6 +20,7 @@ class TransformerResponseErrorConsumerContext {
                                          reactiveTransformationManager: ReactiveTransformationManager,
                                          activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService): TransformerResponseErrorConsumer =
             TransformerResponseErrorConsumer(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.enabled").toBoolean(),
+                                             properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.maxAttempts").toLong(),
                                              properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.nextAttemptDelay").toDuration(),
                                              alfrescoNodesChecksumGenerator,
                                              reactiveTransformationManager,
