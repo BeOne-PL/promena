@@ -1,7 +1,7 @@
 package pl.beone.promena.transformer.internal.model.data
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
 import java.net.URI
@@ -21,30 +21,24 @@ class FileDataTest {
 
     @Test
     fun `init _ http scheme _ should throw UnsupportedOperationException`() {
-        assertThatThrownBy { FileData(URI("http://noMatter.com/")) }
-                .isExactlyInstanceOf(UnsupportedOperationException::class.java)
-                .hasMessage("Location URI <http://noMatter.com/> has <http> scheme but this implementation supports only <file> scheme")
+        shouldThrow<UnsupportedOperationException> { FileData(URI("http://noMatter.com/")) }
+                .message shouldBe "Location URI <http://noMatter.com/> has <http> scheme but this implementation supports only <file> scheme"
     }
 
     @Test
     fun getBytes() {
-        FileData(fileUri).let {
-            assertThat(it.getBytes()).isEqualTo("test".toByteArray())
-        }
+        FileData(fileUri).getBytes() shouldBe "test".toByteArray()
     }
 
     @Test
     fun `getBytes _ unreachable file _ should throw ResourceIsNotReachableException`() {
-        assertThatThrownBy { FileData(notReachableFileUri).getBytes() }
-                .isExactlyInstanceOf(DataAccessibilityException::class.java)
-                .hasMessage("File <file:/doesNotExist> doesn't exist")
+        shouldThrow<DataAccessibilityException> { FileData(notReachableFileUri).getBytes() }
+                .message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
 
     @Test
     fun getLocation() {
-        FileData(fileUri).let {
-            assertThat(it.getLocation()).isEqualTo(fileUri)
-        }
+        FileData(fileUri).getLocation() shouldBe fileUri
     }
 
     @Test
@@ -53,9 +47,8 @@ class FileDataTest {
     }
 
     @Test
-    fun `isAvailable should throw DataAccessibilityException`() {
-        assertThatThrownBy { FileData(notReachableFileUri).isAvailable() }
-                .isExactlyInstanceOf(DataAccessibilityException::class.java)
-                .hasMessage("File <file:/doesNotExist> doesn't exist")
+    fun `isAvailable _ should throw DataAccessibilityException`() {
+        shouldThrow<DataAccessibilityException> { FileData(notReachableFileUri).isAvailable() }
+                .message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
 }

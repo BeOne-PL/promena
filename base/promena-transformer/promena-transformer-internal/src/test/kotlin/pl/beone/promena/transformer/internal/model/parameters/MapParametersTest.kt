@@ -1,154 +1,141 @@
 package pl.beone.promena.transformer.internal.model.parameters
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.matchers.maps.shouldContainAll
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
 
 class MapParametersTest {
 
-    private val parameters = MapParameters(mapOf(
-            "int" to 3,
-            "long" to 10L,
-            "double" to 3.5,
-            "float" to 4.1f,
-            "boolean" to true,
-            "string" to "value",
+    companion object {
+        private val parameters = MapParameters(mapOf(
+                "int" to 3,
+                "long" to 10L,
+                "double" to 3.5,
+                "float" to 4.1f,
+                "boolean" to true,
+                "string" to "value",
 
-            "stringInt" to "3",
-            "stringLong" to "10",
-            "stringDouble" to "3.5",
-            "stringFloat" to "4.1",
-            "stringBoolean" to "true",
-            "stringBoolean2" to "false",
+                "stringInt" to "3",
+                "stringLong" to "10",
+                "stringDouble" to "3.5",
+                "stringFloat" to "4.1",
+                "stringBoolean" to "true",
+                "stringBoolean2" to "false",
 
-            "parameters" to MapParameters(mapOf("key" to "value")),
-            "mapParameters" to mapOf("mapKey" to "mapValue"),
+                "parameters" to MapParameters(mapOf("key" to "value")),
+                "mapParameters" to mapOf("mapKey" to "mapValue"),
 
-            "intList" to listOf(1, 2, 3),
-            "mixList" to listOf(1, "string", true),
-            "stringList" to listOf("1", "2", "3")
-    ))
+                "intList" to listOf(1, 2, 3),
+                "mixList" to listOf(1, "string", true),
+                "stringList" to listOf("1", "2", "3")
+        ))
+    }
 
     @Test
     fun empty() {
-        assertThat(MapParameters.empty().getAll()).hasSize(0)
+        MapParameters.empty().getAll() shouldBe emptyMap()
     }
 
     @Test
     fun get() {
-        assertThat(parameters.get("int")).isEqualTo(3)
-        assertThat(parameters.get("long")).isEqualTo(10L)
-        assertThat(parameters.get("double")).isEqualTo(3.5)
-        assertThat(parameters.get("float")).isEqualTo(4.1f)
-        assertThat(parameters.get("boolean")).isEqualTo(true)
-        assertThat(parameters.get("string")).isEqualTo("value")
+        parameters.get("int") shouldBe 3
+        parameters.get("long") shouldBe 10L
+        parameters.get("double") shouldBe 3.5
+        parameters.get("float") shouldBe 4.1f
+        parameters.get("boolean") shouldBe true
+        parameters.get("string") shouldBe "value"
 
-        assertThatThrownBy { parameters.get("absent") }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <absent> element")
+        shouldThrow<NoSuchElementException> { parameters.get("absent") }
+                .message shouldBe "There is no <absent> element"
     }
 
     @Test
     fun `get with class`() {
-        assertThat(parameters.get("int", Int::class.java)).isEqualTo(3)
-        assertThat(parameters.get("long", Long::class.java)).isEqualTo(10L)
-        assertThat(parameters.get("double", Double::class.java)).isEqualTo(3.5)
-        assertThat(parameters.get("float", Float::class.java)).isEqualTo(4.1f)
-        assertThat(parameters.get("boolean", Boolean::class.java)).isEqualTo(true)
-        assertThat(parameters.get("string", String::class.java)).isEqualTo("value")
+        parameters.get("int", Int::class.java) shouldBe 3
+        parameters.get("long", Long::class.java) shouldBe 10L
+        parameters.get("double", Double::class.java) shouldBe 3.5
+        parameters.get("float", Float::class.java) shouldBe 4.1f
+        parameters.get("boolean", Boolean::class.java) shouldBe true
+        parameters.get("string", String::class.java) shouldBe "value"
 
-        assertThat(parameters.get("stringInt", Int::class.java)).isEqualTo(3)
-        assertThat(parameters.get("stringLong", Long::class.java)).isEqualTo(10L)
-        assertThat(parameters.get("double", Double::class.java)).isEqualTo(3.5)
-        assertThat(parameters.get("stringFloat", Float::class.java)).isEqualTo(4.1f)
-        assertThat(parameters.get("stringBoolean", Boolean::class.java)).isEqualTo(true)
-        assertThat(parameters.get("stringBoolean2", Boolean::class.java)).isEqualTo(false)
+        parameters.get("stringInt", Int::class.java) shouldBe 3
+        parameters.get("stringLong", Long::class.java) shouldBe 10L
+        parameters.get("double", Double::class.java) shouldBe 3.5
+        parameters.get("stringFloat", Float::class.java) shouldBe 4.1f
+        parameters.get("stringBoolean", Boolean::class.java) shouldBe true
+        parameters.get("stringBoolean2", Boolean::class.java) shouldBe false
 
-        assertThat(parameters.get("int", Long::class.java)).isEqualTo(3L)
-        assertThat(parameters.get("stringInt", Int::class.java)).isEqualTo(3)
+        parameters.get("int", Long::class.java) shouldBe 3L
+        parameters.get("stringInt", Int::class.java) shouldBe 3
 
-        assertThatThrownBy { parameters.get("string", Boolean::class.java) }
-                .isExactlyInstanceOf(TypeConversionException::class.java)
-                .hasMessage("Couldn't convert <value> (java.lang.String) to <boolean>")
+        shouldThrow<TypeConversionException> { parameters.get("string", Boolean::class.java) }
+                .message shouldBe "Couldn't convert <value> (java.lang.String) to <boolean>"
 
-        assertThatThrownBy { parameters.get("stringBoolean", Long::class.java) }
-                .isExactlyInstanceOf(TypeConversionException::class.java)
-                .hasMessage("Couldn't convert <true> (java.lang.String) to <long>")
-        assertThatThrownBy { parameters.get("stringInt", IntRange::class.java) }
-                .isExactlyInstanceOf(TypeConversionException::class.java)
-                .hasMessage("Converting from <java.lang.String> to <kotlin.ranges.IntRange> isn't supported")
+        shouldThrow<TypeConversionException> { parameters.get("stringBoolean", Long::class.java) }
+                .message shouldBe "Couldn't convert <true> (java.lang.String) to <long>"
+        shouldThrow<TypeConversionException> { parameters.get("stringInt", IntRange::class.java) }
+                .message shouldBe "Converting from <java.lang.String> to <kotlin.ranges.IntRange> isn't supported"
 
-        assertThatThrownBy { parameters.get("absent", String::class.java) }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <absent> element")
+        shouldThrow<NoSuchElementException> { parameters.get("absent", String::class.java) }
+                .message shouldBe "There is no <absent> element"
     }
 
     @Test
     fun getTimeout() {
-        assertThat(MapParameters(mapOf("timeout" to 5000)).getTimeout())
-                .isEqualTo(5000)
+        MapParameters(mapOf("timeout" to 5000)).getTimeout() shouldBe 5000
 
-        assertThatThrownBy { MapParameters.empty().getTimeout() }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <timeout> element")
+        shouldThrow<NoSuchElementException> { MapParameters.empty().getTimeout() }
+                .message shouldBe "There is no <timeout> element"
     }
 
     @Test
     fun getParameters() {
-        assertThat(parameters.getParameters("parameters")).isEqualTo(MapParameters(mapOf("key" to "value")))
+        parameters.getParameters("parameters") shouldBe MapParameters(mapOf("key" to "value"))
 
-        assertThatThrownBy { parameters.getParameters("stringBoolean") }
-                .isExactlyInstanceOf(TypeConversionException::class.java)
-                .hasMessage("Converting from <java.lang.String> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported")
-        assertThatThrownBy { parameters.getParameters("mapParameters") }
-                .isExactlyInstanceOf(TypeConversionException::class.java)
-                .hasMessage("Converting from <java.util.Collections\$SingletonMap> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported")
+        shouldThrow<TypeConversionException> { parameters.getParameters("stringBoolean") }
+                .message shouldBe "Converting from <java.lang.String> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported"
+        shouldThrow<TypeConversionException> { parameters.getParameters("mapParameters") }
+                .message shouldBe "Converting from <java.util.Collections\$SingletonMap> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported"
 
-        assertThatThrownBy { parameters.getParameters("absent") }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <absent> element")
+        shouldThrow<NoSuchElementException> { parameters.getParameters("absent") }
+                .message shouldBe "There is no <absent> element"
     }
 
     @Test
     fun getList() {
-        assertThat(parameters.getList("intList")).isEqualTo(listOf(1, 2, 3))
-        assertThat(parameters.getList("mixList")).isEqualTo(listOf(1, "string", true))
-        assertThat(parameters.getList("stringList")).isEqualTo(listOf("1", "2", "3"))
+        parameters.getList("intList") shouldBe listOf(1, 2, 3)
+        parameters.getList("mixList") shouldBe listOf(1, "string", true)
+        parameters.getList("stringList") shouldBe listOf("1", "2", "3")
 
-        assertThatThrownBy { parameters.getList("stringBoolean") }
-                .isExactlyInstanceOf(TypeConversionException::class.java)
-                .hasMessage("Converting from <java.lang.String> to <java.util.List> isn't supported")
+        shouldThrow<TypeConversionException> { parameters.getList("stringBoolean") }
+                .message shouldBe "Converting from <java.lang.String> to <java.util.List> isn't supported"
 
-        assertThatThrownBy { parameters.getList("absent") }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <absent> element")
+        shouldThrow<NoSuchElementException> { parameters.getList("absent") }
+                .message shouldBe "There is no <absent> element"
     }
 
     @Test
     fun `getList with class`() {
-        assertThat(parameters.getList("intList", Int::class.java)).isEqualTo(listOf(1, 2, 3))
-        assertThat(parameters.getList("stringList", String::class.java)).isEqualTo(listOf("1", "2", "3"))
-        assertThat(parameters.getList("stringList", Long::class.java)).isEqualTo(listOf(1L, 2L, 3L))
+        parameters.getList("intList", Int::class.java) shouldBe listOf(1, 2, 3)
+        parameters.getList("stringList", String::class.java) shouldBe listOf("1", "2", "3")
+        parameters.getList("stringList", Long::class.java) shouldBe listOf(1L, 2L, 3L)
 
-        assertThatThrownBy { parameters.getList("mixList", Int::class.java) }
-                .isExactlyInstanceOf(TypeConversionException::class.java)
-                .hasMessage("Couldn't convert <[1, string, true]> to List<int>")
+        shouldThrow<TypeConversionException> { parameters.getList("mixList", Int::class.java) }
+                .message shouldBe "Couldn't convert <[1, string, true]> to List<int>"
 
-        assertThatThrownBy { parameters.getList("absent") }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <absent> element")
+        shouldThrow<NoSuchElementException> { parameters.getList("absent") }
+                .message shouldBe "There is no <absent> element"
     }
 
     @Test
     fun getAll() {
-        assertThat(parameters.getAll())
-                .hasSize(17)
-                .containsEntry("int", 3)
-                .containsEntry("int", 3)
-                .containsEntry("boolean", true)
-                .containsEntry("stringFloat", "4.1")
-                .containsEntry("parameters", MapParameters(mapOf("key" to "value")))
-                .containsEntry("mixList", listOf(1, "string", true))
+        parameters.getAll().size shouldBe 17
+        parameters.getAll() shouldContainAll mapOf("int" to 3,
+                                                   "boolean" to true,
+                                                   "stringFloat" to "4.1",
+                                                   "parameters" to MapParameters(mapOf("key" to "value")),
+                                                   "mixList" to listOf(1, "string", true))
     }
 }

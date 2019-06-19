@@ -1,6 +1,7 @@
 package pl.beone.promena.transformer.internal.model.metadata
 
-import org.assertj.core.api.Assertions.assertThat
+import io.kotlintest.matchers.maps.shouldContainAll
+import io.kotlintest.shouldBe
 import org.junit.Test
 
 class MapMetadataTest {
@@ -20,44 +21,43 @@ class MapMetadataTest {
 
     @Test
     fun empty() {
-        assertThat(MapMetadata.empty().getAll()).hasSize(0)
+        MapMetadata.empty().getAll().size shouldBe 0
     }
 
     @Test
     fun get() {
-        assertThat(metadata.get("int")).isEqualTo(3)
-        assertThat(metadata.get("string")).isEqualTo("value")
+        metadata.get("int") shouldBe 3
+        metadata.get("string") shouldBe "value"
     }
 
     @Test
     fun `get with class`() {
-        assertThat(metadata.get("int", Int::class.java)).isEqualTo(3)
-        assertThat(metadata.get("string", String::class.java)).isEqualTo("value")
+        metadata.get("int", Int::class.java) shouldBe 3
+        metadata.get("string", String::class.java) shouldBe "value"
 
-        assertThat(metadata.get("stringInt", Int::class.java)).isEqualTo(3)
+        metadata.get("stringInt", Int::class.java) shouldBe 3
     }
 
     @Test
     fun getMetadata() {
-        assertThat(metadata.getMetadata("metadata")).isEqualTo(MapMetadata(mapOf("key" to "value")))
+        metadata.getMetadata("metadata") shouldBe MapMetadata(mapOf("key" to "value"))
     }
 
     @Test
     fun getList() {
-        assertThat(metadata.getList("intList")).isEqualTo(listOf(1, 2, 3))
+        metadata.getList("intList") shouldBe listOf(1, 2, 3)
     }
 
     @Test
     fun `getList with class`() {
-        assertThat(metadata.getList("intList", Int::class.java)).isEqualTo(listOf(1, 2, 3))
-        assertThat(metadata.getList("stringList", Long::class.java)).isEqualTo(listOf(1L, 2L, 3L))
+        metadata.getList("intList", Int::class.java) shouldBe listOf(1, 2, 3)
+        metadata.getList("stringList", Long::class.java) shouldBe listOf(1L, 2L, 3L)
     }
 
     @Test
     fun getAll() {
-        assertThat(metadata.getAll())
-                .hasSize(7)
-                .containsEntry("int", 3)
-                .containsEntry("metadata", MapMetadata(mapOf("key" to "value")))
+        metadata.getAll().size shouldBe 7
+        metadata.getAll() shouldContainAll mapOf("int" to 3,
+                                                 "metadata" to MapMetadata(mapOf("key" to "value")))
     }
 }

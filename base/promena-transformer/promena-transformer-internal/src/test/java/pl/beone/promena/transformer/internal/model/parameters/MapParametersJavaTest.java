@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MapParametersJavaTest {
 
-    private Parameters parameters = new MapParameters(new HashMap<String, Object>() {{
+    private static Parameters parameters = new MapParameters(new HashMap<>() {{
         put("int", 3);
         put("long", 10L);
         put("double", 3.5);
@@ -29,7 +29,7 @@ public class MapParametersJavaTest {
         put("stringBoolean", "true");
         put("stringBoolean2", "false");
 
-        put("parameters", new MapParameters(new HashMap<String, Object>() {{
+        put("parameters", new MapParameters(new HashMap<>() {{
             put("key", "value");
         }}));
         put("mapParameters", new HashMap<String, Object>() {{
@@ -43,6 +43,8 @@ public class MapParametersJavaTest {
 
     @Test
     public void get() {
+//        Map.of()
+
         assertThat(parameters.get("int")).isEqualTo(3);
         assertThat(parameters.get("long")).isEqualTo(10L);
         assertThat(parameters.get("double")).isEqualTo(3.5);
@@ -93,7 +95,7 @@ public class MapParametersJavaTest {
     @Test
     public void getParameters() {
         assertThat(parameters.getParameters("parameters"))
-                .isEqualTo(new MapParameters(new HashMap<String, Object>() {{
+                .isEqualTo(new MapParameters(new HashMap<>() {{
                     put("key", "value");
                 }}));
 

@@ -1,7 +1,8 @@
 package pl.beone.promena.transformer.internal.model.data
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotThrowAny
+import io.kotlintest.shouldThrow
 import org.junit.Test
 
 class InMemoryDataTest {
@@ -12,27 +13,22 @@ class InMemoryDataTest {
 
     @Test
     fun getBytes() {
-        InMemoryData(bytes).let {
-            assertThat(it.getBytes()).isEqualTo(bytes)
-        }
+        InMemoryData(bytes).getBytes() shouldBe bytes
     }
 
     @Test
-    fun `getLocation should throw UnsupportedOperationException`() {
-        InMemoryData(bytes).let {
-            assertThatThrownBy { it.getLocation() }
-                    .isExactlyInstanceOf(UnsupportedOperationException::class.java)
-                    .hasMessage("This resource exists only in memory")
-        }
+    fun `getLocation _ should throw UnsupportedOperationException`() {
+        shouldThrow<UnsupportedOperationException> { InMemoryData(bytes).getLocation() }
+                .message shouldBe "This resource exists only in memory"
     }
 
     @Test
     fun isAvailable() {
-        InMemoryData(bytes).isAvailable()
+        shouldNotThrowAny { InMemoryData(bytes).isAvailable() }
     }
 
     @Test
     fun equals() {
-        assertThat(InMemoryData(bytes) == InMemoryData("test".toByteArray())).isTrue()
+        InMemoryData(bytes) shouldBe InMemoryData("test".toByteArray())
     }
 }
