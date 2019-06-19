@@ -4,9 +4,11 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
-import com.nhaarman.mockitokotlin2.*
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.matchers.string.shouldContain
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -22,9 +24,20 @@ import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
+import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import java.io.PrintWriter
+import java.io.StringWriter
+
 
 class AkkaTransformerServiceTest {
+
+    companion object {
+        private const val transformerId = "mock"
+        private const val emptyTransformerId = "empty"
+        private val bytes = "test".toByteArray()
+        private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
+    }
 
     private lateinit var actorSystem: ActorSystem
 
@@ -40,151 +53,160 @@ class AkkaTransformerServiceTest {
 
     @Test
     fun transform() {
-        val metadata = mock<Metadata>()
+        val mediaType = MediaTypeConstants.TEXT_PLAIN
+        val metadata = mockk<Metadata>()
 
-        val data = mock<Data> { on { getBytes() } doReturn "test".toByteArray() }
-        val data2 = mock<Data> { on { getBytes() } doReturn "test".toByteArray() }
+        val data = mockk<Data> {
+            every { getBytes() } returns bytes
+        }
+        val data2 = mockk<Data> {
+            every { getBytes() } returns bytes
+        }
 
-        val dataDescriptors = listOf(DataDescriptor(data, MediaTypeConstants.TEXT_PLAIN),
-                                     DataDescriptor(data2, MediaTypeConstants.TEXT_PLAIN))
+        val dataDescriptors = listOf(DataDescriptor(data, mediaType),
+                                     DataDescriptor(data2, mediaType))
 
         val transformedDataDescriptor = TransformedDataDescriptor(data, metadata)
         val transformedDataDescriptor2 = TransformedDataDescriptor(data2, metadata)
 
-        val transformer = mock<Transformer> {
-            on { transform(dataDescriptors, MediaTypeConstants.APPLICATION_PDF, MapParameters.empty()) } doReturn
-                    listOf(TransformedDataDescriptor(data, metadata), TransformedDataDescriptor(data2, metadata))
-            on { canTransform(any(), any(), any()) } doReturn true
+        val transformer = mockk<Transformer> {
+            every { transform(dataDescriptors, targetMediaType, MapParameters.empty()) } returns listOf(transformedDataDescriptor,
+                                                                                                        transformedDataDescriptor2)
+            every { canTransform(any(), any(), any()) } returns true
         }
 
-        val internalCommunicationConverter =
-                mock<InternalCommunicationConverter> {
-                    on { convert(eq(transformedDataDescriptor)) } doReturn transformedDataDescriptor
-                    on { convert(eq(transformedDataDescriptor2)) } doReturn transformedDataDescriptor2
-                }
+        val internalCommunicationConverter = mockk<InternalCommunicationConverter> {
+            every { convert(eq(transformedDataDescriptor)) } returns transformedDataDescriptor
+            every { convert(eq(transformedDataDescriptor2)) } returns transformedDataDescriptor2
+        }
 
         val transformerService = prepare(transformer, internalCommunicationConverter)
 
-        val transformedDataDescriptors = transformerService.transform("mock",
+        val transformedDataDescriptors = transformerService.transform(transformerId,
                                                                       dataDescriptors,
-                                                                      MediaTypeConstants.APPLICATION_PDF,
+                                                                      targetMediaType,
                                                                       MapParameters.empty())
 
         transformedDataDescriptors.zip(dataDescriptors).forEach { (transformedDataDescriptor, dataDescriptor) ->
-            assertThat(transformedDataDescriptor.data).isEqualTo(dataDescriptor.data)
-            assertThat(transformedDataDescriptor.metadata).isEqualTo(metadata)
+            transformedDataDescriptor.data shouldBe dataDescriptor.data
+            transformedDataDescriptor.metadata shouldBe metadata
         }
     }
 
     @Test
     fun `transform _ transformers with not suitable parameters _ should throw TransformerNotFoundException`() {
-        val transformerService = prepare(mock {
-            on { canTransform(any(), eq(MediaTypeConstants.APPLICATION_PDF), any()) } doReturn true
-            on { canTransform(any(), any(), any()) } doReturn false
-        }, mock())
+        val transformerService = prepare(mockk {
+            every { canTransform(any(), targetMediaType, any()) } returns true
+            every { canTransform(any(), any(), any()) } returns false
+        }, mockk())
 
-        assertThatThrownBy {
-            transformerService.transform("mock",
-                                         listOf(DataDescriptor(mock { on { getBytes() } doReturn "test".toByteArray() },
-                                                               MediaTypeConstants.TEXT_PLAIN)),
-                                         MediaTypeConstants.APPLICATION_PDF,
-                                         mock {
-                                             on { getTimeout() } doThrow NoSuchElementException("")
-                                             on { toString() } doReturn "MapParameters(parameters={})"
-                                         })
-        }
-                .isExactlyInstanceOf(TransformerNotFoundException::class.java)
-                .hasMessage("Couldn't transform because there is no suitable transformer | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <1 source(s)>: [<MediaType(mimeType=text/plain, charset=UTF-8)>]")
-                .hasStackTraceContaining("There is no transformer that can process it. There following <1> transformers are available:")
-                .hasStackTraceContaining("pl.beone.promena.transformer.contract.Transformer")
+        val dataDescriptors = listOf(DataDescriptor(mockk { every { getBytes() } returns bytes },
+                                                    MediaTypeConstants.TEXT_PLAIN))
 
-        assertThatThrownBy {
-            transformerService.transform("mock",
-                                         emptyList(),
-                                         MediaTypeConstants.TEXT_PLAIN,
-                                         mock {
-                                             on { getTimeout() } doThrow NoSuchElementException("")
-                                             on { toString() } doReturn "MapParameters(parameters={})"
-                                         })
+        val parameters = mockk<Parameters> {
+            every { getTimeout() } throws NoSuchElementException("")
+            every { toString() } returns "MapParameters(parameters={})"
         }
-                .isExactlyInstanceOf(TransformerNotFoundException::class.java)
-                .hasMessage("Couldn't transform because there is no suitable transformer | <mock> <MediaType(mimeType=text/plain, charset=UTF-8), {}> <0 source(s)>: []")
-                .hasStackTraceContaining("There is no transformer that can process it. There following <1> transformers are available:")
-                .hasStackTraceContaining("pl.beone.promena.transformer.contract.Transformer")
+
+        shouldThrow<TransformerNotFoundException> {
+            transformerService.transform(transformerId, dataDescriptors, targetMediaType, parameters)
+        }.apply {
+            this.message shouldBe "Couldn't transform because there is no suitable transformer | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <1 source(s)>: [<MediaType(mimeType=text/plain, charset=UTF-8)>]"
+            this.getStringStackTrace() shouldContain "There is no transformer that can process it. There following <1> transformers are available:"
+            this.getStringStackTrace() shouldContain "pl.beone.promena.transformer.contract.Transformer"
+        }
+
+        shouldThrow<TransformerNotFoundException> {
+            transformerService.transform(transformerId, emptyList(), MediaTypeConstants.TEXT_PLAIN, parameters)
+        }.apply {
+            this.message shouldBe "Couldn't transform because there is no suitable transformer | <mock> <MediaType(mimeType=text/plain, charset=UTF-8), {}> <0 source(s)>: []"
+            this.getStringStackTrace() shouldContain "There is no transformer that can process it. There following <1> transformers are available:"
+            this.getStringStackTrace() shouldContain "pl.beone.promena.transformer.contract.Transformer"
+        }
     }
 
     @Test
     fun `transform _ error during transformation _ should throw TransformerException`() {
-        val akkaTransformerService = prepare(mock {
-            on { transform(any(), any(), any()) } doThrow RuntimeException("Mock extension")
-            on { canTransform(any(), any(), any()) } doReturn true
-        }, mock())
+        val akkaTransformerService = prepare(mockk {
+            every { transform(any(), any(), any()) } throws RuntimeException("Mock extension")
+            every { canTransform(any(), any(), any()) } returns true
+        }, mockk())
 
-        assertThatThrownBy {
-            akkaTransformerService.transform("mock",
-                                             emptyList(),
-                                             MediaTypeConstants.APPLICATION_PDF,
-                                             mock { on { getTimeout() } doThrow NoSuchElementException("") })
+        val parameters = mockk<Parameters> {
+            every { getTimeout() } throws NoSuchElementException("")
         }
-                .isExactlyInstanceOf(TransformerException::class.java)
-                .hasMessage("Couldn't transform because an error occurred | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <0 source(s)>: []")
-                .hasStackTraceContaining("RuntimeException")
-                .hasStackTraceContaining("Mock extension")
+
+        shouldThrow<TransformerException> {
+            akkaTransformerService.transform(transformerId, emptyList(), targetMediaType, parameters)
+        }.apply {
+            this.message shouldBe "Couldn't transform because an error occurred | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <0 source(s)>: []"
+            this.getStringStackTrace() shouldContain "RuntimeException"
+            this.getStringStackTrace() shouldContain "Mock extension"
+        }
     }
 
     @Test
     fun `transform _ timeout during transformation _ should throw TransformerTimeoutException`() {
-        val akkaTransformerService = prepare(mock {
-            on { transform(any(), any(), any()) } doThrow TransformerTimeoutException("Time expired")
-            on { canTransform(any(), any(), any()) } doReturn true
-        }, mock())
+        val akkaTransformerService = prepare(mockk {
+            every { transform(any(), any(), any()) } throws TransformerTimeoutException("Time expired")
+            every { canTransform(any(), any(), any()) } returns true
+        }, mockk())
 
-        assertThatThrownBy {
-            akkaTransformerService.transform("mock",
-                                             emptyList(),
-                                             MediaTypeConstants.APPLICATION_PDF,
-                                             mock { on { getTimeout() } doThrow NoSuchElementException("") })
+        val parameters = mockk<Parameters> {
+            every { getTimeout() } throws NoSuchElementException("")
         }
-                .isExactlyInstanceOf(TransformerTimeoutException::class.java)
-                .hasMessage("Couldn't transform because transformation time <21474835000> has expired | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <0 source(s)>: []")
-                .hasStackTraceContaining("Time expired")
+
+        shouldThrow<TransformerTimeoutException> {
+            akkaTransformerService.transform(transformerId, emptyList(), targetMediaType, parameters)
+        }.apply {
+            this.message shouldBe "Couldn't transform because transformation time <21474835000> has expired | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <0 source(s)>: []"
+            this.getStringStackTrace() shouldContain "Time expired"
+        }
     }
 
     @Test
     fun `transform _ timeout on Akka level _ should throw TransformerTimeoutException`() {
-        val akkaTransformerService = prepare(mock {
-            on { transform(any(), any(), any()) } doAnswer {
+        val akkaTransformerService = prepare(mockk {
+            every { transform(any(), any(), any()) } answers {
                 Thread.sleep(2000)
                 emptyList()
             }
-            on { canTransform(any(), any(), any()) } doReturn true
-        }, mock())
+            every { canTransform(any(), any(), any()) } returns true
+        }, mockk())
 
-        assertThatThrownBy {
-            akkaTransformerService.transform("mock",
-                                             emptyList(),
-                                             MediaTypeConstants.APPLICATION_PDF,
-                                             mock { on { getTimeout() } doReturn 100 })
+        val parameters = mockk<Parameters> {
+            every { getTimeout() } returns 100
         }
-                .isExactlyInstanceOf(TransformerTimeoutException::class.java)
-                .hasMessage("Couldn't transform because transformation time <100> has expired | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <0 source(s)>: []")
+
+        shouldThrow<TransformerTimeoutException> {
+            akkaTransformerService.transform(transformerId, emptyList(), targetMediaType, parameters)
+        }.apply {
+            this.message shouldBe "Couldn't transform because transformation time <100> has expired | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), {}> <0 source(s)>: []"
+        }
     }
 
     private fun prepare(transformer: Transformer, internalCommunicationConverter: InternalCommunicationConverter): AkkaTransformerService {
         val actorMaterializer = ActorMaterializer.create(actorSystem)
 
         val mirrorTransformerActorRef = actorSystem.actorOf(
-                Props.create(TransformerActor::class.java, listOf(transformer), internalCommunicationConverter), "mock"
+                Props.create(TransformerActor::class.java, listOf(transformer), internalCommunicationConverter), transformerId
         )
         val emptyTransformerActorRef = actorSystem.actorOf(
-                Props.create(TransformerActor::class.java, emptyList<Transformer>(), internalCommunicationConverter), "empty"
+                Props.create(TransformerActor::class.java, emptyList<Transformer>(), internalCommunicationConverter), emptyTransformerId
         )
 
-        val actorService = mock<ActorService> {
-            on { getTransformationActor("mock") } doReturn mirrorTransformerActorRef
-            on { getTransformationActor("empty") } doReturn emptyTransformerActorRef
+        val actorService = mockk<ActorService> {
+            every { getTransformationActor(transformerId) } returns mirrorTransformerActorRef
+            every { getTransformationActor(emptyTransformerId) } returns emptyTransformerActorRef
         }
 
         return AkkaTransformerService(actorMaterializer, actorService)
     }
+}
+
+private fun Exception.getStringStackTrace(): String {
+    val sw = StringWriter()
+    val pw = PrintWriter(sw)
+    this.printStackTrace(pw)
+    return sw.toString()
 }

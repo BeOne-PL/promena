@@ -1,9 +1,8 @@
 package pl.beone.promena.communication.file.internal
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import org.assertj.core.api.Assertions.assertThat
+import io.kotlintest.shouldBe
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
@@ -16,13 +15,13 @@ class FileInternalCommunicationConverterTest {
     fun `convert _ not FileData implementation _ should save in file`() {
         val converter = FileInternalCommunicationConverter(createTempDir().toURI())
 
-        val data = mock<Data> {
-            on { getLocation() } doThrow UnsupportedOperationException()
-            on { getBytes() } doReturn "test".toByteArray()
+        val data = mockk<Data> {
+            every { getLocation() } throws UnsupportedOperationException()
+            every { getBytes() } returns "test".toByteArray()
         }
 
         converter.convert(TransformedDataDescriptor(data, MapMetadata.empty())).let {
-            assertThat(it.data.getBytes()).isEqualTo("test".toByteArray())
+            it.data.getBytes() shouldBe "test".toByteArray()
             it.data.getLocation()
         }
     }
@@ -31,13 +30,13 @@ class FileInternalCommunicationConverterTest {
     fun `convert _ data location scheme is different _ should save in file`() {
         val converter = FileInternalCommunicationConverter(createTempDir().toURI())
 
-        val data = mock<Data> {
-            on { getLocation() } doReturn  URI("http://noMatter.com")
-            on { getBytes() } doReturn "test".toByteArray()
+        val data = mockk<Data> {
+            every { getLocation() } returns URI("http://noMatter.com")
+            every { getBytes() } returns "test".toByteArray()
         }
 
         converter.convert(TransformedDataDescriptor(data, MapMetadata.empty())).let {
-            assertThat(it.data.getBytes()).isEqualTo("test".toByteArray())
+            it.data.getBytes() shouldBe "test".toByteArray()
             it.data.getLocation()
         }
     }

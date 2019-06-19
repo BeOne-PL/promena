@@ -1,115 +1,116 @@
 package pl.beone.promena.communication.file.internal
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotThrowAny
+import io.kotlintest.shouldThrow
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationValidationException
 import pl.beone.promena.core.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
+import pl.beone.promena.transformer.contract.model.Data
 import java.net.URI
 
 class FileCommunicationValidatorTest {
 
-    companion object {
-        private val validator = FileCommunicationValidatorConverter()
-    }
-
     @Test
     fun validate() {
-        val communicationParameters = mock<CommunicationParameters> {
-            on { getLocation() } doReturn createTempDir().toURI()
+        val dataDescriptor = DataDescriptor(mockk {
+            every { getLocation() } returns URI("file:/tmp")
+        }, MediaTypeConstants.TEXT_PLAIN)
+        val dataDescriptor2 = DataDescriptor(mockk {
+            every { getLocation() } returns URI("file:/tmp")
+        }, MediaTypeConstants.TEXT_PLAIN)
+
+        val communicationParameters = mockk<CommunicationParameters> {
+            every { getLocation() } returns createTempDir().toURI()
         }
 
-        val dataDescriptor = DataDescriptor(mock { on { getLocation() } doReturn URI("file:/tmp") }, MediaTypeConstants.TEXT_PLAIN)
-        val dataDescriptor2 = DataDescriptor(mock { on { getLocation() } doReturn URI("file:/tmp") }, MediaTypeConstants.TEXT_PLAIN)
-
-        validator.validate(listOf(dataDescriptor, dataDescriptor2),
-                           communicationParameters)
+        shouldNotThrowAny {
+            FileCommunicationValidatorConverter().validate(listOf(dataDescriptor, dataDescriptor2), communicationParameters)
+        }
     }
 
     @Test
     fun `validate _ communication parameters without location _ should throw CommunicationValidationException`() {
-        val communicationParameters = mock<CommunicationParameters> {
-            on { getLocation() } doThrow NoSuchElementException()
+        val data = mockk<Data>()
+        val communicationParameters = mockk<CommunicationParameters> {
+            every { getLocation() } throws NoSuchElementException()
         }
 
-        assertThatThrownBy {
-            validator.validate(listOf(DataDescriptor(mock(), MediaTypeConstants.TEXT_PLAIN)),
-                               communicationParameters)
-        }
-                .isExactlyInstanceOf(CommunicationValidationException::class.java)
-                .hasMessage("Communication parameters doesn't contain <location>")
+        shouldThrow<CommunicationValidationException> {
+            FileCommunicationValidatorConverter().validate(listOf(DataDescriptor(data, MediaTypeConstants.TEXT_PLAIN)), communicationParameters)
+        }.message shouldBe "Communication parameters doesn't contain <location>"
     }
 
     @Test
     fun `validate _ communication parameters location hasn't file scheme _ should throw CommunicationValidationException`() {
-        val communicationParameters = mock<CommunicationParameters> {
-            on { getLocation() } doReturn URI("http://noMatter.com")
+        val data = mockk<Data>()
+
+        val communicationParameters = mockk<CommunicationParameters> {
+            every { getLocation() } returns URI("http://noMatter.com")
         }
 
-        assertThatThrownBy {
-            validator.validate(listOf(DataDescriptor(mock(), MediaTypeConstants.TEXT_PLAIN)),
-                               communicationParameters)
-        }
-                .isExactlyInstanceOf(CommunicationValidationException::class.java)
-                .hasMessage("Communication location <http://noMatter.com> isn't reachable")
+        shouldThrow<CommunicationValidationException> {
+            FileCommunicationValidatorConverter().validate(listOf(DataDescriptor(data, MediaTypeConstants.TEXT_PLAIN)), communicationParameters)
+        }.message shouldBe "Communication location <http://noMatter.com> isn't reachable"
     }
 
     @Test
     fun `validate _ data exists only in memory _ should throw CommunicationValidationException`() {
-        val communicationParameters = mock<CommunicationParameters> {
-            on { getLocation() } doReturn createTempDir().toURI()
+        val dataDescriptor = DataDescriptor(mockk {
+            every { getLocation() } returns URI("file:/tmp")
+        }, MediaTypeConstants.TEXT_PLAIN)
+        val dataDescriptor2 = DataDescriptor(mockk {
+            every { getLocation() } throws UnsupportedOperationException()
+        }, MediaTypeConstants.TEXT_PLAIN)
+
+        val communicationParameters = mockk<CommunicationParameters> {
+            every { getLocation() } returns createTempDir().toURI()
         }
 
-        val dataDescriptor = DataDescriptor(mock { on { getLocation() } doReturn URI("file:/tmp") }, MediaTypeConstants.TEXT_PLAIN)
-        val dataDescriptor2 = DataDescriptor(mock { on { getLocation() } doThrow UnsupportedOperationException() }, MediaTypeConstants.TEXT_PLAIN)
-
-        assertThatThrownBy {
-            validator.validate(listOf(dataDescriptor, dataDescriptor2),
-                               communicationParameters)
-        }
-                .isExactlyInstanceOf(CommunicationValidationException::class.java)
-                .hasMessage("One of data exists only in memory but should be file")
+        shouldThrow<CommunicationValidationException> {
+            FileCommunicationValidatorConverter().validate(listOf(dataDescriptor, dataDescriptor2), communicationParameters)
+        }.message shouldBe "One of data exists only in memory but should be file"
     }
 
     @Test
     fun `validate _ data location hasn't file scheme _ should throw CommunicationException`() {
-        val communicationParameters = mock<CommunicationParameters> {
-            on { getLocation() } doReturn createTempDir().toURI()
+        val communicationParameters = mockk<CommunicationParameters> {
+            every { getLocation() } returns createTempDir().toURI()
         }
 
-        val dataDescriptor = DataDescriptor(mock { on { getLocation() } doReturn URI("file:/tmp") }, MediaTypeConstants.TEXT_PLAIN)
-        val dataDescriptor2 = DataDescriptor(mock { on { getLocation() } doReturn URI("http://noMatter.com") }, MediaTypeConstants.TEXT_PLAIN)
+        val dataDescriptor = DataDescriptor(mockk {
+            every { getLocation() } returns URI("file:/tmp")
+        }, MediaTypeConstants.TEXT_PLAIN)
+        val dataDescriptor2 = DataDescriptor(mockk {
+            every { getLocation() } returns URI("http://noMatter.com")
+        }, MediaTypeConstants.TEXT_PLAIN)
 
-        assertThatThrownBy {
-            validator.validate(listOf(dataDescriptor, dataDescriptor2),
-                               communicationParameters)
-        }
-                .isExactlyInstanceOf(CommunicationValidationException::class.java)
-                .hasMessage("Data location <http://noMatter.com> hasn't <file> scheme")
+        shouldThrow<CommunicationValidationException> {
+            FileCommunicationValidatorConverter().validate(listOf(dataDescriptor, dataDescriptor2), communicationParameters)
+        }.message shouldBe "Data location <http://noMatter.com> hasn't <file> scheme"
     }
 
     @Test
     fun `validate _ data isn't accessible _ should throw CommunicationValidationException`() {
-        val communicationParameters = mock<CommunicationParameters> {
-            on { getLocation() } doReturn createTempDir().toURI()
+        val communicationParameters = mockk<CommunicationParameters> {
+            every { getLocation() } returns createTempDir().toURI()
         }
 
-        val dataDescriptor = DataDescriptor(mock { on { getLocation() } doReturn URI("file:/tmp") }, MediaTypeConstants.TEXT_PLAIN)
-        val dataDescriptor2 = DataDescriptor(mock {
-            on { getLocation() } doReturn URI("file:/tmp/sub")
-            on { isAvailable() } doThrow DataAccessibilityException("")
+        val dataDescriptor = DataDescriptor(mockk {
+            every { getLocation() } returns URI("file:/tmp")
+        }, MediaTypeConstants.TEXT_PLAIN)
+        val dataDescriptor2 = DataDescriptor(mockk {
+            every { getLocation() } returns URI("file:/tmp/sub")
+            every { isAvailable() } throws DataAccessibilityException("")
         }, MediaTypeConstants.TEXT_PLAIN)
 
-        assertThatThrownBy {
-            validator.validate(listOf(dataDescriptor, dataDescriptor2),
-                               communicationParameters)
-        }
-                .isExactlyInstanceOf(CommunicationValidationException::class.java)
-                .hasMessage("Data (<file:/tmp/sub>) isn't available")
+        shouldThrow<CommunicationValidationException> {
+            FileCommunicationValidatorConverter().validate(listOf(dataDescriptor, dataDescriptor2), communicationParameters)
+        }.message shouldBe "Data (<file:/tmp/sub>) isn't available"
     }
 }

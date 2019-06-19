@@ -1,9 +1,16 @@
 package pl.beone.promena.connector.messagebroker.delivery.jms
 
+import io.kotlintest.matchers.beInstanceOf
+import io.kotlintest.matchers.maps.shouldContainAll
+import io.kotlintest.matchers.maps.shouldContainKey
+import io.kotlintest.matchers.numerics.shouldBeGreaterThan
+import io.kotlintest.matchers.numerics.shouldBeInRange
+import io.kotlintest.matchers.numerics.shouldBeLessThan
+import io.kotlintest.should
+import io.kotlintest.shouldBe
 import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
@@ -40,6 +47,10 @@ class TransformerIncorrectFlowTest {
             withFixedExposedPort(61616, 61616)
             start()
         }
+
+        private const val transformerId = "test-transformer"
+        private val correlationId = UUID.randomUUID().toString()
+        private val expectException = TransformerTimeoutException("Time expired")
     }
 
     @Autowired
@@ -61,15 +72,10 @@ class TransformerIncorrectFlowTest {
 
     @Test
     fun `send data to transformation request queue _ should handle exception to response error queue`() {
-        val transformerId = "test-transformer"
-        val correlationId = UUID.randomUUID().toString()
-        val expectException = TransformerTimeoutException("Time expired")
+        every { transformationUseCase.transform(any(), any(), any()) } throws expectException
 
-        every { transformationUseCase.transform(any(), any<TransformationDescriptor>(), any()) } throws expectException
-
-        //
         val startTimestamp = getTimestamp()
-        sendRequestMessage(transformerId, correlationId)
+        sendRequestMessage()
         val (headers, exception) = try {
             transformerResponseConsumer.getErrorMessage(3000)
         } catch (e: IllegalStateException) {
@@ -77,37 +83,41 @@ class TransformerIncorrectFlowTest {
         }
         val endTimestamp = getTimestamp()
 
-        //
-        assertThat(headers)
-                .containsEntry(CORRELATION_ID, correlationId)
-                .containsEntry(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
-                .containsEntry("send_back_nodeRefs", listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
-                                                            "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
-                .containsEntry("send_back_targetMediaType_mimeType", TEXT_PLAIN.mimeType)
-                .containsEntry("send_back_targetMediaType_charset", TEXT_PLAIN.charset.toString())
-                .containsEntry("send_back_parameters", MapParameters(mapOf("key" to "value")).getAll())
-                .containsEntry("send_back_timeout", 3000)
-                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP)
-                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP)
+        headers.let {
+            it shouldContainAll mapOf(CORRELATION_ID to correlationId,
+                                      PromenaJmsHeader.PROMENA_TRANSFORMER_ID to transformerId,
+                                      "send_back_nodeRefs" to listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
+                                                                     "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"),
+                                      "send_back_targetMediaType_mimeType" to TEXT_PLAIN.mimeType,
+                                      "send_back_targetMediaType_charset" to TEXT_PLAIN.charset.toString(),
+                                      "send_back_parameters" to MapParameters(mapOf("key" to "value")).getAll(),
+                                      "send_back_timeout" to 3000)
+            it shouldContainKey PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP
+            it shouldContainKey PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP
+        }
 
         val transformationStartTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP] as Long
         val transformationEndTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP] as Long
-        assertThat(transformationStartTimestamp)
-                .isBetween(startTimestamp, endTimestamp)
-                .isLessThan(transformationEndTimestamp)
-        assertThat(transformationEndTimestamp)
-                .isBetween(startTimestamp, endTimestamp)
-                .isGreaterThan(transformationStartTimestamp)
+
+        transformationStartTimestamp.let {
+            it.shouldBeInRange(startTimestamp..endTimestamp)
+            it shouldBeLessThan transformationEndTimestamp
+        }
+
+        transformationEndTimestamp.let {
+            it.shouldBeInRange(startTimestamp..endTimestamp)
+            it shouldBeGreaterThan transformationStartTimestamp
+        }
 
         exception.let {
-            assertThat(it.javaClass).isEqualTo(expectException.javaClass)
-            assertThat(it.message).isEqualTo(expectException.message)
-            assertThat(it.localizedMessage).isEqualTo(expectException.localizedMessage)
-            assertThat(it.cause).isEqualTo(expectException.cause)
+            it should beInstanceOf(expectException::class)
+            it.message shouldBe expectException.message
+            it.localizedMessage shouldBe expectException.localizedMessage
+            it.cause shouldBe expectException.cause
         }
     }
 
-    private fun sendRequestMessage(transformerId: String, correlationId: String) {
+    private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
                                    TransformationDescriptor(listOf(DataDescriptor("".toInMemoryData(), TEXT_PLAIN)),
                                                             MediaTypeConstants.APPLICATION_JSON,

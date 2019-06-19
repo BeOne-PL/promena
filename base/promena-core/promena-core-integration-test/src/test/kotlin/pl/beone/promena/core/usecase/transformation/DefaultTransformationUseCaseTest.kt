@@ -5,10 +5,11 @@ import akka.actor.Props
 import akka.routing.SmallestMailboxPool
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import com.typesafe.config.ConfigFactory
-import org.assertj.core.api.Assertions.assertThat
+import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.shouldBe
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -23,13 +24,13 @@ import pl.beone.promena.core.external.akka.actor.DefaultActorService
 import pl.beone.promena.core.external.akka.transformer.AkkaTransformerService
 import pl.beone.promena.core.external.akka.transformer.config.DefaultTransformersCreator
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
-import pl.beone.promena.core.internal.serialization.KryoSerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import java.io.InputStream
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
@@ -38,10 +39,14 @@ class DefaultTransformationUseCaseTest {
     companion object {
         private const val THREADS = 4
         private const val TRANSFORMER_ACTORS = 4
-        private const val SERIALIZER_ACTORS = 2
         private const val NR_OF_ITERATIONS = 20
 
-        private val serializationService = KryoSerializationService()
+        private const val transformerId = "mirror"
+        private val mediaType = MediaTypeConstants.TEXT_PLAIN
+        private val targetMediaType = MediaTypeConstants.TEXT_PLAIN
+        private val parameters = MapParameters.empty()
+        private val communicationParameters = MapCommunicationParameters.empty()
+
     }
 
     private lateinit var actorSystem: ActorSystem
@@ -60,11 +65,11 @@ class DefaultTransformationUseCaseTest {
     fun `transform _ run Akka and transform using memory communication and simple data classes _ should perform transformation`() {
         val transformationUseCase = init()
 
-        val data = InMemoryData(this::class.java.getResourceAsStream("/file/test.txt").readBytes())
+        val data = InMemoryData(readFromResources().readBytes())
         transform(transformationUseCase, data)
                 .forEach {
-                    assertThat(it).hasSize(1)
-                    assertThat(data.getBytes()).isEqualTo(it.first().data.getBytes())
+                    it shouldHaveSize 1
+                    data.getBytes() shouldBe it.first().data.getBytes()
                 }
     }
 
@@ -73,13 +78,9 @@ class DefaultTransformationUseCaseTest {
 
         return (0..NR_OF_ITERATIONS).map {
             executors.submit(Callable<List<TransformedDataDescriptor>> {
-                val transformationDescriptor = TransformationDescriptor(listOf(DataDescriptor(data, MediaTypeConstants.TEXT_PLAIN)),
-                                                                        MediaTypeConstants.TEXT_PLAIN,
-                                                                        MapParameters.empty())
-
-                transformationUseCase.transform("mirror",
-                                                transformationDescriptor,
-                                                MapCommunicationParameters.empty())
+                transformationUseCase.transform(transformerId,
+                                                TransformationDescriptor(listOf(DataDescriptor(data, mediaType)), targetMediaType, parameters),
+                                                communicationParameters)
             })
         }.map { it.get() }
     }
@@ -91,10 +92,10 @@ class DefaultTransformationUseCaseTest {
 
         val mirrorTransformer = MirrorTransformer()
 
-        val transformerConfig = mock<TransformerConfig> {
-            on { getTransformationId(mirrorTransformer) } doReturn "mirror"
-            on { getActors(mirrorTransformer) } doReturn TRANSFORMER_ACTORS
-            on { getPriority(mirrorTransformer) } doReturn 1
+        val transformerConfig = mockk<TransformerConfig> {
+            every { getTransformationId(mirrorTransformer) } returns transformerId
+            every { getActors(mirrorTransformer) } returns TRANSFORMER_ACTORS
+            every { getPriority(mirrorTransformer) } returns 1
         }
 
         val actorCreator = object : ActorCreator {
@@ -109,7 +110,7 @@ class DefaultTransformationUseCaseTest {
 
         val mirrorActorRefWithId = transformersCreator.create(listOf(mirrorTransformer))
 
-        val actorService = DefaultActorService(mirrorActorRefWithId, mock())
+        val actorService = DefaultActorService(mirrorActorRefWithId, mockk())
 
         val transformerService = AkkaTransformerService(actorMaterializer, actorService)
 
@@ -118,4 +119,8 @@ class DefaultTransformationUseCaseTest {
                                             transformerService,
                                             MemoryOutgoingCommunicationConverter())
     }
+
+    private fun readFromResources(): InputStream =
+            this::class.java.getResourceAsStream("/file/test.txt")
+
 }

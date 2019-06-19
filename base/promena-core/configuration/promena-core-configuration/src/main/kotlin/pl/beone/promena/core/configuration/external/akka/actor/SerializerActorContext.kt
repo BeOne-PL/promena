@@ -20,7 +20,7 @@ class SerializerActorContext {
     fun serializerActor(environment: Environment,
                         actorSystem: ActorSystem,
                         serializationService: SerializationService) =
-            actorCreator.create("serializer",
+            actorCreator.create(SerializerActor.actorName,
                                 Props.create(SerializerActor::class.java, serializationService),
                                 environment.getRequiredProperty("core.serializer.actors", Int::class.java)).ref
 

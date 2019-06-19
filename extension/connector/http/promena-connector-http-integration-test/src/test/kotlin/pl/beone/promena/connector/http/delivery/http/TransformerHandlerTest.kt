@@ -1,11 +1,9 @@
 package pl.beone.promena.connector.http.delivery.http
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.eq
+import io.mockk.every
+import io.mockk.mockkObject
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,9 +18,7 @@ import pl.beone.promena.core.contract.serialization.DescriptorSerializationServi
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerTimeoutException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
@@ -58,16 +54,14 @@ class TransformerHandlerTest {
 
     @Test
     fun `transform _ with empty communication parameters`() {
-        `when`(descriptorSerializationService.deserialize(requestBody))
-                .thenReturn(transformationDescriptor)
+        mockkObject(descriptorSerializationService)
+        every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
+        every { descriptorSerializationService.serialize(transformedDataDescriptors) } returns responseBody
 
-        `when`(transformationUseCase.transform(eq(transformerId),
-                                               eq(transformationDescriptor),
-                                               eq(MapCommunicationParameters.empty())))
-                .thenReturn(transformedDataDescriptors)
-
-        `when`(descriptorSerializationService.serialize(transformedDataDescriptors))
-                .thenReturn(responseBody)
+        mockkObject(transformationUseCase)
+        every {
+            transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty())
+        } returns transformedDataDescriptors
 
         webTestClient.post().uri("/transform/$transformerId")
                 .body(BodyInserters.fromObject(requestBody))
@@ -78,16 +72,15 @@ class TransformerHandlerTest {
 
     @Test
     fun `transform _ with location in communication parameters`() {
-        `when`(descriptorSerializationService.deserialize(requestBody))
-                .thenReturn(transformationDescriptor)
+        mockkObject(descriptorSerializationService)
+        every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
+        every { descriptorSerializationService.serialize(transformedDataDescriptors) } returns responseBody
 
-        `when`(transformationUseCase.transform(eq(transformerId),
-                                               eq(transformationDescriptor),
-                                               eq(MapCommunicationParameters(mapOf("location" to "file:/tmp")))))
-                .thenReturn(transformedDataDescriptors)
 
-        `when`(descriptorSerializationService.serialize(transformedDataDescriptors))
-                .thenReturn(responseBody)
+        mockkObject(transformationUseCase)
+        every {
+            transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters(mapOf("location" to "file:/tmp")))
+        } returns transformedDataDescriptors
 
         webTestClient.post().uri("/transform/$transformerId?location=file:/tmp")
                 .body(BodyInserters.fromObject(requestBody))
@@ -97,26 +90,32 @@ class TransformerHandlerTest {
     }
 
     @Test
-    fun `transform _ throw TransformerNotFoundException _ should return InternalServerError with serialized exception`() {
-        val exceptionMessage = "exception".toByteArray()
+    fun `transform _ should throw TransformerNotFoundException and return InternalServerError with serialized exception`() {
+        val exception = TransformerNotFoundException("exception")
+        val messageByteArray = exception.message!!.toByteArray()
 
-        `when`(descriptorSerializationService.deserialize(requestBody))
-                .thenReturn(transformationDescriptor)
+        mockkObject(descriptorSerializationService)
+        every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
 
-        `when`(serializationService.serialize(any<TransformerNotFoundException>()))
-                .thenReturn(exceptionMessage)
+        mockkObject(serializationService)
+        every { serializationService.serialize(any<TransformerNotFoundException>()) } returns messageByteArray
 
-        `when`(transformationUseCase.transform(eq(transformerId),
-                                               eq(transformationDescriptor),
-                                               eq(MapCommunicationParameters.empty())))
-                .thenThrow(TransformerNotFoundException("exception"))
+        mockkObject(transformationUseCase)
+        every {
+            transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty())
+        } returns transformedDataDescriptors
+
+        mockkObject(transformationUseCase)
+        every { transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty()) } throws exception
 
         webTestClient.post().uri("/transform/$transformerId")
                 .body(BodyInserters.fromObject(requestBody))
                 .exchange()
-                .expectHeader().valueEquals("serialization-class", "pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException")
+                .expectHeader()
+                .valueEquals("serialization-class",
+                             "pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException")
                 .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-                .expectBody<ByteArray>().isEqualTo(exceptionMessage)
+                .expectBody<ByteArray>().isEqualTo(messageByteArray)
     }
 
     @Test

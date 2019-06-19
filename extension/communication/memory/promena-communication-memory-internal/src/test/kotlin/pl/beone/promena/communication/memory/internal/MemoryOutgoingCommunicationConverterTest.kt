@@ -1,19 +1,16 @@
 package pl.beone.promena.communication.memory.internal
 
-import com.nhaarman.mockitokotlin2.mock
-import org.assertj.core.api.Assertions.assertThat
+import io.kotlintest.shouldBe
+import io.mockk.mockk
 import org.junit.Test
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 
 class MemoryOutgoingCommunicationConverterTest {
 
-    companion object {
-        private val converter = MemoryOutgoingCommunicationConverter()
-    }
-
     @Test
     fun convert() {
-        val transformedDataDescriptor = TransformedDataDescriptor(mock(), mock())
-        assertThat(converter.convert(transformedDataDescriptor, mock())).isEqualTo(transformedDataDescriptor)
+        val transformedDataDescriptor = TransformedDataDescriptor(mockk(), mockk())
+
+        MemoryOutgoingCommunicationConverter().convert(transformedDataDescriptor, mockk()) shouldBe transformedDataDescriptor
     }
 }

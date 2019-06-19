@@ -1,9 +1,9 @@
 package pl.beone.promena.communication.file.internal
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationException
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
@@ -26,7 +26,7 @@ class FileIncomingCommunicationConverterTest {
         val dataDescriptor = createFileTransformedDataDescriptor(directory)
 
         converter.convert(dataDescriptor, MapCommunicationParameters.empty()).let {
-            assertThat(it).isEqualTo(dataDescriptor)
+            dataDescriptor shouldBe it
         }
     }
 
@@ -37,8 +37,8 @@ class FileIncomingCommunicationConverterTest {
         val dataDescriptor = createFileTransformedDataDescriptor(createTempDir())
 
         converter.convert(dataDescriptor, MapCommunicationParameters.empty()).let {
-            assertThat(it).isNotEqualTo(dataDescriptor)
-            assertThat(it.data.getBytes()).isEqualTo(dataDescriptor.data.getBytes())
+            it shouldBe dataDescriptor
+            it.data.getBytes() shouldBe dataDescriptor.data.getBytes()
         }
     }
 
@@ -46,28 +46,26 @@ class FileIncomingCommunicationConverterTest {
     fun `convert _ data location scheme is different _ should throw CommunicationException`() {
         val converter = FileIncomingCommunicationConverter(createTempDir().toURI())
 
-        val data = mock<Data> {
-            on { getLocation() } doReturn URI("http://noMatter.com")
+        val data = mockk<Data> {
+            every { getLocation() } returns URI("http://noMatter.com")
         }
 
-        assertThatThrownBy {
-            converter.convert(DataDescriptor(data, MediaTypeConstants.TEXT_PLAIN),
-                              MapCommunicationParameters.empty())
-        }
-                .isExactlyInstanceOf(CommunicationException::class.java)
-                .hasMessage("Data location <http://noMatter.com> hasn't <file> scheme")
+        val dataDescriptor = DataDescriptor(data, MediaTypeConstants.TEXT_PLAIN)
+
+        shouldThrow<CommunicationException> {
+            converter.convert(dataDescriptor, MapCommunicationParameters.empty())
+        }.message shouldBe "Data location <http://noMatter.com> hasn't <file> scheme"
     }
 
     @Test
     fun `convert _ not FileData implementation _ should throw CommunicationException`() {
         val converter = FileIncomingCommunicationConverter(createTempDir().toURI())
 
-        assertThatThrownBy {
-            converter.convert(DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.TEXT_PLAIN),
-                              MapCommunicationParameters.empty())
-        }
-                .isExactlyInstanceOf(CommunicationException::class.java)
-                .hasMessage("Data exists only in memory but should be file")
+        val dataDescriptor = DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.TEXT_PLAIN)
+
+        shouldThrow<CommunicationException> {
+            converter.convert(dataDescriptor, MapCommunicationParameters.empty())
+        }.message shouldBe "Data exists only in memory but should be file"
     }
 
     private fun createFileTransformedDataDescriptor(directory: File? = null): DataDescriptor =

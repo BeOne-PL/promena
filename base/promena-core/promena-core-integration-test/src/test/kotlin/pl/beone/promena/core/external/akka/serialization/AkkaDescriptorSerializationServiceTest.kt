@@ -4,11 +4,10 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -17,7 +16,6 @@ import pl.beone.promena.core.common.utils.getClazz
 import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
@@ -27,6 +25,13 @@ import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 
 class AkkaDescriptorSerializationServiceTest {
+
+    companion object {
+        private val data = InMemoryData("test".toByteArray())
+        private val data2 = InMemoryData("test2".toByteArray())
+        private val serializedTransformedDataDescriptors = "serialized data".toByteArray()
+
+    }
 
     private lateinit var actorSystem: ActorSystem
 
@@ -43,55 +48,53 @@ class AkkaDescriptorSerializationServiceTest {
     @Test
     fun serialize() {
         val transformedDataDescriptors = listOf(
-                TransformedDataDescriptor(InMemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value"))),
-                TransformedDataDescriptor(InMemoryData("test2".toByteArray()), MapMetadata(emptyMap()))
+                TransformedDataDescriptor(data, MapMetadata(mapOf("key" to "value"))),
+                TransformedDataDescriptor(data2, MapMetadata(emptyMap()))
         )
 
-        val dataDescriptorSerializationService = prepare(mock {
-            on { serialize(transformedDataDescriptors) } doReturn "serialized data".toByteArray()
+        val dataDescriptorSerializationService = prepare(mockk {
+            every { serialize(transformedDataDescriptors) } returns serializedTransformedDataDescriptors
         })
 
-        assertThat(dataDescriptorSerializationService.serialize(transformedDataDescriptors))
-                .isEqualTo("serialized data".toByteArray())
+        dataDescriptorSerializationService.serialize(transformedDataDescriptors) shouldBe serializedTransformedDataDescriptors
     }
 
     @Test
     fun deserialize() {
         val transformationDescriptor = TransformationDescriptor(
-                listOf(DataDescriptor(InMemoryData("test".toByteArray()),
-                                      MediaType.create("application/octet-stream", Charsets.UTF_8)),
-                       DataDescriptor(InMemoryData("test2".toByteArray()),
-                                      MediaType.create("application/octet-stream", Charsets.UTF_8))),
+                listOf(DataDescriptor(data, MediaTypeConstants.APPLICATION_OCTET_STREAM),
+                       DataDescriptor(data2, MediaTypeConstants.APPLICATION_OCTET_STREAM)),
                 MediaTypeConstants.APPLICATION_PDF,
                 MapParameters(mapOf("key" to "value"))
         )
 
-        val dataDescriptorSerializationService = prepare(mock {
-            on { deserialize("serialized data".toByteArray(), getClazz<TransformationDescriptor>()) } doReturn transformationDescriptor
+        val dataDescriptorSerializationService = prepare(mockk {
+            every { deserialize(serializedTransformedDataDescriptors, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
         })
 
-        assertThat(dataDescriptorSerializationService.deserialize("serialized data".toByteArray()))
-                .isEqualTo(transformationDescriptor)
+        dataDescriptorSerializationService.deserialize(serializedTransformedDataDescriptors) shouldBe transformationDescriptor
     }
 
     @Test
     fun `deserialize _ should throw DeserializationException`() {
-        val dataDescriptorSerializationService = prepare(mock {
-            on { deserialize("incorrect serialized data".toByteArray(), getClazz<TransformationDescriptor>()) } doThrow DeserializationException("")
+        val incorrectSerializedTransformedDataDescriptors = "incorrect serialized data".toByteArray()
+
+        val dataDescriptorSerializationService = prepare(mockk {
+            every {
+                deserialize(incorrectSerializedTransformedDataDescriptors, getClazz<TransformationDescriptor>())
+            } throws DeserializationException("")
         })
 
-        assertThatThrownBy { dataDescriptorSerializationService.deserialize("incorrect serialized data".toByteArray()) }
-                .isExactlyInstanceOf(DeserializationException::class.java)
+        shouldThrow<DeserializationException> { dataDescriptorSerializationService.deserialize(incorrectSerializedTransformedDataDescriptors) }
     }
 
     private fun prepare(serializationService: SerializationService): AkkaDescriptorSerializationService {
         val actorMaterializer = ActorMaterializer.create(actorSystem)
 
-        val serializerActor =
-                actorSystem.actorOf(Props.create(SerializerActor::class.java, serializationService), "serializer")
+        val serializerActor = actorSystem.actorOf(Props.create(SerializerActor::class.java, serializationService), SerializerActor.actorName)
 
-        val actorService = mock<ActorService> {
-            on { getSerializerActor() } doReturn serializerActor
+        val actorService = mockk<ActorService> {
+            every { getSerializerActor() } returns serializerActor
         }
 
         return AkkaDescriptorSerializationService(actorMaterializer, actorService)

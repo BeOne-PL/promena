@@ -1,39 +1,43 @@
 package pl.beone.promena.communication.memory.internal
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import org.assertj.core.api.Assertions.assertThat
+import io.kotlintest.shouldBe
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import java.net.URI
 
 class MemoryInternalCommunicationConverterTest {
 
     companion object {
-        private val converter = MemoryInternalCommunicationConverter()
+        private val metadata = MapMetadata.empty()
     }
 
     @Test
     fun convert() {
-        val data = mock<Data> {
-            on { getLocation() } doThrow UnsupportedOperationException()
+        val data = mockk<Data> {
+            every { getLocation() } throws UnsupportedOperationException()
         }
-        val transformedDataDescriptor = TransformedDataDescriptor(data, mock())
+        val transformedDataDescriptor = TransformedDataDescriptor(data, metadata)
 
-        assertThat(converter.convert(transformedDataDescriptor)).isEqualTo(transformedDataDescriptor)
+        MemoryInternalCommunicationConverter()
+                .convert(transformedDataDescriptor) shouldBe transformedDataDescriptor
     }
 
     @Test
     fun `convert _ data hasn't memory implementation _ should get data and load into memory`() {
-        val data = mock<Data> {
-            on { getLocation() } doReturn URI("file:/tmp")
-            on { getBytes() } doReturn "test".toByteArray()
-        }
-        val transformedDataDescriptor = TransformedDataDescriptor(data, mock())
+        val bytes = "test".toByteArray()
 
-        assertThat(converter.convert(transformedDataDescriptor).data.getBytes()).isEqualTo("test".toByteArray())
+        val data = mockk<Data> {
+            every { getLocation() } returns URI("file:/tmp")
+            every { getBytes() } returns bytes
+        }
+        val transformedDataDescriptor = TransformedDataDescriptor(data, metadata)
+
+        MemoryInternalCommunicationConverter()
+                .convert(transformedDataDescriptor).data.getBytes() shouldBe bytes
     }
 }

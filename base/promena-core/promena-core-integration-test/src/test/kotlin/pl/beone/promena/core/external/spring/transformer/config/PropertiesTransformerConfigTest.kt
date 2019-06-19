@@ -1,7 +1,7 @@
 package pl.beone.promena.core.external.spring.transformer.config
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,44 +42,43 @@ class PropertiesTransformerConfigTest {
     @Test
     fun getTransformationId() {
         TransformerWithProperties().let {
-            assertThat(propertiesTransformerConfig.getTransformationId(it)).isEqualTo("transformerWithProperties")
+            propertiesTransformerConfig.getTransformationId(it) shouldBe "transformerWithProperties"
         }
     }
 
     @Test
     fun getActors() {
         TransformerWithProperties().let {
-            assertThat(propertiesTransformerConfig.getActors(it)).isEqualTo(3)
+            propertiesTransformerConfig.getActors(it) shouldBe 3
         }
     }
 
     @Test
     fun getPriority() {
         TransformerWithProperties().let {
-            assertThat(propertiesTransformerConfig.getPriority(it)).isEqualTo(2)
+            propertiesTransformerConfig.getPriority(it) shouldBe 2
         }
     }
 
     @Test
     fun `getTransformationId _ no property _ should throw IllegalStateException`() {
         TransformerWithoutProperties().let {
-            assertThatThrownBy { propertiesTransformerConfig.getTransformationId(it) }
-                    .isExactlyInstanceOf(IllegalStateException::class.java)
-                    .hasMessage("There is no <transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithoutProperties.transformationId> property. Transformer must have <transformerId>")
+            shouldThrow<IllegalStateException> { propertiesTransformerConfig.getTransformationId(it) }
+                    .message shouldBe "There is no <transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithoutProperties.transformationId> property. Transformer must have <transformerId>"
         }
     }
 
     @Test
     fun `getActors _ no property _ should use default 1`() {
         TransformerWithoutProperties().let {
-            assertThat(propertiesTransformerConfig.getActors(it)).isEqualTo(1)
+            propertiesTransformerConfig.getActors(it) shouldBe 1
         }
     }
 
     @Test
     fun `getPriority _ no property _ should use default 0`() {
         TransformerWithoutProperties().let {
-            assertThat(propertiesTransformerConfig.getPriority(it)).isEqualTo(0)
+            propertiesTransformerConfig.getPriority(it) shouldBe 0
         }
     }
 

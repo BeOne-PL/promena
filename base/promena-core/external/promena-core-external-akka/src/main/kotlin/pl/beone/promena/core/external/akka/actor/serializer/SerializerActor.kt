@@ -13,6 +13,10 @@ import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescripto
 
 class SerializerActor(private val serializationService: SerializationService) : AbstractLoggingActor() {
 
+    companion object {
+        val actorName = "serializer"
+    }
+
     override fun createReceive() =
             receiveBuilder()
                     .match(ToSerializeMessage::class.java) {

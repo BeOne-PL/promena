@@ -50,9 +50,6 @@
         <promena-connector-message-broker.version>3.0.0-alpha</promena-connector-message-broker.version>
 
         <kryo-message-converter.version>1.0.0</kryo-message-converter.version>
-
-        <mockk.version>1.9.3</mockk.version>
-        <kotlintest-runner-junit5.version>3.3.2</kotlintest-runner-junit5.version>
     </properties>
 
     <dependencies>
@@ -71,20 +68,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
+            <groupId>io.kotlintest</groupId>
+            <artifactId>kotlintest-runner-junit5</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
-            <version>${mockk.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.kotlintest</groupId>
-            <artifactId>kotlintest-runner-junit5</artifactId>
-            <version>${kotlintest-runner-junit5.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

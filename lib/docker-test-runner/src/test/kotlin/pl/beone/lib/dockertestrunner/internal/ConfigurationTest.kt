@@ -1,7 +1,7 @@
 package pl.beone.lib.dockertestrunner.internal
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import org.junit.Test
 import java.io.File
 
@@ -11,24 +11,22 @@ class ConfigurationTest {
     fun getProperty() {
         val configuration = Configuration()
 
-        assertThat(configuration.getProperty("docker.test.image.custom.name"))
-                .isEqualTo("docker-test-runner:test")
+        configuration.getProperty("docker.test.image.custom.name") shouldBe "docker-test-runner:test"
 
-        assertThatThrownBy { configuration.getProperty("absent.property") }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <absent.property> element")
+        shouldThrow<NoSuchElementException> {
+            configuration.getProperty("absent.property")
+        }.message shouldBe "There is no <absent.property> element"
     }
 
     @Test
     fun `getProperty with casting`() {
         val configuration = Configuration()
 
-        assertThat(configuration.getProperty("docker.test.image.custom.enabled", Boolean::class.java))
-                .isEqualTo(true)
+        configuration.getProperty("docker.test.image.custom.enabled", Boolean::class.java) shouldBe true
 
-        assertThatThrownBy { configuration.getProperty("absent.property", Boolean::class.java) }
-                .isExactlyInstanceOf(NoSuchElementException::class.java)
-                .hasMessage("There is no <absent.property> element")
+        shouldThrow<NoSuchElementException> {
+            configuration.getProperty("absent.property", Boolean::class.java)
+        }.message shouldBe "There is no <absent.property> element"
     }
 
     @Test
@@ -36,14 +34,11 @@ class ConfigurationTest {
         mockDockerTestProperties {
             val configuration = Configuration()
 
-            assertThat(configuration.getProperty("docker.test.image.custom.enabled", Boolean::class.java))
-                    .isEqualTo(true)
+            configuration.getProperty("docker.test.image.custom.enabled", Boolean::class.java) shouldBe true
 
-            assertThat(configuration.getProperty("docker.test.image.custom.name"))
-                    .isEqualTo("docker-test-runner:changed-test")
+            configuration.getProperty("docker.test.image.custom.name") shouldBe "docker-test-runner:changed-test"
 
-            assertThat(configuration.getProperty("additional.property"))
-                    .isEqualTo("no matter")
+            configuration.getProperty("additional.property") shouldBe "no matter"
         }
     }
 

@@ -1,7 +1,7 @@
 package pl.beone.promena.communication.file.internal
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationException
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
@@ -21,10 +21,9 @@ class FileOutgoingCommunicationConverterTest {
 
         val dataDescriptor = createFileTransformedDataDescriptor(createTempDir())
 
-        converter.convert(dataDescriptor,
-                          createCommunicationParametersWithLocation(directory.toURI())).let {
-            assertThat(it).isNotEqualTo(dataDescriptor)
-            assertThat(it.data.getBytes()).isEqualTo(dataDescriptor.data.getBytes())
+        converter.convert(dataDescriptor, createCommunicationParametersWithLocation(directory.toURI())).let {
+            it shouldBe dataDescriptor
+            it.data.getBytes() shouldBe dataDescriptor.data.getBytes()
         }
     }
 
@@ -32,12 +31,10 @@ class FileOutgoingCommunicationConverterTest {
     fun `convert _ data location scheme is different _ should throw CommunicationException`() {
         val converter = FileOutgoingCommunicationConverter()
 
-        assertThatThrownBy {
+        shouldThrow<CommunicationException> {
             converter.convert(createFileTransformedDataDescriptor(createTempDir()),
                               createCommunicationParametersWithLocation(URI("http://noMatter.com")))
-        }
-                .isExactlyInstanceOf(CommunicationException::class.java)
-                .hasMessage("Location <http://noMatter.com> hasn't <file> scheme")
+        }.message shouldBe "Location <http://noMatter.com> hasn't <file> scheme"
     }
 
     private fun createCommunicationParametersWithLocation(location: URI): MapCommunicationParameters =

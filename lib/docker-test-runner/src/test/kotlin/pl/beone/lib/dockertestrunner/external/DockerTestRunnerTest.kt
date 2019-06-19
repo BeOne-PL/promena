@@ -1,6 +1,6 @@
 package pl.beone.lib.dockertestrunner.external
 
-import org.assertj.core.api.Assertions.assertThat
+import io.kotlintest.shouldBe
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,23 +10,26 @@ class DockerTestRunnerTest {
 
     @Test
     fun simpleTest() {
-        assertThat(true).isEqualTo(true)
+        true shouldBe true
     }
 
     @Test
     fun checkIfDockerFragmentWasUsedToBuildImage() {
-        String(Runtime.getRuntime().exec("cat /test.txt").inputStream.readAllBytes()).trim()
-                .let { assertThat(it).isEqualTo("test") }
+        String(readFromFileUsingCat("/test.txt")).trim()
+                .let { it shouldBe "test" }
     }
 
     @Test
     fun `name with spaces _ should be ignored`() {
-        assertThat(true).isEqualTo(false)
+        true shouldBe false
     }
 
     @Ignore
     @Test
     fun ignoreAnnotation_shouldBeIgnored() {
-        assertThat(true).isEqualTo(false)
+        true shouldBe false
     }
+
+    private fun readFromFileUsingCat(path: String): ByteArray =
+            Runtime.getRuntime().exec("cat $path").inputStream.readAllBytes()
 }

@@ -1,9 +1,15 @@
 package pl.beone.promena.connector.messagebroker.delivery.jms
 
+import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.matchers.maps.shouldContainAll
+import io.kotlintest.matchers.maps.shouldContainKey
+import io.kotlintest.matchers.numerics.shouldBeGreaterThan
+import io.kotlintest.matchers.numerics.shouldBeInRange
+import io.kotlintest.matchers.numerics.shouldBeLessThan
+import io.kotlintest.shouldBe
 import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
@@ -42,6 +48,13 @@ class TransformerCorrectFlowTest {
             withFixedExposedPort(61616, 61616)
             start()
         }
+
+        private const val transformerId = "test-transformer"
+        private const val location = "file:/tmp"
+        private val correlationId = UUID.randomUUID().toString()
+        private val transformationDescriptor =
+                TransformationDescriptor(listOf(DataDescriptor("test".toInMemoryData(), TEXT_PLAIN)), APPLICATION_JSON, MapParameters.empty())
+        private val transformedData = """" {"test":"test"} """.toInMemoryData()
     }
 
     @Autowired
@@ -63,13 +76,6 @@ class TransformerCorrectFlowTest {
 
     @Test
     fun `send data to transformation request queue _ should transform and send result to response queue`() {
-        val transformerId = "test-transformer"
-        val location = "file:/tmp"
-        val correlationId = UUID.randomUUID().toString()
-        val transformationDescriptor =
-                TransformationDescriptor(listOf(DataDescriptor("test".toInMemoryData(), TEXT_PLAIN)), APPLICATION_JSON, MapParameters.empty())
-        val transformedData = """" {"test":"test"} """.toInMemoryData()
-
         every {
             transformationUseCase.transform(transformerId,
                                             transformationDescriptor,
@@ -78,7 +84,7 @@ class TransformerCorrectFlowTest {
 
         //
         val startTimestamp = getTimestamp()
-        sendRequestMessage(transformerId, location, transformationDescriptor, correlationId)
+        sendRequestMessage()
         val (headers, transformedDataDescriptors) = try {
             transformerResponseConsumer.getMessage(3000)
         } catch (e: IllegalStateException) {
@@ -87,33 +93,34 @@ class TransformerCorrectFlowTest {
         val endTimestamp = getTimestamp()
 
         //
-        assertThat(headers)
-                .containsEntry(CORRELATION_ID, correlationId)
-                .containsEntry(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
-                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP)
-                .containsKey(PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP)
+        headers.let {
+            it shouldContainAll mapOf(CORRELATION_ID to correlationId,
+                                      PromenaJmsHeader.PROMENA_TRANSFORMER_ID to transformerId)
+            it shouldContainKey PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP
+            it shouldContainKey PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP
+        }
 
         val transformationStartTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP] as Long
         val transformationEndTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP] as Long
-        assertThat(transformationStartTimestamp)
-                .isBetween(startTimestamp, endTimestamp)
-                .isLessThan(transformationEndTimestamp)
-        assertThat(transformationEndTimestamp)
-                .isBetween(startTimestamp, endTimestamp)
-                .isGreaterThan(transformationStartTimestamp)
 
-        assertThat(transformedDataDescriptors)
-                .hasSize(1)
+        transformationStartTimestamp.let {
+            it.shouldBeInRange(startTimestamp..endTimestamp)
+            it shouldBeLessThan transformationEndTimestamp
+        }
+
+        transformationEndTimestamp.let {
+            it.shouldBeInRange(startTimestamp..endTimestamp)
+            it shouldBeGreaterThan transformationStartTimestamp
+        }
+
+        transformedDataDescriptors shouldHaveSize 1
         transformedDataDescriptors[0].let {
-            assertThat(it.data.getBytes()).isEqualTo(transformedData.getBytes())
-            assertThat(it.metadata.getAll()).isEmpty()
+            it.data.getBytes() shouldBe transformedData.getBytes()
+            it.metadata.getAll() shouldBe emptyMap()
         }
     }
 
-    private fun sendRequestMessage(transformerId: String,
-                                   location: String,
-                                   transformationDescriptor: TransformationDescriptor,
-                                   correlationId: String) {
+    private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), listOf(transformationDescriptor)) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
