@@ -17,12 +17,9 @@ import pl.beone.promena.communication.memory.internal.MemoryIncomingCommunicatio
 import pl.beone.promena.communication.memory.internal.MemoryInternalCommunicationConverter
 import pl.beone.promena.communication.memory.internal.MemoryOutgoingCommunicationConverter
 import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithId
-import pl.beone.promena.core.common.utils.getClazz
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.external.akka.actor.DefaultActorService
-import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
-import pl.beone.promena.core.external.akka.serialization.AkkaDescriptorSerializationService
 import pl.beone.promena.core.external.akka.transformer.AkkaTransformerService
 import pl.beone.promena.core.external.akka.transformer.config.DefaultTransformersCreator
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
@@ -80,11 +77,9 @@ class DefaultTransformationUseCaseTest {
                                                                         MediaTypeConstants.TEXT_PLAIN,
                                                                         MapParameters.empty())
 
-                val transformedBytes = transformationUseCase.transform("mirror",
-                                                                       serializationService.serialize(transformationDescriptor),
-                                                                       MapCommunicationParameters.empty())
-
-                serializationService.deserialize(transformedBytes, getClazz<List<TransformedDataDescriptor>>())
+                transformationUseCase.transform("mirror",
+                                                transformationDescriptor,
+                                                MapCommunicationParameters.empty())
             })
         }.map { it.get() }
     }
@@ -114,18 +109,11 @@ class DefaultTransformationUseCaseTest {
 
         val mirrorActorRefWithId = transformersCreator.create(listOf(mirrorTransformer))
 
-        val serializerActorRef = actorCreator.create("serializer",
-                                                     Props.create(SerializerActor::class.java, serializationService),
-                                                     SERIALIZER_ACTORS).ref
-
-        val actorService = DefaultActorService(mirrorActorRefWithId, serializerActorRef)
-
-        val descriptorSerializationService = AkkaDescriptorSerializationService(actorMaterializer, actorService)
+        val actorService = DefaultActorService(mirrorActorRefWithId, mock())
 
         val transformerService = AkkaTransformerService(actorMaterializer, actorService)
 
-        return DefaultTransformationUseCase(descriptorSerializationService,
-                                            MemoryCommunicationValidatorConverter(),
+        return DefaultTransformationUseCase(MemoryCommunicationValidatorConverter(),
                                             MemoryIncomingCommunicationConverter(),
                                             transformerService,
                                             MemoryOutgoingCommunicationConverter())
