@@ -13,11 +13,11 @@ class GlobalPropertiesContext(private val environment: Environment,
     @Bean("global-properties")
     fun globalProperties(): Properties =
             Properties().apply {
-                "promena.client.serializer.kryo.bufferSize".let { setProperty(it, environment.getProperty(it)) }
+                "promena.client.serializer.kryo.buffer-size".let { setProperty(it, environment.getProperty(it)) }
 
                 "promena.client.transformation.error.retry.enabled".let { setProperty(it, environment.getProperty(it)) }
-                "promena.client.transformation.error.retry.maxAttempts".let { setProperty(it, environment.getProperty(it)) }
-                "promena.client.transformation.error.retry.nextAttemptDelay".let { setProperty(it, environment.getProperty(it)) }
+                "promena.client.transformation.error.retry.max-attempts".let { setProperty(it, environment.getProperty(it)) }
+                "promena.client.transformation.error.retry.next-attempt-delay".let { setProperty(it, environment.getProperty(it)) }
 
                 "promena.client.message-broker.consumer.queue.request".let { setProperty(it, environment.getProperty(it)) }
                 "promena.client.message-broker.consumer.queue.response".let { setProperty(it, environment.getProperty(it)) }

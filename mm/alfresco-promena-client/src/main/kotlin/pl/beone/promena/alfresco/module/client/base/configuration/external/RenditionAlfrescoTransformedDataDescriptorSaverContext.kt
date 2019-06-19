@@ -22,7 +22,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverContext {
                                                         namespaceService: NamespaceService,
                                                         transactionService: TransactionService,
                                                         alfrescoDataConverter: AlfrescoDataConverter) =
-            RenditionAlfrescoTransformedDataDescriptorSaver(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.saveIfZero").toBoolean(),
+            RenditionAlfrescoTransformedDataDescriptorSaver(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.save-if-zero").toBoolean(),
                                                             nodeService,
                                                             contentService,
                                                             namespaceService,

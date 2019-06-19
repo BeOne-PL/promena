@@ -13,5 +13,5 @@ class HttpClientContext {
     @Bean
     fun httpClient(@Qualifier("global-properties") properties: Properties) =
             HttpClient.create()
-                    .baseUrl(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.http.baseUrl"))
+                    .baseUrl(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.http.base-url"))
 }
