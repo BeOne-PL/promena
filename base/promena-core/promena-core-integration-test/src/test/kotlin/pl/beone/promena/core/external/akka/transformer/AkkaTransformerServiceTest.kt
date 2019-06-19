@@ -189,10 +189,10 @@ class AkkaTransformerServiceTest {
         val actorMaterializer = ActorMaterializer.create(actorSystem)
 
         val mirrorTransformerActorRef = actorSystem.actorOf(
-                Props.create(TransformerActor::class.java, listOf(transformer), internalCommunicationConverter), transformerId
+                Props.create { TransformerActor(listOf(transformer), internalCommunicationConverter) }, transformerId
         )
         val emptyTransformerActorRef = actorSystem.actorOf(
-                Props.create(TransformerActor::class.java, emptyList<Transformer>(), internalCommunicationConverter), emptyTransformerId
+                Props.create { TransformerActor(emptyList(), internalCommunicationConverter) }, emptyTransformerId
         )
 
         val actorService = mockk<ActorService> {
