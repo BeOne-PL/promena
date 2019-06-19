@@ -1,11 +1,16 @@
 package pl.beone.promena.alfresco.module.client.messagebroker.internal
 
 import org.alfresco.service.cmr.repository.NodeRef
+import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 class ReactiveTransformationManager {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(ReactiveTransformationManager::class.java)
+    }
 
     private val monoMap = ConcurrentHashMap<String, Mono<List<NodeRef>>>()
     private val completableFutureMap = ConcurrentHashMap<String, CompletableFuture<List<NodeRef>>>()
@@ -44,7 +49,7 @@ class ReactiveTransformationManager {
         if (completableFuture != null) {
             toRun(completableFuture)
         } else {
-            throw RuntimeException("Couldn't finish <$id>. CompletableFuture was removed earlier")
+            logger.warn("Couldn't find transformation <$id>. User won't be informed about the end of this transformation")
         }
     }
 }

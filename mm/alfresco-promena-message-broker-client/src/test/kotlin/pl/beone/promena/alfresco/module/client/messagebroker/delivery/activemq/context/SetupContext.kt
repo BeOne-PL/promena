@@ -10,6 +10,7 @@ import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAl
 
 @Configuration
 @ComponentScan(
+        "pl.beone.promena.alfresco.module.client.base.configuration.internal",
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure",
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.internal",
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.framework",
