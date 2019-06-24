@@ -9,11 +9,12 @@ import akka.stream.javadsl.Sink
 import akka.stream.javadsl.Source
 import akka.util.Timeout
 import org.slf4j.LoggerFactory
-import pl.beone.promena.core.common.utils.*
 import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.contract.transformer.TransformerService
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
+import pl.beone.promena.core.external.akka.util.*
+import pl.beone.promena.core.external.akka.util.infinite
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerTimeoutException
@@ -40,25 +41,22 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
             val bytes = try {
                 unwrapExecutionException {
                     createSource(dataDescriptors)
-                            .via(createFlow(actorService.getTransformationActor(transformerId),
-                                            targetMediaType,
-                                            parameters))
+                            .via(createFlow(actorService.getTransformationActor(transformerId), targetMediaType, parameters))
                             .runWith(Sink.head(), actorMaterializer)
                             .toCompletableFuture()
                             .get()
                 }
             } catch (e: Exception) {
-                val exceptionDescriptor =
-                        generateExceptionDescriptor(transformerId, targetMediaType, parameters, dataDescriptors)
+                val exceptionDescriptor = generateExceptionDescriptor(transformerId, targetMediaType, parameters, dataDescriptors)
 
                 when (e) {
                     is AskTimeoutException, is TransformerTimeoutException ->
                         throw TransformerTimeoutException("Couldn't transform because transformation time <${parameters.getTimeoutOrInfiniteIfNotFound()}> has expired | $exceptionDescriptor",
                                                           e)
-                    is TransformerNotFoundException ->
+                    is TransformerNotFoundException                        ->
                         throw TransformerNotFoundException("Couldn't transform because there is no suitable transformer | $exceptionDescriptor",
                                                            e)
-                    else ->
+                    else                                                   ->
                         throw TransformerException("Couldn't transform because an error occurred | $exceptionDescriptor",
                                                    e)
                 }

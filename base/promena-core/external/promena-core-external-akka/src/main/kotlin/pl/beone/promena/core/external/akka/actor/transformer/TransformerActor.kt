@@ -2,10 +2,10 @@ package pl.beone.promena.core.external.akka.actor.transformer
 
 import akka.actor.AbstractLoggingActor
 import akka.actor.Status
-import pl.beone.promena.core.common.utils.format
-import pl.beone.promena.core.common.utils.measureTimeMillisWithContent
-import pl.beone.promena.core.common.utils.toMB
-import pl.beone.promena.core.common.utils.toSeconds
+import pl.beone.promena.core.external.akka.util.format
+import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
+import pl.beone.promena.core.external.akka.util.toMB
+import pl.beone.promena.core.external.akka.util.toSeconds
 import pl.beone.promena.core.contract.communication.InternalCommunicationConverter
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
@@ -39,9 +39,9 @@ class TransformerActor(private val transformers: List<Transformer>,
                           parameters: Parameters): List<TransformedDataDescriptor> {
         val (transformedDataDescriptors, measuredTimeMs) = measureTimeMillisWithContent {
             val transformer = transformers.firstOrNull { it.canTransform(dataDescriptors, targetMediaType, parameters) }
-                    ?: throw TransformerNotFoundException("There is no transformer that can process it. " +
-                                                                  "There following <${transformers.size}> transformers are available: " +
-                                                                  "<${transformers.joinToString(", ") { it.javaClass.canonicalName }}>")
+                              ?: throw TransformerNotFoundException("There is no transformer that can process it. " +
+                                                                    "There following <${transformers.size}> transformers are available: " +
+                                                                    "<${transformers.joinToString(", ") { it.javaClass.canonicalName }}>")
 
             val transformedDataDescriptors = transformer.transform(dataDescriptors, targetMediaType, parameters)
                     .map { internalTransformedDataDescriptorConverter.convert(it) }

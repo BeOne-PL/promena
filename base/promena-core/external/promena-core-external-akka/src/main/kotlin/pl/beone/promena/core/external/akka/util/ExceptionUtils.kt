@@ -1,8 +1,8 @@
-package pl.beone.promena.core.common.utils
+package pl.beone.promena.core.external.akka.util
 
 import java.util.concurrent.ExecutionException
 
-fun <T> unwrapExecutionException(toExecute: () -> T): T =
+internal fun <T> unwrapExecutionException(toExecute: () -> T): T =
         try {
             toExecute()
         } catch (e: ExecutionException) {

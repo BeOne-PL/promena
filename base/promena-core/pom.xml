@@ -21,7 +21,6 @@
         <module>contract/promena-core-contract</module>
         <module>configuration/promena-core-configuration</module>
         <module>external/promena-core-external-akka</module>
-        <module>promena-core-common</module>
         <module>external/promena-core-external-spring</module>
         <module>promena-core-internal</module>
         <module>promena-core-integration-test</module>

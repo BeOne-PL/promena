@@ -2,19 +2,19 @@ package pl.beone.promena.core.external.akka.actor.serializer
 
 import akka.actor.AbstractLoggingActor
 import akka.actor.Status
-import pl.beone.promena.core.common.utils.*
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.message.DeserializedMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.SerializedMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToDeserializeMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToSerializeMessage
+import pl.beone.promena.core.external.akka.util.*
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 
 class SerializerActor(private val serializationService: SerializationService) : AbstractLoggingActor() {
 
     companion object {
-        val actorName = "serializer"
+        const val actorName = "serializer"
     }
 
     override fun createReceive() =
@@ -63,5 +63,4 @@ class SerializerActor(private val serializationService: SerializationService) : 
 
         return transformationDescriptor
     }
-
 }

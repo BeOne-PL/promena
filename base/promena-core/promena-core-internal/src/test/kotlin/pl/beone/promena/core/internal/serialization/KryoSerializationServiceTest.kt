@@ -4,7 +4,6 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
-import pl.beone.promena.core.common.utils.getClazz
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
@@ -72,4 +71,7 @@ class KryoSerializationServiceTest {
             serializationService.deserialize("incorrect data".toByteArray(), getClazz<String>())
         }.message shouldBe "Couldn't deserialize"
     }
+
+    private inline fun <reified T : Any> getClazz(): Class<T> =
+            T::class.java
 }

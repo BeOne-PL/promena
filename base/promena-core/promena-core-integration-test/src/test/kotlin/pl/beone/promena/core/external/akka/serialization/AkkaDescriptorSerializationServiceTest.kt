@@ -11,8 +11,8 @@ import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
-import pl.beone.promena.core.common.utils.getClazz
 import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
