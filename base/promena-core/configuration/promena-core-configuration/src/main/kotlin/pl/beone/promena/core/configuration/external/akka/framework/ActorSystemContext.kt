@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment
 import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.StandardEnvironment
 
+// TODO maybe separate to custom interface
 @Configuration
 class ActorSystemContext {
 

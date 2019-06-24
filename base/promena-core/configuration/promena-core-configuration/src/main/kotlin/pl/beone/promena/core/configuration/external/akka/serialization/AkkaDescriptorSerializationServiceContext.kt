@@ -14,7 +14,7 @@ class AkkaDescriptorSerializationServiceContext {
     @Bean
     @ConditionalOnMissingBean(DescriptorSerializationService::class)
     fun akkaDescriptorSerializationService(actorMaterializer: ActorMaterializer,
-                                           acSerializationService: ActorService) =
+                                           actorService: ActorService) =
             AkkaDescriptorSerializationService(actorMaterializer,
-                                                                                                 acSerializationService)
+                                               actorService)
 }

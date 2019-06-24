@@ -1,6 +1,7 @@
 package pl.beone.promena.connector.http.delivery.http
 
-import org.assertj.core.api.Assertions.assertThat
+import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.shouldBe
 import org.junit.Test
 import org.springframework.util.LinkedMultiValueMap
 
@@ -23,18 +24,18 @@ class CommunicationParametersConverterTest {
                 "list" to listOf("1.0", "2.5")
         )))
 
-        assertThat(parameters.getAll()).hasSize(8)
+        parameters.getAll().entries shouldHaveSize 8
 
-        assertThat(parameters.get("firstPages")).isEqualTo(2L)
-        assertThat(parameters.get("page")).isEqualTo(4L)
-        assertThat(parameters.get("onlyHeader")).isEqualTo(true)
-        assertThat(parameters.get("onlyScan")).isEqualTo(false)
-        assertThat(parameters.get("barcode")).isEqualTo("EAN")
-        assertThat(parameters.get("value")).isEqualTo(3.4)
-        assertThat(parameters.get("stringValueLookingLikeIncorrectDouble")).isEqualTo("3.4.5.6.7.8.9")
-        assertThat(parameters.get("list")).isEqualTo(listOf(1.0, 2.5))
+        parameters.get("firstPages") shouldBe 2L
+        parameters.get("page") shouldBe 4L
+        parameters.get("onlyHeader") shouldBe true
+        parameters.get("onlyScan") shouldBe false
+        parameters.get("barcode") shouldBe "EAN"
+        parameters.get("value") shouldBe 3.4
+        parameters.get("stringValueLookingLikeIncorrectDouble") shouldBe "3.4.5.6.7.8.9"
+        parameters.get("list") shouldBe listOf(1.0, 2.5)
 
-        assertThat(parameters.get("onlyScan", String::class.java)).isEqualTo("false")
-        assertThat(parameters.get("value", Float::class.java)).isEqualTo(3.4f)
+        parameters.get("onlyScan", String::class.java) shouldBe "false"
+        parameters.get("value", Float::class.java) shouldBe 3.4f
     }
 }

@@ -18,5 +18,5 @@ class DefaultActorServiceContext {
                             actorRefWithTransformerIdList: List<ActorRefWithId>,
                             @Qualifier("serializerActor") serializerActorRef: ActorRef) =
             DefaultActorService(actorRefWithTransformerIdList,
-                                                                          serializerActorRef)
+                                serializerActorRef)
 }

@@ -41,7 +41,6 @@ class FileOutgoingCommunicationConverterTest {
             MapCommunicationParameters(mapOf("location" to location.toString()))
 
     private fun createFileTransformedDataDescriptor(directory: File? = null): TransformedDataDescriptor =
-            TransformedDataDescriptor(FileData(createTempFile(directory = directory).apply { writeText("test") }.toURI()),
-                                      MapMetadata.empty())
+            TransformedDataDescriptor(FileData(createTempFile(directory = directory).apply { writeText("test") }.toURI()), MapMetadata.empty())
 
 }

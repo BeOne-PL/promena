@@ -52,11 +52,11 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
 
     private fun logException(e: Exception, transformerId: String, transformationDescriptor: TransformationDescriptor) {
         logger.error("An error occurred during transforming <{}> <{}> <{}> <{}>",
-                                                                                                         transformerId,
-                                                                                                         transformationDescriptor.dataDescriptors.getLocationsInString(),
-                                                                                                         transformationDescriptor.parameters,
-                                                                                                         transformationDescriptor.targetMediaType,
-                                                                                                         e)
+                     transformerId,
+                     transformationDescriptor.dataDescriptors.getLocationsInString(),
+                     transformationDescriptor.parameters,
+                     transformationDescriptor.targetMediaType,
+                     e)
     }
 
     private fun List<DataDescriptor>.getLocationsInString(): String =

@@ -12,8 +12,9 @@ class CommunicationParametersConverter {
                                                .toMap())
 
     private fun convert(values: List<Any>): Any =
-            values.map { it.convertToBoolean() ?: it.convertToDouble() ?: it.convertToLong() ?: it.toString() }
-                    .let { unWrapIfArrayContainsOnlyOneElement(it) }
+            unWrapIfArrayContainsOnlyOneElement(
+                    values.map { it.convertToBoolean() ?: it.convertToDouble() ?: it.convertToLong() ?: it.toString() }
+            )
 
     private fun Any.convertToBoolean(): Boolean? =
             when (this.toString()) {

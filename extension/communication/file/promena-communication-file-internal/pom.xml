@@ -21,9 +21,5 @@
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-internal</artifactId>
         </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.core</groupId>
-            <artifactId>promena-core-common</artifactId>
-        </dependency>
     </dependencies>
 </project>

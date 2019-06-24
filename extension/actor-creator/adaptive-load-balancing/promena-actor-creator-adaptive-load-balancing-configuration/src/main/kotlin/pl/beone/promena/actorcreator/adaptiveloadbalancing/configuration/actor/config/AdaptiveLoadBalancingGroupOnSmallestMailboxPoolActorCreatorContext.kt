@@ -41,7 +41,7 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
             }
         } else {
             try {
-                Class.forName(property).newInstance() as MetricsSelector
+                Class.forName(property).getDeclaredConstructor().newInstance() as MetricsSelector
             } catch (e: Exception) {
                 throw Exception("Couldn't create MetricsSelector using <$property>. It must be class with constructor without arguments!", e)
             }

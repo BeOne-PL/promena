@@ -29,8 +29,7 @@ abstract class AbstractFileCommunicationConverter<T : AbstractDescriptor> {
 
                 return descriptor.saveBytesInFileAndConvert(location)
             } else {
-                throw CommunicationException("Data exists only in memory but should be file",
-                                                                                                            e)
+                throw CommunicationException("Data exists only in memory but should be file", e)
             }
         }
 

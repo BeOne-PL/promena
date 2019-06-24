@@ -29,11 +29,5 @@
             <groupId>de.javakaffee</groupId>
             <artifactId>kryo-serializers</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>pl.beone.promena.core</groupId>
-            <artifactId>promena-core-common</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>

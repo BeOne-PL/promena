@@ -9,7 +9,7 @@ import akka.cluster.metrics.NodeMetrics
 import akka.cluster.metrics.StandardMetrics
 import akka.event.Logging
 
-// TODO asd
+// TODO as prototype
 class MetricsListener : AbstractActor() {
     private var log = Logging.getLogger(context.system(), this)
     private var cluster = Cluster.get(context.system())

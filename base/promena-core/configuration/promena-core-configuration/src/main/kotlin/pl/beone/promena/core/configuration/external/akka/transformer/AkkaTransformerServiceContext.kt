@@ -16,5 +16,5 @@ class AkkaTransformerServiceContext {
     fun akkaTransformerService(actorMaterializer: ActorMaterializer,
                                actorService: ActorService) =
             AkkaTransformerService(actorMaterializer,
-                                                                                   actorService)
+                                   actorService)
 }

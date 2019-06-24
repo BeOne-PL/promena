@@ -35,10 +35,9 @@ class DefaultTransformationUseCaseTest {
         val transformerService = mockk<TransformerService> {
             every { transform("default", listOf(dataDescriptor), targetMediaType, parameters) } returns transformedDataDescriptors
         }
-        val outgoingCommunicationConverter =
-                mockk<OutgoingCommunicationConverter> {
-                    every { convert(transformedDataDescriptor, communicationParameters) } returns transformedDataDescriptor
-                }
+        val outgoingCommunicationConverter = mockk<OutgoingCommunicationConverter> {
+            every { convert(transformedDataDescriptor, communicationParameters) } returns transformedDataDescriptor
+        }
 
         DefaultTransformationUseCase(mockk(), incomingCommunicationConverter, transformerService, outgoingCommunicationConverter)
                 .transform("default", transformationDescriptor, communicationParameters) shouldBe transformedDataDescriptors

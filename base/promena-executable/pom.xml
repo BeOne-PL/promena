@@ -41,11 +41,11 @@
             <artifactId>promena-connector-http-configuration</artifactId>
             <version>3.0.0-alpha</version>
         </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-message-broker-configuration</artifactId>
-            <version>3.0.0-alpha</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.connector</groupId>-->
+<!--            <artifactId>promena-connector-message-broker-configuration</artifactId>-->
+<!--            <version>3.0.0-alpha</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>pl.beone.transformer</groupId>

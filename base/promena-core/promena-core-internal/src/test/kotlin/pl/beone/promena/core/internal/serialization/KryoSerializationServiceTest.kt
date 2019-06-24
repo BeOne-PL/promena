@@ -40,7 +40,7 @@ class KryoSerializationServiceTest {
     }
 
     @Test
-    fun `serialize and deserialize _ TransformationDescriptor`() {
+    fun `serialize and deserialize _ single TransformationDescriptor`() {
         val transformationDescriptor = TransformationDescriptor(
                 listOf(DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.APPLICATION_OCTET_STREAM),
                        DataDescriptor(InMemoryData("""{ "key": "value" }""".toByteArray()), MediaTypeConstants.APPLICATION_OCTET_STREAM)),

@@ -42,7 +42,7 @@
         </repository>
         <snapshotRepository>
             <id>beone-snapshots</id>
-            <url>http://nexus.office.beone.pl/repository/snapshots</url>
+            <url>http://nexus.office.beone.pl/repository/s napshots</url>
         </snapshotRepository>
     </distributionManagement>
 

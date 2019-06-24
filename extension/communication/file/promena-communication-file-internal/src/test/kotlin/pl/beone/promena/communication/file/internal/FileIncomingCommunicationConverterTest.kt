@@ -69,6 +69,5 @@ class FileIncomingCommunicationConverterTest {
     }
 
     private fun createFileTransformedDataDescriptor(directory: File? = null): DataDescriptor =
-            DataDescriptor(FileData(createTempFile(directory = directory).apply { writeText("test") }.toURI()),
-                           MediaTypeConstants.TEXT_PLAIN)
+            DataDescriptor(FileData(createTempFile(directory = directory).apply { writeText("test") }.toURI()), MediaTypeConstants.TEXT_PLAIN)
 }

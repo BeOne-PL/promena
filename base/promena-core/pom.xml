@@ -129,11 +129,6 @@
             </dependency>
             <dependency>
                 <groupId>pl.beone.promena.core</groupId>
-                <artifactId>promena-core-common</artifactId>
-                <version>${promena-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>pl.beone.promena.core</groupId>
                 <artifactId>promena-core-integration-test</artifactId>
                 <version>${promena-core.version}</version>
             </dependency>

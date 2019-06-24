@@ -23,8 +23,7 @@ class MemoryCommunicationValidatorConverter : CommunicationValidator {
             try {
                 data.isAvailable()
             } catch (e: DataAccessibilityException) {
-                throw CommunicationValidationException("One of data isn't available",
-                                                                                                                      e)
+                throw CommunicationValidationException("One of data isn't available", e)
             }
         }
     }

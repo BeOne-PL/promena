@@ -18,6 +18,6 @@ class DefaultTransformersCreatorContext {
                                    internalCommunicationConverter: InternalCommunicationConverter,
                                    actorCreator: ActorCreator) =
             DefaultTransformersCreator(transformerConfig,
-                                                                                              internalCommunicationConverter,
-                                                                                              actorCreator)
+                                       internalCommunicationConverter,
+                                       actorCreator)
 }

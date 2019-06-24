@@ -38,7 +38,7 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
         logBeforeTransformation(transformerId, dataDescriptors, targetMediaType, parameters)
 
         val (transformedDataDescriptors, measuredTimeMs) = measureTimeMillisWithContent {
-            val bytes = try {
+             try {
                 unwrapExecutionException {
                     createSource(dataDescriptors)
                             .via(createFlow(actorService.getTransformationActor(transformerId), targetMediaType, parameters))
@@ -61,8 +61,6 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
                                                    e)
                 }
             }
-
-            bytes
         }
 
         logAfterTransformation(transformerId, targetMediaType, parameters, measuredTimeMs, transformedDataDescriptors)

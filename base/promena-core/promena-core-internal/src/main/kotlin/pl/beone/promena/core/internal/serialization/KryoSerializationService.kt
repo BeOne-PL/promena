@@ -13,7 +13,7 @@ import java.net.URI
 import java.util.*
 
 // default = 100MB
-class KryoSerializationService(private val bufferSize: Int = 100*1024*1024) : SerializationService {
+class KryoSerializationService(private val bufferSize: Int = 100 * 1024 * 1024) : SerializationService {
 
     companion object {
         private val kryoThreadLocal = object : ThreadLocal<Kryo>() {
@@ -49,7 +49,7 @@ class KryoSerializationService(private val bufferSize: Int = 100*1024*1024) : Se
             try {
                 with(ByteBufferOutput(bufferSize)) {
                     kryoThreadLocal.get().writeClassAndObject(this, element)
-                    return this.toBytes()!!
+                    return this.toBytes()
                 }
             } catch (e: Exception) {
                 throw SerializationException("Couldn't serialize", e)

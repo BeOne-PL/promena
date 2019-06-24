@@ -1,6 +1,5 @@
 package pl.beone.promena.connector.http.delivery.http
 
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -15,8 +14,6 @@ class TransformerHandler(private val serializationService: SerializationService,
                          private val transformationUseCase: TransformationUseCase) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(TransformerHandler::class.java)
-
         private const val HEADER_SERIALIZATION_CLASS = "serialization-class"
     }
 

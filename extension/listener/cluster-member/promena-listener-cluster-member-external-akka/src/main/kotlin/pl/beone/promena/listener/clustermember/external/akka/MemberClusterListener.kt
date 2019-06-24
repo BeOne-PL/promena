@@ -2,7 +2,6 @@ package pl.beone.promena.listener.clustermember.external.akka
 
 import akka.actor.AbstractActor
 import akka.cluster.Cluster
-import akka.cluster.ClusterEvent
 import akka.cluster.ClusterEvent.*
 import akka.event.Logging
 

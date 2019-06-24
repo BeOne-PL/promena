@@ -9,6 +9,8 @@ import pl.beone.promena.transformer.internal.model.getListWithoutType
 data class MapParameters(private val parameters: Map<String, Any>) : Parameters {
 
     companion object {
+
+        @JvmStatic
         fun empty(): Parameters = MapParameters(emptyMap())
     }
 

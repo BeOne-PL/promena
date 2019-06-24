@@ -8,7 +8,6 @@ import pl.beone.promena.transformer.applicationmodel.exception.transformer.Trans
 class DefaultActorService(private val actorRefWithTransformerIdList: List<ActorRefWithId>,
                           private val serializerActorRef: ActorRef) : ActorService {
 
-
     override fun getTransformationActor(transformerId: String): ActorRef =
             actorRefWithTransformerIdList.firstOrNull { it.id == transformerId }?.ref
                     ?: throw throw TransformerNotFoundException("There is no <$transformerId> transformer")

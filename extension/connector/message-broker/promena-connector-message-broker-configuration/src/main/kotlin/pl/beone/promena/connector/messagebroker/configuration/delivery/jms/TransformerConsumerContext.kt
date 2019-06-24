@@ -29,9 +29,9 @@ class TransformerConsumerContext {
         addSelectorToEnvironment(environment, transformerConfig, transformers)
 
         return TransformerConsumer(jmsTemplate,
-                                                                                         ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")),
-                                                                                         ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")),
-                                                                                         transformationUseCase)
+                                   ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")),
+                                   ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")),
+                                   transformationUseCase)
     }
 
     private fun addSelectorToEnvironment(environment: StandardEnvironment,

@@ -8,8 +8,9 @@ import java.net.URI
 data class MapCommunicationParameters(private val parameters: Map<String, Any>) : CommunicationParameters {
 
     companion object {
-        fun empty(): CommunicationParameters = MapCommunicationParameters(
-                emptyMap())
+
+        @JvmStatic
+        fun empty(): CommunicationParameters = MapCommunicationParameters(emptyMap())
     }
 
     override fun get(key: String): Any =

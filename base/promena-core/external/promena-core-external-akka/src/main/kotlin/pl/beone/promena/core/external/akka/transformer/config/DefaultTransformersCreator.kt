@@ -46,15 +46,13 @@ class DefaultTransformersCreator(private val transformerConfig: TransformerConfi
                                        transformers: List<TransformerWithPriority>,
                                        maxActors: Int): ActorRefWithId =
             actorCreator.create(transformerId,
-                                Props.create { TransformerActor(transformers.map { it.transformer }, internalCommunicationConverter) },
+                                Props.create(TransformerActor::class.java) {
+                                    TransformerActor(transformers.map { it.transformer }, internalCommunicationConverter)
+                                },
                                 maxActors)
 
     private fun sortTransformersByPriority(transformers: List<Transformer>): List<TransformerWithPriority> =
-            transformers.map {
-                TransformerWithPriority(it,
-                                        transformerConfig.getPriority(
-                                                it))
-            }
+            transformers.map { TransformerWithPriority(it, transformerConfig.getPriority(it)) }
                     .sortedBy { it.priority }
 
 }

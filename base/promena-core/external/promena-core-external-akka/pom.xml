@@ -21,10 +21,6 @@
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-contract-akka</artifactId>
         </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.core</groupId>
-            <artifactId>promena-core-common</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>

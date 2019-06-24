@@ -91,7 +91,8 @@ class AkkaDescriptorSerializationServiceTest {
     private fun prepare(serializationService: SerializationService): AkkaDescriptorSerializationService {
         val actorMaterializer = ActorMaterializer.create(actorSystem)
 
-        val serializerActor = actorSystem.actorOf(Props.create { SerializerActor(serializationService) }, SerializerActor.actorName)
+        val serializerActor =
+                actorSystem.actorOf(Props.create(SerializerActor::class.java) { SerializerActor(serializationService) }, SerializerActor.actorName)
 
         val actorService = mockk<ActorService> {
             every { getSerializerActor() } returns serializerActor
