@@ -3,13 +3,13 @@ package pl.beone.promena.core.configuration.external.akka.framework
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.StandardEnvironment
 
-// TODO maybe separate to custom interface
 @Configuration
 class ActorSystemContext {
 
@@ -18,6 +18,7 @@ class ActorSystemContext {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ActorSystem::class)
     fun actorSystem(environment: Environment): ActorSystem {
         setAkkaProperties(getAkkaProperties(environment))
 
