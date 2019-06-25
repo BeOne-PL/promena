@@ -70,6 +70,7 @@ EXIT /B %ERRORLEVEL%
     docker volume create alfresco-promena-http-client-acs-volume
     docker volume create alfresco-promena-http-client-db-volume
     docker volume create alfresco-promena-http-client-ass-volume
+    docker volume create alfresco-promena-http-client-ass-volume-solrhome
     docker-compose -f "%COMPOSE_FILE_PATH%" up --build -d
 EXIT /B 0
 :down
@@ -96,4 +97,5 @@ EXIT /B 0
     docker volume rm -f alfresco-promena-http-client-acs-volume
     docker volume rm -f alfresco-promena-http-client-db-volume
     docker volume rm -f alfresco-promena-http-client-ass-volume
+    docker volume rm -f alfresco-promena-http-client-ass-volume-solrhome
 EXIT /B 0

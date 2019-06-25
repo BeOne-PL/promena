@@ -12,6 +12,7 @@ start() {
     docker volume create alfresco-promena-http-client-acs-volume
     docker volume create alfresco-promena-http-client-db-volume
     docker volume create alfresco-promena-http-client-ass-volume
+    docker volume create alfresco-promena-http-client-ass-volume-solrhome
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
@@ -25,6 +26,7 @@ purge() {
     docker volume rm -f alfresco-promena-http-client-acs-volume
     docker volume rm -f alfresco-promena-http-client-db-volume
     docker volume rm -f alfresco-promena-http-client-ass-volume
+    docker volume rm -f alfresco-promena-http-client-ass-volume-solrhome
 }
 
 build() {
