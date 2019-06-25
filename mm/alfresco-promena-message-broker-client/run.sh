@@ -12,6 +12,7 @@ start() {
     docker volume create alfresco-promena-message-broker-client-acs-volume
     docker volume create alfresco-promena-message-broker-client-db-volume
     docker volume create alfresco-promena-message-broker-client-ass-volume
+    docker volume create alfresco-promena-message-broker-client-ass-volume-solrhome
     docker volume create alfresco-promena-message-broker-client-activemq-log-volume
     docker volume create alfresco-promena-message-broker-client-activemq-conf-volume
     docker volume create alfresco-promena-message-broker-client-activemq-data-volume
@@ -28,6 +29,7 @@ purge() {
     docker volume rm -f alfresco-promena-message-broker-client-acs-volume
     docker volume rm -f alfresco-promena-message-broker-client-db-volume
     docker volume rm -f alfresco-promena-message-broker-client-ass-volume
+    docker volume rm -f alfresco-promena-message-broker-client-ass-volume-solrhome
     docker volume rm -f alfresco-promena-message-broker-client-activemq-log-volume
     docker volume rm -f alfresco-promena-message-broker-client-activemq-conf-volume
     docker volume rm -f alfresco-promena-message-broker-client-activemq-data-volume
