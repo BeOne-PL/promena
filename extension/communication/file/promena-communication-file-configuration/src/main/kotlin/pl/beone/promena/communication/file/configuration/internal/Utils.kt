@@ -1,7 +1,6 @@
 package pl.beone.promena.communication.file.configuration.internal
 
 import org.springframework.core.env.Environment
-import pl.beone.promena.core.common.utils.verifyIfItIsDirectoryAndYouCanCreateFile
 import java.io.File
 import java.io.IOException
 import java.net.URI
