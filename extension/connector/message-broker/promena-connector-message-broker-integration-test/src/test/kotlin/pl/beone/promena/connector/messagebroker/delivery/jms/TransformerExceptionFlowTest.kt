@@ -12,7 +12,6 @@ import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.Before
-import org.junit.ClassRule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,8 +22,8 @@ import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
-import org.testcontainers.containers.FixedHostPortGenericContainer
 import pl.beone.promena.connector.messagebroker.integrationtest.IntegrationTestApplication
+import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
 import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformerResponseConsumer
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerTimeoutException
@@ -37,18 +36,10 @@ import java.util.*
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IntegrationTestApplication::class])
-@TestPropertySource("classpath:module-connector-activemq-test.properties")
-class TransformerIncorrectFlowTest {
+@TestPropertySource("classpath:module-connector-message-broker-test.properties")
+class TransformerExceptionFlowTest {
 
     companion object {
-        @get:ClassRule
-        @JvmStatic
-        val activemq = FixedHostPortGenericContainer<Nothing>("rmohr/activemq:5.15.6-alpine").apply {
-            withFixedExposedPort(61616, 61616)
-            start()
-        }
-
-        private const val transformerId = "test-transformer"
         private val correlationId = UUID.randomUUID().toString()
         private val expectException = TransformerTimeoutException("Time expired")
     }
@@ -56,7 +47,7 @@ class TransformerIncorrectFlowTest {
     @Autowired
     private lateinit var jmsTemplate: JmsTemplate
 
-    @Value("\${promena.connector.activemq.consumer.queue.request}")
+    @Value("\${promena.connector.message-broker.consumer.queue.request}")
     private lateinit var queueRequest: String
 
     @Autowired
@@ -85,7 +76,7 @@ class TransformerIncorrectFlowTest {
 
         headers.let {
             it shouldContainAll mapOf(CORRELATION_ID to correlationId,
-                                      PromenaJmsHeader.PROMENA_TRANSFORMER_ID to transformerId,
+                                      PromenaJmsHeader.PROMENA_TRANSFORMER_ID to MockContext.transformerId,
                                       "send_back_nodeRefs" to listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
                                                                      "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"),
                                       "send_back_targetMediaType_mimeType" to TEXT_PLAIN.mimeType,
@@ -124,7 +115,7 @@ class TransformerIncorrectFlowTest {
                                                             MapParameters.empty())) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
+                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, MockContext.transformerId)
 
                 setObjectProperty("send_back_nodeRefs", listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
                                                                "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))

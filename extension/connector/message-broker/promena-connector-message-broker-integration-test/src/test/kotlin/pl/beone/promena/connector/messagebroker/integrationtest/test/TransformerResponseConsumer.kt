@@ -14,13 +14,13 @@ class TransformerResponseConsumer {
     private val messages = LinkedBlockingQueue<HeadersWithPayload<List<TransformedDataDescriptor>>>()
     private val errorMessages = LinkedBlockingQueue<HeadersWithPayload<Exception>>()
 
-    @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.response}")
+    @JmsListener(destination = "\${promena.connector.message-broker.consumer.queue.response}")
     fun receiveQueue(@Headers headers: Map<String, Any>,
                      @Payload transformedDataDescriptors: List<TransformedDataDescriptor>) {
         messages.add(HeadersWithPayload(headers, transformedDataDescriptors))
     }
 
-    @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.response.error}")
+    @JmsListener(destination = "\${promena.connector.message-broker.consumer.queue.response.error}")
     fun receiveErrorQueue(@Headers headers: Map<String, Any>,
                           @Payload exception: Exception) {
         errorMessages.add(HeadersWithPayload(headers, exception))

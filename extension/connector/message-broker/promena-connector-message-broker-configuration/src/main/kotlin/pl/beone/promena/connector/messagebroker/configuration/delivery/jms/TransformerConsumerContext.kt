@@ -29,8 +29,8 @@ class TransformerConsumerContext {
         addSelectorToEnvironment(environment, transformerConfig, transformers)
 
         return TransformerConsumer(jmsTemplate,
-                                   ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")),
-                                   ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")),
+                                   ActiveMQQueue(environment.getRequiredProperty("promena.connector.message-broker.consumer.queue.response")),
+                                   ActiveMQQueue(environment.getRequiredProperty("promena.connector.message-broker.consumer.queue.response.error")),
                                    transformationUseCase)
     }
 
@@ -43,7 +43,7 @@ class TransformerConsumerContext {
         logger.info("Set transformer consumer selector to: {}", selector)
 
         environment.propertySources.addLast(
-                MapPropertySource("transformerConsumer", mapOf("promena.connector.activemq.consumer.queue.request.selector" to selector))
+                MapPropertySource("transformerConsumer", mapOf("promena.connector.message-broker.consumer.queue.request.selector" to selector))
         )
     }
 }

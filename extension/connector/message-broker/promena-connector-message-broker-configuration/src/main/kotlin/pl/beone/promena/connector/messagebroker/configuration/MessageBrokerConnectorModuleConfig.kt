@@ -4,5 +4,5 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 
 @Configuration
-@PropertySource("classpath:module-connector-activemq.properties")
-class ActiveMQConnectorModuleConfig
+@PropertySource("classpath:module-connector-message-broker.properties")
+class MessageBrokerConnectorModuleConfig

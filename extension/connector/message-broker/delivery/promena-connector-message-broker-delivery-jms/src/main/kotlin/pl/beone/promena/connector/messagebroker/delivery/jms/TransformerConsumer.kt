@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 
@@ -25,8 +26,8 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
     private val headersToSentBackDeterminer = HeadersToSentBackDeterminer()
     private val transformerProducer = TransformerProducer(jmsTemplate)
 
-    @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.request}",
-                 selector = "\${promena.connector.activemq.consumer.queue.request.selector}")
+    @JmsListener(destination = "\${promena.connector.message-broker.consumer.queue.request}",
+                 selector = "\${promena.connector.message-broker.consumer.queue.request.selector}")
     fun receiveQueue(@Header(JmsHeaders.CORRELATION_ID) correlationId: String,
                      @Header(PromenaJmsHeader.PROMENA_TRANSFORMER_ID) transformerId: String,
                      @Headers headers: Map<String, Any>,
@@ -37,8 +38,10 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
             val communicationParameters = communicationParametersConverter.convert(headers)
 
             responseQueue to transformationUseCase.transform(transformerId, transformationDescriptor, communicationParameters)
+        } catch (e: TransformerNotFoundException) {
+            throw e
         } catch (e: Exception) {
-            logException(e, transformerId, transformationDescriptor)
+//            logException(e, transformerId, transformationDescriptor) TODO is it logging in higher leverls?
 
             errorResponseQueue to e
         }
