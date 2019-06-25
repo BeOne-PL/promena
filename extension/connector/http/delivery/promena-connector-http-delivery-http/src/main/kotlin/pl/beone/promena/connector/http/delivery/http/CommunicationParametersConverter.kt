@@ -4,7 +4,7 @@ import org.springframework.util.MultiValueMap
 import pl.beone.promena.core.contract.communication.CommunicationParameters
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 
-class CommunicationParametersConverter {
+internal class CommunicationParametersConverter {
 
     fun convert(parameters: MultiValueMap<String, String>): CommunicationParameters =
             MapCommunicationParameters(parameters.entries
