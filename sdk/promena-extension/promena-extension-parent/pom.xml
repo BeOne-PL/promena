@@ -7,11 +7,11 @@
     <parent>
         <groupId>pl.beone.promena.sdk</groupId>
         <artifactId>promena-parent</artifactId>
-        <version>3.0.0-alpha</version>
+        <version>0.9.0</version>
     </parent>
 
     <artifactId>promena-extension-parent</artifactId>
-    <version>3.0.0-alpha</version>
+    <version>0.9.0</version>
     <packaging>pom</packaging>
 
     <name>[SDK][POM] Promena extension</name>
@@ -40,8 +40,8 @@
     </distributionManagement>
 
     <properties>
-        <promena-core.version>3.0.0-alpha</promena-core.version>
-        <promena-transformer.version>3.0.0-alpha</promena-transformer.version>
+        <promena-core.version>0.9.0</promena-core.version>
+        <promena-transformer.version>0.9.0</promena-transformer.version>
     </properties>
 
     <dependencyManagement>

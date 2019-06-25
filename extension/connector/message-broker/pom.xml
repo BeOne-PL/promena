@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk</groupId>
         <artifactId>promena-extension-parent</artifactId>
-        <version>3.0.0-alpha</version>
+        <version>0.9.0</version>
     </parent>
 
     <groupId>pl.beone.promena.connector</groupId>
     <artifactId>promena-connector-message-broker</artifactId>
-    <version>3.0.0-alpha</version>
+    <version>0.9.0</version>
 
     <name>[EXTENSION][CONNECTOR] Message broker</name>
 
@@ -47,9 +47,9 @@
     </distributionManagement>
 
     <properties>
-        <promena-connector-message-broker.version>3.0.0-alpha</promena-connector-message-broker.version>
+        <promena-connector-message-broker.version>0.9.0</promena-connector-message-broker.version>
 
-        <kryo-message-converter.version>1.0.0</kryo-message-converter.version>
+        <kryo-message-converter.version>0.9.0</kryo-message-converter.version>
     </properties>
 
     <dependencies>

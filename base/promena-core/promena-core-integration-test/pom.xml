@@ -5,14 +5,14 @@
     <parent>
         <artifactId>promena-core</artifactId>
         <groupId>pl.beone.promena.core</groupId>
-        <version>3.0.0-alpha</version>
+        <version>0.9.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>promena-core-integration-test</artifactId>
 
     <properties>
-        <promena-communication-memory.version>3.0.0-alpha</promena-communication-memory.version>
+        <promena-communication-memory.version>0.9.0</promena-communication-memory.version>
     </properties>
 
     <dependencies>

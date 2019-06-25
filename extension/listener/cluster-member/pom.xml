@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk</groupId>
         <artifactId>promena-extension-parent</artifactId>
-        <version>3.0.0-alpha</version>
+        <version>0.9.0</version>
     </parent>
 
     <groupId>pl.beone.promena.listener</groupId>
     <artifactId>promena-listener-cluster-member</artifactId>
-    <version>3.0.0-alpha</version>
+    <version>0.9.0</version>
 
     <name>[EXTENSION][LISTENER] Cluster member</name>
 
@@ -46,7 +46,7 @@
     </distributionManagement>
 
     <properties>
-        <promena-listener-cluster-member.version>3.0.0-alpha</promena-listener-cluster-member.version>
+        <promena-listener-cluster-member.version>0.9.0</promena-listener-cluster-member.version>
     </properties>
 
     <dependencies>

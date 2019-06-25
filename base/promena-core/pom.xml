@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk</groupId>
         <artifactId>promena-parent</artifactId>
-        <version>3.0.0-alpha</version>
+        <version>0.9.0</version>
     </parent>
 
     <groupId>pl.beone.promena.core</groupId>
     <artifactId>promena-core</artifactId>
-    <version>3.0.0-alpha</version>
+    <version>0.9.0</version>
 
     <name>Core</name>
 
@@ -54,8 +54,8 @@
     </distributionManagement>
 
     <properties>
-        <promena-core.version>3.0.0-alpha</promena-core.version>
-        <promena-transformer.version>3.0.0-alpha</promena-transformer.version>
+        <promena-core.version>0.9.0</promena-core.version>
+        <promena-transformer.version>0.9.0</promena-transformer.version>
     </properties>
 
     <dependencies>

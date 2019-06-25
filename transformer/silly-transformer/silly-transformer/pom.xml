@@ -16,7 +16,7 @@
 
         <docker-test-runner.version>1.0.0-alpha</docker-test-runner.version>
 
-        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
 
     <dependencies>

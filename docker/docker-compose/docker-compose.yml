@@ -80,7 +80,7 @@ services:
       - activemq-data:/opt/activemq/data
 
   promena:
-    image: promena-executable:3.0.0-alpha
+    image: promena-executable:0.9.0
     environment:
       - "spring.activemq.broker-url=failover:(nio://activemq:61616)?timeout=3000&jms.useCompression=true"
 

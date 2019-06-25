@@ -43,7 +43,7 @@
         <tika-core.version>1.20</tika-core.version>
         <picocli.version>3.9.5</picocli.version>
 
-        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
 
     <dependencies>

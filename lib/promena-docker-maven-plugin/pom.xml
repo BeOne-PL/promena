@@ -7,7 +7,7 @@
 
     <groupId>pl.beone.promena.maven.plugin</groupId>
     <artifactId>promena-docker-maven-plugin</artifactId>
-    <version>1.0.0-alpha</version>
+    <version>0.9.0</version>
     <packaging>maven-plugin</packaging>
 
     <name>[MAVEN][PLUGIN] promena-docker-maven-plugin</name>
@@ -17,7 +17,7 @@
     </prerequisites>
 
     <properties>
-        <kotlin.version>1.3.31</kotlin.version>
+        <kotlin.version>1.3.40</kotlin.version>
         <java.version>11</java.version>
 
         <maven.version>3.3.9</maven.version>
@@ -29,7 +29,7 @@
 
         <junit.version>4.12</junit.version>
 
-        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>

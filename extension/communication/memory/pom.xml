@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk</groupId>
         <artifactId>promena-extension-parent</artifactId>
-        <version>3.0.0-alpha</version>
+        <version>0.9.0</version>
     </parent>
 
     <groupId>pl.beone.promena.communication</groupId>
     <artifactId>promena-communication-memory</artifactId>
-    <version>3.0.0-alpha</version>
+    <version>0.9.0</version>
 
     <name>[EXTENSION][COMMUNICATION] Memory</name>
 
@@ -46,7 +46,7 @@
     </distributionManagement>
 
     <properties>
-        <promena-communication-memory.version>3.0.0-alpha</promena-communication-memory.version>
+        <promena-communication-memory.version>0.9.0</promena-communication-memory.version>
     </properties>
 
     <dependencies>

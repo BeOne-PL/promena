@@ -6,9 +6,9 @@
 
     <groupId>pl.beone.lib</groupId>
     <artifactId>docker-test-runner</artifactId>
-    <version>1.0.0-alpha</version>
+    <version>0.9.0</version>
 
-    <name>[LIB] Docker test runner</name>
+    <name>[LIB] docker-test-runner</name>
 
     <repositories>
         <repository>
@@ -34,17 +34,17 @@
     </distributionManagement>
 
     <properties>
-        <kotlin.version>1.3.31</kotlin.version>
-        <java.version>1.8</java.version>
+        <kotlin.version>1.3.40</kotlin.version>
+        <java.version>11</java.version>
 
-        <type-converter.version>1.0.0</type-converter.version>
+        <type-converter.version>0.9.0</type-converter.version>
         <testcontainers.version>1.11.2</testcontainers.version>
 
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
         <kotlintest-runner-junit5.version>3.3.2</kotlintest-runner-junit5.version>
 
-        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
     </properties>

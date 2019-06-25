@@ -5,7 +5,7 @@
     <parent>
         <groupId>pl.beone.promena.connector</groupId>
         <artifactId>promena-connector-http</artifactId>
-        <version>3.0.0-alpha</version>
+        <version>0.9.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,11 +16,6 @@
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-internal</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-http-contract</artifactId>
-            <version>${promena-connector-http.version}</version>
         </dependency>
 
         <dependency>
