@@ -76,14 +76,14 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
             logger.debug("Transforming <{}> <{}, {}> <{} source(s)>: [{}]...",
                          transformerId,
                          targetMediaType,
-                         parameters.getAll(),
+                         parameters,
                          dataDescriptors.size,
                          dataDescriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" })
         } else {
             logger.info("Transforming <{}> <{}, {}> <{} source(s)>: [{}]...",
                         transformerId,
                         targetMediaType,
-                        parameters.getAll(),
+                        parameters,
                         dataDescriptors.size,
                         dataDescriptors.joinToString(", ") { "<${it.mediaType}>" })
         }
@@ -115,7 +115,7 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
             logger.debug("Transformed <{}> <{}, {}> <{} result(s)> in <{} s>: [{}]",
                          transformerId,
                          targetMediaType,
-                         parameters.getAll(),
+                         parameters,
                          transformedDataDescriptors.size,
                          measuredTimeMs.toSeconds(),
                          transformedDataDescriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" })
@@ -123,7 +123,7 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
             logger.info("Transformed <{}> <{}, {}> <{} result(s)> in <{} s>: [{}]",
                         transformerId,
                         targetMediaType,
-                        parameters.getAll(),
+                        parameters,
                         transformedDataDescriptors.size,
                         measuredTimeMs.toSeconds(),
                         transformedDataDescriptors.joinToString(", ") { "<${it.metadata}>" })
@@ -144,9 +144,9 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
     private fun List<DataDescriptor>.getLocationsInString(): String =
             joinToString(",") {
                 try {
-                    "${it.data.getLocation()}, ${it.mediaType}"
+                    "<${it.data.getLocation()}, ${it.mediaType}>"
                 } catch (e: UnsupportedOperationException) {
-                    "no location, ${it.mediaType}"
+                    "<no location, ${it.mediaType}>"
                 }
             }
 }

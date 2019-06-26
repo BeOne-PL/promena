@@ -37,7 +37,7 @@ class DefaultTransformationUseCase(private val communicationValidator: Communica
 
             return transformedDataDescriptors.map { outgoingCommunicationConverter.convert(it, communicationParameters) }
         } catch (e: Exception) {
-            logger.error("Couldn't transform <{}, {}>", transformationDescriptor, communicationParameters, e)
+            logger.error("Couldn't transform <{}, {}>", transformerId, communicationParameters, e)
 
             throw e
         }
