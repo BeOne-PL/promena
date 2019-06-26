@@ -22,7 +22,7 @@ class ActorSystemContext {
     fun actorSystem(environment: Environment): ActorSystem {
         setAkkaProperties(getAkkaProperties(environment))
 
-        return ActorSystem.create("TransformationServer", ConfigFactory.load("kryo-mapping.conf"))
+        return ActorSystem.create("Promena", ConfigFactory.load("kryo-mapping.conf"))
     }
 
     private fun getAkkaProperties(environment: Environment): List<Pair<String, String>> =
