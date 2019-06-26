@@ -41,8 +41,6 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
         } catch (e: TransformerNotFoundException) {
             throw e
         } catch (e: Exception) {
-//            logException(e, transformerId, transformationDescriptor) TODO is it logging in higher leverls?
-
             errorResponseQueue to e
         }
 
@@ -52,24 +50,6 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
 
         transformerProducer.send(queue, correlationId, headersToSend, payload)
     }
-
-    private fun logException(e: Exception, transformerId: String, transformationDescriptor: TransformationDescriptor) {
-        logger.error("An error occurred during transforming <{}> <{}> <{}> <{}>",
-                     transformerId,
-                     transformationDescriptor.dataDescriptors.getLocationsInString(),
-                     transformationDescriptor.parameters,
-                     transformationDescriptor.targetMediaType,
-                     e)
-    }
-
-    private fun List<DataDescriptor>.getLocationsInString(): String =
-            joinToString(",") {
-                try {
-                    "${it.data.getLocation()}, ${it.mediaType}"
-                } catch (e: UnsupportedOperationException) {
-                    "no location, ${it.mediaType}"
-                }
-            }
 
     private fun determineTimestampHeaders(startTimestamp: Long, endTimestamp: Long): Map<String, Long> =
             mapOf(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP to startTimestamp,

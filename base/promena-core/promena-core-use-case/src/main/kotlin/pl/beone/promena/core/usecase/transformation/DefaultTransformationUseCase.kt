@@ -1,5 +1,6 @@
 package pl.beone.promena.core.usecase.transformation
 
+import org.slf4j.LoggerFactory
 import pl.beone.promena.core.contract.communication.CommunicationParameters
 import pl.beone.promena.core.contract.communication.CommunicationValidator
 import pl.beone.promena.core.contract.communication.IncomingCommunicationConverter
@@ -15,21 +16,31 @@ class DefaultTransformationUseCase(private val communicationValidator: Communica
                                    private val outgoingCommunicationConverter: OutgoingCommunicationConverter)
     : TransformationUseCase {
 
+    companion object {
+        private val logger = LoggerFactory.getLogger(DefaultTransformationUseCase::class.java)
+    }
+
     override fun transform(transformerId: String,
                            transformationDescriptor: TransformationDescriptor,
                            communicationParameters: CommunicationParameters): List<TransformedDataDescriptor> {
-        communicationValidator.validate(transformationDescriptor.dataDescriptors, communicationParameters)
+        try {
+            communicationValidator.validate(transformationDescriptor.dataDescriptors, communicationParameters)
 
-        val convertedDataDescriptors = transformationDescriptor.dataDescriptors.map {
-            incomingCommunicationConverter.convert(it, communicationParameters)
+            val convertedDataDescriptors = transformationDescriptor.dataDescriptors.map {
+                incomingCommunicationConverter.convert(it, communicationParameters)
+            }
+
+            val transformedDataDescriptors = transformerService.transform(transformerId,
+                                                                          convertedDataDescriptors,
+                                                                          transformationDescriptor.targetMediaType,
+                                                                          transformationDescriptor.parameters)
+
+            return transformedDataDescriptors.map { outgoingCommunicationConverter.convert(it, communicationParameters) }
+        } catch (e: Exception) {
+            logger.error("Couldn't transform <{}, {}>", transformationDescriptor, communicationParameters, e)
+
+            throw e
         }
-
-        val transformedDataDescriptors = transformerService.transform(transformerId,
-                                                                      convertedDataDescriptors,
-                                                                      transformationDescriptor.targetMediaType,
-                                                                      transformationDescriptor.parameters)
-
-        return transformedDataDescriptors.map { outgoingCommunicationConverter.convert(it, communicationParameters) }
     }
 
 }

@@ -35,11 +35,8 @@ class TransformerHandler(private val serializationService: SerializationService,
     private fun createResponse(bytes: ByteArray): Mono<ServerResponse> =
             ServerResponse.ok().body(Mono.just(bytes), ByteArray::class.java)
 
-    private fun createExceptionResponse(exception: Throwable): Mono<ServerResponse> {
-        // TODO log
-
-        return ServerResponse.status(INTERNAL_SERVER_ERROR)
-                .header(HEADER_SERIALIZATION_CLASS, exception.javaClass.name)
-                .body(Mono.just(exception).map { serializationService.serialize(it) }, ByteArray::class.java)
-    }
+    private fun createExceptionResponse(exception: Throwable): Mono<ServerResponse> =
+            ServerResponse.status(INTERNAL_SERVER_ERROR)
+                    .header(HEADER_SERIALIZATION_CLASS, exception.javaClass.name)
+                    .body(Mono.just(exception).map { serializationService.serialize(it) }, ByteArray::class.java)
 }

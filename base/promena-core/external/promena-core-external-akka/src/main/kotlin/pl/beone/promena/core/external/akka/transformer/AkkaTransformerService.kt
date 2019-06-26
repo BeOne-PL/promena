@@ -14,7 +14,6 @@ import pl.beone.promena.core.contract.transformer.TransformerService
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
 import pl.beone.promena.core.external.akka.util.*
-import pl.beone.promena.core.external.akka.util.infinite
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerTimeoutException
@@ -38,7 +37,7 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
         logBeforeTransformation(transformerId, dataDescriptors, targetMediaType, parameters)
 
         val (transformedDataDescriptors, measuredTimeMs) = measureTimeMillisWithContent {
-             try {
+            try {
                 unwrapExecutionException {
                     createSource(dataDescriptors)
                             .via(createFlow(actorService.getTransformationActor(transformerId), targetMediaType, parameters))
@@ -54,11 +53,9 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
                         throw TransformerTimeoutException("Couldn't transform because transformation time <${parameters.getTimeoutOrInfiniteIfNotFound()}> has expired | $exceptionDescriptor",
                                                           e)
                     is TransformerNotFoundException                        ->
-                        throw TransformerNotFoundException("Couldn't transform because there is no suitable transformer | $exceptionDescriptor",
-                                                           e)
+                        throw TransformerNotFoundException("Couldn't transform because there is no suitable transformer | $exceptionDescriptor", e)
                     else                                                   ->
-                        throw TransformerException("Couldn't transform because an error occurred | $exceptionDescriptor",
-                                                   e)
+                        throw TransformerException("Couldn't transform because an error occurred | $exceptionDescriptor", e)
                 }
             }
         }
@@ -140,8 +137,16 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
             "<:1> <:2, :3> <:4 source(s)>: [:5]"
                     .replace(":1", transformerId)
                     .replace(":2", targetMediaType.toString())
-                    .replace(":3", parameters.getAll().toString())
+                    .replace(":3", parameters.toString())
                     .replace(":4", dataDescriptors.size.toString())
-                    .replace(":5", dataDescriptors.joinToString(", ") { "<${it.mediaType}>" })
+                    .replace(":5", dataDescriptors.getLocationsInString())
 
+    private fun List<DataDescriptor>.getLocationsInString(): String =
+            joinToString(",") {
+                try {
+                    "${it.data.getLocation()}, ${it.mediaType}"
+                } catch (e: UnsupportedOperationException) {
+                    "no location, ${it.mediaType}"
+                }
+            }
 }
