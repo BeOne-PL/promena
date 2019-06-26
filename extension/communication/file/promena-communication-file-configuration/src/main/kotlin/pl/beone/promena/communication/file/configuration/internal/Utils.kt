@@ -6,7 +6,7 @@ import java.io.IOException
 import java.net.URI
 
 internal fun Environment.getLocationAndVerify(): URI =
-        URI(this.getProperty("communication.file.location")).apply {
+        URI(this.getRequiredProperty("communication.file.location")).apply {
             verifyIfItIsDirectoryAndYouCanCreateFile()
         }
 
