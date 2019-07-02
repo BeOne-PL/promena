@@ -2,7 +2,6 @@ package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 
 import io.kotlintest.fail
 import io.kotlintest.matchers.maps.shouldContainAll
-import io.kotlintest.matchers.maps.shouldNotContainKey
 import io.kotlintest.shouldBe
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQMessage
@@ -24,10 +23,11 @@ import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import java.net.URI
 import java.util.*
 
 @RunWith(SpringRunner::class)
-@TestPropertySource(locations = ["classpath:alfresco-global-test.properties"])
+@TestPropertySource(locations = ["classpath:alfresco-global-sender-test.properties"])
 @ContextHierarchy(
         ContextConfiguration(classes = [ActiveMQContainerContext::class, GlobalPropertiesContext::class]),
         ContextConfiguration(classes = [SetupContext::class])
@@ -46,6 +46,7 @@ class TransformerSenderTest {
     companion object {
         private val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.TEXT_PLAIN))
         private val id = UUID.randomUUID().toString()
+        private val location = URI("file:/tmp")
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
         private const val nodesChecksum = "123456789"
         private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
@@ -85,8 +86,8 @@ class TransformerSenderTest {
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE to UTF8Buffer(targetMediaType.mimeType),
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET to UTF8Buffer(targetMediaType.charset.name()),
                           PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS to parameters.getAll(),
-                          PromenaJmsHeader.SEND_BACK_ATTEMPT to attempt)
-            activeMQMessage.properties shouldNotContainKey PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION
+                          PromenaJmsHeader.SEND_BACK_ATTEMPT to attempt,
+                          PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION to UTF8Buffer(location.toString()))
         }
     }
 

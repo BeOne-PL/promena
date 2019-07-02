@@ -26,7 +26,7 @@ class TransformerSender(private val communicationLocation: URI?,
                 jmsCorrelationID = id
                 setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
 
-                communicationLocation?.let { setObjectProperty(PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION, communicationLocation) }
+                communicationLocation?.let { setObjectProperty(PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION, communicationLocation.toString()) }
 
                 setObjectProperty(PromenaJmsHeader.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
                 setObjectProperty(PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM, nodesChecksum)

@@ -15,6 +15,8 @@ class GlobalPropertiesContext(private val environment: Environment,
             Properties().apply {
                 "promena.client.serializer.kryo.buffer-size".let { setProperty(it, environment.getProperty(it)) }
 
+                "promena.client.communication.file.location".let { setProperty(it, environment.getProperty(it)) }
+
                 "promena.client.transformation.error.retry.enabled".let { setProperty(it, environment.getProperty(it)) }
                 "promena.client.transformation.error.retry.max-attempts".let { setProperty(it, environment.getProperty(it)) }
                 "promena.client.transformation.error.retry.next-attempt-delay".let { setProperty(it, environment.getProperty(it)) }
