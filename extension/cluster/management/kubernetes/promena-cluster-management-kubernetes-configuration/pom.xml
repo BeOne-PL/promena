@@ -19,17 +19,7 @@
 
         <dependency>
             <groupId>com.lightbend.akka.management</groupId>
-            <artifactId>akka-management_2.12</artifactId>
-            <version>${akka-management.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.akka.management</groupId>
             <artifactId>akka-management-cluster-bootstrap_2.12</artifactId>
-            <version>${akka-management.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.akka.management</groupId>
-            <artifactId>akka-management-cluster-http_2.12</artifactId>
             <version>${akka-management.version}</version>
         </dependency>
 
@@ -40,9 +30,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-discovery_2.12</artifactId>
-            <version>${akka-discovery.version}</version>
+            <groupId>com.github.TanUkkii007</groupId>
+            <artifactId>akka-cluster-custom-downing</artifactId>
+            <version>${akka-cluster-custom-downing.version}</version>
         </dependency>
     </dependencies>
 </project>

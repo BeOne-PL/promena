@@ -28,6 +28,11 @@
         </repository>
 
         <repository>
+            <id>mulesoft</id>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </repository>
+
+        <repository>
             <id>codelds</id>
             <url>https://code.lds.org/nexus/content/groups/main-repo</url>
         </repository>
@@ -49,7 +54,7 @@
 
         <akka-management.version>1.0.1</akka-management.version>
         <akka-discovery-kubernetes-api.version>1.0.1</akka-discovery-kubernetes-api.version>
-        <akka-discovery.version>2.5.21</akka-discovery.version>
+        <akka-cluster-custom-downing.version>0.0.12</akka-cluster-custom-downing.version>
     </properties>
 
     <dependencies>
