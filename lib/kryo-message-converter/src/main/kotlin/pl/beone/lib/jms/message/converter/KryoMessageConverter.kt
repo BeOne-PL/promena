@@ -1,6 +1,7 @@
 package pl.beone.lib.jms.message.converter
 
 import org.springframework.jms.support.converter.MessageConverter
+import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 import javax.jms.BytesMessage
 import javax.jms.Message
@@ -26,7 +27,20 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
         val bytes = message.getBytes()
         val clazz = message.getClassFromProperties()
 
-        return kryoSerializationService.deserialize(bytes, clazz)
+        return try {
+            kryoSerializationService.deserialize(bytes, clazz)
+        } catch (e: ClassNotFoundException) {
+            throwWrappedExceptionIfErrorOccurredForExceptionClass(clazz, e)
+        }
+    }
+
+    private fun throwWrappedExceptionIfErrorOccurredForExceptionClass(clazz: Class<*>, exception: ClassNotFoundException) {
+        if (clazz is Throwable) {
+            throw DeserializationException("Couldn't deserialize exception class <${clazz.javaClass.canonicalName}> because some class isn't available in ClassLoader",
+                                           exception)
+        } else {
+            throw exception
+        }
     }
 
     private fun BytesMessage.getBytes(): ByteArray {
@@ -38,7 +52,7 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
     private fun Message.getClassFromProperties(): Class<*> =
             try {
                 Class.forName(getStringProperty(PROPERTY_SERIALIZATION_CLASS))
-                        ?: throw NoSuchElementException("Properties don't contain <$PROPERTY_SERIALIZATION_CLASS> entry")
+                ?: throw NoSuchElementException("Properties don't contain <$PROPERTY_SERIALIZATION_CLASS> entry")
             } catch (e: ClassNotFoundException) {
                 throw IllegalArgumentException("Class determined in <$PROPERTY_SERIALIZATION_CLASS> message property isn't available", e)
             }
