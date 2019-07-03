@@ -31,9 +31,11 @@ import reactor.retry.Retry
 import reactor.retry.RetryExhaustedException
 import reactor.util.function.Tuple2
 import java.lang.System.currentTimeMillis
+import java.net.URI
 import java.time.Duration
 
-class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
+class HttpClientAlfrescoPromenaService(private val communicationLocation: URI?,
+                                       private val retryOnError: Boolean,
                                        private val retryOnErrorMaxAttempts: Long,
                                        private val retryOnErrorNextAttemptsDelay: Duration,
                                        private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
@@ -106,7 +108,7 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
         return httpClient
                 .headersWithContentType()
                 .post()
-                .transformerUri(transformerId)
+                .transformerUriWithCommunicationLocation(transformerId)
                 .send(ByteBufFlux.fromInbound(serializedTransformationDescriptor))
                 .responseSingle { response, bytes -> zipBytesWithResponse(bytes, response) }
                 .map { handleTransformationResult(it.t2, it.t1) }
@@ -124,8 +126,8 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
     private fun HttpClient.headersWithContentType(): HttpClient =
             headers { it.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeConstants.APPLICATION_OCTET_STREAM.mimeType) }
 
-    private fun HttpClient.RequestSender.transformerUri(transformerId: String): HttpClient.RequestSender =
-            uri("/transform/$transformerId")
+    private fun HttpClient.RequestSender.transformerUriWithCommunicationLocation(transformerId: String): HttpClient.RequestSender =
+            uri("/transform/$transformerId" + if (communicationLocation != null) "?location=$communicationLocation" else "")
 
     // defaultIfEmpty is necessary. In other case complete event is emitted if content is null
     private fun zipBytesWithResponse(byte: ByteBufMono, response: HttpClientResponse): Mono<Tuple2<ByteArray, HttpClientResponse>> =
@@ -206,8 +208,7 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
                                                         transformerId,
                                                         parameters,
                                                         nodeRefs,
-                                                        targetMediaType,
-                                                        retryOnErrorNextAttemptsDelay)
+                                                        targetMediaType)
                                   })
             } else {
                 this

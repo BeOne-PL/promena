@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.QueryStringDecoder
 import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Before
 import org.junit.Test
@@ -29,8 +30,11 @@ import reactor.netty.ByteBufFlux
 import reactor.netty.DisposableServer
 import reactor.netty.http.client.HttpClient
 import reactor.netty.http.server.HttpServer
+import reactor.netty.http.server.HttpServerRequest
 import reactor.test.StepVerifier
 import reactor.test.expectError
+import java.io.File
+import java.net.URI
 import java.time.Duration
 
 private data class Mocks(val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
@@ -67,7 +71,8 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        HttpClientAlfrescoPromenaService(false,
+        HttpClientAlfrescoPromenaService(null,
+                                         false,
                                          0,
                                          Duration.ofMillis(0),
                                          alfrescoNodesChecksumGenerator,
@@ -79,6 +84,30 @@ class HttpClientAlfrescoPromenaServiceTest {
     }
 
     @Test
+    fun `transform _ with communication location`() {
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
+            every { generateChecksum(nodeRefs) } returns "123456789"
+        }
+
+        val tmpFile = createTempFile()
+
+        HttpClientAlfrescoPromenaService(tmpFile.toURI(),
+                                         false,
+                                         0,
+                                         Duration.ofMillis(0),
+                                         alfrescoNodesChecksumGenerator,
+                                         alfrescoDataDescriptorGetter,
+                                         alfrescoTransformedDataDescriptorSaver,
+                                         serializationService,
+                                         httpServer.createHttpClient())
+                .transform("success", nodeRefs, targetMediaType, parameters) shouldBe transformedNodeRefs
+
+        // test server should remove file from "location" if URI contains "location" param
+        tmpFile.exists() shouldBe false
+    }
+
+    @Test
     fun `transform _ timeout expires before the end of transformation _ should throw TransformationSynchronizationException and finish transformation after it`() {
         val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
@@ -86,7 +115,8 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         shouldThrow<TransformationSynchronizationException> {
-            HttpClientAlfrescoPromenaService(false,
+            HttpClientAlfrescoPromenaService(null,
+                                             false,
                                              0,
                                              Duration.ofMillis(0),
                                              alfrescoNodesChecksumGenerator,
@@ -109,7 +139,8 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(false,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+                                                             false,
                                                              0,
                                                              Duration.ofMillis(0),
                                                              alfrescoNodesChecksumGenerator,
@@ -131,7 +162,8 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(false,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+                                                             false,
                                                              0,
                                                              Duration.ofMillis(0),
                                                              alfrescoNodesChecksumGenerator,
@@ -155,7 +187,8 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(false,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+                                                             false,
                                                              0,
                                                              Duration.ofMillis(0),
                                                              alfrescoNodesChecksumGenerator,
@@ -176,7 +209,8 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(false,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+                                                             false,
                                                              0,
                                                              Duration.ofMillis(0),
                                                              alfrescoNodesChecksumGenerator,
@@ -197,7 +231,8 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(true,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+                                                             true,
                                                              3,
                                                              Duration.ofMillis(300),
                                                              alfrescoNodesChecksumGenerator,
@@ -220,7 +255,9 @@ class HttpClientAlfrescoPromenaServiceTest {
                     .port(0)
                     .wiretap(true)
                     .route {
-                        it.post("/transform/success") { _, response ->
+                        it.post("/transform/success") { request, response ->
+                            deleteFileFromLocationPath(request)
+
                             response.send(ByteBufFlux.fromInbound(Mono.just(successBytes)))
                         }
                         it.post("/transform/exception") { _, response ->
@@ -229,6 +266,14 @@ class HttpClientAlfrescoPromenaServiceTest {
                                     .send(ByteBufFlux.fromInbound(Mono.just(exceptionBytes)))
                         }
                     }.bindNow()
+
+    // a bit stupid. If URI contain "location" - remove that file. Only for test purposes
+    private fun deleteFileFromLocationPath(request: HttpServerRequest) {
+        val location = QueryStringDecoder(request.uri()).parameters()["location"]
+        if (location != null) {
+            File(URI(location.first())).delete()
+        }
+    }
 
     private fun DisposableServer.createHttpClient(): HttpClient =
             HttpClient.create()
