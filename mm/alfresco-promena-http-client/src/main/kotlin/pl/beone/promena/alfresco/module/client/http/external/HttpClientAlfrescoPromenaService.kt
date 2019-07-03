@@ -201,7 +201,13 @@ class HttpClientAlfrescoPromenaService(private val retryOnError: Boolean,
                                   .fixedBackoff(retryOnErrorNextAttemptsDelay)
                                   .retryMax(retryOnErrorMaxAttempts)
                                   .doOnRetry {
-                                      logger.logOnRetry(it.iteration(), retryOnErrorMaxAttempts, transformerId, parameters, nodeRefs, targetMediaType)
+                                      logger.logOnRetry(it.iteration(),
+                                                        retryOnErrorMaxAttempts,
+                                                        transformerId,
+                                                        parameters,
+                                                        nodeRefs,
+                                                        targetMediaType,
+                                                        retryOnErrorNextAttemptsDelay)
                                   })
             } else {
                 this
