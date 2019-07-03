@@ -32,8 +32,6 @@ class JmsPropertiesContext {
                         ?.toInt()?.let { listener.concurrency = it }
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.listener.max-concurrency")
                         ?.toInt()?.let { listener.maxConcurrency = it }
-                properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.listener.max-concurrency")
-                        ?.toInt()?.let { listener.maxConcurrency = it }
 
                 properties.getPropertyWithResolvedPlaceholders("promena.client.message-broker.spring.jms.template.default-destination")
                         ?.let { template.defaultDestination = it }
