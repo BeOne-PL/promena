@@ -96,14 +96,16 @@ fun Logger.logOnRetry(attempt: Long,
                       transformerId: String,
                       parameters: Parameters,
                       nodeRefs: List<NodeRef>,
-                      targetMediaType: MediaType) {
-    warn("Attempt ({}/{}). Transforming <{}> <{}> nodes <{}> to <{}>...",
+                      targetMediaType: MediaType,
+                      duration: Duration) {
+    warn("Attempt ({}/{}). Transformation <{}> <{}> nodes <{}> to <{}> will be run after <{}>",
          attempt,
          retryOnErrorMaxAttempts,
          transformerId,
          parameters,
          nodeRefs,
-         targetMediaType)
+         targetMediaType,
+         duration)
 }
 
 private fun calculateExecutionTimeInSeconds(millisStart: Long, millisEnd: Long): String =
