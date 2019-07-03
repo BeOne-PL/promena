@@ -108,5 +108,20 @@ fun Logger.logOnRetry(attempt: Long,
          duration)
 }
 
+fun Logger.logOnRetry(attempt: Long,
+                      retryOnErrorMaxAttempts: Long,
+                      transformerId: String,
+                      parameters: Parameters,
+                      nodeRefs: List<NodeRef>,
+                      targetMediaType: MediaType) {
+    warn("Attempt ({}/{}). Transforming <{}> <{}> nodes <{}> to <{}>...",
+         attempt,
+         retryOnErrorMaxAttempts,
+         transformerId,
+         parameters,
+         nodeRefs,
+         targetMediaType)
+}
+
 private fun calculateExecutionTimeInSeconds(millisStart: Long, millisEnd: Long): String =
         String.format("%.3f", (millisEnd - millisStart) / 1000.0)
