@@ -28,6 +28,13 @@ import pl.beone.promena.transformer.contract.model.Parameters
 import reactor.core.publisher.Mono
 import java.time.Duration
 
+private data class ErrorTransformationDescriptor(val id: String,
+                                                 val transformerId: String,
+                                                 val nodeRefs: List<NodeRef>,
+                                                 val targetMediaType: MediaType,
+                                                 val parameters: Parameters,
+                                                 val attempt: Long)
+
 class TransformerResponseErrorConsumer(private val retryOnError: Boolean,
                                        private val retryOnErrorMaxAttempts: Long,
                                        private val retryOnErrorNextAttemptsDelay: Duration,
@@ -43,7 +50,8 @@ class TransformerResponseErrorConsumer(private val retryOnError: Boolean,
     private val mediaTypeConverter = MediaTypeConverter()
     private val parametersConverter = ParametersConverter()
 
-    @JmsListener(destination = "\${promena.client.message-broker.consumer.queue.response.error}")
+    @JmsListener(destination = "\${promena.client.message-broker.consumer.queue.response.error}",
+                 selector = "\${promena.client.message-broker.consumer.queue.response.error.selector}")
     fun receiveQueue(@Header(CORRELATION_ID) correlationId: String,
                      @Header(PROMENA_TRANSFORMER_ID) transformerId: String,
                      @Header(SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
@@ -73,14 +81,19 @@ class TransformerResponseErrorConsumer(private val retryOnError: Boolean,
 
             if (makeAnotherAttempt(attempt)) {
                 retry(correlationId, transformerId, nodeRefs, targetMediaType, parameters, attempt)
-            } else {
-                reactiveTransformationManager.completeErrorTransformation(correlationId, exception)
+
+                if (lastAttempt(attempt)) {
+                    reactiveTransformationManager.completeErrorTransformation(correlationId, exception)
+                }
             }
         }
     }
 
     private fun makeAnotherAttempt(attempt: Long): Boolean =
             retryOnError && attempt < retryOnErrorMaxAttempts
+
+    private fun lastAttempt(attempt: Long): Boolean =
+            attempt == retryOnErrorMaxAttempts - 1
 
     private fun retry(id: String,
                       transformerId: String,
@@ -90,9 +103,20 @@ class TransformerResponseErrorConsumer(private val retryOnError: Boolean,
                       attempt: Long) {
         val currentAttempt = attempt + 1
 
-        Mono.just(activeMQAlfrescoPromenaService.transformAsync(id, transformerId, nodeRefs, targetMediaType, parameters, currentAttempt))
-                .doFirst { logger.logOnRetry(currentAttempt, retryOnErrorMaxAttempts, transformerId, parameters, nodeRefs, targetMediaType) }
-                .delaySubscription(retryOnErrorNextAttemptsDelay)
+        Mono.just(ErrorTransformationDescriptor(id, transformerId, nodeRefs, targetMediaType, parameters, currentAttempt))
+                .doOnNext {
+                    logger.logOnRetry(currentAttempt,
+                                      retryOnErrorMaxAttempts,
+                                      transformerId,
+                                      parameters,
+                                      nodeRefs,
+                                      targetMediaType,
+                                      retryOnErrorNextAttemptsDelay)
+                }
+                .delayElement(retryOnErrorNextAttemptsDelay)
+                .doOnNext {
+                    activeMQAlfrescoPromenaService.transformAsync(it.id, it.transformerId, it.nodeRefs, it.targetMediaType, it.parameters, it.attempt)
+                }
                 .subscribe()
     }
 }
