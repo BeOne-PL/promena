@@ -3,11 +3,10 @@ package pl.beone.promena.connector.messagebroker.delivery.jms
 import io.kotlintest.matchers.beInstanceOf
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.matchers.maps.shouldContainKey
-import io.kotlintest.matchers.numerics.shouldBeGreaterThan
-import io.kotlintest.matchers.numerics.shouldBeInRange
-import io.kotlintest.matchers.numerics.shouldBeLessThan
+import io.kotlintest.matchers.numerics.*
 import io.kotlintest.should
 import io.kotlintest.shouldBe
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
@@ -24,6 +23,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.messagebroker.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
+import pl.beone.promena.connector.messagebroker.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformerResponseConsumer
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerTimeoutException
@@ -33,6 +33,7 @@ import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.util.*
+import javax.jms.Message
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IntegrationTestApplication::class])
@@ -51,19 +52,28 @@ class TransformerExceptionFlowTest {
     private lateinit var queueRequest: String
 
     @Autowired
+    private lateinit var queueClearer: QueueClearer
+
+    @Autowired
     private lateinit var transformerResponseConsumer: TransformerResponseConsumer
 
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
 
     @Before
-    fun mock() {
+    fun setUp() {
         mockkObject(transformationUseCase)
+        clearMocks(transformationUseCase)
+
+        queueClearer.clearQueues()
     }
 
     @Test
     fun `send data to transformation request queue _ should handle exception to response error queue`() {
-        every { transformationUseCase.transform(any(), any(), any()) } throws expectException
+        every { transformationUseCase.transform(any(), any(), any()) } answers {
+            Thread.sleep(300)
+            throw expectException
+        }
 
         val startTimestamp = getTimestamp()
         sendRequestMessage()
@@ -99,6 +109,8 @@ class TransformerExceptionFlowTest {
             it.shouldBeInRange(startTimestamp..endTimestamp)
             it shouldBeGreaterThan transformationStartTimestamp
         }
+
+        (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
         exception.let {
             it should beInstanceOf(expectException::class)

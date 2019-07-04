@@ -2,9 +2,11 @@ package pl.beone.promena.connector.messagebroker.delivery.jms
 
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQBytesMessage
+import org.apache.activemq.command.ActiveMQDestination
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.Before
 import org.junit.Test
@@ -18,6 +20,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.messagebroker.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
+import pl.beone.promena.connector.messagebroker.integrationtest.test.QueueClearer
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
@@ -46,12 +49,18 @@ class TransformerTransformerNotFoundExceptionFlowTest {
     @Value("\${promena.connector.message-broker.consumer.queue.request}")
     private lateinit var queueRequest: String
 
+    @Autowired
+    private lateinit var queueClearer: QueueClearer
+
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
 
     @Before
-    fun mock() {
+    fun setUp() {
         mockkObject(transformationUseCase)
+        clearMocks(transformationUseCase)
+
+        queueClearer.clearQueues()
     }
 
     @Test
@@ -61,7 +70,7 @@ class TransformerTransformerNotFoundExceptionFlowTest {
         sendRequestMessage()
         Thread.sleep(2000)
 
-        jmsTemplate.browse(queueRequest) { session, browser ->
+        jmsTemplate.browse(queueRequest) { _, browser ->
             val messages = browser.enumeration.toList()
 
             messages shouldHaveSize 1

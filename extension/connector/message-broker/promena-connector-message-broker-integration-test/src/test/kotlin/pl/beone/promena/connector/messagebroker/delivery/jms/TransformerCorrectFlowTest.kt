@@ -4,9 +4,11 @@ import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.numerics.shouldBeGreaterThan
+import io.kotlintest.matchers.numerics.shouldBeGreaterThanOrEqual
 import io.kotlintest.matchers.numerics.shouldBeInRange
 import io.kotlintest.matchers.numerics.shouldBeLessThan
 import io.kotlintest.shouldBe
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
@@ -23,6 +25,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.messagebroker.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
+import pl.beone.promena.connector.messagebroker.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformerResponseConsumer
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.internal.communication.MapCommunicationParameters
@@ -55,14 +58,20 @@ class TransformerCorrectFlowTest {
     private lateinit var queueRequest: String
 
     @Autowired
+    private lateinit var queueClearer: QueueClearer
+
+    @Autowired
     private lateinit var transformerResponseConsumer: TransformerResponseConsumer
 
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
 
     @Before
-    fun mock() {
+    fun setUp() {
         mockkObject(transformationUseCase)
+        clearMocks(transformationUseCase)
+
+        queueClearer.clearQueues()
     }
 
     @Test
@@ -71,7 +80,10 @@ class TransformerCorrectFlowTest {
             transformationUseCase.transform(MockContext.transformerId,
                                             transformationDescriptor,
                                             MapCommunicationParameters(mapOf("location" to location)))
-        } returns listOf(TransformedDataDescriptor(transformedData, MapMetadata.empty()))
+        } answers {
+            Thread.sleep(300)
+            listOf(TransformedDataDescriptor(transformedData, MapMetadata.empty()))
+        }
 
         //
         val startTimestamp = getTimestamp()
@@ -103,6 +115,8 @@ class TransformerCorrectFlowTest {
             it.shouldBeInRange(startTimestamp..endTimestamp)
             it shouldBeGreaterThan transformationStartTimestamp
         }
+
+        (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
         transformedDataDescriptors shouldHaveSize 1
         transformedDataDescriptors[0].let {
