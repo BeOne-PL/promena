@@ -28,12 +28,12 @@ import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
 import pl.beone.promena.connector.messagebroker.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformerResponseConsumer
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.util.*

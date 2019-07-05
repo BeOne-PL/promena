@@ -10,13 +10,13 @@ import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
-import pl.beone.promena.core.contract.communication.CommunicationParameters
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.external.OutgoingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.contract.transformer.TransformerService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor

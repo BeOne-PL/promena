@@ -1,6 +1,6 @@
 package pl.beone.promena.core.contract.transformation
 
-import pl.beone.promena.core.contract.communication.CommunicationParameters
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 

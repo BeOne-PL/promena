@@ -25,16 +25,14 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.external.akka.actor.DefaultActorService
 import pl.beone.promena.core.external.akka.transformer.AkkaTransformerService
 import pl.beone.promena.core.external.akka.transformer.config.DefaultTransformersCreator
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
-import java.util.concurrent.Callable
-import java.util.concurrent.Executors
 
 class DefaultTransformationUseCaseTest {
 

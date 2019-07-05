@@ -1,8 +1,8 @@
 package pl.beone.promena.communication.external.memory.internal
 
 import org.slf4j.LoggerFactory
-import pl.beone.promena.core.contract.communication.CommunicationParameters
 import pl.beone.promena.core.contract.communication.external.OutgoingExternalCommunicationConverter
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 
 class MemoryWithBackPressureOutgoingExternalCommunicationConverter : OutgoingExternalCommunicationConverter {

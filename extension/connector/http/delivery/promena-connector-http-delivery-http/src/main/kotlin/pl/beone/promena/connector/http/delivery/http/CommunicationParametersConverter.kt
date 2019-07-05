@@ -1,8 +1,8 @@
 package pl.beone.promena.connector.http.delivery.http
 
 import org.springframework.util.MultiValueMap
-import pl.beone.promena.core.contract.communication.CommunicationParameters
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 
 internal class CommunicationParametersConverter {
 

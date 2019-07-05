@@ -1,6 +1,6 @@
-package pl.beone.promena.core.internal.communication
+package pl.beone.promena.transformer.internal.communication
 
-import pl.beone.promena.core.contract.communication.CommunicationParameters
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.internal.model._get
 import pl.beone.promena.transformer.internal.model.get
 

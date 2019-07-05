@@ -1,10 +1,10 @@
 package pl.beone.promena.core.usecase.transformation
 
 import org.slf4j.LoggerFactory
-import pl.beone.promena.core.contract.communication.CommunicationParameters
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.contract.transformer.TransformerService
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 

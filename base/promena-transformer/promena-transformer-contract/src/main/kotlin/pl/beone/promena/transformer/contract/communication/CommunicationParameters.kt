@@ -1,4 +1,4 @@
-package pl.beone.promena.core.contract.communication
+package pl.beone.promena.transformer.contract.communication
 
 interface CommunicationParameters {
 

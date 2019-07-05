@@ -1,7 +1,7 @@
 package pl.beone.promena.connector.messagebroker.delivery.jms
 
-import pl.beone.promena.core.contract.communication.CommunicationParameters
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 
 internal class CommunicationParametersConverter {
 

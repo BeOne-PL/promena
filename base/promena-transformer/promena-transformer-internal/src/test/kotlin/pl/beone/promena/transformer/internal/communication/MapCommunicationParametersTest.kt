@@ -1,4 +1,4 @@
-package pl.beone.promena.core.internal.communication
+package pl.beone.promena.transformer.internal.communication
 
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe

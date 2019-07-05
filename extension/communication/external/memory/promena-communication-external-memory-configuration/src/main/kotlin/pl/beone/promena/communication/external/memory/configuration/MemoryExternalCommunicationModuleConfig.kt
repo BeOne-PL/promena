@@ -7,7 +7,7 @@ import org.springframework.core.env.Environment
 import pl.beone.promena.communication.external.memory.internal.MemoryWithBackPressureIncomingExternalCommunicationConverter
 import pl.beone.promena.communication.external.memory.internal.MemoryWithBackPressureOutgoingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 
 @Configuration
 @PropertySource("classpath:module-communication-external-memory.properties")

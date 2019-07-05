@@ -13,9 +13,9 @@ import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 

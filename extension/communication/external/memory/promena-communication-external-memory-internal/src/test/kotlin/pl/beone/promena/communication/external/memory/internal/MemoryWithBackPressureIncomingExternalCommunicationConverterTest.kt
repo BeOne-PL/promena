@@ -13,11 +13,11 @@ import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 
 class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {

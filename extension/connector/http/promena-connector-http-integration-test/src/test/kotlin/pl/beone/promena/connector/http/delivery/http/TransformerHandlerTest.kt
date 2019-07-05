@@ -17,11 +17,11 @@ import pl.beone.promena.connector.http.configuration.HttpConnectorModuleConfig
 import pl.beone.promena.core.contract.serialization.DescriptorSerializationService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
-import pl.beone.promena.core.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
@@ -79,7 +79,8 @@ class TransformerHandlerTest {
 
         mockkObject(transformationUseCase)
         every {
-            transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters(mapOf("location" to "file:/tmp")))
+            transformationUseCase.transform(transformerId, transformationDescriptor,
+                                            MapCommunicationParameters(mapOf("location" to "file:/tmp")))
         } returns transformedDataDescriptors
 
         webTestClient.post().uri("/transform/$transformerId?location=file:/tmp")
