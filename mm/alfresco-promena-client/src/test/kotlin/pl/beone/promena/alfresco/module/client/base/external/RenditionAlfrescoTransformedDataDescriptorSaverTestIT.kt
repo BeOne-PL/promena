@@ -3,7 +3,6 @@ package pl.beone.promena.alfresco.module.client.base.external
 import io.kotlintest.matchers.collections.shouldContainAll
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.maps.shouldContainAll
-import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.maps.shouldNotContainKey
 import io.kotlintest.shouldBe
 import io.mockk.Runs
@@ -18,7 +17,7 @@ import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.PromenaTransformationContentModel
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor

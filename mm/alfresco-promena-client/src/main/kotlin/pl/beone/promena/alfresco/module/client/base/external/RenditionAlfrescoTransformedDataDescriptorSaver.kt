@@ -9,7 +9,7 @@ import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.transaction.TransactionService
 import org.slf4j.LoggerFactory
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.PromenaTransformationContentModel
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
