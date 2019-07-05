@@ -1,7 +1,5 @@
 package pl.beone.promena.core.contract.communication
 
-import java.net.URI
-
 interface CommunicationParameters {
 
     @Throws(NoSuchElementException::class)
@@ -11,7 +9,7 @@ interface CommunicationParameters {
     fun <T> get(key: String, clazz: Class<T>): T
 
     @Throws(NoSuchElementException::class)
-    fun getLocation(): URI
+    fun getId(): String
 
     fun getAll(): Map<String, Any>
 }

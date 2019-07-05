@@ -42,7 +42,7 @@
 
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
-        <kotlintest-runner-junit5.version>3.3.2</kotlintest-runner-junit5.version>
+        <kotlintest-runner-junit4.version>3.3.3</kotlintest-runner-junit4.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
@@ -85,8 +85,8 @@
         </dependency>
         <dependency>
             <groupId>io.kotlintest</groupId>
-            <artifactId>kotlintest-runner-junit5</artifactId>
-            <version>${kotlintest-runner-junit5.version}</version>
+            <artifactId>kotlintest-runner-junit4</artifactId>
+            <version>${kotlintest-runner-junit4.version}</version>
         </dependency>
     </dependencies>
 

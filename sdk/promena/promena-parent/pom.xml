@@ -51,7 +51,7 @@
         <akka-kryo-serialization.version>0.5.2</akka-kryo-serialization.version>
         <kryo-serializers.version>0.45</kryo-serializers.version>
 
-        <kotlintest-runner-junit5.version>3.3.2</kotlintest-runner-junit5.version>
+        <kotlintest-runner-junit4.version>3.3.3</kotlintest-runner-junit4.version>
         <mockk.version>1.9.3</mockk.version>
     </properties>
 
@@ -100,8 +100,8 @@
 
             <dependency>
                 <groupId>io.kotlintest</groupId>
-                <artifactId>kotlintest-runner-junit5</artifactId>
-                <version>${kotlintest-runner-junit5.version}</version>
+                <artifactId>kotlintest-runner-junit4</artifactId>
+                <version>${kotlintest-runner-junit4.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.mockk</groupId>

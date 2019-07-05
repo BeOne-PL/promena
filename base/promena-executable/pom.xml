@@ -38,6 +38,24 @@
         </dependency>
 
         <dependency>
+            <groupId>pl.beone.promena.actor-creator</groupId>
+            <artifactId>promena-actor-creator-adaptive-load-balancing-configuration</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.communication.external</groupId>
+            <artifactId>promena-communication-external-memory-configuration</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.communication.internal</groupId>
+            <artifactId>promena-communication-internal-memory-configuration</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>pl.beone.promena.connector</groupId>
             <artifactId>promena-connector-http-configuration</artifactId>
             <version>0.9.0</version>
@@ -49,30 +67,14 @@
         </dependency>
 
         <dependency>
+            <groupId>pl.beone.promena.cluster.management</groupId>
+            <artifactId>promena-cluster-management-kubernetes-configuration</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>pl.beone.transformer</groupId>
-            <artifactId>appender-transformer-configuration</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-
-        <!--<dependency>-->
-        <!--<groupId>pl.beone.promena.communication</groupId>-->
-        <!--<artifactId>promena-communication-file-configuration</artifactId>-->
-        <!--<version>0.9.0</version>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>pl.beone.promena.communication</groupId>
-            <artifactId>promena-communication-memory-configuration</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>pl.beone.promena.listener</groupId>
-            <artifactId>promena-listener-cluster-member-configuration</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.actor-creator</groupId>
-            <artifactId>promena-actor-creator-adaptive-load-balancing-configuration</artifactId>
+            <artifactId>delay-transformer-configuration</artifactId>
             <version>0.9.0</version>
         </dependency>
     </dependencies>
@@ -146,14 +148,14 @@
                 <version>0.9.0</version>
 
                 <configuration>
-                    <name>${project.artifactId}</name>
+                    <name>${project.artifactId}-file-http-message-broker</name>
                     <version>${project.version}</version>
                 </configuration>
 
                 <dependencies>
                     <dependency>
                         <groupId>pl.beone.transformer</groupId>
-                        <artifactId>appender-transformer</artifactId>
+                        <artifactId>delay-transformer</artifactId>
                         <version>0.9.0</version>
                     </dependency>
                 </dependencies>

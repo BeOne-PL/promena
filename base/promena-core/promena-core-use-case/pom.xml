@@ -16,6 +16,12 @@
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-contract</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

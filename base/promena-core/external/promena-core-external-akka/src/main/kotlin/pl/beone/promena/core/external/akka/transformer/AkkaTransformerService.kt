@@ -112,7 +112,7 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
                                        measuredTimeMs: Long,
                                        transformedDataDescriptors: List<TransformedDataDescriptor>) {
         if (logger.isDebugEnabled) {
-            logger.debug("Transformed <{}> <{}, {}> <{} result(s)> in <{} s>: [{}]",
+            logger.debug("Finished transforming <{}> <{}, {}> <{} result(s)> in <{} s>: [{}]",
                          transformerId,
                          targetMediaType,
                          parameters,
@@ -120,7 +120,7 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
                          measuredTimeMs.toSeconds(),
                          transformedDataDescriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" })
         } else {
-            logger.info("Transformed <{}> <{}, {}> <{} result(s)> in <{} s>: [{}]",
+            logger.info("Finished transforming <{}> <{}, {}> <{} result(s)> in <{} s>: [{}]",
                         transformerId,
                         targetMediaType,
                         parameters,
@@ -142,7 +142,7 @@ class AkkaTransformerService(private val actorMaterializer: ActorMaterializer,
                     .replace(":5", dataDescriptors.getLocationsInString())
 
     private fun List<DataDescriptor>.getLocationsInString(): String =
-            joinToString(",") {
+            joinToString(", ") {
                 try {
                     "<${it.data.getLocation()}, ${it.mediaType}>"
                 } catch (e: UnsupportedOperationException) {

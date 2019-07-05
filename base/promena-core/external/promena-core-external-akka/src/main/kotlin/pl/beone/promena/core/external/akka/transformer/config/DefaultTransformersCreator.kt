@@ -4,7 +4,7 @@ import akka.actor.Props
 import org.slf4j.LoggerFactory
 import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithId
 import pl.beone.promena.core.contract.actor.config.ActorCreator
-import pl.beone.promena.core.contract.communication.InternalCommunicationConverter
+import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
 import pl.beone.promena.core.external.akka.actor.transformer.TransformerActor
@@ -22,7 +22,7 @@ class DefaultTransformersCreator(private val transformerConfig: TransformerConfi
     }
 
     override fun create(transformers: List<Transformer>): List<ActorRefWithId> {
-        logger.info("Found <${transformers.size}> transformer(s). Actor config <${actorCreator::class.qualifiedName}>")
+        logger.info("Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.qualifiedName}")
 
         return transformers.groupBy { transformerConfig.getTransformationId(it) }
                 .map { (transformerId, transformers) ->

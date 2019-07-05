@@ -24,7 +24,14 @@ class InMemoryDataTest {
 
     @Test
     fun isAvailable() {
-        shouldNotThrowAny { InMemoryData(bytes).isAvailable() }
+        shouldNotThrowAny { InMemoryData(bytes).isAccessible() }
+    }
+
+    @Test
+    fun delete() {
+        shouldThrow<UnsupportedOperationException> {
+            InMemoryData(bytes).delete()
+        }.message shouldBe "This resource exists only in memory"
     }
 
     @Test

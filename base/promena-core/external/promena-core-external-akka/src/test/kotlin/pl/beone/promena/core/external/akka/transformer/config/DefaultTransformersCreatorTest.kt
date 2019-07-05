@@ -6,7 +6,7 @@ import io.mockk.mockk
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithId
 import pl.beone.promena.core.contract.actor.config.ActorCreator
-import pl.beone.promena.core.contract.communication.InternalCommunicationConverter
+import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 

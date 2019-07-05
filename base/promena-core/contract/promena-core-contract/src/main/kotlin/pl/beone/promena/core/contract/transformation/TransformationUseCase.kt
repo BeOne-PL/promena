@@ -8,5 +8,5 @@ interface TransformationUseCase {
 
     fun transform(transformerId: String,
                   transformationDescriptor: TransformationDescriptor,
-                  communicationParameters: CommunicationParameters): List<TransformedDataDescriptor>
+                  externalCommunicationParameters: CommunicationParameters): List<TransformedDataDescriptor>
 }

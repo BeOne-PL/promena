@@ -3,12 +3,12 @@ package pl.beone.promena.core.internal.communication
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
 import org.junit.Test
-import java.net.URI
 
 class MapCommunicationParametersTest {
 
     companion object {
         private val communicationParameters = MapCommunicationParameters(mapOf(
+                "id" to "memory",
                 "int" to 3,
                 "string" to "value",
                 "stringInt" to "3",
@@ -19,6 +19,12 @@ class MapCommunicationParametersTest {
     @Test
     fun empty() {
         MapCommunicationParameters.empty().getAll().size shouldBe 0
+    }
+
+    @Test
+    fun create() {
+        MapCommunicationParameters.create("memory").getAll().size shouldBe 1
+        MapCommunicationParameters.create("memory", mapOf("int" to 3)).getAll().size shouldBe 2
     }
 
     @Test
@@ -36,13 +42,13 @@ class MapCommunicationParametersTest {
     }
 
     @Test
-    fun getLocation() {
-        communicationParameters.getLocation() shouldBe URI("file:/tmp")
+    fun getId() {
+        communicationParameters.getId() shouldBe "memory"
     }
 
     @Test
     fun getAll() {
-        communicationParameters.getAll().size shouldBe 4
+        communicationParameters.getAll().size shouldBe 5
         communicationParameters.getAll() shouldContainAll mapOf("location" to "file:/tmp")
     }
 }

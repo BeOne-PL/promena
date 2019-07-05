@@ -11,20 +11,10 @@
 
     <artifactId>promena-core-integration-test</artifactId>
 
-    <properties>
-        <promena-communication-memory.version>0.9.0</promena-communication-memory.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-configuration</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.communication</groupId>
-            <artifactId>promena-communication-memory-configuration</artifactId>
-            <version>${promena-communication-memory.version}</version>
             <scope>test</scope>
         </dependency>
 

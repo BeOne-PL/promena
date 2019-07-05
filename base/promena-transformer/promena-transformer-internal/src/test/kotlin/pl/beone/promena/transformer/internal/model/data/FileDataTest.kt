@@ -4,6 +4,8 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
+import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
+import java.io.File
 import java.net.URI
 
 class FileDataTest {
@@ -43,12 +45,30 @@ class FileDataTest {
 
     @Test
     fun isAvailable() {
-        FileData(fileUri).isAvailable()
+        FileData(fileUri).isAccessible()
+    }
+
+    @Test
+    fun delete() {
+        val file = createTempFile().apply { writeText("test") }
+
+        FileData(file.toURI()).delete()
+
+        file.exists() shouldBe false
+    }
+
+    @Test
+    fun `delete _ should throw DataDeleteException`() {
+        val notExistFile = createTempDir().resolve(File("test")).toURI()
+
+        shouldThrow<DataDeleteException> {
+            FileData(notExistFile).delete()
+        }.message shouldBe "Couldn't delete <$notExistFile> file. Maybe file doesn't exist"
     }
 
     @Test
     fun `isAvailable _ should throw DataAccessibilityException`() {
-        shouldThrow<DataAccessibilityException> { FileData(notReachableFileUri).isAvailable() }
+        shouldThrow<DataAccessibilityException> { FileData(notReachableFileUri).isAccessible() }
                 .message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
 }

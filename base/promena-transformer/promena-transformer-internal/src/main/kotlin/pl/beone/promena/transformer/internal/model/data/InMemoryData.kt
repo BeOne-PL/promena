@@ -4,15 +4,18 @@ import pl.beone.promena.transformer.contract.model.Data
 import java.net.URI
 
 data class InMemoryData(private val bytes: ByteArray) : Data {
-
     override fun getBytes(): ByteArray =
             bytes
 
-    override fun getLocation(): URI =
-            throw UnsupportedOperationException("This resource exists only in memory")
+    override fun getLocation(): URI {
+        throw UnsupportedOperationException("This resource exists only in memory")
+    }
 
-    override fun isAvailable() {
+    override fun isAccessible() {
+    }
 
+    override fun delete() {
+        throw UnsupportedOperationException("This resource exists only in memory")
     }
 
     override fun equals(other: Any?): Boolean {

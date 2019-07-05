@@ -22,9 +22,8 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
 
         logger.info("Adaptive load balancing metrics selector: {}", metricsSelector::class.qualifiedName)
 
-        return AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(actorSystem,
-                                                                           metricsSelector)
-                                                                    }
+        return AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(actorSystem, metricsSelector)
+    }
 
     private fun Environment.getSelectorInstance(): MetricsSelector {
         val property = this.getRequiredProperty("actor-creator.adaptive-load-balancing.metrics-selector")

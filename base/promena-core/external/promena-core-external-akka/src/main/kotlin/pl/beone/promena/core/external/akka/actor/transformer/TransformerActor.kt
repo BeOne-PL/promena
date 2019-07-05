@@ -2,13 +2,13 @@ package pl.beone.promena.core.external.akka.actor.transformer
 
 import akka.actor.AbstractLoggingActor
 import akka.actor.Status
+import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
+import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
+import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
 import pl.beone.promena.core.external.akka.util.format
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
 import pl.beone.promena.core.external.akka.util.toMB
 import pl.beone.promena.core.external.akka.util.toSeconds
-import pl.beone.promena.core.contract.communication.InternalCommunicationConverter
-import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
-import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.Transformer
@@ -44,9 +44,8 @@ class TransformerActor(private val transformers: List<Transformer>,
                                                                     "<${transformers.joinToString(", ") { it.javaClass.canonicalName }}>")
 
             val transformedDataDescriptors = transformer.transform(dataDescriptors, targetMediaType, parameters)
-                    .map { internalTransformedDataDescriptorConverter.convert(it) }
 
-            transformedDataDescriptors
+            internalTransformedDataDescriptorConverter.convert(dataDescriptors, transformedDataDescriptors)
         }
 
         if (log().isDebugEnabled) {

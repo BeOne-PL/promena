@@ -13,3 +13,5 @@ RUN echo $' \n\
 grant { \n\
     permission java.security.AllPermission; \n\
 }; ' >> /usr/local/tomcat/conf/catalina.policy
+
+COPY ./data/alfresco/alfresco-global.properties /usr/local/tomcat/shared/classes/alfresco-global.properties

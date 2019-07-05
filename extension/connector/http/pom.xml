@@ -67,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>io.kotlintest</groupId>
-            <artifactId>kotlintest-runner-junit5</artifactId>
+            <artifactId>kotlintest-runner-junit4</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -2,18 +2,15 @@ package pl.beone.promena.core.usecase.transformation
 
 import org.slf4j.LoggerFactory
 import pl.beone.promena.core.contract.communication.CommunicationParameters
-import pl.beone.promena.core.contract.communication.CommunicationValidator
-import pl.beone.promena.core.contract.communication.IncomingCommunicationConverter
-import pl.beone.promena.core.contract.communication.OutgoingCommunicationConverter
+import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.contract.transformer.TransformerService
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 
-class DefaultTransformationUseCase(private val communicationValidator: CommunicationValidator,
-                                   private val incomingCommunicationConverter: IncomingCommunicationConverter,
-                                   private val transformerService: TransformerService,
-                                   private val outgoingCommunicationConverter: OutgoingCommunicationConverter)
+class DefaultTransformationUseCase(private val externalCommunicationManager: ExternalCommunicationManager,
+                                   private val internalCommunicationParameters: CommunicationParameters,
+                                   private val transformerService: TransformerService)
     : TransformationUseCase {
 
     companion object {
@@ -22,25 +19,28 @@ class DefaultTransformationUseCase(private val communicationValidator: Communica
 
     override fun transform(transformerId: String,
                            transformationDescriptor: TransformationDescriptor,
-                           communicationParameters: CommunicationParameters): List<TransformedDataDescriptor> {
+                           externalCommunicationParameters: CommunicationParameters): List<TransformedDataDescriptor> {
         try {
-            communicationValidator.validate(transformationDescriptor.dataDescriptors, communicationParameters)
+            val (_, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) =
+                    externalCommunicationManager.getCommunication(externalCommunicationParameters.getId())
 
-            val convertedDataDescriptors = transformationDescriptor.dataDescriptors.map {
-                incomingCommunicationConverter.convert(it, communicationParameters)
-            }
+            val dataDescriptors = transformationDescriptor.dataDescriptors
+
+            val convertedDataDescriptors =
+                    incomingExternalCommunicationConverter.convert(dataDescriptors, externalCommunicationParameters, internalCommunicationParameters)
 
             val transformedDataDescriptors = transformerService.transform(transformerId,
                                                                           convertedDataDescriptors,
                                                                           transformationDescriptor.targetMediaType,
                                                                           transformationDescriptor.parameters)
 
-            return transformedDataDescriptors.map { outgoingCommunicationConverter.convert(it, communicationParameters) }
+            return outgoingExternalCommunicationConverter.convert(transformedDataDescriptors,
+                                                                  externalCommunicationParameters,
+                                                                  internalCommunicationParameters)
         } catch (e: Exception) {
-            logger.error("Couldn't transform <{}, {}>", transformerId, communicationParameters, e)
+            logger.error("Couldn't transform <{}, {}>", transformerId, externalCommunicationParameters, e) // TODO maybe better message
 
             throw e
         }
     }
-
 }

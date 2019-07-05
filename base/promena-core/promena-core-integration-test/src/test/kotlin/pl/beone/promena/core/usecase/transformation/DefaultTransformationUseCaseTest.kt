@@ -6,6 +6,7 @@ import akka.routing.SmallestMailboxPool
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
 import com.typesafe.config.ConfigFactory
+import io.kotlintest.fail
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
 import io.mockk.every
@@ -13,12 +14,13 @@ import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import pl.beone.promena.communication.memory.internal.MemoryCommunicationValidatorConverter
-import pl.beone.promena.communication.memory.internal.MemoryIncomingCommunicationConverter
-import pl.beone.promena.communication.memory.internal.MemoryInternalCommunicationConverter
-import pl.beone.promena.communication.memory.internal.MemoryOutgoingCommunicationConverter
 import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithId
 import pl.beone.promena.core.contract.actor.config.ActorCreator
+import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
+import pl.beone.promena.core.contract.communication.external.OutgoingExternalCommunicationConverter
+import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
+import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
+import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.external.akka.actor.DefaultActorService
 import pl.beone.promena.core.external.akka.transformer.AkkaTransformerService
@@ -29,24 +31,27 @@ import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
-import java.io.InputStream
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
 class DefaultTransformationUseCaseTest {
 
     companion object {
-        private const val THREADS = 4
-        private const val TRANSFORMER_ACTORS = 4
-        private const val NR_OF_ITERATIONS = 20
+        private const val TRANSFORMER_ACTORS = 1
 
         private const val transformerId = "mirror"
+        private const val communicationId = "memory"
+        private val data = InMemoryData(this::class.java.getResourceAsStream("/file/test.txt").readBytes())
         private val mediaType = MediaTypeConstants.TEXT_PLAIN
         private val targetMediaType = MediaTypeConstants.TEXT_PLAIN
         private val parameters = MapParameters.empty()
-        private val communicationParameters = MapCommunicationParameters.empty()
-
+        private val dataDescriptors = listOf(DataDescriptor(data, mediaType))
+        private val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
+        private val transformedDataDescriptor = listOf(TransformedDataDescriptor(data, MapMetadata.empty()))
+        private val externalCommunicationParameters = MapCommunicationParameters.create(communicationId)
+        private val internalCommunicationParameters = MapCommunicationParameters.create(communicationId)
     }
 
     private lateinit var actorSystem: ActorSystem
@@ -65,30 +70,33 @@ class DefaultTransformationUseCaseTest {
     fun `transform _ run Akka and transform using memory communication and simple data classes _ should perform transformation`() {
         val transformationUseCase = init()
 
-        val data = InMemoryData(readFromResources().readBytes())
-        transform(transformationUseCase, data)
-                .forEach {
-                    it shouldHaveSize 1
-                    data.getBytes() shouldBe it.first().data.getBytes()
-                }
-    }
+        try {
+            transformationUseCase.transform(transformerId, transformationDescriptor, externalCommunicationParameters).let {
+                it shouldHaveSize 1
+                data.getBytes() shouldBe it.first().data.getBytes()
 
-    private fun transform(transformationUseCase: DefaultTransformationUseCase, data: InMemoryData): List<List<TransformedDataDescriptor>> {
-        val executors = Executors.newFixedThreadPool(THREADS)
-
-        return (0..NR_OF_ITERATIONS).map {
-            executors.submit(Callable<List<TransformedDataDescriptor>> {
-                transformationUseCase.transform(transformerId,
-                                                TransformationDescriptor(listOf(DataDescriptor(data, mediaType)), targetMediaType, parameters),
-                                                communicationParameters)
-            })
-        }.map { it.get() }
+            }
+        } catch (e: Exception) {
+            fail("Error occurred. Check logs for more details")
+        }
     }
 
     private fun init(): DefaultTransformationUseCase {
         val actorMaterializer = ActorMaterializer.create(actorSystem)
 
-        val internalCommunicationConverter = MemoryInternalCommunicationConverter()
+        val incomingExternalCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
+            every { convert(dataDescriptors, externalCommunicationParameters, internalCommunicationParameters) } returns dataDescriptors
+        }
+
+        val internalCommunicationConverter = mockk<InternalCommunicationConverter> {
+            every { convert(dataDescriptors, transformedDataDescriptor) } returns transformedDataDescriptor
+        }
+
+        val outgoingExternalCommunicationConverter = mockk<OutgoingExternalCommunicationConverter> {
+            every {
+                convert(transformedDataDescriptor, externalCommunicationParameters, internalCommunicationParameters)
+            } returns transformedDataDescriptor
+        }
 
         val mirrorTransformer = MirrorTransformer()
 
@@ -104,6 +112,12 @@ class DefaultTransformationUseCaseTest {
             }
         }
 
+        val externalCommunicationManager = mockk<ExternalCommunicationManager> {
+            every { getCommunication(communicationId) } returns ExternalCommunication(communicationId,
+                                                                                      incomingExternalCommunicationConverter,
+                                                                                      outgoingExternalCommunicationConverter)
+        }
+
         val transformersCreator = DefaultTransformersCreator(transformerConfig,
                                                              internalCommunicationConverter,
                                                              actorCreator)
@@ -114,13 +128,7 @@ class DefaultTransformationUseCaseTest {
 
         val transformerService = AkkaTransformerService(actorMaterializer, actorService)
 
-        return DefaultTransformationUseCase(MemoryCommunicationValidatorConverter(),
-                                            MemoryIncomingCommunicationConverter(),
-                                            transformerService,
-                                            MemoryOutgoingCommunicationConverter())
+        return DefaultTransformationUseCase(externalCommunicationManager, internalCommunicationParameters, transformerService)
     }
-
-    private fun readFromResources(): InputStream =
-            this::class.java.getResourceAsStream("/file/test.txt")
 
 }

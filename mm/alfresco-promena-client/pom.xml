@@ -37,7 +37,7 @@
         <!-- JRebel Hot reloading of classpath stuff and web resource stuff -->
         <jrebel.version>1.1.8</jrebel.version>
 
-        <kotlintest-runner-junit5.version>3.3.2</kotlintest-runner-junit5.version>
+        <kotlintest-runner-junit4.version>3.3.3</kotlintest-runner-junit4.version>
 
         <!-- Environment configuration properties -->
         <share.port>8180</share.port>
@@ -109,8 +109,8 @@
         </dependency>
         <dependency>
             <groupId>io.kotlintest</groupId>
-            <artifactId>kotlintest-runner-junit5</artifactId>
-            <version>${kotlintest-runner-junit5.version}</version>
+            <artifactId>kotlintest-runner-junit4</artifactId>
+            <version>${kotlintest-runner-junit4.version}</version>
             <scope>test</scope>
         </dependency>
 

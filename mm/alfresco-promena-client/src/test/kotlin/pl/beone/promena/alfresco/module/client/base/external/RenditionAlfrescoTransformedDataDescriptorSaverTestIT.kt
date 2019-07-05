@@ -39,7 +39,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
         val integrationNode = createNodeInIntegrationFolder()
 
         val alfrescoDataConverter = mockk<AlfrescoDataConverter> {
-            every { saveDataInContentWriter(eq(data), any()) } just Runs
+            every { saveDataInContentWriter(data, any()) } just Runs
         }
 
         val nodes = RenditionAlfrescoTransformedDataDescriptorSaver(true,
