@@ -3,13 +3,22 @@ package pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_COMMUNICATION_ID
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_ATTEMPT
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODE_REFS
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
-import java.net.URI
 
-class TransformerSender(private val communicationLocation: URI?,
+class TransformerSender(private val externalCommunication: ExternalCommunication,
                         private val queueRequest: ActiveMQQueue,
                         private val jmsTemplate: JmsTemplate) {
 
@@ -24,16 +33,17 @@ class TransformerSender(private val communicationLocation: URI?,
         jmsTemplate.convertAndSend(queueRequest, TransformationDescriptor(dataDescriptors, targetMediaType, parameters)) { message ->
             message.apply {
                 jmsCorrelationID = id
-                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, transformerId)
+                setStringProperty(PROMENA_TRANSFORMER_ID, transformerId)
 
-                communicationLocation?.let { setObjectProperty(PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION, communicationLocation.toString()) }
+                setObjectProperty(PROMENA_COMMUNICATION_ID, externalCommunication.id)
+                externalCommunication.location?.let { setObjectProperty(PROMENA_COMMUNICATION_LOCATION, externalCommunication.location.toString()) }
 
-                setObjectProperty(PromenaJmsHeader.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
-                setObjectProperty(PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
-                setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, targetMediaType.mimeType)
-                setStringProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, targetMediaType.charset.name())
-                setObjectProperty(PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())
-                setObjectProperty(PromenaJmsHeader.SEND_BACK_ATTEMPT, attempt)
+                setObjectProperty(SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
+                setObjectProperty(SEND_BACK_NODES_CHECKSUM, nodesChecksum)
+                setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, targetMediaType.mimeType)
+                setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, targetMediaType.charset.name())
+                setObjectProperty(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())
+                setObjectProperty(SEND_BACK_ATTEMPT, attempt)
             }
         }
     }

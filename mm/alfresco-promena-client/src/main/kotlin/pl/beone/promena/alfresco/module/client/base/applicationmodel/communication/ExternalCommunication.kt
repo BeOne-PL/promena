@@ -3,4 +3,4 @@ package pl.beone.promena.alfresco.module.client.base.applicationmodel.communicat
 import java.net.URI
 
 data class ExternalCommunication(val id: String,
-                                 val location: URI?)
+                                 val location: URI? = null)

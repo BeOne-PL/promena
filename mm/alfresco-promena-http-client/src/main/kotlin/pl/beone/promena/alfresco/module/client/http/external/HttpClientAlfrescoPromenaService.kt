@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.HttpHeaders
 import io.netty.handler.codec.http.HttpResponseStatus
 import org.alfresco.service.cmr.repository.NodeRef
 import org.slf4j.LoggerFactory
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.NodesInconsistencyException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
@@ -34,7 +35,7 @@ import java.lang.System.currentTimeMillis
 import java.net.URI
 import java.time.Duration
 
-class HttpClientAlfrescoPromenaService(private val communicationLocation: URI?,
+class HttpClientAlfrescoPromenaService(private val externalCommunication: ExternalCommunication,
                                        private val retryOnError: Boolean,
                                        private val retryOnErrorMaxAttempts: Long,
                                        private val retryOnErrorNextAttemptsDelay: Duration,
@@ -127,7 +128,9 @@ class HttpClientAlfrescoPromenaService(private val communicationLocation: URI?,
             headers { it.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeConstants.APPLICATION_OCTET_STREAM.mimeType) }
 
     private fun HttpClient.RequestSender.transformerUriWithCommunicationLocation(transformerId: String): HttpClient.RequestSender =
-            uri("/transform/$transformerId" + if (communicationLocation != null) "?location=$communicationLocation" else "")
+            uri("/transform/$transformerId"
+                + "?id=${externalCommunication.id}"
+                + if (externalCommunication.location != null) "&location=${externalCommunication.location}" else "")
 
     // defaultIfEmpty is necessary. In other case complete event is emitted if content is null
     private fun zipBytesWithResponse(byte: ByteBufMono, response: HttpClientResponse): Mono<Tuple2<ByteArray, HttpClientResponse>> =

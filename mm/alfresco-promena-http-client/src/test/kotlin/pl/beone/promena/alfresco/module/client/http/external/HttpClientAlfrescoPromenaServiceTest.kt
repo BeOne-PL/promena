@@ -12,6 +12,9 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Before
 import org.junit.Test
 import pl.beone.lib.typeconverter.internal.getClazz
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.File
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.Memory
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
@@ -71,7 +74,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        HttpClientAlfrescoPromenaService(null,
+        HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
                                          false,
                                          0,
                                          Duration.ofMillis(0),
@@ -92,7 +95,7 @@ class HttpClientAlfrescoPromenaServiceTest {
 
         val tmpFile = createTempFile()
 
-        HttpClientAlfrescoPromenaService(tmpFile.toURI(),
+        HttpClientAlfrescoPromenaService(ExternalCommunication(File, tmpFile.toURI()),
                                          false,
                                          0,
                                          Duration.ofMillis(0),
@@ -115,7 +118,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         shouldThrow<TransformationSynchronizationException> {
-            HttpClientAlfrescoPromenaService(null,
+            HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
                                              false,
                                              0,
                                              Duration.ofMillis(0),
@@ -139,7 +142,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
                                                              false,
                                                              0,
                                                              Duration.ofMillis(0),
@@ -162,7 +165,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
                                                              false,
                                                              0,
                                                              Duration.ofMillis(0),
@@ -187,7 +190,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
                                                              false,
                                                              0,
                                                              Duration.ofMillis(0),
@@ -209,7 +212,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
                                                              false,
                                                              0,
                                                              Duration.ofMillis(0),
@@ -231,7 +234,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(null,
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
                                                              true,
                                                              3,
                                                              Duration.ofMillis(300),

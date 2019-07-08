@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.core.JmsTemplate
-import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getAndVerifyLocation
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
 import java.util.*
@@ -20,8 +20,9 @@ class TransformerSenderContext {
 
     @Bean
     fun transformerSender(@Qualifier("global-properties") properties: Properties,
+                          externalCommunication: ExternalCommunication,
                           jmsTemplate: JmsTemplate) =
-            TransformerSender(properties.getAndVerifyLocation(logger),
+            TransformerSender(externalCommunication,
                               ActiveMQQueue(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.message-broker.consumer.queue.request")),
                               jmsTemplate)
 }

@@ -23,7 +23,7 @@ internal fun Properties.getPropertyWithEmptySupport(key: String): String? =
         }
 
 internal fun Properties.getLocation(): URI {
-    val property = this.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.file.location")
+    val property = this.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.file.location")
 
     val uri = URI(property)
 
