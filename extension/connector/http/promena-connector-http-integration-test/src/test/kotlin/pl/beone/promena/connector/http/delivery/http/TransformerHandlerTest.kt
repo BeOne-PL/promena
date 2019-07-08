@@ -1,7 +1,9 @@
 package pl.beone.promena.connector.http.delivery.http
 
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,13 +54,23 @@ class TransformerHandlerTest {
         private val responseBody = "response body".toByteArray()
     }
 
+    @Before
+    fun setUp() {
+        mockkObject(descriptorSerializationService)
+        clearMocks(descriptorSerializationService)
+
+        mockkObject(transformationUseCase)
+        clearMocks(transformationUseCase)
+
+        mockkObject(serializationService)
+        clearMocks(serializationService)
+    }
+
     @Test
     fun `transform _ with empty communication parameters`() {
-        mockkObject(descriptorSerializationService)
         every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
         every { descriptorSerializationService.serialize(transformedDataDescriptors) } returns responseBody
 
-        mockkObject(transformationUseCase)
         every {
             transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty())
         } returns transformedDataDescriptors
@@ -72,12 +84,9 @@ class TransformerHandlerTest {
 
     @Test
     fun `transform _ with location in communication parameters`() {
-        mockkObject(descriptorSerializationService)
         every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
         every { descriptorSerializationService.serialize(transformedDataDescriptors) } returns responseBody
 
-
-        mockkObject(transformationUseCase)
         every {
             transformationUseCase.transform(transformerId, transformationDescriptor,
                                             MapCommunicationParameters(mapOf("location" to "file:/tmp")))
@@ -95,18 +104,10 @@ class TransformerHandlerTest {
         val exception = TransformerNotFoundException("exception")
         val messageByteArray = exception.message!!.toByteArray()
 
-        mockkObject(descriptorSerializationService)
         every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
 
-        mockkObject(serializationService)
         every { serializationService.serialize(any<TransformerNotFoundException>()) } returns messageByteArray
 
-        mockkObject(transformationUseCase)
-        every {
-            transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty())
-        } returns transformedDataDescriptors
-
-        mockkObject(transformationUseCase)
         every { transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty()) } throws exception
 
         webTestClient.post().uri("/transform/$transformerId")
