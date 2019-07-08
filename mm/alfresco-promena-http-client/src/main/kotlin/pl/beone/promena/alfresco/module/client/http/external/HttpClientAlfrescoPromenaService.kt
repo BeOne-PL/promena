@@ -32,7 +32,6 @@ import reactor.retry.Retry
 import reactor.retry.RetryExhaustedException
 import reactor.util.function.Tuple2
 import java.lang.System.currentTimeMillis
-import java.net.URI
 import java.time.Duration
 
 class HttpClientAlfrescoPromenaService(private val externalCommunication: ExternalCommunication,
@@ -109,7 +108,7 @@ class HttpClientAlfrescoPromenaService(private val externalCommunication: Extern
         return httpClient
                 .headersWithContentType()
                 .post()
-                .transformerUriWithCommunicationLocation(transformerId)
+                .transformerUriWithExternalComunicationParameters(transformerId)
                 .send(ByteBufFlux.fromInbound(serializedTransformationDescriptor))
                 .responseSingle { response, bytes -> zipBytesWithResponse(bytes, response) }
                 .map { handleTransformationResult(it.t2, it.t1) }
@@ -127,7 +126,7 @@ class HttpClientAlfrescoPromenaService(private val externalCommunication: Extern
     private fun HttpClient.headersWithContentType(): HttpClient =
             headers { it.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeConstants.APPLICATION_OCTET_STREAM.mimeType) }
 
-    private fun HttpClient.RequestSender.transformerUriWithCommunicationLocation(transformerId: String): HttpClient.RequestSender =
+    private fun HttpClient.RequestSender.transformerUriWithExternalComunicationParameters(transformerId: String): HttpClient.RequestSender =
             uri("/transform/$transformerId"
                 + "?id=${externalCommunication.id}"
                 + if (externalCommunication.location != null) "&location=${externalCommunication.location}" else "")
