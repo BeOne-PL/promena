@@ -4,12 +4,13 @@ package ${package}.configuration
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import ${package}.${transformerClassName}
 
 @Configuration
 class ${transformerClassName}Context {
 
     @Bean
-    fun ${transformerClassNameWithLowFirstChar}() = ${transformerClassName}()
+    fun ${transformerClassNameWithLowFirstChar}(internalCommunicationParameters: CommunicationParameters) = ${transformerClassName}(internalCommunicationParameters)
 
 }

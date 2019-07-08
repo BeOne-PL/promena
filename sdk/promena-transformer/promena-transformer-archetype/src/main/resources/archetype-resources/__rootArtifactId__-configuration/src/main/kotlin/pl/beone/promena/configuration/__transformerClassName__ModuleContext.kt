@@ -7,9 +7,9 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 
-@Configuration("${rootArtifactId}-context")
+@Configuration
 @ComponentScan(basePackages = [
     "${package}.configuration"
 ])
-@PropertySource("${rootArtifactId}-transformer.properties")
-class ModuleContext
+@PropertySource("classpath:${rootArtifactId}-transformer.properties")
+class ${transformerClassName}ModuleContext
