@@ -10,7 +10,7 @@
         <version>2.1.6.RELEASE</version>
     </parent>
 
-    <groupId>pl.beone.promena.sdk</groupId>
+    <groupId>pl.beone.promena.sdk.maven.parent</groupId>
     <artifactId>promena-parent</artifactId>
     <version>0.9.0</version>
     <packaging>pom</packaging>
