@@ -27,6 +27,6 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverter : IncomingExt
     }
 
     private fun List<DataDescriptor>.convertToInMemoryDataDescriptors(): List<DataDescriptor> =
-            map { DataDescriptor(it.data.createInMemoryDataAndDeleteOldDataResource(logger), it.mediaType) }
+            map { DataDescriptor(it.data.createInMemoryDataAndDeleteOldDataResource(logger), it.mediaType, it.metadata) }
 }
 

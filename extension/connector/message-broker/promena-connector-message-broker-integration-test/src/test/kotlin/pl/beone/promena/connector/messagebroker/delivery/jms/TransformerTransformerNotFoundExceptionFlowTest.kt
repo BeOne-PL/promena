@@ -27,6 +27,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.util.*
 import java.util.concurrent.Executors
@@ -82,7 +83,7 @@ class TransformerTransformerNotFoundExceptionFlowTest {
 
     private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
-                                   TransformationDescriptor(listOf(DataDescriptor("".toInMemoryData(), TEXT_PLAIN)),
+                                   TransformationDescriptor(listOf(DataDescriptor("".toInMemoryData(), TEXT_PLAIN, MapMetadata.empty())),
                                                             MediaTypeConstants.APPLICATION_JSON,
                                                             MapParameters.empty())) { message ->
             message.apply {

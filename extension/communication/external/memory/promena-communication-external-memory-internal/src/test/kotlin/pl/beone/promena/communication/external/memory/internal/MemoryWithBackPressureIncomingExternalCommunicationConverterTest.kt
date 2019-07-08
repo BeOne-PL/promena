@@ -14,11 +14,12 @@ import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 
 class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
 
@@ -34,7 +35,7 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
 
     @Test
     fun `convert _ the same id communication parameter`() {
-        val dataDescriptors = listOf(DataDescriptor("test".createInMemoryData(), MediaTypeConstants.TEXT_PLAIN))
+        val dataDescriptors = listOf(DataDescriptor("test".createInMemoryData(), TEXT_PLAIN, MapMetadata.empty()))
 
         MemoryWithBackPressureIncomingExternalCommunicationConverter()
                 .convert(dataDescriptors, communicationParameters, communicationParameters) shouldBe dataDescriptors
@@ -43,14 +44,14 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
     @Test
     fun `convert _ should convert Data to InMemoryData`() {
         val bytes = "converted test".toByteArray()
-        val mediaType = MediaTypeConstants.TEXT_PLAIN
+        val mediaType = TEXT_PLAIN
 
         val data = mockk<Data> {
             every { getBytes() } returns bytes
             every { delete() } just Runs
         }
 
-        val dataDescriptors = listOf(DataDescriptor(data, mediaType))
+        val dataDescriptors = listOf(DataDescriptor(data, mediaType, MapMetadata(mapOf("key" to "value"))))
 
         val internalCommunicationParameters = MapCommunicationParameters.create("different")
 
@@ -68,14 +69,14 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
     @Test
     fun `convert _ delete throws DataDeleteException _ should convert Data to InMemoryData`() {
         val bytes = "converted test".toByteArray()
-        val mediaType = MediaTypeConstants.TEXT_PLAIN
+        val mediaType = TEXT_PLAIN
 
         val data = mockk<Data> {
             every { getBytes() } returns bytes
             every { delete() } throws DataDeleteException("Exception")
         }
 
-        val dataDescriptors = listOf(DataDescriptor(data, mediaType))
+        val dataDescriptors = listOf(DataDescriptor(data, mediaType, MapMetadata(mapOf("key" to "value"))))
 
         val internalCommunicationParameters = MapCommunicationParameters.create("different")
 

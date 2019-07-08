@@ -17,6 +17,7 @@ import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
@@ -29,6 +30,8 @@ class AkkaDescriptorSerializationServiceTest {
     companion object {
         private val data = InMemoryData("test".toByteArray())
         private val data2 = InMemoryData("test2".toByteArray())
+        private val metadata = MapMetadata(mapOf("key" to "value"))
+        private val metadata2 = MapMetadata.empty()
         private val serializedTransformedDataDescriptors = "serialized data".toByteArray()
 
     }
@@ -49,7 +52,7 @@ class AkkaDescriptorSerializationServiceTest {
     fun serialize() {
         val transformedDataDescriptors = listOf(
                 TransformedDataDescriptor(data, MapMetadata(mapOf("key" to "value"))),
-                TransformedDataDescriptor(data2, MapMetadata(emptyMap()))
+                TransformedDataDescriptor(data2, MapMetadata.empty())
         )
 
         val dataDescriptorSerializationService = prepare(mockk {
@@ -62,8 +65,8 @@ class AkkaDescriptorSerializationServiceTest {
     @Test
     fun deserialize() {
         val transformationDescriptor = TransformationDescriptor(
-                listOf(DataDescriptor(data, MediaTypeConstants.APPLICATION_OCTET_STREAM),
-                       DataDescriptor(data2, MediaTypeConstants.APPLICATION_OCTET_STREAM)),
+                listOf(DataDescriptor(data, APPLICATION_OCTET_STREAM, metadata),
+                       DataDescriptor(data2, APPLICATION_OCTET_STREAM, metadata2)),
                 MediaTypeConstants.APPLICATION_PDF,
                 MapParameters(mapOf("key" to "value"))
         )

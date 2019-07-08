@@ -5,6 +5,7 @@ import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
@@ -32,7 +33,7 @@ class KryoSerializationServiceTest {
     fun `serialize and deserialize _ list of TransformedDataDescriptor`() {
         val transformedDataDescriptors = listOf(
                 TransformedDataDescriptor(InMemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value"))),
-                TransformedDataDescriptor(InMemoryData("""{ "key": "value" """.toByteArray()), MapMetadata(emptyMap()))
+                TransformedDataDescriptor(InMemoryData("""{ "key": "value" """.toByteArray()), MapMetadata.empty())
         )
 
         serializationService.deserialize(serializationService.serialize(transformedDataDescriptors), getClazz<TransformationDescriptor>()) shouldBe
@@ -42,8 +43,8 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ single TransformationDescriptor`() {
         val transformationDescriptor = TransformationDescriptor(
-                listOf(DataDescriptor(InMemoryData("test".toByteArray()), MediaTypeConstants.APPLICATION_OCTET_STREAM),
-                       DataDescriptor(InMemoryData("""{ "key": "value" }""".toByteArray()), MediaTypeConstants.APPLICATION_OCTET_STREAM)),
+                listOf(DataDescriptor(InMemoryData("test".toByteArray()), APPLICATION_OCTET_STREAM, MapMetadata(mapOf("key" to "value"))),
+                       DataDescriptor(InMemoryData("""{ "key": "value" }""".toByteArray()), APPLICATION_OCTET_STREAM, MapMetadata.empty())),
                 MediaTypeConstants.APPLICATION_PDF,
                 MapParameters(mapOf("key" to "value"))
         )

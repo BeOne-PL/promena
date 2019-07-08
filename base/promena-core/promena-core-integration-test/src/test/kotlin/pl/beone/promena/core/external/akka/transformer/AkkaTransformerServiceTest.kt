@@ -70,8 +70,8 @@ class AkkaTransformerServiceTest {
             every { getBytes() } returns bytes
         }
 
-        val dataDescriptors = listOf(DataDescriptor(data, mediaType),
-                                     DataDescriptor(data2, mediaType))
+        val dataDescriptors = listOf(DataDescriptor(data, mediaType, metadata),
+                                     DataDescriptor(data2, mediaType, metadata))
 
         val transformedDataDescriptors = listOf(TransformedDataDescriptor(data, metadata),
                                                 TransformedDataDescriptor(data2, metadata))
@@ -109,7 +109,8 @@ class AkkaTransformerServiceTest {
             every { getBytes() } returns bytes
             every { getLocation() } throws UnsupportedOperationException()
         }
-        val dataDescriptors = listOf(DataDescriptor(data, TEXT_PLAIN), DataDescriptor(data2, TEXT_PLAIN))
+        val metadata = mockk<Metadata>()
+        val dataDescriptors = listOf(DataDescriptor(data, TEXT_PLAIN, metadata), DataDescriptor(data2, TEXT_PLAIN, metadata))
 
         val parameters = mockk<Parameters> {
             every { getTimeout() } throws NoSuchElementException("")

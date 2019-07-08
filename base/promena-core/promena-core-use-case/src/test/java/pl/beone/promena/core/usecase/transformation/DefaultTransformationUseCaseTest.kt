@@ -16,6 +16,7 @@ import pl.beone.promena.core.contract.communication.external.manager.ExternalCom
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.contract.transformer.TransformerService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
@@ -28,7 +29,7 @@ class DefaultTransformationUseCaseTest {
         private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
         private val parameters = mockk<Parameters>()
 
-        private val dataDescriptors = listOf(DataDescriptor(mockk(), MediaTypeConstants.TEXT_PLAIN))
+        private val dataDescriptors = listOf(DataDescriptor(mockk(), TEXT_PLAIN, mockk()))
         private val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
         private val transformedDataDescriptors = listOf(TransformedDataDescriptor(mockk(), mockk()))
     }

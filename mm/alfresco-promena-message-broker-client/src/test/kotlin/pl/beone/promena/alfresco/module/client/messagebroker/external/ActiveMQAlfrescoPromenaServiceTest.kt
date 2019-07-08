@@ -17,6 +17,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import reactor.core.publisher.Mono
 import java.time.Duration
@@ -27,7 +28,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"),
                                       NodeRef("workspace://SpacesStore/a36d5c1a-e32c-478b-ad8b-14b2882115d1"))
         private const val nodesChecksum = "123456789"
-        private val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), TEXT_PLAIN))
+        private val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), TEXT_PLAIN, MapMetadata(mapOf("key" to "value"))))
         private const val transformerId = "transformer-test"
         private val targetMediaType = APPLICATION_PDF
         private val resultNodeRefs = listOf(NodeRef("workspace://SpacesStore/c0b95525-26a6-4067-9756-6bec11c93c70"),

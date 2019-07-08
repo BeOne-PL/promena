@@ -13,6 +13,7 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConvert
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import java.util.*
 
 @RunWith(AlfrescoTestRunner::class)
@@ -32,7 +33,7 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
 
         ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, alfrescoDataConverter)
                 .get(listOf(node)).let {
-                    it shouldBe listOf(DataDescriptor(data, mediaType))
+                    it shouldBe listOf(DataDescriptor(data, mediaType, MapMetadata.empty()))
                 }
     }
 

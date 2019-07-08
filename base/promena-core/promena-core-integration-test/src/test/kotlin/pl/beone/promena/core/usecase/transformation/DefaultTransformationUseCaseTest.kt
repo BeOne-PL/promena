@@ -44,8 +44,9 @@ class DefaultTransformationUseCaseTest {
         private val data = InMemoryData(this::class.java.getResourceAsStream("/file/test.txt").readBytes())
         private val mediaType = MediaTypeConstants.TEXT_PLAIN
         private val targetMediaType = MediaTypeConstants.TEXT_PLAIN
+        private val metadata = MapMetadata.empty()
         private val parameters = MapParameters.empty()
-        private val dataDescriptors = listOf(DataDescriptor(data, mediaType))
+        private val dataDescriptors = listOf(DataDescriptor(data, mediaType, metadata))
         private val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
         private val transformedDataDescriptor = listOf(TransformedDataDescriptor(data, MapMetadata.empty()))
         private val externalCommunicationParameters = MapCommunicationParameters.create(communicationId)

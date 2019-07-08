@@ -9,6 +9,7 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConvert
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import java.nio.charset.Charset
 
 class ContentPropertyAlfrescoDataDescriptorGetter(private val nodeService: NodeService,
@@ -30,6 +31,6 @@ class ContentPropertyAlfrescoDataDescriptorGetter(private val nodeService: NodeS
         val contentReader = contentService.getReader(this, ContentModel.PROP_CONTENT)
         val mediaType = MediaType.create(contentReader.mimetype, Charset.forName(contentReader.encoding))
 
-        return DataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType)
+        return DataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType, MapMetadata.empty())
     }
 }

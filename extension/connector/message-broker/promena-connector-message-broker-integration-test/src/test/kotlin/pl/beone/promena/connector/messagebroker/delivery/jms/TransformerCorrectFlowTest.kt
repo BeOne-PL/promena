@@ -47,7 +47,9 @@ class TransformerCorrectFlowTest {
         private const val location = "file:/tmp"
         private val correlationId = UUID.randomUUID().toString()
         private val transformationDescriptor =
-                TransformationDescriptor(listOf(DataDescriptor("test".toInMemoryData(), TEXT_PLAIN)), APPLICATION_JSON, MapParameters.empty())
+                TransformationDescriptor(listOf(DataDescriptor("test".toInMemoryData(), TEXT_PLAIN, MapMetadata.empty())),
+                                         APPLICATION_JSON,
+                                         MapParameters.empty())
         private val transformedData = """" {"test":"test"} """.toInMemoryData()
     }
 
