@@ -14,81 +14,78 @@ import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
+import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 
-class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
+class MemoryOutgoingExternalCommunicationConverterTest {
 
     companion object {
         private val communicationParameters = MapCommunicationParameters.create("memory")
+        private val metadata = MapMetadata(mapOf("key" to "value"))
     }
 
     @Before
     fun setUp() {
-        (LoggerFactory.getLogger("pl.beone.promena.communication.external.memory.internal.MemoryWithBackPressureIncomingExternalCommunicationConverter") as Logger)
+        (LoggerFactory.getLogger("pl.beone.promena.communication.external.memory.internal.MemoryOutgoingExternalCommunicationConverter") as Logger)
                 .level = Level.DEBUG
     }
 
     @Test
     fun `convert _ the same id communication parameter`() {
-        val dataDescriptors = listOf(DataDescriptor("test".createMemoryData(), TEXT_PLAIN, MapMetadata.empty()))
+        val transformedDataDescriptors = listOf(TransformedDataDescriptor("test".toMemoryData(), metadata))
 
-        MemoryWithBackPressureIncomingExternalCommunicationConverter()
-                .convert(dataDescriptors, communicationParameters, communicationParameters) shouldBe dataDescriptors
+        MemoryOutgoingExternalCommunicationConverter()
+                .convert(transformedDataDescriptors, communicationParameters, communicationParameters) shouldBe transformedDataDescriptors
     }
 
     @Test
     fun `convert _ should convert Data to MemoryData`() {
         val bytes = "converted test".toByteArray()
-        val mediaType = TEXT_PLAIN
 
         val data = mockk<Data> {
             every { getBytes() } returns bytes
             every { delete() } just Runs
         }
 
-        val dataDescriptors = listOf(DataDescriptor(data, mediaType, MapMetadata(mapOf("key" to "value"))))
+        val transformedDataDescriptors = listOf(TransformedDataDescriptor(data, metadata))
 
         val internalCommunicationParameters = MapCommunicationParameters.create("different")
 
-        MemoryWithBackPressureIncomingExternalCommunicationConverter()
-                .convert(dataDescriptors, communicationParameters, internalCommunicationParameters).let {
+        MemoryOutgoingExternalCommunicationConverter()
+                .convert(transformedDataDescriptors, communicationParameters, internalCommunicationParameters).let {
                     it shouldHaveSize 1
 
-                    val dataDescriptor = it.first()
-                    dataDescriptor.data should instanceOf(MemoryData::class)
-                    dataDescriptor.data.getBytes() shouldBe bytes
-                    dataDescriptor.mediaType shouldBe mediaType
+                    val transformedDataDescriptor = it.first()
+                    transformedDataDescriptor.data should instanceOf(MemoryData::class)
+                    transformedDataDescriptor.data.getBytes() shouldBe bytes
+                    transformedDataDescriptor.metadata shouldBe metadata
                 }
     }
 
     @Test
     fun `convert _ delete throws DataDeleteException _ should convert Data to MemoryData`() {
         val bytes = "converted test".toByteArray()
-        val mediaType = TEXT_PLAIN
 
         val data = mockk<Data> {
             every { getBytes() } returns bytes
             every { delete() } throws DataDeleteException("Exception")
         }
 
-        val dataDescriptors = listOf(DataDescriptor(data, mediaType, MapMetadata(mapOf("key" to "value"))))
+        val transformedDataDescriptors = listOf(TransformedDataDescriptor(data, metadata))
 
         val internalCommunicationParameters = MapCommunicationParameters.create("different")
 
-        MemoryWithBackPressureIncomingExternalCommunicationConverter()
-                .convert(dataDescriptors, communicationParameters, internalCommunicationParameters).let {
+        MemoryOutgoingExternalCommunicationConverter()
+                .convert(transformedDataDescriptors, communicationParameters, internalCommunicationParameters).let {
                     it shouldHaveSize 1
 
                     val dataDescriptor = it.first()
                     dataDescriptor.data should instanceOf(MemoryData::class)
                     dataDescriptor.data.getBytes() shouldBe bytes
-                    dataDescriptor.mediaType shouldBe mediaType
+                    dataDescriptor.metadata shouldBe metadata
                 }
     }
-
 }
