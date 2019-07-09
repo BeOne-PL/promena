@@ -12,7 +12,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
 import pl.beone.promena.transformer.internal.model.data.FileData
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 
@@ -25,12 +25,12 @@ class ${transformerClassName}Test {
 
         val metadata = MapMetadata.empty()
 
-        transformer.transform(listOf(DataDescriptor("data".toInMemoryData(), TEXT_PLAIN, metadata)), TEXT_PLAIN, MapParameters.empty())
+        transformer.transform(listOf(DataDescriptor("data".toMemoryData(), TEXT_PLAIN, metadata)), TEXT_PLAIN, MapParameters.empty())
                 .let {
                     it shouldHaveSize 1
 
                     val (transformedData, transformedMetadata) = it.first()
-                    transformedData should instanceOf(InMemoryData::class)
+                    transformedData should instanceOf(MemoryData::class)
                     transformedData.getBytes() shouldBe "data#".toByteArray()
                     transformedMetadata shouldBe metadata
                 }
@@ -62,8 +62,8 @@ class ${transformerClassName}Test {
         transformer.canTransform(emptyList(), APPLICATION_PDF, MapParameters.empty()) shouldBe false
     }
 
-    private fun String.toInMemoryData(): InMemoryData =
-            InMemoryData(toByteArray())
+    private fun String.toMemoryData(): MemoryData =
+            MemoryData(toByteArray())
 
     private fun String.toFileData(): FileData =
             FileData(createTempFile().apply {
