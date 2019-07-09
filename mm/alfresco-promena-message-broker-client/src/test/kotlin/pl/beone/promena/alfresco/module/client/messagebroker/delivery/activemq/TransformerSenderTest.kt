@@ -23,7 +23,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.net.URI
@@ -47,7 +47,7 @@ class TransformerSenderTest {
     private lateinit var transformerSender: TransformerSender
 
     companion object {
-        private val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), TEXT_PLAIN, MapMetadata(mapOf("key" to "value"))))
+        private val dataDescriptors = listOf(DataDescriptor(MemoryData("test".toByteArray()), TEXT_PLAIN, MapMetadata(mapOf("key" to "value"))))
         private val id = UUID.randomUUID().toString()
         private const val communicationId = File
         private val communicationLocation = URI("file:/tmp")

@@ -30,7 +30,7 @@ import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 
@@ -41,7 +41,7 @@ class DefaultTransformationUseCaseTest {
 
         private const val transformerId = "mirror"
         private const val communicationId = "memory"
-        private val data = InMemoryData(this::class.java.getResourceAsStream("/file/test.txt").readBytes())
+        private val data = MemoryData(this::class.java.getResourceAsStream("/file/test.txt").readBytes())
         private val mediaType = MediaTypeConstants.TEXT_PLAIN
         private val targetMediaType = MediaTypeConstants.TEXT_PLAIN
         private val metadata = MapMetadata.empty()

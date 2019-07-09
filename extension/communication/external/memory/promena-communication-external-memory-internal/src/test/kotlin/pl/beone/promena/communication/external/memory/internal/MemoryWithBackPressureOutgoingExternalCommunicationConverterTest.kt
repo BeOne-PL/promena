@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 
 class MemoryWithBackPressureOutgoingExternalCommunicationConverterTest {
@@ -34,14 +34,14 @@ class MemoryWithBackPressureOutgoingExternalCommunicationConverterTest {
 
     @Test
     fun convert() {
-        val transformedDataDescriptors = listOf(TransformedDataDescriptor("test".createInMemoryData(), metadata))
+        val transformedDataDescriptors = listOf(TransformedDataDescriptor("test".createMemoryData(), metadata))
 
         MemoryWithBackPressureOutgoingExternalCommunicationConverter()
                 .convert(transformedDataDescriptors, communicationParameters, communicationParameters) shouldBe transformedDataDescriptors
     }
 
     @Test
-    fun `convert _ should convert Data to InMemoryData`() {
+    fun `convert _ should convert Data to MemoryData`() {
         val bytes = "converted test".toByteArray()
 
         val data = mockk<Data> {
@@ -58,7 +58,7 @@ class MemoryWithBackPressureOutgoingExternalCommunicationConverterTest {
                     it shouldHaveSize 1
 
                     val transformedDataDescriptor = it.first()
-                    transformedDataDescriptor.data should instanceOf(InMemoryData::class)
+                    transformedDataDescriptor.data should instanceOf(MemoryData::class)
                     transformedDataDescriptor.data.getBytes() shouldBe bytes
                     transformedDataDescriptor.metadata shouldBe metadata
                 }

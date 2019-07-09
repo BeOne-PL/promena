@@ -16,10 +16,13 @@
     <artifactId>promena-executable</artifactId>
     <version>0.9.0</version>
 
-    <name>Executable</name>
-
     <properties>
         <java.version>11</java.version>
+
+        <promena.version>0.9.0</promena.version>
+        <promena-docker-maven-plugin.version>0.9.0</promena-docker-maven-plugin.version>
+
+        <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
@@ -31,50 +34,62 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- Core -->
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-configuration</artifactId>
-            <version>0.9.0</version>
+            <version>${promena.version}</version>
         </dependency>
 
+        <!-- Actor creator -->
         <dependency>
             <groupId>pl.beone.promena.actor-creator</groupId>
             <artifactId>promena-actor-creator-adaptive-load-balancing-configuration</artifactId>
-            <version>0.9.0</version>
+            <version>${promena.version}</version>
         </dependency>
 
+        <!-- Communication - external -->
         <dependency>
             <groupId>pl.beone.promena.communication.external</groupId>
             <artifactId>promena-communication-external-memory-configuration</artifactId>
-            <version>0.9.0</version>
+            <version>${promena.version}</version>
         </dependency>
 
+        <!-- Communication - internal -->
         <dependency>
             <groupId>pl.beone.promena.communication.internal</groupId>
             <artifactId>promena-communication-internal-memory-configuration</artifactId>
-            <version>0.9.0</version>
+            <version>${promena.version}</version>
         </dependency>
 
+        <!-- Connector -->
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
             <artifactId>promena-connector-http-configuration</artifactId>
-            <version>0.9.0</version>
+            <version>${promena.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
             <artifactId>promena-connector-message-broker-configuration</artifactId>
-            <version>0.9.0</version>
+            <version>${promena.version}</version>
         </dependency>
 
+        <!-- Management -->
         <dependency>
             <groupId>pl.beone.promena.cluster.management</groupId>
             <artifactId>promena-cluster-management-kubernetes-configuration</artifactId>
             <version>0.9.0</version>
         </dependency>
 
+        <!-- TRANSFORMER -->
         <dependency>
             <groupId>pl.beone.transformer</groupId>
             <artifactId>delay-transformer-configuration</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.transformer.hash-appender</groupId>
+            <artifactId>hash-appender-transformer-configuration</artifactId>
             <version>0.9.0</version>
         </dependency>
     </dependencies>
@@ -99,7 +114,7 @@
                     <dependency>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
-                        <version>2.1.6.RELEASE</version>
+                        <version>${spring-boot.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -145,7 +160,7 @@
             <plugin>
                 <groupId>pl.beone.promena.maven.plugin</groupId>
                 <artifactId>promena-docker-maven-plugin</artifactId>
-                <version>0.9.0</version>
+                <version>${promena-docker-maven-plugin.version}</version>
 
                 <configuration>
                     <name>${project.artifactId}-file-http-message-broker</name>
@@ -153,9 +168,15 @@
                 </configuration>
 
                 <dependencies>
+                    <!-- TRANSFORMER -->
                     <dependency>
                         <groupId>pl.beone.transformer</groupId>
                         <artifactId>delay-transformer</artifactId>
+                        <version>0.9.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>pl.beone.promena.transformer.hash-appender</groupId>
+                        <artifactId>hash-appender-transformer</artifactId>
                         <version>0.9.0</version>
                     </dependency>
                 </dependencies>

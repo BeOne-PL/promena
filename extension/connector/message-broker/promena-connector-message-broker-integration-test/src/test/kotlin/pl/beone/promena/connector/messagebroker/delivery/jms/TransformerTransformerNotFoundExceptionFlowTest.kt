@@ -6,7 +6,6 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQBytesMessage
-import org.apache.activemq.command.ActiveMQDestination
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.Before
 import org.junit.Test
@@ -83,7 +82,7 @@ class TransformerTransformerNotFoundExceptionFlowTest {
 
     private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
-                                   TransformationDescriptor(listOf(DataDescriptor("".toInMemoryData(), TEXT_PLAIN, MapMetadata.empty())),
+                                   TransformationDescriptor(listOf(DataDescriptor("".toMemoryData(), TEXT_PLAIN, MapMetadata.empty())),
                                                             MediaTypeConstants.APPLICATION_JSON,
                                                             MapParameters.empty())) { message ->
             message.apply {

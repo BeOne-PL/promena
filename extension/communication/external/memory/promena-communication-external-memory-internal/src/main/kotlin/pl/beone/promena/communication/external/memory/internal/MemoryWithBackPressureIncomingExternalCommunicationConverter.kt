@@ -20,13 +20,13 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverter : IncomingExt
             logger.warn("External communication is <{}> but internal communication is <{}>. You should choose the same communication implementation for performance reasons",
                         externalCommunicationId, internalCommunicationId)
 
-            dataDescriptors.convertToInMemoryDataDescriptors()
+            dataDescriptors.convertToMemoryDataDescriptors()
         } else {
             dataDescriptors
         }
     }
 
-    private fun List<DataDescriptor>.convertToInMemoryDataDescriptors(): List<DataDescriptor> =
-            map { DataDescriptor(it.data.createInMemoryDataAndDeleteOldDataResource(logger), it.mediaType, it.metadata) }
+    private fun List<DataDescriptor>.convertToMemoryDataDescriptors(): List<DataDescriptor> =
+            map { DataDescriptor(it.data.createMemoryDataAndDeleteOldDataResource(logger), it.mediaType, it.metadata) }
 }
 

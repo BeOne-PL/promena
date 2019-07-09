@@ -34,7 +34,6 @@ import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.util.*
-import javax.jms.Message
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IntegrationTestApplication::class])
@@ -123,7 +122,7 @@ class TransformerExceptionFlowTest {
 
     private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
-                                   TransformationDescriptor(listOf(DataDescriptor("".toInMemoryData(), TEXT_PLAIN, MapMetadata.empty())),
+                                   TransformationDescriptor(listOf(DataDescriptor("".toMemoryData(), TEXT_PLAIN, MapMetadata.empty())),
                                                             MediaTypeConstants.APPLICATION_JSON,
                                                             MapParameters.empty())) { message ->
             message.apply {

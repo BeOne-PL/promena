@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 
 class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
 
@@ -18,10 +18,10 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
 
     private fun convertIfNecessary(it: TransformedDataDescriptor): TransformedDataDescriptor {
         val data = it.data
-        return if (data !is InMemoryData) {
-            logger.warn("One of transformed data in internal communication is type <{}> but should be <InMemoryData>. You should use the same data implementation for performance reasons",
+        return if (data !is MemoryData) {
+            logger.warn("One of transformed data in internal communication is type <{}> but should be <MemoryData>. You should use the same data implementation for performance reasons",
                         data::class.java.simpleName)
-            TransformedDataDescriptor(data.createInMemoryDataAndDeleteOldDataResource(logger), it.metadata)
+            TransformedDataDescriptor(data.createMemoryDataAndDeleteOldDataResource(logger), it.metadata)
         } else {
             it
         }

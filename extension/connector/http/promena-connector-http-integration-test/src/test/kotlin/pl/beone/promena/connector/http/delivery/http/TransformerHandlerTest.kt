@@ -24,7 +24,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 
@@ -50,7 +50,7 @@ class TransformerHandlerTest {
         private const val transformerId = "default"
         private val requestBody = "request body".toByteArray()
         private val transformationDescriptor = TransformationDescriptor(emptyList(), MediaTypeConstants.TEXT_PLAIN, MapParameters.empty())
-        private val transformedDataDescriptors = listOf(TransformedDataDescriptor(InMemoryData(ByteArray(0)), MapMetadata.empty()))
+        private val transformedDataDescriptors = listOf(TransformedDataDescriptor(MemoryData(ByteArray(0)), MapMetadata.empty()))
         private val responseBody = "response body".toByteArray()
     }
 

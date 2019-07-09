@@ -9,7 +9,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.net.URI
@@ -32,8 +32,8 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ list of TransformedDataDescriptor`() {
         val transformedDataDescriptors = listOf(
-                TransformedDataDescriptor(InMemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value"))),
-                TransformedDataDescriptor(InMemoryData("""{ "key": "value" """.toByteArray()), MapMetadata.empty())
+                TransformedDataDescriptor(MemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value"))),
+                TransformedDataDescriptor(MemoryData("""{ "key": "value" """.toByteArray()), MapMetadata.empty())
         )
 
         serializationService.deserialize(serializationService.serialize(transformedDataDescriptors), getClazz<TransformationDescriptor>()) shouldBe
@@ -43,8 +43,8 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ single TransformationDescriptor`() {
         val transformationDescriptor = TransformationDescriptor(
-                listOf(DataDescriptor(InMemoryData("test".toByteArray()), APPLICATION_OCTET_STREAM, MapMetadata(mapOf("key" to "value"))),
-                       DataDescriptor(InMemoryData("""{ "key": "value" }""".toByteArray()), APPLICATION_OCTET_STREAM, MapMetadata.empty())),
+                listOf(DataDescriptor(MemoryData("test".toByteArray()), APPLICATION_OCTET_STREAM, MapMetadata(mapOf("key" to "value"))),
+                       DataDescriptor(MemoryData("""{ "key": "value" }""".toByteArray()), APPLICATION_OCTET_STREAM, MapMetadata.empty())),
                 MediaTypeConstants.APPLICATION_PDF,
                 MapParameters(mapOf("key" to "value"))
         )

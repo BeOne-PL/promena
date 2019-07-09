@@ -18,7 +18,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 
 class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
@@ -35,14 +35,14 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
 
     @Test
     fun `convert _ the same id communication parameter`() {
-        val dataDescriptors = listOf(DataDescriptor("test".createInMemoryData(), TEXT_PLAIN, MapMetadata.empty()))
+        val dataDescriptors = listOf(DataDescriptor("test".createMemoryData(), TEXT_PLAIN, MapMetadata.empty()))
 
         MemoryWithBackPressureIncomingExternalCommunicationConverter()
                 .convert(dataDescriptors, communicationParameters, communicationParameters) shouldBe dataDescriptors
     }
 
     @Test
-    fun `convert _ should convert Data to InMemoryData`() {
+    fun `convert _ should convert Data to MemoryData`() {
         val bytes = "converted test".toByteArray()
         val mediaType = TEXT_PLAIN
 
@@ -60,14 +60,14 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
                     it shouldHaveSize 1
 
                     val dataDescriptor = it.first()
-                    dataDescriptor.data should instanceOf(InMemoryData::class)
+                    dataDescriptor.data should instanceOf(MemoryData::class)
                     dataDescriptor.data.getBytes() shouldBe bytes
                     dataDescriptor.mediaType shouldBe mediaType
                 }
     }
 
     @Test
-    fun `convert _ delete throws DataDeleteException _ should convert Data to InMemoryData`() {
+    fun `convert _ delete throws DataDeleteException _ should convert Data to MemoryData`() {
         val bytes = "converted test".toByteArray()
         val mediaType = TEXT_PLAIN
 
@@ -85,7 +85,7 @@ class MemoryWithBackPressureIncomingExternalCommunicationConverterTest {
                     it shouldHaveSize 1
 
                     val dataDescriptor = it.first()
-                    dataDescriptor.data should instanceOf(InMemoryData::class)
+                    dataDescriptor.data should instanceOf(MemoryData::class)
                     dataDescriptor.data.getBytes() shouldBe bytes
                     dataDescriptor.mediaType shouldBe mediaType
                 }

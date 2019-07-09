@@ -25,7 +25,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import reactor.core.publisher.Mono
@@ -50,9 +50,9 @@ class HttpClientAlfrescoPromenaServiceTest {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
         private val targetMediaType = TEXT_PLAIN
         private val parameters = MapParameters(mapOf("key" to "value"))
-        private val dataDescriptors = listOf(DataDescriptor(InMemoryData("test".toByteArray()), TEXT_PLAIN, MapMetadata(mapOf("key" to "value"))))
+        private val dataDescriptors = listOf(DataDescriptor(MemoryData("test".toByteArray()), TEXT_PLAIN, MapMetadata(mapOf("key" to "value"))))
         private val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
-        private val transformedDataDescriptors = listOf(TransformedDataDescriptor(InMemoryData("test".toByteArray()), MapMetadata.empty()))
+        private val transformedDataDescriptors = listOf(TransformedDataDescriptor(MemoryData("test".toByteArray()), MapMetadata.empty()))
         private val serverException = RuntimeException("Exception")
         private val transformedNodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"))
 

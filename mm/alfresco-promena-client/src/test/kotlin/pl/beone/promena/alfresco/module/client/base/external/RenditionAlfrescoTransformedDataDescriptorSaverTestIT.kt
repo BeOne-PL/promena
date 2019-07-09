@@ -21,7 +21,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.Prome
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 
 @RunWith(AlfrescoTestRunner::class)
@@ -29,7 +29,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
 
     companion object {
         private const val transformerId = "transformer-test"
-        private val data = InMemoryData("test".toByteArray())
+        private val data = MemoryData("test".toByteArray())
         private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
     }
 

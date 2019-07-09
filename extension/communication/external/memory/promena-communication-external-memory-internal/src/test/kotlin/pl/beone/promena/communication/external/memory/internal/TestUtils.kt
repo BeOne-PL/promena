@@ -1,6 +1,6 @@
 package pl.beone.promena.communication.external.memory.internal
 
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 
-internal fun String.createInMemoryData(): InMemoryData =
-        InMemoryData(this.toByteArray())
+internal fun String.createMemoryData(): MemoryData =
+        MemoryData(this.toByteArray())

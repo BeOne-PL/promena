@@ -3,12 +3,12 @@ package pl.beone.promena.communication.internal.memory.internal
 import org.slf4j.Logger
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.contract.model.Data
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 
-internal fun Data.createInMemoryDataAndDeleteOldDataResource(logger: Logger): InMemoryData {
-    logger.debug("Creating <InMemoryData> from <{}>...", this.toSimplifiedString())
-    val convertedData = InMemoryData(this.getBytes())
-    logger.debug("Finished creating <InMemoryData> from <{}>", this.toSimplifiedString())
+internal fun Data.createMemoryDataAndDeleteOldDataResource(logger: Logger): MemoryData {
+    logger.debug("Creating <MemoryData> from <{}>...", this.toSimplifiedString())
+    val convertedData = MemoryData(this.getBytes())
+    logger.debug("Finished creating <MemoryData> from <{}>", this.toSimplifiedString())
 
     logger.debug("Deleting <{}> resource...", this.toSimplifiedString())
     try {

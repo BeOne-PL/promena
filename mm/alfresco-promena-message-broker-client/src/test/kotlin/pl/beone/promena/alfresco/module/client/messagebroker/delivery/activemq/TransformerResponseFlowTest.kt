@@ -31,7 +31,7 @@ import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.c
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 import java.time.Duration
@@ -62,7 +62,7 @@ class TransformerResponseFlowTest {
 
     companion object {
         private val transformedDataDescriptors = listOf(
-                TransformedDataDescriptor(InMemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value")))
+                TransformedDataDescriptor(MemoryData("test".toByteArray()), MapMetadata(mapOf("key" to "value")))
         )
         private const val transformerId = "transformer-test"
         val nodeRefs = listOf(NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 
 class MemoryInternalCommunicationConverterTest {
@@ -33,13 +33,13 @@ class MemoryInternalCommunicationConverterTest {
 
     @Test
     fun convert() {
-        val transformedDataDescriptors = listOf(TransformedDataDescriptor("test".createInMemoryData(), metadata))
+        val transformedDataDescriptors = listOf(TransformedDataDescriptor("test".createMemoryData(), metadata))
 
         MemoryInternalCommunicationConverter().convert(listOf(), transformedDataDescriptors) shouldBe transformedDataDescriptors
     }
 
     @Test
-    fun `convert _ should convert Data to InMemoryData`() {
+    fun `convert _ should convert Data to MemoryData`() {
         val bytes = "converted test".toByteArray()
 
         val data = mockk<Data> {
@@ -53,14 +53,14 @@ class MemoryInternalCommunicationConverterTest {
             it shouldHaveSize 1
 
             val transformedDataDescriptor = it.first()
-            transformedDataDescriptor.data should instanceOf(InMemoryData::class)
+            transformedDataDescriptor.data should instanceOf(MemoryData::class)
             transformedDataDescriptor.data.getBytes() shouldBe bytes
             transformedDataDescriptor.metadata shouldBe metadata
         }
     }
 
     @Test
-    fun `convert _ delete throws DataDeleteException _ should convert Data to InMemoryData`() {
+    fun `convert _ delete throws DataDeleteException _ should convert Data to MemoryData`() {
         val bytes = "converted test".toByteArray()
 
         val data = mockk<Data> {
@@ -74,12 +74,12 @@ class MemoryInternalCommunicationConverterTest {
             it shouldHaveSize 1
 
             val transformedDataDescriptor = it.first()
-            transformedDataDescriptor.data should instanceOf(InMemoryData::class)
+            transformedDataDescriptor.data should instanceOf(MemoryData::class)
             transformedDataDescriptor.data.getBytes() shouldBe bytes
             transformedDataDescriptor.metadata shouldBe metadata
         }
     }
 
-    private fun String.createInMemoryData(): InMemoryData =
-            InMemoryData(this.toByteArray())
+    private fun String.createMemoryData(): MemoryData =
+            MemoryData(this.toByteArray())
 }

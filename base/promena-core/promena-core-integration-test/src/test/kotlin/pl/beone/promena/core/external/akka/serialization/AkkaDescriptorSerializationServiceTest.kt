@@ -21,15 +21,15 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.parameters.MapParameters
 
 class AkkaDescriptorSerializationServiceTest {
 
     companion object {
-        private val data = InMemoryData("test".toByteArray())
-        private val data2 = InMemoryData("test2".toByteArray())
+        private val data = MemoryData("test".toByteArray())
+        private val data2 = MemoryData("test2".toByteArray())
         private val metadata = MapMetadata(mapOf("key" to "value"))
         private val metadata2 = MapMetadata.empty()
         private val serializedTransformedDataDescriptors = "serialized data".toByteArray()

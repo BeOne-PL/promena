@@ -12,7 +12,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.N
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.internal.model.data.InMemoryData
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import java.util.*
 
@@ -21,7 +21,7 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
 
     @Test
     fun get_shouldDetermineDataDescriptor() {
-        val data = InMemoryData("test".toByteArray())
+        val data = MemoryData("test".toByteArray())
         val mediaType = MediaTypeConstants.TEXT_PLAIN
         val node = with(createOrGetIntegrationTestsFolder()) {
             createNode().apply { saveContent(mediaType, "no matter") }
