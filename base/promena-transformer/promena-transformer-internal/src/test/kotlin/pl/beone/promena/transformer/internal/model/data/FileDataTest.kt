@@ -1,6 +1,7 @@
 package pl.beone.promena.transformer.internal.model.data
 
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotThrow
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
@@ -44,8 +45,10 @@ class FileDataTest {
     }
 
     @Test
-    fun isAvailable() {
-        FileData(fileUri).isAccessible()
+    fun isAccessible() {
+        shouldNotThrow<DataAccessibilityException> {
+            FileData(fileUri).isAccessible()
+        }
     }
 
     @Test
