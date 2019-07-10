@@ -68,13 +68,10 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
 
         val data = FileData(file.toURI())
 
-        try {
-            MemoryOrFileAlfrescoDataConverter(Memory, null)
-                    .saveDataInContentWriter(data, node.getContentWriter())
+        MemoryOrFileAlfrescoDataConverter(Memory, null)
+                .saveDataInContentWriter(data, node.getContentWriter())
 
-            node.readContent() shouldBe "test".toByteArray()
-        } finally {
-            file.delete()
-        }
+        node.readContent() shouldBe "test".toByteArray()
+        java.io.File(data.getLocation()).exists() shouldBe false
     }
 }
