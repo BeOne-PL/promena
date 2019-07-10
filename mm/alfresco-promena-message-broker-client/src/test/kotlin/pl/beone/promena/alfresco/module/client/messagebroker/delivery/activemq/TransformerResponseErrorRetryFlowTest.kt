@@ -89,7 +89,7 @@ class TransformerResponseErrorRetryFlowTest {
 
         sendResponseErrorMessage(0)
         thread {
-            Thread.sleep(500)
+            Thread.sleep(1000)
             sendResponseErrorMessage(1)
         }
 
