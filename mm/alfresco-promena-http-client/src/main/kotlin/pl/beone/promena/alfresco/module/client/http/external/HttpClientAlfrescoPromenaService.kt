@@ -108,7 +108,7 @@ class HttpClientAlfrescoPromenaService(private val externalCommunication: Extern
         return httpClient
                 .headersWithContentType()
                 .post()
-                .transformerUriWithExternalComunicationParameters(transformerId)
+                .transformerUriWithExternalCommunicationParameters(transformerId)
                 .send(ByteBufFlux.fromInbound(serializedTransformationDescriptor))
                 .responseSingle { response, bytes -> zipBytesWithResponse(bytes, response) }
                 .map { handleTransformationResult(it.t2, it.t1) }
@@ -126,7 +126,7 @@ class HttpClientAlfrescoPromenaService(private val externalCommunication: Extern
     private fun HttpClient.headersWithContentType(): HttpClient =
             headers { it.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeConstants.APPLICATION_OCTET_STREAM.mimeType) }
 
-    private fun HttpClient.RequestSender.transformerUriWithExternalComunicationParameters(transformerId: String): HttpClient.RequestSender =
+    private fun HttpClient.RequestSender.transformerUriWithExternalCommunicationParameters(transformerId: String): HttpClient.RequestSender =
             uri("/transform/$transformerId"
                 + "?id=${externalCommunication.id}"
                 + if (externalCommunication.location != null) "&location=${externalCommunication.location}" else "")
