@@ -20,11 +20,17 @@
         <java.version>11</java.version>
 
         <promena.core.version>0.9.0</promena.core.version>
+
         <promena.actor-creator.adaptive-load-balancing.version>0.9.0</promena.actor-creator.adaptive-load-balancing.version>
+
         <promena.communication.external.memory.version>0.9.0</promena.communication.external.memory.version>
+        <promena.communication.external.file.version>0.9.0</promena.communication.external.file.version>
         <promena.communication.internal.memory.version>0.9.0</promena.communication.internal.memory.version>
+        <promena.communication.internal.file.version>0.9.0</promena.communication.internal.file.version>
+
         <promena.connector.http.version>0.9.0</promena.connector.http.version>
         <promena.connector.message-broker.version>0.9.0</promena.connector.message-broker.version>
+
         <promena.cluster.management.kubernetes.version>0.9.0</promena.cluster.management.kubernetes.version>
 
         <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
@@ -60,6 +66,11 @@
             <artifactId>promena-communication-external-memory-configuration</artifactId>
             <version>${promena.communication.external.memory.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.communication.external</groupId>-->
+<!--            <artifactId>promena-communication-external-file-configuration</artifactId>-->
+<!--            <version>${promena.communication.external.file.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Communication - internal -->
         <dependency>
@@ -67,6 +78,11 @@
             <artifactId>promena-communication-internal-memory-configuration</artifactId>
             <version>${promena.communication.internal.memory.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.communication.internal</groupId>-->
+<!--            <artifactId>promena-communication-internal-file-configuration</artifactId>-->
+<!--            <version>${promena.communication.internal.file.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Connector -->
         <dependency>
@@ -74,18 +90,18 @@
             <artifactId>promena-connector-http-configuration</artifactId>
             <version>${promena.connector.http.version}</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>pl.beone.promena.connector</groupId>-->
-        <!--            <artifactId>promena-connector-message-broker-configuration</artifactId>-->
-        <!--            <version>${promena.connector.message-broker.version}</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.connector</groupId>-->
+<!--            <artifactId>promena-connector-message-broker-configuration</artifactId>-->
+<!--            <version>${promena.connector.message-broker.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Management -->
-        <!--        <dependency>-->
-        <!--            <groupId>pl.beone.promena.cluster.management</groupId>-->
-        <!--            <artifactId>promena-cluster-management-kubernetes-configuration</artifactId>-->
-        <!--            <version>${promena.cluster.management.kubernetes.version}</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.cluster.management</groupId>-->
+<!--            <artifactId>promena-cluster-management-kubernetes-configuration</artifactId>-->
+<!--            <version>${promena.cluster.management.kubernetes.version}</version>-->
+<!--        </dependency>-->
 
         <!-- TRANSFORMER -->
 
