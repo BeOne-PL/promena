@@ -20,21 +20,24 @@ class ${transformerClassName}(private val internalCommunicationParameters: Commu
     override fun transform(dataDescriptors: List<DataDescriptor>,
                            targetMediaType: MediaType,
                            parameters: Parameters): List<TransformedDataDescriptor> =
-            dataDescriptors.map { it.data.process(internalCommunicationParameters.getId()) }
+            dataDescriptors.map { process(it.data, internalCommunicationParameters.getId()) }
                     .map { TransformedDataDescriptor(it, MapMetadata.empty()) }
 
-    private fun Data.process(communicationId: String): Data =
+    private fun process(data: Data, communicationId: String): Data =
             when (communicationId) {
-                "file" -> fileDataProcessor.transform(this)
-                else   -> memoryDataProcessor.transform(this) // back pressure
+                "file" -> fileDataProcessor.transform(data)
+                else   -> memoryDataProcessor.transform(data) // back pressure
             }
 
     override fun canTransform(dataDescriptors: List<DataDescriptor>,
                               targetMediaType: MediaType,
                               parameters: Parameters): Boolean =
-            dataDescriptors.allTextPlain() && targetMediaType == TEXT_PLAIN
+            dataDescriptors.allTextPlain() && targetMediaType.isTextPlain()
 
     private fun List<DataDescriptor>.allTextPlain(): Boolean =
-            all { it.mediaType == TEXT_PLAIN }
+            all { it.mediaType.isTextPlain() }
+
+    private fun MediaType.isTextPlain(): Boolean =
+            this == TEXT_PLAIN
 
 }

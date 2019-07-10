@@ -29,7 +29,7 @@ class ${transformerClassName}Test {
                 .let {
                     it shouldHaveSize 1
 
-                    val (transformedData, transformedMetadata) = it.first()
+                    val (transformedData, transformedMetadata) = it[0]
                     transformedData should instanceOf(MemoryData::class)
                     transformedData.getBytes() shouldBe "data#".toByteArray()
                     transformedMetadata shouldBe metadata
@@ -46,7 +46,7 @@ class ${transformerClassName}Test {
                 .let {
                     it shouldHaveSize 1
 
-                    val (transformedData, transformedMetadata) = it.first()
+                    val (transformedData, transformedMetadata) = it[0]
                     transformedData should instanceOf(FileData::class)
                     transformedData.getBytes() shouldBe "data#".toByteArray()
                     transformedMetadata shouldBe metadata
