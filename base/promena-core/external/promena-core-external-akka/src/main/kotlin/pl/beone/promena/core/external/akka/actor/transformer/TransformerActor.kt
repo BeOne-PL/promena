@@ -23,10 +23,8 @@ class TransformerActor(private val transformers: List<Transformer>,
             receiveBuilder()
                     .match(ToTransformMessage::class.java) {
                         try {
-                            val dataDescriptors =
-                                    transform(it.dataDescriptors, it.targetMediaType, it.parameters)
-
-                            sender.tell(TransformedMessage(dataDescriptors), self)
+                            val transformedDataDescriptors = performTransformation(it.dataDescriptors, it.targetMediaType, it.parameters)
+                            sender.tell(TransformedMessage(transformedDataDescriptors), self)
                         } catch (e: Exception) {
                             sender.tell(Status.Failure(e), self)
                         }
@@ -34,14 +32,11 @@ class TransformerActor(private val transformers: List<Transformer>,
                     .matchAny {}
                     .build()
 
-    private fun transform(dataDescriptors: List<DataDescriptor>,
-                          targetMediaType: MediaType,
-                          parameters: Parameters): List<TransformedDataDescriptor> {
+    private fun performTransformation(dataDescriptors: List<DataDescriptor>,
+                                      targetMediaType: MediaType,
+                                      parameters: Parameters): List<TransformedDataDescriptor> {
         val (transformedDataDescriptors, measuredTimeMs) = measureTimeMillisWithContent {
-            val transformer = transformers.firstOrNull { it.canTransform(dataDescriptors, targetMediaType, parameters) }
-                              ?: throw TransformerNotFoundException("There is no transformer that can process it. " +
-                                                                    "There following <${transformers.size}> transformers are available: " +
-                                                                    "<${transformers.joinToString(", ") { it.javaClass.canonicalName }}>")
+            val transformer = determineTransformer(dataDescriptors, targetMediaType, parameters) ?: throw createException()
 
             val transformedDataDescriptors = transformer.transform(dataDescriptors, targetMediaType, parameters)
 
@@ -62,4 +57,12 @@ class TransformerActor(private val transformers: List<Transformer>,
 
         return transformedDataDescriptors
     }
+
+    private fun determineTransformer(dataDescriptors: List<DataDescriptor>, targetMediaType: MediaType, parameters: Parameters): Transformer? =
+            transformers.firstOrNull { it.canTransform(dataDescriptors, targetMediaType, parameters) }
+
+    private fun createException(): TransformerNotFoundException =
+            TransformerNotFoundException("There is no transformer that can process it. " +
+                                         "There following <${transformers.size}> transformers are available: " +
+                                         "<${transformers.joinToString(", ") { it.javaClass.canonicalName }}>")
 }

@@ -7,7 +7,6 @@ import pl.beone.promena.core.contract.communication.external.manager.ExternalCom
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.contract.transformer.TransformerService
 import pl.beone.promena.core.usecase.transformation.DefaultTransformationUseCase
-import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 
 @Configuration
 class DefaultTransformationUseCaseContext {
@@ -15,9 +14,7 @@ class DefaultTransformationUseCaseContext {
     @Bean
     @ConditionalOnMissingBean(TransformationUseCase::class)
     fun defaultTransformationUseCase(externalCommunicationManager: ExternalCommunicationManager,
-                                     internalCommunicationParameters: CommunicationParameters,
                                      transformerService: TransformerService) =
             DefaultTransformationUseCase(externalCommunicationManager,
-                                         internalCommunicationParameters,
                                          transformerService)
 }

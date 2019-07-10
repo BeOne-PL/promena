@@ -9,7 +9,6 @@ import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
 
 class DefaultTransformationUseCase(private val externalCommunicationManager: ExternalCommunicationManager,
-                                   private val internalCommunicationParameters: CommunicationParameters,
                                    private val transformerService: TransformerService)
     : TransformationUseCase {
 
@@ -27,16 +26,14 @@ class DefaultTransformationUseCase(private val externalCommunicationManager: Ext
             val dataDescriptors = transformationDescriptor.dataDescriptors
 
             val convertedDataDescriptors =
-                    incomingExternalCommunicationConverter.convert(dataDescriptors, externalCommunicationParameters, internalCommunicationParameters)
+                    incomingExternalCommunicationConverter.convert(dataDescriptors, externalCommunicationParameters)
 
             val transformedDataDescriptors = transformerService.transform(transformerId,
                                                                           convertedDataDescriptors,
                                                                           transformationDescriptor.targetMediaType,
                                                                           transformationDescriptor.parameters)
 
-            return outgoingExternalCommunicationConverter.convert(transformedDataDescriptors,
-                                                                  externalCommunicationParameters,
-                                                                  internalCommunicationParameters)
+            return outgoingExternalCommunicationConverter.convert(transformedDataDescriptors, externalCommunicationParameters)
         } catch (e: Exception) {
             logger.error("Couldn't transform <{}, {}>", transformerId, externalCommunicationParameters, e) // TODO maybe better message
 

@@ -50,7 +50,6 @@ class DefaultTransformationUseCaseTest {
         private val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
         private val transformedDataDescriptor = listOf(TransformedDataDescriptor(data, MapMetadata.empty()))
         private val externalCommunicationParameters = MapCommunicationParameters.create(communicationId)
-        private val internalCommunicationParameters = MapCommunicationParameters.create(communicationId)
     }
 
     private lateinit var actorSystem: ActorSystem
@@ -84,7 +83,7 @@ class DefaultTransformationUseCaseTest {
         val actorMaterializer = ActorMaterializer.create(actorSystem)
 
         val incomingExternalCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
-            every { convert(dataDescriptors, externalCommunicationParameters, internalCommunicationParameters) } returns dataDescriptors
+            every { convert(dataDescriptors, externalCommunicationParameters) } returns dataDescriptors
         }
 
         val internalCommunicationConverter = mockk<InternalCommunicationConverter> {
@@ -93,7 +92,7 @@ class DefaultTransformationUseCaseTest {
 
         val outgoingExternalCommunicationConverter = mockk<OutgoingExternalCommunicationConverter> {
             every {
-                convert(transformedDataDescriptor, externalCommunicationParameters, internalCommunicationParameters)
+                convert(transformedDataDescriptor, externalCommunicationParameters)
             } returns transformedDataDescriptor
         }
 
@@ -127,7 +126,7 @@ class DefaultTransformationUseCaseTest {
 
         val transformerService = AkkaTransformerService(actorMaterializer, actorService)
 
-        return DefaultTransformationUseCase(externalCommunicationManager, internalCommunicationParameters, transformerService)
+        return DefaultTransformationUseCase(externalCommunicationManager, transformerService)
     }
 
 }

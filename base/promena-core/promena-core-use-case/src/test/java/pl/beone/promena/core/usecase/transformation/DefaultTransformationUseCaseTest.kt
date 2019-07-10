@@ -44,18 +44,13 @@ class DefaultTransformationUseCaseTest {
         val externalCommunicationParameters = mockk<CommunicationParameters> {
             every { getId() } returns "memory"
         }
-        val internalCommunicationParameters = mockk<CommunicationParameters> {
-            every { getId() } returns "memory"
-        }
 
         val incomingCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
-            every { convert(dataDescriptors, externalCommunicationParameters, internalCommunicationParameters) } returns dataDescriptors
+            every { convert(dataDescriptors, externalCommunicationParameters) } returns dataDescriptors
         }
         val outgoingCommunicationConverter = mockk<OutgoingExternalCommunicationConverter> {
             every {
-                convert(transformedDataDescriptors,
-                        externalCommunicationParameters,
-                        internalCommunicationParameters)
+                convert(transformedDataDescriptors, externalCommunicationParameters)
             } returns transformedDataDescriptors
         }
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
@@ -67,7 +62,7 @@ class DefaultTransformationUseCaseTest {
             every { transform("default", dataDescriptors, targetMediaType, parameters) } returns transformedDataDescriptors
         }
 
-        DefaultTransformationUseCase(externalCommunicationManager, internalCommunicationParameters, transformerService)
+        DefaultTransformationUseCase(externalCommunicationManager, transformerService)
                 .transform("default", transformationDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptors
     }
 
@@ -76,7 +71,6 @@ class DefaultTransformationUseCaseTest {
         val externalCommunicationParameters = mockk<CommunicationParameters> {
             every { getId() } returns "absent"
         }
-        val internalCommunicationParameters = mockk<CommunicationParameters>()
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
             every { getCommunication("absent") } throws ExternalCommunicationManagerException("Exception")
@@ -85,7 +79,7 @@ class DefaultTransformationUseCaseTest {
         val transformerService = mockk<TransformerService>()
 
         shouldThrowExactly<ExternalCommunicationManagerException> {
-            DefaultTransformationUseCase(externalCommunicationManager, internalCommunicationParameters, transformerService)
+            DefaultTransformationUseCase(externalCommunicationManager, transformerService)
                     .transform("default", transformationDescriptor, externalCommunicationParameters)
         }.message shouldBe "Exception"
     }

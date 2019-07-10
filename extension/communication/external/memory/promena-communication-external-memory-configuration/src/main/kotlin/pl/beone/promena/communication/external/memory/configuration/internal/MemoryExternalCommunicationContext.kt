@@ -12,11 +12,11 @@ class MemoryExternalCommunicationContext {
 
     @Bean
     fun memoryExternalCommunication(environment: Environment,
-                                    memoryWithBackPressureIncomingExternalCommunicationConverter: MemoryIncomingExternalCommunicationConverter,
-                                    memoryWithBackPressureOutgoingExternalCommunicationConverter: MemoryOutgoingExternalCommunicationConverter) =
+                                    memoryIncomingExternalCommunicationConverter: MemoryIncomingExternalCommunicationConverter,
+                                    memoryOutgoingExternalCommunicationConverter: MemoryOutgoingExternalCommunicationConverter) =
             ExternalCommunication(environment.getCommunicationId(),
-                                  memoryWithBackPressureIncomingExternalCommunicationConverter,
-                                  memoryWithBackPressureOutgoingExternalCommunicationConverter)
+                                  memoryIncomingExternalCommunicationConverter,
+                                  memoryOutgoingExternalCommunicationConverter)
 
     private fun Environment.getCommunicationId(): String =
             getRequiredProperty("communication.external.memory.id")
