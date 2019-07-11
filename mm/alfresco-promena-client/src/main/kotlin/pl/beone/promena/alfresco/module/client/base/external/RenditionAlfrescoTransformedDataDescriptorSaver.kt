@@ -96,11 +96,15 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
     private fun determineTransformationProperties(transformerId: String,
                                                   transformationIndex: Int?,
                                                   transformationSize: Int): Map<QName, Serializable?> =
-            mapOf(ContentModel.PROP_NAME to transformerId,
-                  ContentModel.PROP_THUMBNAIL_NAME to transformerId,
-                  ContentModel.PROP_IS_INDEXED to false,
-                  PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to transformationIndex,
-                  PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to transformationSize)
+            mapOf<QName, Serializable?>(ContentModel.PROP_NAME to transformerId,
+                                        ContentModel.PROP_THUMBNAIL_NAME to transformerId,
+                                        ContentModel.PROP_IS_INDEXED to false,
+                                        PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to transformationIndex,
+                                        PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to transformationSize)
+                    .filterNotNullValues()
+
+    private fun <T, U> Map<T, U>.filterNotNullValues(): Map<T, U> =
+            filter { (_, value) -> value != null }
 
     private fun Metadata.getAlfrescoProperties(): Map<QName, Serializable?> =
             this.getAll()

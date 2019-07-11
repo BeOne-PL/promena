@@ -165,9 +165,9 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
             it shouldContainAll mapOf(ContentModel.PROP_NAME to transformerId,
                                       ContentModel.PROP_THUMBNAIL_NAME to transformerId,
                                       ContentModel.PROP_IS_INDEXED to false,
-                                      PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX to null,
                                       PromenaTransformationContentModel.PROP_TRANSFORMATION_SIZE to 0)
             it shouldNotContainKey ContentModel.PROP_CONTENT_PROPERTY_NAME
+            it shouldNotContainKey PromenaTransformationContentModel.PROP_TRANSFORMATION_INDEX
         }
 
         nodes shouldBe integrationNode.getRenditionAssociations().map { it.childRef }
