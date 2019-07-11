@@ -13,6 +13,7 @@ RUN yum clean all && rm -rf /tmp/* /var/tmp/* /var/cache/yum/*
 EXPOSE 8080
 
 COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 
 ENV APP_JAR ${APP_JAR}
