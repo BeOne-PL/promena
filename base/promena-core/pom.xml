@@ -35,11 +35,6 @@
             <id>beone-releases</id>
             <url>http://nexus.office.beone.pl/repository/releases</url>
         </repository>
-
-        <repository>
-            <id>codelds</id>
-            <url>https://code.lds.org/nexus/content/groups/main-repo</url>
-        </repository>
     </repositories>
 
     <distributionManagement>
@@ -52,6 +47,13 @@
             <url>http://nexus.office.beone.pl/repository/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>beone-releases</id>
+            <url>http://nexus.office.beone.pl/repository/releases</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <properties>
         <promena-core.version>0.9.0</promena-core.version>
