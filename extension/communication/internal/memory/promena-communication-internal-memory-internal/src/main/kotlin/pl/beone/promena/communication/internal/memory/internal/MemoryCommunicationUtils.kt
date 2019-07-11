@@ -30,11 +30,11 @@ fun <T : AbstractDescriptor> convertIfItIsNecessary(logger: Logger, descriptors:
     return memoryDescriptors + convertedNotMemoryDescriptors
 }
 
+fun <T : AbstractDescriptor> List<T>.filterNotMemoryData(): List<T> =
+        filter { it.data !is MemoryData }
+
 private fun <T : AbstractDescriptor> List<T>.filterMemoryData(): List<T> =
         filter { it.data is MemoryData }
-
-private fun <T : AbstractDescriptor> List<T>.filterNotMemoryData(): List<T> =
-        filter { it.data !is MemoryData }
 
 private fun convert(logger: Logger, data: Data): MemoryData {
     val newMemoryData = createMemoryData(logger, data)

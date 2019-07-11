@@ -17,8 +17,9 @@ class InternalCommunicationLogger(private val internalCommunicationConverter: In
 
     @PostConstruct
     private fun log() {
-        logger.info("Internal communication: {}, parameters: {}",
+        logger.info("Internal communication: <{}> <{}> <{}>",
+                    communicationParameters.getId(),
                     internalCommunicationConverter::class.qualifiedName,
-                    communicationParameters.getAll())
+                    communicationParameters)
     }
 }
