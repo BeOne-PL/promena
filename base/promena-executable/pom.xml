@@ -54,6 +54,11 @@
             <artifactId>promena-communication-external-memory-configuration</artifactId>
             <version>${promena.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.communication.external</groupId>-->
+<!--            <artifactId>promena-communication-external-file-configuration</artifactId>-->
+<!--            <version>${promena.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Communication - internal -->
         <dependency>
@@ -61,6 +66,11 @@
             <artifactId>promena-communication-internal-memory-configuration</artifactId>
             <version>${promena.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.communication.internal</groupId>-->
+<!--            <artifactId>promena-communication-internal-file-configuration</artifactId>-->
+<!--            <version>${promena.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Connector -->
         <dependency>
