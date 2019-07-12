@@ -24,9 +24,8 @@ class FileIncomingExternalCommunicationConverterTest {
     fun `convert _ the same id communication parameter`() {
         val dataDescriptors = listOf(DataDescriptor("test".toFileData(createTempDir().toURI()), TEXT_PLAIN, MapMetadata.empty()))
         val externalCommunicationParameters = MapCommunicationParameters.create("memory")
-        val internalCommunicationParameters = MapCommunicationParameters.create("file")
 
         FileIncomingExternalCommunicationConverter()
-                .convert(dataDescriptors, externalCommunicationParameters, internalCommunicationParameters) shouldBe dataDescriptors
+                .convert(dataDescriptors, externalCommunicationParameters) shouldBe dataDescriptors
     }
 }

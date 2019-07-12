@@ -10,15 +10,14 @@ import pl.beone.promena.transformer.internal.model.data.FileData
 import java.io.File
 import java.net.URI
 
-class FileOutgoingExternalCommunicationConverter : OutgoingExternalCommunicationConverter {
+class FileOutgoingExternalCommunicationConverter(private val internalCommunicationParameters: CommunicationParameters) : OutgoingExternalCommunicationConverter {
 
     companion object {
         private val logger = LoggerFactory.getLogger(FileOutgoingExternalCommunicationConverter::class.java)
     }
 
     override fun convert(transformedDataDescriptors: List<TransformedDataDescriptor>,
-                         externalCommunicationParameters: CommunicationParameters,
-                         internalCommunicationParameters: CommunicationParameters): List<TransformedDataDescriptor> {
+                         externalCommunicationParameters: CommunicationParameters): List<TransformedDataDescriptor> {
         val externalCommunicationLocation = externalCommunicationParameters.getLocation()
 
         val externalCommunicationId = externalCommunicationParameters.getId()

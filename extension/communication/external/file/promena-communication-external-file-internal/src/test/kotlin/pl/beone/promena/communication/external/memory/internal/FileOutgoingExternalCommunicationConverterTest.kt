@@ -26,7 +26,7 @@ class FileOutgoingExternalCommunicationConverterTest {
 
     companion object {
         private val location = createTempDir().toURI()
-        private val externalCommunicationParameters = MapCommunicationParameters.create("file", mapOf("location" to location))
+        private val communicationParameters = MapCommunicationParameters.create("file", mapOf("location" to location))
         private val metadata = MapMetadata(mapOf("key" to "value"))
     }
 
@@ -40,10 +40,8 @@ class FileOutgoingExternalCommunicationConverterTest {
     fun `convert _ the same id communication parameter`() {
         val transformedDataDescriptors = listOf(TransformedDataDescriptor("test".toFileData(location), metadata))
 
-        FileOutgoingExternalCommunicationConverter()
-                .convert(transformedDataDescriptors,
-                         externalCommunicationParameters,
-                         externalCommunicationParameters) shouldBe transformedDataDescriptors
+        FileOutgoingExternalCommunicationConverter(communicationParameters)
+                .convert(transformedDataDescriptors, communicationParameters) shouldBe transformedDataDescriptors
     }
 
     @Test
@@ -59,8 +57,8 @@ class FileOutgoingExternalCommunicationConverterTest {
 
         val internalCommunicationParameters = MapCommunicationParameters.create("different")
 
-        FileOutgoingExternalCommunicationConverter()
-                .convert(transformedDataDescriptors, externalCommunicationParameters, internalCommunicationParameters).let {
+        FileOutgoingExternalCommunicationConverter(internalCommunicationParameters)
+                .convert(transformedDataDescriptors, communicationParameters).let {
                     it shouldHaveSize 1
 
                     val transformedDataDescriptor = it.first()
@@ -83,8 +81,8 @@ class FileOutgoingExternalCommunicationConverterTest {
 
         val internalCommunicationParameters = MapCommunicationParameters.create("different")
 
-        FileOutgoingExternalCommunicationConverter()
-                .convert(transformedDataDescriptors, externalCommunicationParameters, internalCommunicationParameters).let {
+        FileOutgoingExternalCommunicationConverter(internalCommunicationParameters)
+                .convert(transformedDataDescriptors, communicationParameters).let {
                     it shouldHaveSize 1
 
                     val dataDescriptor = it.first()
@@ -105,8 +103,8 @@ class FileOutgoingExternalCommunicationConverterTest {
 
         val internalCommunicationParameters = MapCommunicationParameters.create("file", mapOf("location" to internalCommunicationLocation))
 
-        FileOutgoingExternalCommunicationConverter()
-                .convert(transformedDataDescriptors, externalCommunicationParameters, internalCommunicationParameters).let {
+        FileOutgoingExternalCommunicationConverter(internalCommunicationParameters)
+                .convert(transformedDataDescriptors, communicationParameters).let {
                     it shouldHaveSize 1
 
                     val transformedDataDescriptor = it.first()

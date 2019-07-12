@@ -7,9 +7,7 @@ import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 class FileIncomingExternalCommunicationConverter : IncomingExternalCommunicationConverter {
 
     // deliberately omitted - if communication are different, it will be handled in internal communication
-    override fun convert(dataDescriptors: List<DataDescriptor>,
-                         externalCommunicationParameters: CommunicationParameters,
-                         internalCommunicationParameters: CommunicationParameters): List<DataDescriptor> =
+    override fun convert(dataDescriptors: List<DataDescriptor>, externalCommunicationParameters: CommunicationParameters): List<DataDescriptor> =
             dataDescriptors
 }
 
