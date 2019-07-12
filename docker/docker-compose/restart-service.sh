@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-docker-compose -p promena stop $1 && docker-compose -p promena rm -f $1 && docker-compose -p promena build && docker-compose -p promena create $1 && docker-compose -p promena start $1
