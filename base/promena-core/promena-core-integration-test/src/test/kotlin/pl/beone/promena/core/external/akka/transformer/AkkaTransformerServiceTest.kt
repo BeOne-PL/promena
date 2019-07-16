@@ -121,7 +121,7 @@ class AkkaTransformerServiceTest {
             transformerService.transform(transformerId, dataDescriptors, targetMediaType, parameters)
         }.apply {
             this.message shouldBe "Couldn't transform because there is no suitable transformer | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), MapParameters(parameters={})> <2 source(s)>: [<file:/tmp, MediaType(mimeType=text/plain, charset=UTF-8)>, <no location, MediaType(mimeType=text/plain, charset=UTF-8)>]"
-            this.getStringStackTrace() shouldContain "There is no transformer that can process it. There following <1> transformers are available:"
+            this.getStringStackTrace() shouldContain "There is no transformer that can process it. The following <1> transformers are available:"
             this.getStringStackTrace() shouldContain "pl.beone.promena.transformer.contract.Transformer"
         }
 
@@ -129,7 +129,7 @@ class AkkaTransformerServiceTest {
             transformerService.transform(transformerId, emptyList(), TEXT_PLAIN, parameters)
         }.apply {
             this.message shouldBe "Couldn't transform because there is no suitable transformer | <mock> <MediaType(mimeType=text/plain, charset=UTF-8), MapParameters(parameters={})> <0 source(s)>: []"
-            this.getStringStackTrace() shouldContain "There is no transformer that can process it. There following <1> transformers are available:"
+            this.getStringStackTrace() shouldContain "There is no transformer that can process it. The following <1> transformers are available:"
             this.getStringStackTrace() shouldContain "pl.beone.promena.transformer.contract.Transformer"
         }
     }

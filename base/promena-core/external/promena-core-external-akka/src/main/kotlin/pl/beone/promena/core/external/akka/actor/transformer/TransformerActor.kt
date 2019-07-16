@@ -63,6 +63,6 @@ class TransformerActor(private val transformers: List<Transformer>,
 
     private fun createException(): TransformerNotFoundException =
             TransformerNotFoundException("There is no transformer that can process it. " +
-                                         "There following <${transformers.size}> transformers are available: " +
+                                         "The following <${transformers.size}> transformers are available: " +
                                          "<${transformers.joinToString(", ") { it.javaClass.canonicalName }}>")
 }
