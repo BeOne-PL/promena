@@ -9,8 +9,8 @@ set -e
 if [[ $@ ]]; then
     exec "$@"
 else
-    cmd="java $JAVA_OPTS_MEMORY $JAVA_OPTS_GC $JAVA_OPTS_ADDITIONAL $JAVA_OPTS_DEBUG -jar $APP_JAR"
+    CMD="java $JAVA_OPTS_MEMORY $JAVA_OPTS_GC $JAVA_OPTS_ADDITIONAL $JAVA_OPTS_DEBUG -jar /opt/$APP_JAR"
 
-    echo "# Running <$cmd>..."
-    cd /opt && $cmd
+    echo "# Running <$CMD>..."
+    exec bash -c "$CMD"
 fi
