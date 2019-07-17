@@ -27,8 +27,7 @@ class ActorSystemContext {
 
     private fun getAkkaProperties(environment: Environment): List<Pair<String, String>> =
             (environment as StandardEnvironment).propertySources
-                    .filter { it is MapPropertySource }
-                    .map { it as MapPropertySource }
+                    .filterIsInstance<MapPropertySource>()
                     .flatMap { it.source.keys }
                     .filter { key -> key.startsWith("akka.") }
                     .map { key -> key to environment.getRequiredProperty(key) }
