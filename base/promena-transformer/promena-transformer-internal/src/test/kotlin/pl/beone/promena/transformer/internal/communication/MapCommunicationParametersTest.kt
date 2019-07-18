@@ -7,13 +7,13 @@ import org.junit.Test
 class MapCommunicationParametersTest {
 
     companion object {
-        private val communicationParameters = MapCommunicationParameters(mapOf(
-                "id" to "memory",
-                "int" to 3,
-                "string" to "value",
-                "stringInt" to "3",
-                "location" to "file:/tmp"
-        ))
+        private val communicationParameters = MapCommunicationParameters.builder()
+                .parameter("id", "memory")
+                .parameter("int", 3)
+                .parameter("string", "value")
+                .parameter("stringInt", "3")
+                .parameter("location", "file:/tmp")
+                .build()
     }
 
     @Test
@@ -22,9 +22,9 @@ class MapCommunicationParametersTest {
     }
 
     @Test
-    fun create() {
-        MapCommunicationParameters.create("memory").getAll().size shouldBe 1
-        MapCommunicationParameters.create("memory", mapOf("int" to 3)).getAll().size shouldBe 2
+    fun of() {
+        MapCommunicationParameters.of("memory").getAll().size shouldBe 1
+        MapCommunicationParameters.of("memory", mapOf("int" to 3)).getAll().size shouldBe 2
     }
 
     @Test

@@ -5,37 +5,51 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
+import pl.beone.promena.transformer.contract.model.Parameters.Companion.Timeout
+import java.time.Duration
 
 class MapParametersTest {
 
     companion object {
-        private val parameters = MapParameters(mapOf(
-                "int" to 3,
-                "long" to 10L,
-                "double" to 3.5,
-                "float" to 4.1f,
-                "boolean" to true,
-                "string" to "value",
+        private val parameters = MapParameters.builder()
+                .parameter("int", 3)
+                .parameter("long", 10L)
+                .parameter("double", 3.5)
+                .parameter("float", 4.1f)
+                .parameter("boolean", true)
+                .parameter("string", "value")
 
-                "stringInt" to "3",
-                "stringLong" to "10",
-                "stringDouble" to "3.5",
-                "stringFloat" to "4.1",
-                "stringBoolean" to "true",
-                "stringBoolean2" to "false",
+                .parameter("stringInt", "3")
+                .parameter("stringLong", "10")
+                .parameter("stringDouble", "3.5")
+                .parameter("stringFloat", "4.1")
+                .parameter("stringBoolean", "true")
+                .parameter("stringBoolean2", "false")
 
-                "parameters" to MapParameters(mapOf("key" to "value")),
-                "mapParameters" to mapOf("mapKey" to "mapValue"),
+                .parameter("parameter", MapParameters.builder().parameter("key", "value").build())
+                .parameter("mapParameters", mapOf("mapKey" to "value"))
 
-                "intList" to listOf(1, 2, 3),
-                "mixList" to listOf(1, "string", true),
-                "stringList" to listOf("1", "2", "3")
-        ))
+                .parameter("intList", listOf(1, 2, 3))
+                .parameter("mixList", listOf(1, "string", true))
+                .parameter("stringList", listOf("1", "2", "3"))
+                .build()
     }
 
     @Test
     fun empty() {
         MapParameters.empty().getAll() shouldBe emptyMap()
+    }
+
+    @Test
+    fun `of _ timeout not specified`() {
+        val parameters = mapOf("test" to "value")
+        MapParameters.of(parameters).getAll() shouldBe parameters
+    }
+
+    @Test
+    fun `of _ timeout specified`() {
+        val duration = Duration.ofSeconds(3)
+        MapParameters.of(mapOf("test" to "value"), duration).getAll() shouldBe mapOf("test" to "value", Timeout to duration)
     }
 
     @Test
@@ -84,15 +98,16 @@ class MapParametersTest {
 
     @Test
     fun getTimeout() {
-        MapParameters(mapOf("timeout" to 5000)).getTimeout() shouldBe 5000
+        val timeout = Duration.ofMillis(10)
+        MapParameters.builder().timeout(timeout).build().getTimeout() shouldBe timeout
 
         shouldThrow<NoSuchElementException> { MapParameters.empty().getTimeout() }
-                .message shouldBe "There is no <timeout> element"
+                .message shouldBe "There is no <$Timeout> element"
     }
 
     @Test
     fun getParameters() {
-        parameters.getParameters("parameters") shouldBe MapParameters(mapOf("key" to "value"))
+        parameters.getParameters("parameter") shouldBe MapParameters(mapOf("key" to "value"))
 
         shouldThrow<TypeConversionException> { parameters.getParameters("stringBoolean") }
                 .message shouldBe "Converting from <java.lang.String> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported"
@@ -135,7 +150,7 @@ class MapParametersTest {
         parameters.getAll() shouldContainAll mapOf("int" to 3,
                                                    "boolean" to true,
                                                    "stringFloat" to "4.1",
-                                                   "parameters" to MapParameters(mapOf("key" to "value")),
+                                                   "parameter" to MapParameters(mapOf("key" to "value")),
                                                    "mixList" to listOf(1, "string", true))
     }
 }

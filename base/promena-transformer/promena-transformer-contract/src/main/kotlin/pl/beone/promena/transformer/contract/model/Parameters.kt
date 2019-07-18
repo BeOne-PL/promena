@@ -1,6 +1,12 @@
 package pl.beone.promena.transformer.contract.model
 
+import java.time.Duration
+
 interface Parameters {
+
+    companion object {
+        const val Timeout = "timeout"
+    }
 
     @Throws(NoSuchElementException::class)
     fun get(key: String): Any
@@ -9,7 +15,7 @@ interface Parameters {
     fun <T> get(key: String, clazz: Class<T>): T
 
     @Throws(NoSuchElementException::class)
-    fun getTimeout(): Long
+    fun getTimeout(): Duration
 
     @Throws(NoSuchElementException::class)
     fun getParameters(key: String): Parameters

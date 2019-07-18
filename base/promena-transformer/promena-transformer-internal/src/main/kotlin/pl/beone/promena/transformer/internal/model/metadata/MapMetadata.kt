@@ -6,12 +6,21 @@ import pl.beone.promena.transformer.internal.model.get
 import pl.beone.promena.transformer.internal.model.getList
 import pl.beone.promena.transformer.internal.model.getListWithoutType
 
-data class MapMetadata(private val metadata: Map<String, Any>) : Metadata {
+data class MapMetadata internal constructor(private val metadata: Map<String, Any>) : Metadata {
 
     companion object {
 
         @JvmStatic
-        fun empty(): Metadata = MapMetadata(emptyMap())
+        fun empty(): MapMetadata =
+                MapMetadata(emptyMap())
+
+        @JvmStatic
+        fun of(metadata: Map<String, Any>): MapMetadata =
+                MapMetadata(metadata)
+
+        @JvmStatic
+        fun builder(): MapMetadataBuilder =
+                MapMetadataBuilder(HashMap())
     }
 
     override fun get(key: String): Any =

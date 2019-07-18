@@ -5,9 +5,40 @@ import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteEx
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataReadException
 import pl.beone.promena.transformer.contract.model.Data
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
 import java.net.URI
 
-data class FileData(private val uri: URI) : Data {
+data class FileData internal constructor(private val uri: URI) : Data {
+
+    companion object {
+
+        @JvmStatic
+        fun of(uri: URI): FileData = FileData(uri)
+
+        @JvmStatic
+        fun of(file: File): FileData = FileData(file.toURI())
+
+        // TODO test it!
+        @JvmStatic
+        fun of(inputStream: InputStream, directoryUri: URI): FileData {
+            val file = File(directoryUri)
+
+            if (!file.exists() && !file.isDirectory) {
+                throw IOException("URI <$directoryUri> doesn't exist or isn't a directory")
+            }
+
+            createTempFile(directory = file).outputStream().use { inputStream.copyTo(it) }
+
+            return FileData(directoryUri)
+        }
+
+        // TODO test it!
+        @JvmStatic
+        fun of(inputStream: InputStream, directoryFile: File): FileData =
+                of(inputStream, directoryFile.toURI())
+
+    }
 
     init {
         if (uri.scheme == "file") {
@@ -27,6 +58,12 @@ data class FileData(private val uri: URI) : Data {
         } catch (e: Exception) {
             throw DataReadException("Couldn't read bytes from <$location>", e)
         }
+    }
+
+    override fun getInputStream(): InputStream {
+        isAccessible()
+
+        return File(uri).inputStream()
     }
 
     override fun getLocation(): URI =

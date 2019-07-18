@@ -12,7 +12,7 @@
 
     <groupId>pl.beone.promena.transformer</groupId>
     <artifactId>promena-transformer</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.0-SNAPSHOT</version>
 
     <name>Transformer</name>
 
@@ -49,7 +49,7 @@
     </pluginRepositories>
 
     <properties>
-        <promena-transformer.version>0.9.0</promena-transformer.version>
+        <promena-transformer.version>0.9.0-SNAPSHOT</promena-transformer.version>
 
         <type-converter.version>0.9.0</type-converter.version>
     </properties>

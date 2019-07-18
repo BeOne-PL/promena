@@ -19,35 +19,46 @@ class FileDataTest {
 
     @Test
     fun init() {
-        FileData(fileUri)
+        FileData.of(fileUri)
     }
 
     @Test
     fun `init _ http scheme _ should throw UnsupportedOperationException`() {
-        shouldThrow<UnsupportedOperationException> { FileData(URI("http://noMatter.com/")) }
+        shouldThrow<UnsupportedOperationException> { FileData.of(URI("http://noMatter.com/")) }
                 .message shouldBe "Location URI <http://noMatter.com/> has <http> scheme but this implementation supports only <file> scheme"
     }
 
     @Test
     fun getBytes() {
-        FileData(fileUri).getBytes() shouldBe "test".toByteArray()
+        FileData.of(fileUri).getBytes() shouldBe "test".toByteArray()
+    }
+
+    @Test
+    fun getInputStream() {
+        FileData.of(fileUri).getInputStream().readAllBytes() shouldBe "test".toByteArray()
+    }
+
+    @Test
+    fun `getInputStream _ unreachable file _ should throw ResourceIsNotReachableException`() {
+        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).getInputStream() shouldBe "test".toByteArray() }
+                .message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
 
     @Test
     fun `getBytes _ unreachable file _ should throw ResourceIsNotReachableException`() {
-        shouldThrow<DataAccessibilityException> { FileData(notReachableFileUri).getBytes() }
+        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).getBytes() }
                 .message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
 
     @Test
     fun getLocation() {
-        FileData(fileUri).getLocation() shouldBe fileUri
+        FileData.of(fileUri).getLocation() shouldBe fileUri
     }
 
     @Test
     fun isAccessible() {
         shouldNotThrow<DataAccessibilityException> {
-            FileData(fileUri).isAccessible()
+            FileData.of(fileUri).isAccessible()
         }
     }
 
@@ -55,7 +66,7 @@ class FileDataTest {
     fun delete() {
         val file = createTempFile().apply { writeText("test") }
 
-        FileData(file.toURI()).delete()
+        FileData.of(file.toURI()).delete()
 
         file.exists() shouldBe false
     }
@@ -65,13 +76,13 @@ class FileDataTest {
         val notExistFile = createTempDir().resolve(File("test")).toURI()
 
         shouldThrow<DataDeleteException> {
-            FileData(notExistFile).delete()
+            FileData.of(notExistFile).delete()
         }.message shouldBe "Couldn't delete <$notExistFile> file. Maybe file doesn't exist"
     }
 
     @Test
     fun `isAvailable _ should throw DataAccessibilityException`() {
-        shouldThrow<DataAccessibilityException> { FileData(notReachableFileUri).isAccessible() }
+        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).isAccessible() }
                 .message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
 }

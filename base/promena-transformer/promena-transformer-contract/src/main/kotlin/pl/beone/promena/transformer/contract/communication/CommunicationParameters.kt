@@ -2,6 +2,10 @@ package pl.beone.promena.transformer.contract.communication
 
 interface CommunicationParameters {
 
+    companion object {
+        const val Id = "id"
+    }
+
     @Throws(NoSuchElementException::class)
     fun get(key: String): Any
 

@@ -1,15 +1,14 @@
 package pl.beone.promena.transformer.contract
 
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerException
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerTimeoutException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.DataDescriptor
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
+import java.util.concurrent.TimeoutException
 
 interface Transformer {
 
-    @Throws(TransformerException::class, TransformerTimeoutException::class)
+    @Throws(TimeoutException::class)
     fun transform(dataDescriptors: List<DataDescriptor>,
                   targetMediaType: MediaType,
                   parameters: Parameters): List<TransformedDataDescriptor>

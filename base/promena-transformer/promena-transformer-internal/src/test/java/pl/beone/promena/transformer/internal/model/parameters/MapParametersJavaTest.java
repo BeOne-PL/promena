@@ -14,37 +14,34 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MapParametersJavaTest {
 
-    private static Parameters parameters = new MapParameters(new HashMap<>() {{
-        put("int", 3);
-        put("long", 10L);
-        put("double", 3.5);
-        put("float", 4.1f);
-        put("boolean", true);
-        put("string", "value");
+    private static Parameters parameters = MapParameters.builder()
+            .parameter("int", 3)
+            .parameter("long", 10L)
+            .parameter("double", 3.5)
+            .parameter("float", 4.1f)
+            .parameter("boolean", true)
+            .parameter("string", "value")
 
-        put("stringInt", "3");
-        put("stringLong", "10");
-        put("stringDouble", "3.5");
-        put("stringFloat", "4.1");
-        put("stringBoolean", "true");
-        put("stringBoolean2", "false");
+            .parameter("stringInt", "3")
+            .parameter("stringLong", "10")
+            .parameter("stringDouble", "3.5")
+            .parameter("stringFloat", "4.1")
+            .parameter("stringBoolean", "true")
+            .parameter("stringBoolean2", "false")
 
-        put("parameters", new MapParameters(new HashMap<>() {{
-            put("key", "value");
-        }}));
-        put("mapParameters", new HashMap<String, Object>() {{
-            put("mapKey", "mapValue");
-        }});
+            .parameter("parameters", MapParameters.builder().parameter("key", "value").build())
+            .parameter("mapParameters", new HashMap<String, Object>() {{
+                put("mapKey", "mapValue");
+            }})
 
-        put("intList", Arrays.asList(1, 2, 3));
-        put("mixList", Arrays.asList(1, "string", true));
-        put("stringList", Arrays.asList("1", "2", "3"));
-    }});
+            .parameter("intList", Arrays.asList(1, 2, 3))
+            .parameter("mixList", Arrays.asList(1, "string", true))
+            .parameter("stringList", Arrays.asList("1", "2", "3"))
+
+            .build();
 
     @Test
     public void get() {
-//        Map.of()
-
         assertThat(parameters.get("int")).isEqualTo(3);
         assertThat(parameters.get("long")).isEqualTo(10L);
         assertThat(parameters.get("double")).isEqualTo(3.5);
@@ -105,8 +102,8 @@ public class MapParametersJavaTest {
                         "Converting from <java.lang.String> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported");
         assertThatThrownBy(() -> parameters.getParameters("mapParameters"))
                 .isExactlyInstanceOf(TypeConversionException.class)
-                .hasMessage(
-                        "Converting from <pl.beone.promena.transformer.internal.model.parameters.MapParametersJavaTest$1$2> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported");
+                .hasMessageContaining("Converting from <pl.beone.promena.transformer.internal.model.parameters.MapParametersJavaTest")
+                .hasMessageContaining("> to <pl.beone.promena.transformer.contract.model.Parameters> isn't supported");
 
         assertThatThrownBy(() -> parameters.getParameters("absent"))
                 .isExactlyInstanceOf(NoSuchElementException.class)
