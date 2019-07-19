@@ -7,3 +7,6 @@ fun ByteArray.toMemoryData(): MemoryData =
 
 fun InputStream.toMemoryData(): MemoryData =
         MemoryData.of(this)
+
+fun String.toMemoryData(): MemoryData =
+        MemoryData.of(this.toByteArray())

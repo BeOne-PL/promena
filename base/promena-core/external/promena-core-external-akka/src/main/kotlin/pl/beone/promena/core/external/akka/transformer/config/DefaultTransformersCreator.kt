@@ -47,7 +47,7 @@ class DefaultTransformersCreator(private val transformerConfig: TransformerConfi
                                        maxActors: Int): ActorRefWithId =
             actorCreator.create(transformerId,
                                 Props.create(TransformerActor::class.java) {
-                                    TransformerActor(transformers.map { it.transformer }, internalCommunicationConverter)
+                                    TransformerActor(transformerId, transformers.map { it.transformer }, internalCommunicationConverter)
                                 },
                                 maxActors)
 

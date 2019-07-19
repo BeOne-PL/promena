@@ -9,9 +9,8 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
 import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationNotFoundException
 
 class TransformerConsumer(jmsTemplate: JmsTemplate,
                           private val responseQueue: ActiveMQQueue,
@@ -38,7 +37,7 @@ class TransformerConsumer(jmsTemplate: JmsTemplate,
             val communicationParameters = communicationParametersConverter.convert(headers)
 
             responseQueue to transformationUseCase.transform(transformerId, transformationDescriptor, communicationParameters)
-        } catch (e: TransformerNotFoundException) {
+        } catch (e: TransforN) {
             throw e
         } catch (e: Exception) {
             errorResponseQueue to e

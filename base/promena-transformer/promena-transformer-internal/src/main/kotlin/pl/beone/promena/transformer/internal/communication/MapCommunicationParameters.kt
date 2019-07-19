@@ -9,9 +9,6 @@ data class MapCommunicationParameters internal constructor(private val parameter
     companion object {
 
         @JvmStatic
-        fun empty(): MapCommunicationParameters = MapCommunicationParameters(emptyMap())
-
-        @JvmStatic
         fun of(id: String, parameters: Map<String, Any>? = null): MapCommunicationParameters =
                 MapCommunicationParameters(mapOf("id" to id) + (parameters ?: emptyMap()))
 

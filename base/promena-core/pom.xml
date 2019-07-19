@@ -12,22 +12,22 @@
 
     <groupId>pl.beone.promena.core</groupId>
     <artifactId>promena-core</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.0-SNAPSHOT</version>
 
     <name>Core</name>
 
     <packaging>pom</packaging>
     <modules>
-        <module>contract/promena-core-contract</module>
-        <module>configuration/promena-core-configuration</module>
-        <module>external/promena-core-external-akka</module>
-        <module>external/promena-core-external-spring</module>
-        <module>promena-core-internal</module>
-        <module>promena-core-integration-test</module>
-        <module>contract/promena-core-contract-akka</module>
         <module>application-model/promena-core-application-model</module>
         <module>application-model/promena-core-application-model-akka</module>
+        <module>contract/promena-core-contract</module>
+        <module>contract/promena-core-contract-akka</module>
+        <module>promena-core-internal</module>
+        <module>external/promena-core-external-akka</module>
+        <module>external/promena-core-external-spring</module>
         <module>promena-core-use-case</module>
+        <module>configuration/promena-core-configuration</module>
+        <module>promena-core-integration-test</module>
     </modules>
 
     <repositories>
@@ -56,8 +56,8 @@
     </pluginRepositories>
 
     <properties>
-        <promena-core.version>0.9.0</promena-core.version>
-        <promena-transformer.version>0.9.0</promena-transformer.version>
+        <promena-core.version>0.9.0-SNAPSHOT</promena-core.version>
+        <promena-transformer.version>0.9.0-SNAPSHOT</promena-transformer.version>
     </properties>
 
     <dependencies>

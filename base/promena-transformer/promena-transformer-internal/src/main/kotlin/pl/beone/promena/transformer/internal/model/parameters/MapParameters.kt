@@ -23,7 +23,7 @@ data class MapParameters internal constructor(private val parameters: Map<String
 
         @JvmStatic
         fun builder(): MapParametersBuilder =
-                MapParametersBuilder(HashMap())
+                MapParametersBuilder()
     }
 
     override fun get(key: String): Any =

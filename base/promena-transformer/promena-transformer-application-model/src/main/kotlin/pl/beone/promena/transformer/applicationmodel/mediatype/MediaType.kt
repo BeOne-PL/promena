@@ -8,8 +8,12 @@ data class MediaType(val mimeType: String,
     companion object {
 
         @JvmStatic
-        fun create(mimeType: String, charset: Charset = Charsets.UTF_8): MediaType =
+        fun of(mimeType: String, charset: Charset): MediaType =
                 MediaType(mimeType, charset)
+
+        @JvmStatic
+        fun of(mimeType: String): MediaType =
+                MediaType(mimeType, Charsets.UTF_8)
 
     }
 

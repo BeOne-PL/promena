@@ -5,7 +5,7 @@
     <parent>
         <groupId>pl.beone.promena.core</groupId>
         <artifactId>promena-core</artifactId>
-        <version>0.9.0</version>
+        <version>0.9.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,6 +13,10 @@
     <artifactId>promena-core-external-akka</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>promena-transformer-internal</artifactId>
+        </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-contract</artifactId>

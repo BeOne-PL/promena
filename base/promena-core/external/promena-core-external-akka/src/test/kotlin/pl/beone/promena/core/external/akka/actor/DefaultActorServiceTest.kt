@@ -7,7 +7,7 @@ import io.kotlintest.shouldThrow
 import io.mockk.mockk
 import org.junit.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithId
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
+import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 
 class DefaultActorServiceTest {
 

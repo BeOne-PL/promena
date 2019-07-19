@@ -4,6 +4,8 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
@@ -11,29 +13,34 @@ import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
+import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
-import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import pl.beone.promena.transformer.internal.data.and
+import pl.beone.promena.transformer.internal.data.dataDescriptor
+import pl.beone.promena.transformer.internal.data.transformedDataDescriptor
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.add
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.metadata
+import pl.beone.promena.transformer.internal.model.parameters.add
+import pl.beone.promena.transformer.internal.model.parameters.parameters
+import pl.beone.promena.transformer.internal.transformation.transformationFlow
 
 class AkkaDescriptorSerializationServiceTest {
 
     companion object {
-        private val data = MemoryData("test".toByteArray())
-        private val data2 = MemoryData("test2".toByteArray())
-        private val metadata = MapMetadata(mapOf("key" to "value"))
-        private val metadata2 = MapMetadata.empty()
+        private val data = "test".toMemoryData()
+        private val data2 = "test2".toMemoryData()
+        private val metadata = metadata() add ("key" to "value")
+        private val metadata2 = emptyMetadata()
         private val serializedTransformedDataDescriptors = "serialized data".toByteArray()
-
     }
 
     private lateinit var actorSystem: ActorSystem
@@ -41,6 +48,8 @@ class AkkaDescriptorSerializationServiceTest {
     @Before
     fun setUp() {
         actorSystem = ActorSystem.create()
+
+        (LoggerFactory.getLogger("pl.beone.promena.core.external.akka.transformer.AkkaTransformerService") as Logger).level = Level.DEBUG
     }
 
     @After
@@ -50,45 +59,42 @@ class AkkaDescriptorSerializationServiceTest {
 
     @Test
     fun serialize() {
-        val transformedDataDescriptors = listOf(
-                TransformedDataDescriptor(data, MapMetadata(mapOf("key" to "value"))),
-                TransformedDataDescriptor(data2, MapMetadata.empty())
-        )
+        val transformedDataDescriptors = transformedDataDescriptor(data, metadata)
+                .and(data2, metadata2)
 
-        val dataDescriptorSerializationService = prepare(mockk {
+        val serializationService = prepare(mockk {
             every { serialize(transformedDataDescriptors) } returns serializedTransformedDataDescriptors
         })
 
-        dataDescriptorSerializationService.serialize(transformedDataDescriptors) shouldBe serializedTransformedDataDescriptors
+        serializationService.serialize(transformedDataDescriptors) shouldBe serializedTransformedDataDescriptors
     }
 
     @Test
     fun deserialize() {
-        val transformationDescriptor = TransformationDescriptor(
-                listOf(DataDescriptor(data, APPLICATION_OCTET_STREAM, metadata),
-                       DataDescriptor(data2, APPLICATION_OCTET_STREAM, metadata2)),
-                MediaTypeConstants.APPLICATION_PDF,
-                MapParameters(mapOf("key" to "value"))
+        val transformationDescriptor = TransformationDescriptor.of(
+                transformationFlow("test", MediaTypeConstants.APPLICATION_PDF, parameters() add ("key" to "value")),
+                dataDescriptor(data, APPLICATION_OCTET_STREAM, metadata)
+                        .and(data2, APPLICATION_OCTET_STREAM, metadata2)
         )
 
-        val dataDescriptorSerializationService = prepare(mockk {
+        val serializationService = prepare(mockk {
             every { deserialize(serializedTransformedDataDescriptors, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
         })
 
-        dataDescriptorSerializationService.deserialize(serializedTransformedDataDescriptors) shouldBe transformationDescriptor
+        serializationService.deserialize(serializedTransformedDataDescriptors) shouldBe transformationDescriptor
     }
 
     @Test
     fun `deserialize _ should throw DeserializationException`() {
         val incorrectSerializedTransformedDataDescriptors = "incorrect serialized data".toByteArray()
 
-        val dataDescriptorSerializationService = prepare(mockk {
+        val serializationService = prepare(mockk {
             every {
                 deserialize(incorrectSerializedTransformedDataDescriptors, getClazz<TransformationDescriptor>())
             } throws DeserializationException("")
         })
 
-        shouldThrow<DeserializationException> { dataDescriptorSerializationService.deserialize(incorrectSerializedTransformedDataDescriptors) }
+        shouldThrow<DeserializationException> { serializationService.deserialize(incorrectSerializedTransformedDataDescriptors) }
     }
 
     private fun prepare(serializationService: SerializationService): AkkaDescriptorSerializationService {

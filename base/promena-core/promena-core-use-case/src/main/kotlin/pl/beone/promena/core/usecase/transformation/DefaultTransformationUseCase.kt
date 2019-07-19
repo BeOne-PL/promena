@@ -1,43 +1,43 @@
 package pl.beone.promena.core.usecase.transformation
 
 import org.slf4j.LoggerFactory
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
+import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
-import pl.beone.promena.core.contract.transformer.TransformerService
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.DataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.transformation.TransformationFlow
 
 class DefaultTransformationUseCase(private val externalCommunicationManager: ExternalCommunicationManager,
-                                   private val transformerService: TransformerService)
+                                   private val transformationService: TransformationService)
     : TransformationUseCase {
 
     companion object {
         private val logger = LoggerFactory.getLogger(DefaultTransformationUseCase::class.java)
     }
 
-    override fun transform(transformerId: String,
-                           transformationDescriptor: TransformationDescriptor,
-                           externalCommunicationParameters: CommunicationParameters): List<TransformedDataDescriptor> {
+    override fun transform(transformationFlow: TransformationFlow,
+                           dataDescriptors: DataDescriptors,
+                           externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptors {
         try {
             val (_, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) =
                     externalCommunicationManager.getCommunication(externalCommunicationParameters.getId())
 
-            val dataDescriptors = transformationDescriptor.dataDescriptors
-
-            val convertedDataDescriptors =
-                    incomingExternalCommunicationConverter.convert(dataDescriptors, externalCommunicationParameters)
-
-            val transformedDataDescriptors = transformerService.transform(transformerId,
-                                                                          convertedDataDescriptors,
-                                                                          transformationDescriptor.targetMediaType,
-                                                                          transformationDescriptor.parameters)
-
-            return outgoingExternalCommunicationConverter.convert(transformedDataDescriptors, externalCommunicationParameters)
+            return dataDescriptors
+                    .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
+                    .let { transformationService.transform(transformationFlow, it) }
+                    .let { outgoingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
         } catch (e: Exception) {
-            logger.error("Couldn't transform <{}, {}>", transformerId, externalCommunicationParameters, e) // TODO maybe better message
+            logger.error("Couldn't transform <{}, {}>", externalCommunicationParameters, transformationFlow, e)
 
-            throw e
+            // unwrap expected exception to not show user unnecessary information
+            if (e is TransformationException) {
+                throw TransformationException(e.message!!)
+            } else {
+                throw e
+            }
         }
     }
 }

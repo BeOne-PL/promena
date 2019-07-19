@@ -1,9 +1,9 @@
 package pl.beone.promena.core.contract.communication.internal
 
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.DataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
 
 interface InternalCommunicationConverter {
 
-    fun convert(dataDescriptors: List<DataDescriptor>, transformedDataDescriptors: List<TransformedDataDescriptor>): List<TransformedDataDescriptor>
+    fun convert(dataDescriptors: DataDescriptors, transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors
 }

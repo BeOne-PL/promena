@@ -5,7 +5,7 @@
     <parent>
         <artifactId>promena-core</artifactId>
         <groupId>pl.beone.promena.core</groupId>
-        <version>0.9.0</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,12 @@
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-contract</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>promena-transformer-internal</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

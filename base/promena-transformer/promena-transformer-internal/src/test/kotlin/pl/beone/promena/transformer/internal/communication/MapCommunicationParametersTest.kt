@@ -17,11 +17,6 @@ class MapCommunicationParametersTest {
     }
 
     @Test
-    fun empty() {
-        MapCommunicationParameters.empty().getAll().size shouldBe 0
-    }
-
-    @Test
     fun of() {
         MapCommunicationParameters.of("memory").getAll().size shouldBe 1
         MapCommunicationParameters.of("memory", mapOf("int" to 3)).getAll().size shouldBe 2
