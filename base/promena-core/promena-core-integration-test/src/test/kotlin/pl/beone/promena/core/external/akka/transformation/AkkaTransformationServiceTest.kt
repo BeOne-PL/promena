@@ -3,7 +3,9 @@ package pl.beone.promena.core.external.akka.transformation
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.pattern.AskTimeoutException
+import akka.stream.AbruptStageTerminationException
 import akka.stream.ActorMaterializer
+import akka.stream.BufferOverflowException
 import akka.testkit.javadsl.TestKit
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
@@ -187,47 +189,43 @@ class AkkaTransformationServiceTest {
         }
     }
 
-//    @Test
-//    fun `transform _ error during transformation _ should throw TransformerException`() {
-//        val akkaTransformerService = prepareTransformationService(mockk {
-//            every { transform(any(), any(), any()) } throws RuntimeException("Mock extension")
-//            every { canTransform(any(), any(), any()) } returns true
-//        }, mockk())
-//
-//        val parameters = mockk<Parameters> {
-//            every { getTimeout() } throws NoSuchElementException("")
-//            every { this@mockk.toString() } returns "MapParameters(parameter={})"
-//        }
-//
-//        shouldThrow<TransformationException> {
-//            akkaTransformerService.transform(transformerId, emptyList(), targetMediaType, parameters)
-//        }.apply {
-//            this.message shouldBe "Couldn't transform because an error occurred | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), MapParameters(parameter={})> <0 source(s)>: []"
-//            this.getStringStackTrace() shouldContain "RuntimeException"
-//            this.getStringStackTrace() shouldContain "Mock extension"
-//        }
-//    }
-//    @Test
-//    fun `transform _ timeout on Akka level _ should throw TransformerTimeoutException`() {
-//        val akkaTransformerService = prepareTransformationService(mockk {
-//            every { transform(any(), any(), any()) } answers {
-//                Thread.sleep(2000)
-//                emptyList()
-//            }
-//            every { canTransform(any(), any(), any()) } returns true
-//        }, mockk())
-//
-//        val parameters = mockk<Parameters> {
-//            every { getTimeout() } returns 100
-//            every { this@mockk.toString() } returns "MapParameters(parameter={})"
-//        }
-//
-//        shouldThrow<TransformerTimeoutException> {
-//            akkaTransformerService.transform(transformerId, emptyList(), targetMediaType, parameters)
-//        }.apply {
-//            this.message shouldBe "Couldn't transform because transformation time <100> has expired | <mock> <MediaType(mimeType=application/pdf, charset=UTF-8), MapParameters(parameter={})> <0 source(s)>: []"
-//        }
-//    }
+    @Test
+    fun `transform _ unexpected abrupt stage exception (generally caused by closing server suddenly) _ should throw TransformationException (created from AbruptStageTerminationException)`() {
+        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+
+        val transformationFlow =
+                transformationFlow(textAppenderTransformerId, TEXT_PLAIN, emptyParameters())
+
+        val transformerService = prepareTransformationService(mockk {
+            every { materialize<Any>(any()) } throws AbruptStageTerminationException(null)
+        })
+
+        shouldThrow<TransformationException> {
+            transformerService.transform(transformationFlow, dataDescriptors)
+        }.apply {
+            this.message shouldBe "Couldn't transform because the transformation was abruptly terminated | <SequentialTransformationFlow(transformerDescriptors=[TransformerDescriptor(id=text-appender-transformer, targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))])> <1 source(s)>: [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>]"
+            this.getStringStackTrace() shouldContain "AbruptStageTerminationException"
+        }
+    }
+
+    @Test
+    fun `transform _ unknown exception _ should throw TransformationException`() {
+        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+
+        val transformationFlow =
+                transformationFlow(textAppenderTransformerId, TEXT_PLAIN, emptyParameters())
+
+        val transformerService = prepareTransformationService(mockk {
+            every { materialize<Any>(any()) } throws BufferOverflowException("")
+        })
+
+        shouldThrow<TransformationException> {
+            transformerService.transform(transformationFlow, dataDescriptors)
+        }.apply {
+            this.message shouldBe "Couldn't transform because a unknown error occurred. Check Promena logs for more details | <SequentialTransformationFlow(transformerDescriptors=[TransformerDescriptor(id=text-appender-transformer, targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))])> <1 source(s)>: [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>]"
+            this.getStringStackTrace() shouldContain "BufferOverflowException"
+        }
+    }
 
     private fun prepareTransformationService(actorMaterializer: ActorMaterializer = ActorMaterializer.create(actorSystem)): AkkaTransformationService {
         val textAppenderTransformerActorRef = actorSystem.actorOf(

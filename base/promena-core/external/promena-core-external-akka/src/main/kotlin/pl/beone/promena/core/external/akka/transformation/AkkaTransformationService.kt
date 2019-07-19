@@ -152,7 +152,7 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                 TransformationTerminationException("Couldn't transform because the transformation was abruptly terminated | $exceptionDescriptor",
                                                    exception)
             else                               ->
-                TransformationException("Couldn't transform because an error occurred | $exceptionDescriptor", exception)
+                TransformationException("Couldn't transform because a unknown error occurred. Check Promena logs for more details | $exceptionDescriptor", exception)
         }
     }
 
