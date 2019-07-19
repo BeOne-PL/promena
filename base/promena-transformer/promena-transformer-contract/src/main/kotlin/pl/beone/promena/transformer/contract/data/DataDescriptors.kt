@@ -1,13 +1,34 @@
 package pl.beone.promena.transformer.contract.data
 
-interface DataDescriptors {
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
+import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.Metadata
 
-    fun getAll(): List<DataDescriptor>
+sealed class DataDescriptors {
 
-    fun get(index: Int): DataDescriptor
+    object Empty : DataDescriptors() {
 
-    fun getIterator(): Iterator<DataDescriptor>
+        override val descriptors: List<Single>
+            get() = emptyList()
+    }
 
-    fun getSize(): Int
+    data class Single internal constructor(val data: Data,
+                                           val mediaType: MediaType,
+                                           val metadata: Metadata) : DataDescriptors() {
 
+        override val descriptors: List<Single>
+            get() = listOf(this)
+    }
+
+    data class Multi internal constructor(override val descriptors: List<Single>) : DataDescriptors() {
+
+        companion object {
+
+            @JvmStatic
+            fun of(descriptors: List<Single>): Multi =
+                    Multi(descriptors)
+        }
+    }
+
+    abstract val descriptors: List<Single>
 }

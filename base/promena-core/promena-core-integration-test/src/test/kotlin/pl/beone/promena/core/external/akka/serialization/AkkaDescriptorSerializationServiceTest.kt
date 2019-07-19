@@ -22,16 +22,16 @@ import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
-import pl.beone.promena.transformer.internal.data.and
-import pl.beone.promena.transformer.internal.data.dataDescriptor
-import pl.beone.promena.transformer.internal.data.transformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.plus
+import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
+import pl.beone.promena.transformer.contract.transformation.singleTransformationFlow
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.add
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.metadata
 import pl.beone.promena.transformer.internal.model.parameters.add
 import pl.beone.promena.transformer.internal.model.parameters.parameters
-import pl.beone.promena.transformer.internal.transformation.transformationFlow
 
 class AkkaDescriptorSerializationServiceTest {
 
@@ -59,8 +59,8 @@ class AkkaDescriptorSerializationServiceTest {
 
     @Test
     fun serialize() {
-        val transformedDataDescriptors = transformedDataDescriptor(data, metadata)
-                .and(data2, metadata2)
+        val transformedDataDescriptors = transformedDataDescriptor(data, metadata) +
+                transformedDataDescriptor(data2, metadata2)
 
         val serializationService = prepare(mockk {
             every { serialize(transformedDataDescriptors) } returns serializedTransformedDataDescriptors
@@ -72,9 +72,9 @@ class AkkaDescriptorSerializationServiceTest {
     @Test
     fun deserialize() {
         val transformationDescriptor = TransformationDescriptor.of(
-                transformationFlow("test", MediaTypeConstants.APPLICATION_PDF, parameters() add ("key" to "value")),
-                dataDescriptor(data, APPLICATION_OCTET_STREAM, metadata)
-                        .and(data2, APPLICATION_OCTET_STREAM, metadata2)
+                singleTransformationFlow("test", MediaTypeConstants.APPLICATION_PDF, parameters() add ("key" to "value")),
+                dataDescriptor(data, APPLICATION_OCTET_STREAM, metadata) +
+                        dataDescriptor(data2, APPLICATION_OCTET_STREAM, metadata2)
         )
 
         val serializationService = prepare(mockk {

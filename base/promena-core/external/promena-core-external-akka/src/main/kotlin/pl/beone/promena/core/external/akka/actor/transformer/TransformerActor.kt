@@ -52,10 +52,10 @@ class TransformerActor(private val transformerId: String,
             log().debug("Transformed <:1, :2> from <:3 MB, :4 source(s)> to <:5 MB, :6 result(s)> in <:7 s>"
                                 .replace(":1", targetMediaType.toString())
                                 .replace(":2", parameters.toString())
-                                .replace(":3", dataDescriptors.getAll().map { it.data.getBytes() }.toMB().format(2))
-                                .replace(":4", dataDescriptors.getAll().size.toString())
-                                .replace(":5", transformedDataDescriptors.getAll().map { it.data.getBytes() }.toMB().format(2))
-                                .replace(":6", transformedDataDescriptors.getAll().size.toString())
+                                .replace(":3", dataDescriptors.descriptors.map { it.data.getBytes() }.toMB().format(2))
+                                .replace(":4", dataDescriptors.descriptors.size.toString())
+                                .replace(":5", transformedDataDescriptors.descriptors.map { it.data.getBytes() }.toMB().format(2))
+                                .replace(":6", transformedDataDescriptors.descriptors.size.toString())
                                 .replace(":7", measuredTimeMs.toSeconds().toString()))
         }
 

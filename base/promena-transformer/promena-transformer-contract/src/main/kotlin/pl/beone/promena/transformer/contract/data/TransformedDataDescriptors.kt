@@ -1,13 +1,33 @@
 package pl.beone.promena.transformer.contract.data
 
-interface TransformedDataDescriptors {
+import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.Metadata
 
-    fun getAll(): List<TransformedDataDescriptor>
+sealed class TransformedDataDescriptors {
 
-    fun get(index: Int): TransformedDataDescriptor
+    object Empty : TransformedDataDescriptors() {
 
-    fun getIterator(): Iterator<TransformedDataDescriptor>
+        override val descriptors: List<Single>
+            get() = emptyList()
+    }
 
-    fun getSize(): Int
+    data class Single internal constructor(val data: Data,
+                                           val metadata: Metadata) : TransformedDataDescriptors() {
+
+        override val descriptors: List<Single>
+            get() = listOf(this)
+    }
+
+    data class Multi internal constructor(override val descriptors: List<Single>) : TransformedDataDescriptors() {
+
+        companion object {
+
+            @JvmStatic
+            fun of(descriptors: List<Single>): Multi =
+                    Multi(descriptors)
+        }
+    }
+
+    abstract val descriptors: List<Single>
 
 }

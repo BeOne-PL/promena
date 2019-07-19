@@ -19,12 +19,12 @@ import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransform
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
 import pl.beone.promena.core.external.akka.util.*
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.DataDescriptors
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.dataDescriptors
 import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.contract.transformation.TransformationFlow
-import pl.beone.promena.transformer.internal.data.SequentialDataDescriptors
 import java.time.Duration
 
 private data class ActorTransformerDescriptor(val actorRef: ActorRef,
@@ -67,21 +67,20 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         if (logger.isDebugEnabled) {
             logger.debug("Transforming <{}> <{} source(s)>: [{}]...",
                          transformationFlow,
-                         dataDescriptors.getSize(),
-                         dataDescriptors.getAll().joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" })
+                         dataDescriptors.descriptors.size,
+                         dataDescriptors.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" })
         } else {
             logger.info("Transforming <{}> <{} source(s)>: [{}]...",
                         transformationFlow,
-                        dataDescriptors.getSize(),
-                        dataDescriptors.getAll().joinToString(", ") { "<${it.mediaType}>" })
+                        dataDescriptors.descriptors.size,
+                        dataDescriptors.descriptors.joinToString(", ") { "<${it.mediaType}>" })
         }
     }
 
     private fun getTransformerDescriptorsWithActorRef(transformationFlow: TransformationFlow): List<ActorTransformerDescriptor> =
-            transformationFlow.getAll()
-                    .map { (id, mediaType, parameters) ->
-                        ActorTransformerDescriptor(actorService.getTransformationActor(id), mediaType, parameters)
-                    }
+            transformationFlow.transformers.map { (id, mediaType, parameters) ->
+                ActorTransformerDescriptor(actorService.getTransformationActor(id), mediaType, parameters)
+            }
 
     private fun createSource(dataDescriptors: DataDescriptors): Source<DataDescriptors, NotUsed> =
             Source.single(dataDescriptors)
@@ -115,8 +114,8 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                     .map { it.transformedDataDescriptors }
 
     private fun TransformedDataDescriptors.toSequentialDataDescriptors(mediaType: MediaType): DataDescriptors =
-            SequentialDataDescriptors.of(
-                    getAll().map { (data, metadata) -> DataDescriptor.of(data, mediaType, metadata) }
+            dataDescriptors(
+                    descriptors.map { (data, metadata) -> dataDescriptor(data, mediaType, metadata) }
             )
 
     private fun Duration.toTimeout(): Timeout = Timeout.create(this)
@@ -127,15 +126,15 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         if (logger.isDebugEnabled) {
             logger.debug("Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
                          transformationFlow,
-                         transformedDataDescriptors.getSize(),
+                         transformedDataDescriptors.descriptors.size,
                          measuredTimeMs.toSeconds(),
-                         transformedDataDescriptors.getAll().joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" })
+                         transformedDataDescriptors.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" })
         } else {
             logger.info("Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
                         transformationFlow,
-                        transformedDataDescriptors.getSize(),
+                        transformedDataDescriptors.descriptors.size,
                         measuredTimeMs.toSeconds(),
-                        transformedDataDescriptors.getAll().joinToString(", ") { "<${it.metadata}>" })
+                        transformedDataDescriptors.descriptors.joinToString(", ") { "<${it.metadata}>" })
         }
     }
 
@@ -152,7 +151,8 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                 TransformationTerminationException("Couldn't transform because the transformation was abruptly terminated | $exceptionDescriptor",
                                                    exception)
             else                               ->
-                TransformationException("Couldn't transform because a unknown error occurred. Check Promena logs for more details | $exceptionDescriptor", exception)
+                TransformationException("Couldn't transform because a unknown error occurred. Check Promena logs for more details | $exceptionDescriptor",
+                                        exception)
         }
     }
 
@@ -160,11 +160,11 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                                             dataDescriptors: DataDescriptors): String =
             "<:1> <:2 source(s)>: [:3]"
                     .replace(":1", transformationFlow.toString())
-                    .replace(":2", dataDescriptors.getSize().toString())
-                    .replace(":3", dataDescriptors.getAll().getLocationsInString())
+                    .replace(":2", dataDescriptors.descriptors.size.toString())
+                    .replace(":3", dataDescriptors.getLocationsInString())
 
-    private fun List<DataDescriptor>.getLocationsInString(): String =
-            joinToString(", ") {
+    private fun DataDescriptors.getLocationsInString(): String =
+            descriptors.joinToString(", ") {
                 try {
                     "<${it.data.getLocation()}, ${it.mediaType}>"
                 } catch (e: UnsupportedOperationException) {

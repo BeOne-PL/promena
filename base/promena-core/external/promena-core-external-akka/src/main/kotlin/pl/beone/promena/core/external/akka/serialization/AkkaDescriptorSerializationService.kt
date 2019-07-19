@@ -15,7 +15,6 @@ import pl.beone.promena.core.external.akka.util.getClazz
 import pl.beone.promena.core.external.akka.util.infiniteTimeout
 import pl.beone.promena.core.external.akka.util.unwrapExecutionException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
 
 class AkkaDescriptorSerializationService(private val actorMaterializer: ActorMaterializer,

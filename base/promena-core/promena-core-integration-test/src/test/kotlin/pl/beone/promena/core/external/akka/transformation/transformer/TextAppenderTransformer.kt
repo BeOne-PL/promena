@@ -4,12 +4,12 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptors
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.transformedDataDescriptors
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.model.Parameters
-import pl.beone.promena.transformer.internal.data.SequentialTransformedDataDescriptors
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.add
 import pl.beone.promena.transformer.internal.model.metadata.metadata
@@ -17,12 +17,10 @@ import pl.beone.promena.transformer.internal.model.metadata.metadata
 class TextAppenderTransformer : Transformer {
 
     override fun transform(dataDescriptors: DataDescriptors, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptors =
-            SequentialTransformedDataDescriptors.of(
-                    dataDescriptors.getAll().map {
-                        TransformedDataDescriptor.of(it.data.addHashAtTheEnd(parameters.getAppend()).toMemoryData(),
-                                                     it.metadata.addTransformerId())
-                    }
-            )
+            transformedDataDescriptors(dataDescriptors.descriptors.map {
+                transformedDataDescriptor(it.data.addHashAtTheEnd(parameters.getAppend()).toMemoryData(),
+                                          it.metadata.addTransformerId())
+            })
 
     private fun Parameters.getAppend(): String =
             get("append", String::class.java)
@@ -34,6 +32,6 @@ class TextAppenderTransformer : Transformer {
             metadata(getAll()) add ("text-appender-transformer" to true)
 
     override fun canTransform(dataDescriptors: DataDescriptors, targetMediaType: MediaType, parameters: Parameters): Boolean =
-            dataDescriptors.getAll().all { it.mediaType == TEXT_PLAIN } && targetMediaType == TEXT_PLAIN
+            dataDescriptors.descriptors.all { it.mediaType == TEXT_PLAIN } && targetMediaType == TEXT_PLAIN
 
 }
