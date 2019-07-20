@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-extension-parent</artifactId>
-        <version>0.9.0</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <groupId>pl.beone.promena.communication.external</groupId>
     <artifactId>promena-communication-external-memory</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.0-SNAPSHOT</version>
 
     <name>[EXTENSION][COMMUNICATION][EXTERNAL] Memory</name>
 
@@ -48,8 +48,8 @@
     </pluginRepositories>
 
     <properties>
-        <promena-communication-external-memory.version>0.9.0</promena-communication-external-memory.version>
-        <promena-communication-internal-memory.version>0.9.0</promena-communication-internal-memory.version>
+        <promena-communication-external-memory.version>0.9.0-SNAPSHOT</promena-communication-external-memory.version>
+        <promena-communication-internal-memory.version>0.9.0-SNAPSHOT</promena-communication-internal-memory.version>
     </properties>
 
     <dependencies>

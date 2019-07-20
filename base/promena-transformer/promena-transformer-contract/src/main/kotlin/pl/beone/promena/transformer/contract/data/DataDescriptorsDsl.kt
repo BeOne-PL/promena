@@ -33,3 +33,6 @@ fun dataDescriptors(descriptors: List<DataDescriptors.Single>): DataDescriptors 
 
 fun dataDescriptors(vararg descriptors: DataDescriptors.Single): DataDescriptors =
         dataDescriptors(descriptors.toList())
+
+fun List<DataDescriptors.Single>.toDataDescriptors(): DataDescriptors =
+        dataDescriptors(this)

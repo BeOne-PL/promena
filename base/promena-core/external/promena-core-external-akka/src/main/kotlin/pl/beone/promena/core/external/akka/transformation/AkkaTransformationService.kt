@@ -22,7 +22,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.DataDescriptors
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
 import pl.beone.promena.transformer.contract.data.dataDescriptor
-import pl.beone.promena.transformer.contract.data.dataDescriptors
+import pl.beone.promena.transformer.contract.data.toDataDescriptors
 import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.time.Duration
@@ -114,9 +114,8 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                     .map { it.transformedDataDescriptors }
 
     private fun TransformedDataDescriptors.toSequentialDataDescriptors(mediaType: MediaType): DataDescriptors =
-            dataDescriptors(
-                    descriptors.map { (data, metadata) -> dataDescriptor(data, mediaType, metadata) }
-            )
+            descriptors.map { (data, metadata) -> dataDescriptor(data, mediaType, metadata) }
+                    .toDataDescriptors()
 
     private fun Duration.toTimeout(): Timeout = Timeout.create(this)
 

@@ -2,8 +2,9 @@ package pl.beone.promena.communication.internal.memory.internal
 
 import org.slf4j.LoggerFactory
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.DataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.toDataDescriptors
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 
 class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
@@ -12,16 +13,16 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
         private val logger = LoggerFactory.getLogger(MemoryInternalCommunicationConverter::class.java)
     }
 
-    override fun convert(dataDescriptors: List<DataDescriptor>,
-                         transformedDataDescriptors: List<TransformedDataDescriptor>): List<TransformedDataDescriptor> {
+    override fun convert(dataDescriptors: DataDescriptors,
+                         transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors {
         tryToRemoveResources(dataDescriptors)
         return convertIfItIsNecessary(logger, transformedDataDescriptors)
     }
 
-    private fun tryToRemoveResources(dataDescriptors: List<DataDescriptor>) {
-        val notMemoryDataDescriptors = dataDescriptors.filterNotMemoryData()
+    private fun tryToRemoveResources(dataDescriptors: DataDescriptors) {
+        val notMemoryDataDescriptors = dataDescriptors.filterNotMemoryData().descriptors
 
-        if(notMemoryDataDescriptors.isNotEmpty()) {
+        if (notMemoryDataDescriptors.isNotEmpty()) {
             notMemoryDataDescriptors
                     .also { logger.debug("There are <{}> other than <MemoryData> data instances", it.size) }
                     .also { logger.debug("Deleting...") }
@@ -30,7 +31,8 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
         }
     }
 
-    private fun List<DataDescriptor>.filterNotMemoryData(): List<DataDescriptor> =
-            filter { it.data !is MemoryData }
+    private fun DataDescriptors.filterNotMemoryData(): DataDescriptors =
+            descriptors.filter { it.data !is MemoryData }
+                    .toDataDescriptors()
 }
 

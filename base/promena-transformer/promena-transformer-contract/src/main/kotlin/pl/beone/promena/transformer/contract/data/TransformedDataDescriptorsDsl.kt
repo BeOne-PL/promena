@@ -32,3 +32,6 @@ fun transformedDataDescriptors(descriptors: List<TransformedDataDescriptors.Sing
 
 fun transformedDataDescriptors(vararg descriptors: TransformedDataDescriptors.Single): TransformedDataDescriptors =
         transformedDataDescriptors(descriptors.toList())
+
+fun List<TransformedDataDescriptors.Single>.toTransformedDataDescriptors(): TransformedDataDescriptors =
+        transformedDataDescriptors(this)

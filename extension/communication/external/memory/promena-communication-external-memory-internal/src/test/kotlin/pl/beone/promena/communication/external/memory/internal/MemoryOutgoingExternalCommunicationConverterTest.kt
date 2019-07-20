@@ -9,10 +9,10 @@ import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
-import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
+import pl.beone.promena.transformer.internal.communication.communicationParameters
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 
 class MemoryOutgoingExternalCommunicationConverterTest {
 
@@ -28,11 +28,11 @@ class MemoryOutgoingExternalCommunicationConverterTest {
             every { getBytes() } returns "test".toByteArray()
             every { delete() } just Runs
         }
-        val transformedDataDescriptors = listOf(TransformedDataDescriptor(data, MapMetadata.empty()))
-        val externalCommunicationParameters = MapCommunicationParameters.empty()
 
+        // TODO test it
         MemoryOutgoingExternalCommunicationConverter()
-                .convert(transformedDataDescriptors, externalCommunicationParameters)
+                .convert(transformedDataDescriptor(data, emptyMetadata()),
+                         communicationParameters("memory"))
     }
 
 }

@@ -12,11 +12,13 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
+import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.model.Data
-import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
+import pl.beone.promena.transformer.internal.communication.communicationParameters
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
 
 class MemoryIncomingExternalCommunicationConverterTest {
 
@@ -29,26 +31,20 @@ class MemoryIncomingExternalCommunicationConverterTest {
     @Test
     fun convert() {
         val data = "test".toMemoryData()
-        val metadata = MapMetadata.empty()
+        val metadata = emptyMetadata()
 
         val data2 = mockk<Data> {
             every { getBytes() } returns "test2".toByteArray()
             every { delete() } just Runs
         }
         val convertedData2 = "test2".toMemoryData()
-        val metadata2 = MapMetadata(mapOf("key" to "value"))
+        val metadata2 = emptyMetadata() + ("key" to "value")
 
-        val dataDescriptors = listOf(DataDescriptor(data, TEXT_PLAIN, metadata), DataDescriptor(data2, APPLICATION_PDF, metadata2))
-
-        val externalCommunicationParameters = MapCommunicationParameters.empty()
-        val convertedDataDescriptors =
-                listOf(DataDescriptor(data, TEXT_PLAIN, metadata), DataDescriptor(convertedData2, APPLICATION_PDF, metadata2))
-
+        // TODO test it
         MemoryIncomingExternalCommunicationConverter()
-                .convert(dataDescriptors, externalCommunicationParameters) shouldBe convertedDataDescriptors
+                .convert(dataDescriptor(data, TEXT_PLAIN, metadata) + dataDescriptor(data2, APPLICATION_PDF, metadata2),
+                         communicationParameters("memory")) shouldBe
+                dataDescriptor(data, TEXT_PLAIN, metadata) + dataDescriptor(convertedData2, APPLICATION_PDF, metadata2)
     }
-
-    private fun String.toMemoryData(): MemoryData =
-            MemoryData(this.toByteArray())
 
 }

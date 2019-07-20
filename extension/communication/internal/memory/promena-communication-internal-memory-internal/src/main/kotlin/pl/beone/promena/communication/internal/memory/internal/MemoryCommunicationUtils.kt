@@ -2,26 +2,33 @@ package pl.beone.promena.communication.internal.memory.internal
 
 import org.slf4j.Logger
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
-import pl.beone.promena.transformer.contract.descriptor.AbstractDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.*
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 
-fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptors: List<TransformedDataDescriptor>): List<TransformedDataDescriptor> =
-        convertIfItIsNecessary(logger, transformedDataDescriptors) { newData, oldDescriptor ->
-            TransformedDataDescriptor(newData, oldDescriptor.metadata)
-        }
+fun convertIfItIsNecessary(logger: Logger, dataDescriptors: DataDescriptors): DataDescriptors =
+        convertIfItIsNecessary(logger, dataDescriptors.descriptors, { it.data }) { newData, oldDescriptor ->
+            dataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
+        }.toDataDescriptors()
 
-fun <T : AbstractDescriptor> convertIfItIsNecessary(logger: Logger, descriptors: List<T>, creator: (newData: Data, oldDescriptor: T) -> T): List<T> {
-    val memoryDescriptors = descriptors.filterMemoryData()
+fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors =
+        convertIfItIsNecessary(logger, transformedDataDescriptors.descriptors, { it.data }) { newData, oldDescriptor ->
+            transformedDataDescriptor(newData, oldDescriptor.metadata)
+        }.toTransformedDataDescriptors()
 
-    val notMemoryDescriptors = descriptors.filterNotMemoryData()
+private fun <T> convertIfItIsNecessary(logger: Logger,
+                               descriptors: List<T>,
+                               getData: (descriptor: T) -> Data,
+                               factory: (newData: Data, oldDescriptor: T) -> T): List<T> {
+    val memoryDescriptors = descriptors.filterMemoryData(getData)
+
+    val notMemoryDescriptors = descriptors.filterNotMemoryData(getData)
     val convertedNotMemoryDescriptors = if (notMemoryDescriptors.isNotEmpty()) {
         notMemoryDescriptors
                 .also { logger.debug("There are <{}> other than <MemoryData> data instances", it.size) }
                 .also { logger.debug("Converting...") }
-                .map { convert(logger, it.data) to it }
-                .map { (newData, oldDescriptor) -> creator(newData, oldDescriptor) }
+                .map { convert(logger, getData(it)) to it }
+                .map { (newData, oldDescriptor) -> factory(newData, oldDescriptor) }
                 .also { logger.debug("Finished converting") }
     } else {
         emptyList()
@@ -30,11 +37,11 @@ fun <T : AbstractDescriptor> convertIfItIsNecessary(logger: Logger, descriptors:
     return memoryDescriptors + convertedNotMemoryDescriptors
 }
 
-fun <T : AbstractDescriptor> List<T>.filterNotMemoryData(): List<T> =
-        filter { it.data !is MemoryData }
+fun <T> List<T>.filterNotMemoryData(getData: (descriptor: T) -> Data): List<T> =
+        filter { getData(it) !is MemoryData }
 
-private fun <T : AbstractDescriptor> List<T>.filterMemoryData(): List<T> =
-        filter { it.data is MemoryData }
+private fun <T> List<T>.filterMemoryData(getData: (descriptor: T) -> Data): List<T> =
+        filter { getData(it) is MemoryData }
 
 private fun convert(logger: Logger, data: Data): MemoryData {
     val newMemoryData = createMemoryData(logger, data)
@@ -77,4 +84,4 @@ private fun Data.toSimplifiedString(): String =
         }
 
 private fun Data.toMemoryData(): MemoryData =
-        MemoryData(this.getBytes())
+        MemoryData.of(this.getBytes())

@@ -27,3 +27,6 @@ fun transformation(transformers: List<Transformation.Single>): Transformation =
 
 fun transformation(vararg transformers: Transformation.Single): Transformation =
         transformation(transformers.toList())
+
+fun List<Transformation.Single>.toTransformation(): Transformation =
+        transformation(this)

@@ -12,17 +12,18 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.*
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
 
 class MemoryInternalCommunicationConverterTest {
 
     companion object {
         private val mediaType = TEXT_PLAIN
-        private val metadata = MapMetadata(mapOf("key" to "value"))
+        private val metadata = emptyMetadata() + ("key" to "value")
     }
 
     @Before
@@ -33,13 +34,12 @@ class MemoryInternalCommunicationConverterTest {
 
     @Test
     fun `convert _ all MemoryData instances _ should do nothing`() {
-        val dataDescriptors = listOf(DataDescriptor("test".createMemoryData(), mediaType, metadata),
-                                     DataDescriptor("test2".createMemoryData(), mediaType, metadata))
-        val transformedDataDescriptors = listOf(TransformedDataDescriptor("test".createMemoryData(), metadata),
-                                                TransformedDataDescriptor("test2".createMemoryData(), metadata))
+        val transformedDataDescriptors =
+                transformedDataDescriptor("test".toMemoryData(), metadata) + transformedDataDescriptor("test2".toMemoryData(), metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(dataDescriptors, transformedDataDescriptors) shouldBe transformedDataDescriptors
+                .convert(dataDescriptor("test".toMemoryData(), mediaType, metadata) + dataDescriptor("test2".toMemoryData(), mediaType, metadata),
+                         transformedDataDescriptors) shouldBe transformedDataDescriptors
     }
 
     @Test
@@ -50,18 +50,21 @@ class MemoryInternalCommunicationConverterTest {
             every { delete() } just Runs
         }
         val transformedDataDescriptors =
-                listOf(TransformedDataDescriptor(data, metadata), TransformedDataDescriptor("test2".createMemoryData(), metadata))
+                transformedDataDescriptor(data, metadata) + transformedDataDescriptor("test2".toMemoryData(), metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(emptyList(), transformedDataDescriptors).let {
-                    it shouldHaveSize 2
+                .convert(emptyDataDescriptor(),
+                         transformedDataDescriptors)
+                .let { resultTransformedDataDescriptors ->
+                    val descriptors = resultTransformedDataDescriptors.descriptors
+                    descriptors shouldHaveSize 2
 
-                    val transformedDataDescriptor = it[1]
+                    val transformedDataDescriptor = descriptors[1]
                     transformedDataDescriptor.data should instanceOf(MemoryData::class)
                     transformedDataDescriptor.data.getBytes() shouldBe bytes
                     transformedDataDescriptor.metadata shouldBe metadata
 
-                    it[0] shouldBe transformedDataDescriptors[1]
+                    descriptors[0] shouldBe transformedDataDescriptors.descriptors[1]
                 }
 
         verify { data.getBytes() }
@@ -76,18 +79,21 @@ class MemoryInternalCommunicationConverterTest {
             every { delete() } throws DataDeleteException("Exception")
         }
         val transformedDataDescriptors =
-                listOf(TransformedDataDescriptor(data, metadata), TransformedDataDescriptor("test2".createMemoryData(), metadata))
+                transformedDataDescriptor(data, metadata) + transformedDataDescriptor("test2".toMemoryData(), metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(emptyList(), transformedDataDescriptors).let {
-                    it shouldHaveSize 2
+                .convert(emptyDataDescriptor(),
+                         transformedDataDescriptors)
+                .let { resultTransformedDataDescriptors ->
+                    val descriptors = resultTransformedDataDescriptors.descriptors
+                    descriptors shouldHaveSize 2
 
-                    val transformedDataDescriptor = it[1]
+                    val transformedDataDescriptor = descriptors[1]
                     transformedDataDescriptor.data should instanceOf(MemoryData::class)
                     transformedDataDescriptor.data.getBytes() shouldBe bytes
                     transformedDataDescriptor.metadata shouldBe metadata
 
-                    it[0] shouldBe transformedDataDescriptors[1]
+                    descriptors[0] shouldBe transformedDataDescriptors.descriptors[1]
                 }
 
         verify { data.getBytes() }
@@ -99,17 +105,12 @@ class MemoryInternalCommunicationConverterTest {
         val data = mockk<Data> {
             every { delete() } just Runs
         }
-        val dataDescriptors = listOf(DataDescriptor("test".createMemoryData(), mediaType, metadata),
-                                     DataDescriptor(data, mediaType, metadata))
+        val dataDescriptors = dataDescriptor("test".toMemoryData(), mediaType, metadata) + dataDescriptor(data, mediaType, metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(dataDescriptors, emptyList()).let {
-                    it shouldHaveSize 0
-                }
+                .convert(dataDescriptors, emptyTransformedDataDescriptor()).descriptors shouldHaveSize 0
 
         verify { data.delete() }
     }
 
-    private fun String.createMemoryData(): MemoryData =
-            MemoryData(toByteArray())
 }
