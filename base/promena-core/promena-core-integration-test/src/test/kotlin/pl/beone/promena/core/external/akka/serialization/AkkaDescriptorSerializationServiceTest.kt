@@ -22,7 +22,7 @@ import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
-import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
@@ -72,8 +72,8 @@ class AkkaDescriptorSerializationServiceTest {
     fun deserialize() {
         val transformationDescriptor = TransformationDescriptor.of(
                 singleTransformation("test", MediaTypeConstants.APPLICATION_PDF, emptyParameters() + ("key" to "value")),
-                dataDescriptor(data, APPLICATION_OCTET_STREAM, metadata) +
-                        dataDescriptor(data2, APPLICATION_OCTET_STREAM, metadata2)
+                singleDataDescriptor(data, APPLICATION_OCTET_STREAM, metadata) +
+                        singleDataDescriptor(data2, APPLICATION_OCTET_STREAM, metadata2)
         )
 
         val serializationService = prepare(mockk {

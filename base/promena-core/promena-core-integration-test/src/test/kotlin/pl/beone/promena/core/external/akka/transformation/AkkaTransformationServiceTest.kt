@@ -30,7 +30,7 @@ import pl.beone.promena.core.external.akka.transformation.transformer.TimeoutTra
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_EPUB_ZIP
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML
-import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.transformation.next
@@ -71,7 +71,7 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ single transformation`() {
-        val dataDescriptors = dataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
+        val dataDescriptors = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
 
         val transformationFlow =
                 singleTransformation(textAppenderTransformerId, TEXT_PLAIN, emptyParameters() + ("append" to "$"))
@@ -90,8 +90,8 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ composite transformation`() {
-        val dataDescriptors = dataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true)) +
-                dataDescriptor("test2".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin2" to true))
+        val dataDescriptors = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true)) +
+                singleDataDescriptor("test2".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin2" to true))
 
 
         val transformationFlow =
@@ -119,7 +119,7 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ no transformer with given id _ should throw TransformationException(created from TransformerNotFoundException)`() {
-        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+        val dataDescriptors = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformationFlow = singleTransformation("absentTransformer", TEXT_PLAIN, emptyParameters())
 
@@ -135,7 +135,7 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException (created from TransformerCanNotTransformException)`() {
-        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+        val dataDescriptors = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformationFlow = singleTransformation(textAppenderTransformerId, APPLICATION_EPUB_ZIP, emptyParameters())
 
@@ -151,7 +151,7 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ transformer timeout has been reached _ should throw TransformationException (created from TransformerTimeoutException)`() {
-        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
+        val dataDescriptors = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
 
         val transformationFlow = singleTransformation(textAppenderTransformerId, TEXT_PLAIN, emptyParameters() + ("append" to "$")) next
                 singleTransformation(timeoutTransformerId, TEXT_PLAIN, emptyParameters() addTimeout Duration.ofMillis(1))
@@ -168,7 +168,7 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ akka ask timeout has been reached _ should throw TransformationException (created from AskTimeoutException)`() {
-        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+        val dataDescriptors = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformationFlow = singleTransformation(textAppenderTransformerId, TEXT_PLAIN, emptyParameters())
 
@@ -186,7 +186,7 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ unexpected abrupt stage exception (generally caused by closing server suddenly) _ should throw TransformationException (created from AbruptStageTerminationException)`() {
-        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+        val dataDescriptors = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformationFlow = singleTransformation(textAppenderTransformerId, TEXT_PLAIN, emptyParameters())
 
@@ -204,7 +204,7 @@ class AkkaTransformationServiceTest {
 
     @Test
     fun `transform _ unknown exception _ should throw TransformationException`() {
-        val dataDescriptors = dataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+        val dataDescriptors = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformationFlow = singleTransformation(textAppenderTransformerId, TEXT_PLAIN, emptyParameters())
 

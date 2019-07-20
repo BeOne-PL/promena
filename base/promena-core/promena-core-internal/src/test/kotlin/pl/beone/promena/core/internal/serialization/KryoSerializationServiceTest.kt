@@ -7,7 +7,7 @@ import pl.beone.promena.core.applicationmodel.exception.serializer.Deserializati
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
-import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.next
@@ -47,8 +47,8 @@ class KryoSerializationServiceTest {
     fun `serialize and deserialize _ TransformationDescriptor with single flow`() {
         val transformationDescriptor = TransformationDescriptor.of(
                 singleTransformation("test", APPLICATION_PDF, emptyParameters()),
-                dataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                        dataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
+                singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
+                        singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 
         serializationService.deserialize(serializationService.serialize(transformationDescriptor), getClazz<TransformationDescriptor>()) shouldBe
@@ -60,8 +60,8 @@ class KryoSerializationServiceTest {
         val transformationDescriptor = TransformationDescriptor.of(
                 singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
                         singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
-                dataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                        dataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
+                singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
+                        singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 
         serializationService.deserialize(serializationService.serialize(transformationDescriptor), getClazz<TransformationDescriptor>()) shouldBe

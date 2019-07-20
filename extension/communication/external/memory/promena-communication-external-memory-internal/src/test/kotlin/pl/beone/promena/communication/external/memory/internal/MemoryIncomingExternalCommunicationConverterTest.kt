@@ -12,7 +12,7 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.communication.communicationParameters
@@ -42,9 +42,9 @@ class MemoryIncomingExternalCommunicationConverterTest {
 
         // TODO test it
         MemoryIncomingExternalCommunicationConverter()
-                .convert(dataDescriptor(data, TEXT_PLAIN, metadata) + dataDescriptor(data2, APPLICATION_PDF, metadata2),
+                .convert(singleDataDescriptor(data, TEXT_PLAIN, metadata) + singleDataDescriptor(data2, APPLICATION_PDF, metadata2),
                          communicationParameters("memory")) shouldBe
-                dataDescriptor(data, TEXT_PLAIN, metadata) + dataDescriptor(convertedData2, APPLICATION_PDF, metadata2)
+                singleDataDescriptor(data, TEXT_PLAIN, metadata) + singleDataDescriptor(convertedData2, APPLICATION_PDF, metadata2)
     }
 
 }

@@ -8,7 +8,7 @@ import pl.beone.promena.transformer.internal.model.data.MemoryData
 
 fun convertIfItIsNecessary(logger: Logger, dataDescriptor: DataDescriptor): DataDescriptor =
         convertIfItIsNecessary(logger, dataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
-            dataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
+            singleDataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
         }.toDataDescriptor()
 
 fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors =

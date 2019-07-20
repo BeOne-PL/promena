@@ -38,7 +38,7 @@ class MemoryInternalCommunicationConverterTest {
                 transformedDataDescriptor("test".toMemoryData(), metadata) + transformedDataDescriptor("test2".toMemoryData(), metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(dataDescriptor("test".toMemoryData(), mediaType, metadata) + dataDescriptor("test2".toMemoryData(), mediaType, metadata),
+                .convert(singleDataDescriptor("test".toMemoryData(), mediaType, metadata) + singleDataDescriptor("test2".toMemoryData(), mediaType, metadata),
                          transformedDataDescriptors) shouldBe transformedDataDescriptors
     }
 
@@ -105,7 +105,7 @@ class MemoryInternalCommunicationConverterTest {
         val data = mockk<Data> {
             every { delete() } just Runs
         }
-        val dataDescriptors = dataDescriptor("test".toMemoryData(), mediaType, metadata) + dataDescriptor(data, mediaType, metadata)
+        val dataDescriptors = singleDataDescriptor("test".toMemoryData(), mediaType, metadata) + singleDataDescriptor(data, mediaType, metadata)
 
         MemoryInternalCommunicationConverter()
                 .convert(dataDescriptors, emptyTransformedDataDescriptor()).descriptors shouldHaveSize 0
