@@ -1,3 +1,5 @@
+@file:JvmName("TransformedDataDescriptorsDsl")
+
 package pl.beone.promena.transformer.contract.data
 
 import pl.beone.promena.transformer.contract.model.Data
@@ -28,3 +30,5 @@ fun transformedDataDescriptors(descriptors: List<TransformedDataDescriptors.Sing
             else -> TransformedDataDescriptors.Multi.of(descriptors)
         }
 
+fun transformedDataDescriptors(vararg descriptors: TransformedDataDescriptors.Single): TransformedDataDescriptors =
+        transformedDataDescriptors(descriptors.toList())

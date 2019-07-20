@@ -8,7 +8,7 @@ import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.data.DataDescriptors
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
-import pl.beone.promena.transformer.contract.transformation.TransformationFlow
+import pl.beone.promena.transformer.contract.transformation.Transformation
 
 class DefaultTransformationUseCase(private val externalCommunicationManager: ExternalCommunicationManager,
                                    private val transformationService: TransformationService)
@@ -18,7 +18,7 @@ class DefaultTransformationUseCase(private val externalCommunicationManager: Ext
         private val logger = LoggerFactory.getLogger(DefaultTransformationUseCase::class.java)
     }
 
-    override fun transform(transformationFlow: TransformationFlow,
+    override fun transform(transformation: Transformation,
                            dataDescriptors: DataDescriptors,
                            externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptors {
         try {
@@ -27,10 +27,10 @@ class DefaultTransformationUseCase(private val externalCommunicationManager: Ext
 
             return dataDescriptors
                     .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
-                    .let { transformationService.transform(transformationFlow, it) }
+                    .let { transformationService.transform(transformation, it) }
                     .let { outgoingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
         } catch (e: Exception) {
-            logger.error("Couldn't transform <{}, {}>", externalCommunicationParameters, transformationFlow, e)
+            logger.error("Couldn't transform <{}, {}>", externalCommunicationParameters, transformation, e)
 
             // unwrap expected exception to not show user unnecessary information
             if (e is TransformationException) {

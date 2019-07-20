@@ -11,28 +11,27 @@ import java.time.Duration
 class MapParametersTest {
 
     companion object {
-        private val parameters = MapParameters.builder()
-                .parameter("int", 3)
-                .parameter("long", 10L)
-                .parameter("double", 3.5)
-                .parameter("float", 4.1f)
-                .parameter("boolean", true)
-                .parameter("string", "value")
+        private val parameters = emptyParameters() +
+                ("int" to 3) +
+                ("long" to 10L) +
+                ("double" to 3.5) +
+                ("float" to 4.1f) +
+                ("boolean" to true) +
+                ("string" to "value") +
 
-                .parameter("stringInt", "3")
-                .parameter("stringLong", "10")
-                .parameter("stringDouble", "3.5")
-                .parameter("stringFloat", "4.1")
-                .parameter("stringBoolean", "true")
-                .parameter("stringBoolean2", "false")
+                ("stringInt" to "3") +
+                ("stringLong" to "10") +
+                ("stringDouble" to "3.5") +
+                ("stringFloat" to "4.1") +
+                ("stringBoolean" to "true") +
+                ("stringBoolean2" to "false") +
 
-                .parameter("parameter", MapParameters.builder().parameter("key", "value").build())
-                .parameter("mapParameters", mapOf("mapKey" to "value"))
+                ("parameter" to emptyParameters() + ("key" to "value")) +
+                ("mapParameters" to mapOf("mapKey" to "value")) +
 
-                .parameter("intList", listOf(1, 2, 3))
-                .parameter("mixList", listOf(1, "string", true))
-                .parameter("stringList", listOf("1", "2", "3"))
-                .build()
+                ("intList" to listOf(1, 2, 3)) +
+                ("mixList" to listOf(1, "string", true)) +
+                ("stringList" to listOf("1", "2", "3"))
     }
 
     @Test
@@ -99,7 +98,7 @@ class MapParametersTest {
     @Test
     fun getTimeout() {
         val timeout = Duration.ofMillis(10)
-        MapParameters.builder().timeout(timeout).build().getTimeout() shouldBe timeout
+        (emptyParameters() addTimeout timeout).getTimeout() shouldBe timeout
 
         shouldThrow<NoSuchElementException> { MapParameters.empty().getTimeout() }
                 .message shouldBe "There is no <$Timeout> element"

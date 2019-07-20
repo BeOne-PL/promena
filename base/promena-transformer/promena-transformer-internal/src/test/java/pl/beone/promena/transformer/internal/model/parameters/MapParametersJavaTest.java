@@ -14,29 +14,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MapParametersJavaTest {
 
-    private static Parameters parameters = MapParameters.builder()
-            .parameter("int", 3)
-            .parameter("long", 10L)
-            .parameter("double", 3.5)
-            .parameter("float", 4.1f)
-            .parameter("boolean", true)
-            .parameter("string", "value")
+    private static Parameters parameters = new MapParametersBuilder()
+            .add("int", 3)
+            .add("long", 10L)
+            .add("double", 3.5)
+            .add("float", 4.1f)
+            .add("boolean", true)
+            .add("string", "value")
 
-            .parameter("stringInt", "3")
-            .parameter("stringLong", "10")
-            .parameter("stringDouble", "3.5")
-            .parameter("stringFloat", "4.1")
-            .parameter("stringBoolean", "true")
-            .parameter("stringBoolean2", "false")
+            .add("stringInt", "3")
+            .add("stringLong", "10")
+            .add("stringDouble", "3.5")
+            .add("stringFloat", "4.1")
+            .add("stringBoolean", "true")
+            .add("stringBoolean2", "false")
 
-            .parameter("parameters", MapParameters.builder().parameter("key", "value").build())
-            .parameter("mapParameters", new HashMap<String, Object>() {{
+            .add("parameters", new MapParametersBuilder().add("key", "value").build())
+            .add("mapParameters", new HashMap<String, Object>() {{
                 put("mapKey", "mapValue");
             }})
 
-            .parameter("intList", Arrays.asList(1, 2, 3))
-            .parameter("mixList", Arrays.asList(1, "string", true))
-            .parameter("stringList", Arrays.asList("1", "2", "3"))
+            .add("intList", Arrays.asList(1, 2, 3))
+            .add("mixList", Arrays.asList(1, "string", true))
+            .add("stringList", Arrays.asList("1", "2", "3"))
 
             .build();
 

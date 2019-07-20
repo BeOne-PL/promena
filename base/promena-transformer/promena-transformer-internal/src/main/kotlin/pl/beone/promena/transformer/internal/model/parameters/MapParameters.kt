@@ -19,11 +19,7 @@ data class MapParameters internal constructor(private val parameters: Map<String
         @JvmStatic
         fun of(parameters: Map<String, Any>, timeout: Duration? = null): MapParameters =
                 MapParameters(parameters +
-                              if (timeout != null) mapOf(Timeout to timeout) else emptyMap())
-
-        @JvmStatic
-        fun builder(): MapParametersBuilder =
-                MapParametersBuilder()
+                                      if (timeout != null) mapOf(Timeout to timeout) else emptyMap())
     }
 
     override fun get(key: String): Any =

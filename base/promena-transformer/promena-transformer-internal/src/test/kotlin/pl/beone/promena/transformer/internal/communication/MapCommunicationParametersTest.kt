@@ -7,13 +7,11 @@ import org.junit.Test
 class MapCommunicationParametersTest {
 
     companion object {
-        private val communicationParameters = MapCommunicationParameters.builder()
-                .parameter("id", "memory")
-                .parameter("int", 3)
-                .parameter("string", "value")
-                .parameter("stringInt", "3")
-                .parameter("location", "file:/tmp")
-                .build()
+        private val communicationParameters = communicationParameters("memory") +
+                ("int" to 3) +
+                ("string" to "value") +
+                ("stringInt" to "3") +
+                ("location" to "file:/tmp")
     }
 
     @Test

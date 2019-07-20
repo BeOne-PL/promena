@@ -6,19 +6,19 @@ import org.junit.Test
 
 class MapMetadataTest {
 
-    private val metadata = MapMetadata.builder()
-            .metadata("int", 3)
-            .metadata("string", "value")
+    companion object {
+        private val metadata = emptyMetadata() +
+                ("int" to 3) +
+                ("string" to "value") +
 
-            .metadata("stringInt", "3")
+                ("stringInt" to "3") +
 
-            .metadata("metadata", MapMetadata.of(mapOf("key" to "value")))
-            .metadata("mapMetadata", mapOf("mapKey" to "mapValue"))
+                ("metadata" to metadata(mapOf("key" to "value"))) +
+                ("mapMetadata" to mapOf("mapKey" to "mapValue")) +
 
-            .metadata("intList", listOf(1, 2, 3))
-            .metadata("stringList", listOf("1", "2", "3"))
-            .build()
-
+                ("intList" to listOf(1, 2, 3)) +
+                ("stringList" to listOf("1", "2", "3"))
+    }
 
     @Test
     fun empty() {
@@ -47,7 +47,7 @@ class MapMetadataTest {
 
     @Test
     fun getMetadata() {
-        metadata.getMetadata("metadata") shouldBe (metadata() add ("key" to "value"))
+        metadata.getMetadata("metadata") shouldBe (emptyMetadata() + ("key" to "value"))
     }
 
     @Test

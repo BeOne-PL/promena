@@ -1,3 +1,5 @@
+@file:JvmName("DataDescriptorsDsl")
+
 package pl.beone.promena.transformer.contract.data
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -26,6 +28,8 @@ fun dataDescriptors(descriptors: List<DataDescriptors.Single>): DataDescriptors 
         when (descriptors.size) {
             0    -> DataDescriptors.Empty
             1    -> descriptors.first()
-            else -> DataDescriptors.Multi.of(descriptors)
+            else -> DataDescriptors.Multi.of(descriptors.toList())
         }
 
+fun dataDescriptors(vararg descriptors: DataDescriptors.Single): DataDescriptors =
+        dataDescriptors(descriptors.toList())

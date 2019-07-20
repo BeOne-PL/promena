@@ -24,7 +24,7 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.data.dataDescriptors
 import pl.beone.promena.transformer.contract.model.Parameters
-import pl.beone.promena.transformer.contract.transformation.TransformationFlow
+import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.time.Duration
 
 private data class ActorTransformerDescriptor(val actorRef: ActorRef,
@@ -38,12 +38,12 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         private val logger = LoggerFactory.getLogger(AkkaTransformationService::class.java)
     }
 
-    override fun transform(transformationFlow: TransformationFlow, dataDescriptors: DataDescriptors): TransformedDataDescriptors {
-        logBeforeTransformation(transformationFlow, dataDescriptors)
+    override fun transform(transformation: Transformation, dataDescriptors: DataDescriptors): TransformedDataDescriptors {
+        logBeforeTransformation(transformation, dataDescriptors)
 
         val (transformedDataDescriptors, measuredTimeMs) = measureTimeMillisWithContent {
             try {
-                val actorTransformerDescriptors = getTransformerDescriptorsWithActorRef(transformationFlow)
+                val actorTransformerDescriptors = getTransformerDescriptorsWithActorRef(transformation)
 
                 unwrapExecutionException {
                     createSource(dataDescriptors)
@@ -54,31 +54,31 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                             .get()
                 }
             } catch (e: Exception) {
-                throw processException(transformationFlow, dataDescriptors, e)
+                throw processException(transformation, dataDescriptors, e)
             }
         }
 
-        logAfterTransformation(transformationFlow, measuredTimeMs, transformedDataDescriptors)
+        logAfterTransformation(transformation, measuredTimeMs, transformedDataDescriptors)
 
         return transformedDataDescriptors
     }
 
-    private fun logBeforeTransformation(transformationFlow: TransformationFlow, dataDescriptors: DataDescriptors) {
+    private fun logBeforeTransformation(transformation: Transformation, dataDescriptors: DataDescriptors) {
         if (logger.isDebugEnabled) {
             logger.debug("Transforming <{}> <{} source(s)>: [{}]...",
-                         transformationFlow,
+                         transformation,
                          dataDescriptors.descriptors.size,
                          dataDescriptors.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" })
         } else {
             logger.info("Transforming <{}> <{} source(s)>: [{}]...",
-                        transformationFlow,
+                        transformation,
                         dataDescriptors.descriptors.size,
                         dataDescriptors.descriptors.joinToString(", ") { "<${it.mediaType}>" })
         }
     }
 
-    private fun getTransformerDescriptorsWithActorRef(transformationFlow: TransformationFlow): List<ActorTransformerDescriptor> =
-            transformationFlow.transformers.map { (id, mediaType, parameters) ->
+    private fun getTransformerDescriptorsWithActorRef(transformation: Transformation): List<ActorTransformerDescriptor> =
+            transformation.transformers.map { (id, mediaType, parameters) ->
                 ActorTransformerDescriptor(actorService.getTransformationActor(id), mediaType, parameters)
             }
 
@@ -120,26 +120,26 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
 
     private fun Duration.toTimeout(): Timeout = Timeout.create(this)
 
-    private fun logAfterTransformation(transformationFlow: TransformationFlow,
+    private fun logAfterTransformation(transformation: Transformation,
                                        measuredTimeMs: Long,
                                        transformedDataDescriptors: TransformedDataDescriptors) {
         if (logger.isDebugEnabled) {
             logger.debug("Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
-                         transformationFlow,
+                         transformation,
                          transformedDataDescriptors.descriptors.size,
                          measuredTimeMs.toSeconds(),
                          transformedDataDescriptors.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" })
         } else {
             logger.info("Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
-                        transformationFlow,
+                        transformation,
                         transformedDataDescriptors.descriptors.size,
                         measuredTimeMs.toSeconds(),
                         transformedDataDescriptors.descriptors.joinToString(", ") { "<${it.metadata}>" })
         }
     }
 
-    private fun processException(transformationFlow: TransformationFlow, dataDescriptors: DataDescriptors, exception: Exception): Exception {
-        val exceptionDescriptor = generateExceptionDescriptor(transformationFlow, dataDescriptors)
+    private fun processException(transformation: Transformation, dataDescriptors: DataDescriptors, exception: Exception): Exception {
+        val exceptionDescriptor = generateExceptionDescriptor(transformation, dataDescriptors)
 
         return when (exception) {
             is TransformerException            ->
@@ -156,10 +156,10 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         }
     }
 
-    private fun generateExceptionDescriptor(transformationFlow: TransformationFlow,
+    private fun generateExceptionDescriptor(transformation: Transformation,
                                             dataDescriptors: DataDescriptors): String =
             "<:1> <:2 source(s)>: [:3]"
-                    .replace(":1", transformationFlow.toString())
+                    .replace(":1", transformation.toString())
                     .replace(":2", dataDescriptors.descriptors.size.toString())
                     .replace(":3", dataDescriptors.getLocationsInString())
 

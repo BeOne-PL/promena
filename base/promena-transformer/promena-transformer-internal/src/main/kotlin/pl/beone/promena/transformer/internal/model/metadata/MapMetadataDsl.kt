@@ -1,10 +1,14 @@
+@file:JvmName("MapMetadataDsl")
+
 package pl.beone.promena.transformer.internal.model.metadata
 
-fun emptyMetadata(): MapMetadata =
-        metadata()
+import pl.beone.promena.transformer.contract.model.Metadata
 
-fun metadata(metadata: Map<String, Any> = emptyMap()): MapMetadata =
+fun emptyMetadata(): MapMetadata =
+        metadata(emptyMap())
+
+fun metadata(metadata: Map<String, Any>): MapMetadata =
         MapMetadata.of(metadata)
 
-infix fun MapMetadata.add(entry: Pair<String, Any>): MapMetadata =
+operator fun Metadata.plus(entry: Pair<String, Any>): MapMetadata =
         MapMetadata.of(getAll() + entry)

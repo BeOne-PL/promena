@@ -11,8 +11,7 @@ import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
-import pl.beone.promena.transformer.internal.model.metadata.add
-import pl.beone.promena.transformer.internal.model.metadata.metadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
 
 class TextAppenderTransformer : Transformer {
 
@@ -29,7 +28,7 @@ class TextAppenderTransformer : Transformer {
             String(getBytes()) + sign
 
     private fun Metadata.addTransformerId(): Metadata =
-            metadata(getAll()) add ("text-appender-transformer" to true)
+            this + ("text-appender-transformer" to true)
 
     override fun canTransform(dataDescriptors: DataDescriptors, targetMediaType: MediaType, parameters: Parameters): Boolean =
             dataDescriptors.descriptors.all { it.mediaType == TEXT_PLAIN } && targetMediaType == TEXT_PLAIN

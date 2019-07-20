@@ -11,11 +11,10 @@ import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.next
-import pl.beone.promena.transformer.contract.transformation.singleTransformationFlow
+import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
-import pl.beone.promena.transformer.internal.model.metadata.add
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
-import pl.beone.promena.transformer.internal.model.metadata.metadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.net.URI
 import java.util.concurrent.Callable
@@ -37,7 +36,7 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ list of TransformedDataDescriptor`() {
         val transformedDataDescriptors =
-                transformedDataDescriptor("test".toMemoryData(), metadata() add ("key" to "value")) +
+                transformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
                         transformedDataDescriptor("""{ "key": "value" }""".toMemoryData(), emptyMetadata())
 
         serializationService.deserialize(serializationService.serialize(transformedDataDescriptors), getClazz<TransformationDescriptor>()) shouldBe
@@ -47,8 +46,8 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ TransformationDescriptor with single flow`() {
         val transformationDescriptor = TransformationDescriptor.of(
-                singleTransformationFlow("test", APPLICATION_PDF, emptyParameters()),
-                dataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, metadata() add ("key" to "value")) +
+                singleTransformation("test", APPLICATION_PDF, emptyParameters()),
+                dataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
                         dataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 
@@ -59,9 +58,9 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ TransformationDescriptor with composite flow`() {
         val transformationDescriptor = TransformationDescriptor.of(
-                singleTransformationFlow("test", APPLICATION_PDF, emptyParameters()) next
-                        singleTransformationFlow("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
-                dataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, metadata() add ("key" to "value")) +
+                singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
+                        singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
+                dataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
                         dataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 

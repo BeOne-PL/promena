@@ -25,20 +25,19 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
-import pl.beone.promena.transformer.contract.transformation.singleTransformationFlow
+import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
-import pl.beone.promena.transformer.internal.model.metadata.add
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
-import pl.beone.promena.transformer.internal.model.metadata.metadata
-import pl.beone.promena.transformer.internal.model.parameters.add
-import pl.beone.promena.transformer.internal.model.parameters.parameters
+import pl.beone.promena.transformer.internal.model.metadata.plus
+import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
+import pl.beone.promena.transformer.internal.model.parameters.plus
 
 class AkkaDescriptorSerializationServiceTest {
 
     companion object {
         private val data = "test".toMemoryData()
         private val data2 = "test2".toMemoryData()
-        private val metadata = metadata() add ("key" to "value")
+        private val metadata = emptyMetadata() + ("key" to "value")
         private val metadata2 = emptyMetadata()
         private val serializedTransformedDataDescriptors = "serialized data".toByteArray()
     }
@@ -72,7 +71,7 @@ class AkkaDescriptorSerializationServiceTest {
     @Test
     fun deserialize() {
         val transformationDescriptor = TransformationDescriptor.of(
-                singleTransformationFlow("test", MediaTypeConstants.APPLICATION_PDF, parameters() add ("key" to "value")),
+                singleTransformation("test", MediaTypeConstants.APPLICATION_PDF, emptyParameters() + ("key" to "value")),
                 dataDescriptor(data, APPLICATION_OCTET_STREAM, metadata) +
                         dataDescriptor(data2, APPLICATION_OCTET_STREAM, metadata2)
         )

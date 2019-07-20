@@ -23,7 +23,7 @@ import pl.beone.promena.transformer.contract.communication.CommunicationParamete
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
-import pl.beone.promena.transformer.contract.transformation.singleTransformationFlow
+import pl.beone.promena.transformer.contract.transformation.singleTransformation
 
 class DefaultTransformationUseCaseTest {
 
@@ -32,7 +32,7 @@ class DefaultTransformationUseCaseTest {
         private val parameters = mockk<Parameters>()
 
         private val dataDescriptors = dataDescriptor(mockk(), TEXT_PLAIN, mockk())
-        private val transformationFlow = singleTransformationFlow("test", targetMediaType, parameters)
+        private val transformationFlow = singleTransformation("test", targetMediaType, parameters)
         private val transformedDataDescriptors = transformedDataDescriptor(mockk(), mockk())
     }
 

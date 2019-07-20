@@ -1,15 +1,22 @@
 package pl.beone.promena.transformer.internal.communication
 
-import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters.Companion.Id
 
-data class MapCommunicationParametersBuilder internal constructor(private val parameters: MutableMap<String, Any> = HashMap()) {
+class MapCommunicationParametersBuilder {
 
-    fun parameter(key: String, value: Any): MapCommunicationParametersBuilder =
+    private val parameters = HashMap<String, Any>()
+
+    fun id(value: Any): MapCommunicationParametersBuilder =
+            apply { parameters[Id] = value }
+
+    fun add(key: String, value: Any): MapCommunicationParametersBuilder =
             apply { parameters[key] = value }
 
-    fun parameter(key: String, parameters: Parameters): MapCommunicationParametersBuilder =
-            parameter(key, parameters as Any)
-
-    fun build(): MapCommunicationParameters = MapCommunicationParameters(parameters)
+    fun build(): MapCommunicationParameters =
+            if (parameters.containsKey(Id)) {
+                MapCommunicationParameters(parameters)
+            } else {
+                throw IllegalStateException("Communication parameters has to contain <id>")
+            }
 
 }

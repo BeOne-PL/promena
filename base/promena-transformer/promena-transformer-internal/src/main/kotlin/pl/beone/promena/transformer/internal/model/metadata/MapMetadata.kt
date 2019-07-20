@@ -17,10 +17,6 @@ data class MapMetadata internal constructor(private val metadata: Map<String, An
         @JvmStatic
         fun of(metadata: Map<String, Any>): MapMetadata =
                 MapMetadata(metadata)
-
-        @JvmStatic
-        fun builder(): MapMetadataBuilder =
-                MapMetadataBuilder()
     }
 
     override fun get(key: String): Any =
