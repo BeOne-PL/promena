@@ -31,7 +31,7 @@ class DefaultTransformationUseCaseTest {
         private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
         private val parameters = mockk<Parameters>()
 
-        private val dataDescriptors = singleDataDescriptor(mockk(), TEXT_PLAIN, mockk())
+        private val dataDescriptor = singleDataDescriptor(mockk(), TEXT_PLAIN, mockk())
         private val transformationFlow = singleTransformation("test", targetMediaType, parameters)
         private val transformedDataDescriptors = transformedDataDescriptor(mockk(), mockk())
     }
@@ -49,7 +49,7 @@ class DefaultTransformationUseCaseTest {
             every { getId() } returns externalCommunicationId
         }
         val incomingCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
-            every { convert(dataDescriptors, externalCommunicationParameters) } returns dataDescriptors
+            every { convert(dataDescriptor, externalCommunicationParameters) } returns dataDescriptor
         }
         val outgoingCommunicationConverter = mockk<OutgoingExternalCommunicationConverter> {
             every {
@@ -63,11 +63,11 @@ class DefaultTransformationUseCaseTest {
         }
 
         val transformerService = mockk<TransformationService> {
-            every { transform(transformationFlow, dataDescriptors) } returns transformedDataDescriptors
+            every { transform(transformationFlow, dataDescriptor) } returns transformedDataDescriptors
         }
 
         DefaultTransformationUseCase(externalCommunicationManager, transformerService)
-                .transform(transformationFlow, dataDescriptors, externalCommunicationParameters) shouldBe transformedDataDescriptors
+                .transform(transformationFlow, dataDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptors
     }
 
     @Test
@@ -84,7 +84,7 @@ class DefaultTransformationUseCaseTest {
 
         shouldThrow<ExternalCommunicationManagerException> {
             DefaultTransformationUseCase(externalCommunicationManager, mockk())
-                    .transform(transformationFlow, dataDescriptors, externalCommunicationParameters)
+                    .transform(transformationFlow, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message shouldBe "Exception occurred"
             it.cause shouldNotBe null
@@ -98,7 +98,7 @@ class DefaultTransformationUseCaseTest {
             every { getId() } returns externalCommunicationId
         }
         val incomingCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
-            every { convert(dataDescriptors, externalCommunicationParameters) } returns dataDescriptors
+            every { convert(dataDescriptor, externalCommunicationParameters) } returns dataDescriptor
         }
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
@@ -107,13 +107,13 @@ class DefaultTransformationUseCaseTest {
         }
 
         val transformerService = mockk<TransformationService> {
-            every { transform(transformationFlow, dataDescriptors) } throws
+            every { transform(transformationFlow, dataDescriptor) } throws
                     TransformationException("Exception occurred", RuntimeException("Stack exception"))
         }
 
         shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, transformerService)
-                    .transform(transformationFlow, dataDescriptors, externalCommunicationParameters)
+                    .transform(transformationFlow, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message shouldBe "Exception occurred"
             it.cause shouldBe null
