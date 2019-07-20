@@ -1,5 +1,6 @@
 package pl.beone.promena.connector.http.delivery.http
 
+import io.kotlintest.matchers.string.shouldContain
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
@@ -16,17 +17,20 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
 import pl.beone.promena.connector.http.configuration.HttpConnectorModuleConfig
+import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
+import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.serialization.DescriptorSerializationService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
-import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
-import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
+import pl.beone.promena.transformer.contract.data.emptyDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
+import pl.beone.promena.transformer.contract.transformation.singleTransformation
+import pl.beone.promena.transformer.internal.communication.communicationParameters
+import pl.beone.promena.transformer.internal.communication.plus
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 
 @RunWith(SpringRunner::class)
 @EnableAutoConfiguration
@@ -47,10 +51,11 @@ class TransformerHandlerTest {
     private lateinit var transformationUseCase: TransformationUseCase
 
     companion object {
-        private const val transformerId = "default"
         private val requestBody = "request body".toByteArray()
-        private val transformationDescriptor = TransformationDescriptor(emptyList(), MediaTypeConstants.TEXT_PLAIN, MapParameters.empty())
-        private val transformedDataDescriptors = listOf(TransformedDataDescriptor(MemoryData(ByteArray(0)), MapMetadata.empty()))
+        private val transformation = singleTransformation("default", TEXT_PLAIN, emptyParameters())
+        private val dataDescriptor = emptyDataDescriptor()
+        private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptor)
+        private val transformedDataDescriptor = singleTransformedDataDescriptor("".toMemoryData(), emptyMetadata())
         private val responseBody = "response body".toByteArray()
     }
 
@@ -67,15 +72,15 @@ class TransformerHandlerTest {
     }
 
     @Test
-    fun `transform _ with empty communication parameters`() {
+    fun `transform _ memory communication parameters`() {
         every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
-        every { descriptorSerializationService.serialize(transformedDataDescriptors) } returns responseBody
+        every { descriptorSerializationService.serialize(transformedDataDescriptor) } returns responseBody
 
         every {
-            transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty())
-        } returns transformedDataDescriptors
+            transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("memory"))
+        } returns transformedDataDescriptor
 
-        webTestClient.post().uri("/transform/$transformerId")
+        webTestClient.post().uri("/transform?id=memory")
                 .body(BodyInserters.fromObject(requestBody))
                 .exchange()
                 .expectStatus().isOk
@@ -83,16 +88,15 @@ class TransformerHandlerTest {
     }
 
     @Test
-    fun `transform _ with location in communication parameters`() {
+    fun `transform _ file communication parameters with location`() {
         every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
-        every { descriptorSerializationService.serialize(transformedDataDescriptors) } returns responseBody
+        every { descriptorSerializationService.serialize(transformedDataDescriptor) } returns responseBody
 
         every {
-            transformationUseCase.transform(transformerId, transformationDescriptor,
-                                            MapCommunicationParameters(mapOf("location" to "file:/tmp")))
-        } returns transformedDataDescriptors
+            transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("file") + ("location" to "file:/tmp"))
+        } returns transformedDataDescriptor
 
-        webTestClient.post().uri("/transform/$transformerId?location=file:/tmp")
+        webTestClient.post().uri("/transform/?id=file&location=file:/tmp")
                 .body(BodyInserters.fromObject(requestBody))
                 .exchange()
                 .expectStatus().isOk
@@ -108,21 +112,32 @@ class TransformerHandlerTest {
 
         every { serializationService.serialize(any<TransformerNotFoundException>()) } returns messageByteArray
 
-        every { transformationUseCase.transform(transformerId, transformationDescriptor, MapCommunicationParameters.empty()) } throws exception
+        every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("memory")) } throws exception
 
-        webTestClient.post().uri("/transform/$transformerId")
+        webTestClient.post().uri("/transform?id=memory")
                 .body(BodyInserters.fromObject(requestBody))
                 .exchange()
                 .expectHeader()
                 .valueEquals("serialization-class",
-                             "pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerNotFoundException")
+                             "pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException")
                 .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
                 .expectBody<ByteArray>().isEqualTo(messageByteArray)
     }
 
     @Test
-    fun `transform _ bad url _ should return NotFound`() {
+    fun `transform _ query string without id communication parameter _ should return BadRequest`() {
+        every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
+
         webTestClient.post().uri("/transform")
+                .body(BodyInserters.fromObject(requestBody))
+                .exchange()
+                .expectStatus().isBadRequest
+                .expectBody<String>().returnResult().responseBody shouldContain "Query string must contain at least <id> communication parameter"
+    }
+
+    @Test
+    fun `transform _ bad url _ should return NotFound`() {
+        webTestClient.post().uri("/absent")
                 .body(BodyInserters.fromObject(requestBody))
                 .exchange()
                 .expectStatus().isNotFound

@@ -2,8 +2,10 @@ package pl.beone.promena.connector.http.delivery.http
 
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import org.junit.Test
 import org.springframework.util.LinkedMultiValueMap
+import pl.beone.promena.connector.http.delivery.http.exception.CommunicationParametersConverterException
 
 class CommunicationParametersConverterTest {
 
@@ -14,6 +16,7 @@ class CommunicationParametersConverterTest {
     @Test
     fun convert() {
         val parameters = communicationParametersConverter.convert(LinkedMultiValueMap(mapOf(
+                "id" to listOf("memory"),
                 "firstPages" to listOf("2"),
                 "page" to listOf("4"),
                 "onlyHeader" to listOf("true"),
@@ -24,8 +27,9 @@ class CommunicationParametersConverterTest {
                 "list" to listOf("1.0", "2.5")
         )))
 
-        parameters.getAll().entries shouldHaveSize 8
+        parameters.getAll().entries shouldHaveSize 9
 
+        parameters.get("id") shouldBe "memory"
         parameters.get("firstPages") shouldBe 2L
         parameters.get("page") shouldBe 4L
         parameters.get("onlyHeader") shouldBe true
@@ -37,5 +41,12 @@ class CommunicationParametersConverterTest {
 
         parameters.get("onlyScan", String::class.java) shouldBe "false"
         parameters.get("value", Float::class.java) shouldBe 3.4f
+    }
+
+    @Test
+    fun `convert _ no id _ should throw CommunicationParametersConverterException`() {
+        shouldThrow<CommunicationParametersConverterException> {
+            communicationParametersConverter.convert(LinkedMultiValueMap(emptyMap()))
+        }.message shouldBe "Query string must contain at least <id> communication parameter"
     }
 }
