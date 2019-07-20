@@ -11,7 +11,7 @@ data class MapCommunicationParameters internal constructor(private val parameter
 
         @JvmStatic
         fun of(id: String, parameters: Map<String, Any> = emptyMap()): MapCommunicationParameters =
-                MapCommunicationParameters(mapOf(Id to id) + parameters)
+                MapCommunicationParameters(parameters + mapOf(Id to id))
     }
 
     override fun get(key: String): Any =
