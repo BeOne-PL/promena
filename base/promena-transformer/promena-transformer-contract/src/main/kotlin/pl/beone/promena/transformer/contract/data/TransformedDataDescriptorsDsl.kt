@@ -27,7 +27,7 @@ fun transformedDataDescriptors(descriptors: List<TransformedDataDescriptors.Sing
         when (descriptors.size) {
             0    -> TransformedDataDescriptors.Empty
             1    -> descriptors.first()
-            else -> TransformedDataDescriptors.Multi.of(descriptors)
+            else -> TransformedDataDescriptors.Multi(descriptors)
         }
 
 fun transformedDataDescriptors(vararg descriptors: TransformedDataDescriptors.Single): TransformedDataDescriptors =

@@ -1,9 +1,9 @@
 package pl.beone.promena.core.contract.communication.external
 
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import pl.beone.promena.transformer.contract.data.DataDescriptors
+import pl.beone.promena.transformer.contract.data.DataDescriptor
 
 interface IncomingExternalCommunicationConverter {
 
-    fun convert(dataDescriptors: DataDescriptors, externalCommunicationParameters: CommunicationParameters): DataDescriptors
+    fun convert(dataDescriptor: DataDescriptor, externalCommunicationParameters: CommunicationParameters): DataDescriptor
 }

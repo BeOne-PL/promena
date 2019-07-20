@@ -4,9 +4,9 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
 
-sealed class DataDescriptors {
+sealed class DataDescriptor {
 
-    object Empty : DataDescriptors() {
+    object Empty : DataDescriptor() {
 
         override val descriptors: List<Single>
             get() = emptyList()
@@ -14,21 +14,13 @@ sealed class DataDescriptors {
 
     data class Single internal constructor(val data: Data,
                                            val mediaType: MediaType,
-                                           val metadata: Metadata) : DataDescriptors() {
+                                           val metadata: Metadata) : DataDescriptor() {
 
         override val descriptors: List<Single>
             get() = listOf(this)
     }
 
-    data class Multi internal constructor(override val descriptors: List<Single>) : DataDescriptors() {
-
-        companion object {
-
-            @JvmStatic
-            fun of(descriptors: List<Single>): Multi =
-                    Multi(descriptors)
-        }
-    }
+    data class Multi internal constructor(override val descriptors: List<Single>) : DataDescriptor()
 
     abstract val descriptors: List<Single>
 }

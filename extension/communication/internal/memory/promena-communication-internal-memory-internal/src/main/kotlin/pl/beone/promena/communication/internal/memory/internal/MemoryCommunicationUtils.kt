@@ -6,10 +6,10 @@ import pl.beone.promena.transformer.contract.data.*
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 
-fun convertIfItIsNecessary(logger: Logger, dataDescriptors: DataDescriptors): DataDescriptors =
-        convertIfItIsNecessary(logger, dataDescriptors.descriptors, { it.data }) { newData, oldDescriptor ->
+fun convertIfItIsNecessary(logger: Logger, dataDescriptor: DataDescriptor): DataDescriptor =
+        convertIfItIsNecessary(logger, dataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
             dataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
-        }.toDataDescriptors()
+        }.toDataDescriptor()
 
 fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors =
         convertIfItIsNecessary(logger, transformedDataDescriptors.descriptors, { it.data }) { newData, oldDescriptor ->
@@ -17,9 +17,9 @@ fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptors: Transform
         }.toTransformedDataDescriptors()
 
 private fun <T> convertIfItIsNecessary(logger: Logger,
-                               descriptors: List<T>,
-                               getData: (descriptor: T) -> Data,
-                               factory: (newData: Data, oldDescriptor: T) -> T): List<T> {
+                                       descriptors: List<T>,
+                                       getData: (descriptor: T) -> Data,
+                                       factory: (newData: Data, oldDescriptor: T) -> T): List<T> {
     val memoryDescriptors = descriptors.filterMemoryData(getData)
 
     val notMemoryDescriptors = descriptors.filterNotMemoryData(getData)

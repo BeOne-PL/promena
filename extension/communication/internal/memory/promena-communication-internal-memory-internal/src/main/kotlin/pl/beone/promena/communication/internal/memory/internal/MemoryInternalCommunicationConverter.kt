@@ -2,9 +2,9 @@ package pl.beone.promena.communication.internal.memory.internal
 
 import org.slf4j.LoggerFactory
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
-import pl.beone.promena.transformer.contract.data.DataDescriptors
+import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
-import pl.beone.promena.transformer.contract.data.toDataDescriptors
+import pl.beone.promena.transformer.contract.data.toDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 
 class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
@@ -13,14 +13,14 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
         private val logger = LoggerFactory.getLogger(MemoryInternalCommunicationConverter::class.java)
     }
 
-    override fun convert(dataDescriptors: DataDescriptors,
+    override fun convert(dataDescriptor: DataDescriptor,
                          transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors {
-        tryToRemoveResources(dataDescriptors)
+        tryToRemoveResources(dataDescriptor)
         return convertIfItIsNecessary(logger, transformedDataDescriptors)
     }
 
-    private fun tryToRemoveResources(dataDescriptors: DataDescriptors) {
-        val notMemoryDataDescriptors = dataDescriptors.filterNotMemoryData().descriptors
+    private fun tryToRemoveResources(dataDescriptor: DataDescriptor) {
+        val notMemoryDataDescriptors = dataDescriptor.filterNotMemoryData().descriptors
 
         if (notMemoryDataDescriptors.isNotEmpty()) {
             notMemoryDataDescriptors
@@ -31,8 +31,8 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
         }
     }
 
-    private fun DataDescriptors.filterNotMemoryData(): DataDescriptors =
+    private fun DataDescriptor.filterNotMemoryData(): DataDescriptor =
             descriptors.filter { it.data !is MemoryData }
-                    .toDataDescriptors()
+                    .toDataDescriptor()
 }
 

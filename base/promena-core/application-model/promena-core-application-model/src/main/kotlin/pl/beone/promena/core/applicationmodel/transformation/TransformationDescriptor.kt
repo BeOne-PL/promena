@@ -1,16 +1,16 @@
 package pl.beone.promena.core.applicationmodel.transformation
 
-import pl.beone.promena.transformer.contract.data.DataDescriptors
+import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
 data class TransformationDescriptor internal constructor(val transformation: Transformation,
-                                                         val dataDescriptors: DataDescriptors) {
+                                                         val dataDescriptor: DataDescriptor) {
 
     companion object {
 
         @JvmStatic
-        fun of(transformation: Transformation, dataDescriptors: DataDescriptors): TransformationDescriptor =
-                TransformationDescriptor(transformation, dataDescriptors)
+        fun of(transformation: Transformation, dataDescriptor: DataDescriptor): TransformationDescriptor =
+                TransformationDescriptor(transformation, dataDescriptor)
 
     }
 

@@ -6,7 +6,7 @@ import pl.beone.promena.core.contract.communication.external.manager.ExternalCom
 import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import pl.beone.promena.transformer.contract.data.DataDescriptors
+import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
@@ -19,13 +19,13 @@ class DefaultTransformationUseCase(private val externalCommunicationManager: Ext
     }
 
     override fun transform(transformation: Transformation,
-                           dataDescriptors: DataDescriptors,
+                           dataDescriptor: DataDescriptor,
                            externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptors {
         try {
             val (_, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) =
                     externalCommunicationManager.getCommunication(externalCommunicationParameters.getId())
 
-            return dataDescriptors
+            return dataDescriptor
                     .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
                     .let { transformationService.transform(transformation, it) }
                     .let { outgoingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }

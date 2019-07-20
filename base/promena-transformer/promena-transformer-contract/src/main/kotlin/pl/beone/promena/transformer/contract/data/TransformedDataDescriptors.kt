@@ -18,15 +18,7 @@ sealed class TransformedDataDescriptors {
             get() = listOf(this)
     }
 
-    data class Multi internal constructor(override val descriptors: List<Single>) : TransformedDataDescriptors() {
-
-        companion object {
-
-            @JvmStatic
-            fun of(descriptors: List<Single>): Multi =
-                    Multi(descriptors)
-        }
-    }
+    data class Multi internal constructor(override val descriptors: List<Single>) : TransformedDataDescriptors()
 
     abstract val descriptors: List<Single>
 
