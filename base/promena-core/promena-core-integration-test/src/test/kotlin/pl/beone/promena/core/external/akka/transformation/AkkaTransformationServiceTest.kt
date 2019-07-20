@@ -78,12 +78,12 @@ class AkkaTransformationServiceTest {
 
         val transformerService = prepareTransformationService()
 
-        transformerService.transform(transformationFlow, dataDescriptor).descriptors.let { transformedDataDescriptors ->
-            transformedDataDescriptors shouldHaveSize 1
+        transformerService.transform(transformationFlow, dataDescriptor).descriptors.let { transformedDataDescriptor ->
+            transformedDataDescriptor shouldHaveSize 1
 
-            transformedDataDescriptors[0].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data.getString() shouldBe "test$"
-                transformedDataDescriptor.metadata shouldBe (emptyMetadata() + ("begin" to true) + ("text-appender-transformer" to true))
+            transformedDataDescriptor[0].let { singleTransformedDataDescriptor ->
+                singleTransformedDataDescriptor.data.getString() shouldBe "test$"
+                singleTransformedDataDescriptor.metadata shouldBe (emptyMetadata() + ("begin" to true) + ("text-appender-transformer" to true))
             }
         }
     }
@@ -100,18 +100,18 @@ class AkkaTransformationServiceTest {
 
         val transformerService = prepareTransformationService()
 
-        transformerService.transform(transformationFlow, dataDescriptor).descriptors.let { transformedDataDescriptors ->
-            transformedDataDescriptors shouldHaveSize 2
+        transformerService.transform(transformationFlow, dataDescriptor).descriptors.let { transformedDataDescriptor ->
+            transformedDataDescriptor shouldHaveSize 2
 
-            transformedDataDescriptors[0].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data.getString() shouldBe "<root>test$</root>"
-                transformedDataDescriptor.metadata shouldBe
+            transformedDataDescriptor[0].let { singleTransformedDataDescriptor ->
+                singleTransformedDataDescriptor.data.getString() shouldBe "<root>test$</root>"
+                singleTransformedDataDescriptor.metadata shouldBe
                         (emptyMetadata() + ("begin" to true) + ("text-appender-transformer" to true) + ("from-text-to-xml-appender-transformer" to true))
             }
 
-            transformedDataDescriptors[1].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data.getString() shouldBe "<root>test2$</root>"
-                transformedDataDescriptor.metadata shouldBe
+            transformedDataDescriptor[1].let { singleTransformedDataDescriptor ->
+                singleTransformedDataDescriptor.data.getString() shouldBe "<root>test2$</root>"
+                singleTransformedDataDescriptor.metadata shouldBe
                         (emptyMetadata() + ("begin2" to true) + ("text-appender-transformer" to true) + ("from-text-to-xml-appender-transformer" to true))
             }
         }

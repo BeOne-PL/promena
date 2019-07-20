@@ -3,7 +3,7 @@ package pl.beone.promena.communication.internal.memory.internal
 import org.slf4j.LoggerFactory
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.transformer.contract.data.DataDescriptor
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.toDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 
@@ -14,9 +14,9 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
     }
 
     override fun convert(dataDescriptor: DataDescriptor,
-                         transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors {
+                         transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor {
         tryToRemoveResources(dataDescriptor)
-        return convertIfItIsNecessary(logger, transformedDataDescriptors)
+        return convertIfItIsNecessary(logger, transformedDataDescriptor)
     }
 
     private fun tryToRemoveResources(dataDescriptor: DataDescriptor) {

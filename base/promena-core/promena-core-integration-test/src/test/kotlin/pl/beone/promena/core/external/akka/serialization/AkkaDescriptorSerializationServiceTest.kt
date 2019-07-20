@@ -22,9 +22,9 @@ import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.SerializerActor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
-import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
-import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
@@ -39,7 +39,7 @@ class AkkaDescriptorSerializationServiceTest {
         private val data2 = "test2".toMemoryData()
         private val metadata = emptyMetadata() + ("key" to "value")
         private val metadata2 = emptyMetadata()
-        private val serializedTransformedDataDescriptors = "serialized data".toByteArray()
+        private val serializedTransformedDataDescriptor = "serialized data".toByteArray()
     }
 
     private lateinit var actorSystem: ActorSystem
@@ -58,14 +58,14 @@ class AkkaDescriptorSerializationServiceTest {
 
     @Test
     fun serialize() {
-        val transformedDataDescriptors = transformedDataDescriptor(data, metadata) +
-                transformedDataDescriptor(data2, metadata2)
+        val transformedDataDescriptor = singleTransformedDataDescriptor(data, metadata) +
+                singleTransformedDataDescriptor(data2, metadata2)
 
         val serializationService = prepare(mockk {
-            every { serialize(transformedDataDescriptors) } returns serializedTransformedDataDescriptors
+            every { serialize(transformedDataDescriptor) } returns serializedTransformedDataDescriptor
         })
 
-        serializationService.serialize(transformedDataDescriptors) shouldBe serializedTransformedDataDescriptors
+        serializationService.serialize(transformedDataDescriptor) shouldBe serializedTransformedDataDescriptor
     }
 
     @Test
@@ -77,23 +77,23 @@ class AkkaDescriptorSerializationServiceTest {
         )
 
         val serializationService = prepare(mockk {
-            every { deserialize(serializedTransformedDataDescriptors, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
+            every { deserialize(serializedTransformedDataDescriptor, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
         })
 
-        serializationService.deserialize(serializedTransformedDataDescriptors) shouldBe transformationDescriptor
+        serializationService.deserialize(serializedTransformedDataDescriptor) shouldBe transformationDescriptor
     }
 
     @Test
     fun `deserialize _ should throw DeserializationException`() {
-        val incorrectSerializedTransformedDataDescriptors = "incorrect serialized data".toByteArray()
+        val incorrectSerializedTransformedDataDescriptor = "incorrect serialized data".toByteArray()
 
         val serializationService = prepare(mockk {
             every {
-                deserialize(incorrectSerializedTransformedDataDescriptors, getClazz<TransformationDescriptor>())
+                deserialize(incorrectSerializedTransformedDataDescriptor, getClazz<TransformationDescriptor>())
             } throws DeserializationException("")
         })
 
-        shouldThrow<DeserializationException> { serializationService.deserialize(incorrectSerializedTransformedDataDescriptors) }
+        shouldThrow<DeserializationException> { serializationService.deserialize(incorrectSerializedTransformedDataDescriptor) }
     }
 
     private fun prepare(serializationService: SerializationService): AkkaDescriptorSerializationService {

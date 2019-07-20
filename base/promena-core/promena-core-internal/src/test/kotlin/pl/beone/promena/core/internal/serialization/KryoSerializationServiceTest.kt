@@ -9,7 +9,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
-import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.next
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
@@ -35,12 +35,12 @@ class KryoSerializationServiceTest {
 
     @Test
     fun `serialize and deserialize _ list of TransformedDataDescriptor`() {
-        val transformedDataDescriptors =
-                transformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
-                        transformedDataDescriptor("""{ "key": "value" }""".toMemoryData(), emptyMetadata())
+        val transformedDataDescriptor =
+                singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
+                        singleTransformedDataDescriptor("""{ "key": "value" }""".toMemoryData(), emptyMetadata())
 
-        serializationService.deserialize(serializationService.serialize(transformedDataDescriptors), getClazz<TransformationDescriptor>()) shouldBe
-                transformedDataDescriptors
+        serializationService.deserialize(serializationService.serialize(transformedDataDescriptor), getClazz<TransformationDescriptor>()) shouldBe
+                transformedDataDescriptor
     }
 
     @Test

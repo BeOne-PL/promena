@@ -15,13 +15,13 @@ import pl.beone.promena.core.external.akka.util.getClazz
 import pl.beone.promena.core.external.akka.util.infiniteTimeout
 import pl.beone.promena.core.external.akka.util.unwrapExecutionException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 class AkkaDescriptorSerializationService(private val actorMaterializer: ActorMaterializer,
                                          private val actorService: ActorService) : DescriptorSerializationService {
 
-    override fun serialize(transformedDataDescriptors: TransformedDataDescriptors): ByteArray =
-            finishFlow(createSource(transformedDataDescriptors)
+    override fun serialize(transformedDataDescriptor: TransformedDataDescriptor): ByteArray =
+            finishFlow(createSource(transformedDataDescriptor)
                                .via(createSerializeFlow()))
 
     override fun deserialize(bytes: ByteArray): TransformationDescriptor =
@@ -38,8 +38,8 @@ class AkkaDescriptorSerializationService(private val actorMaterializer: ActorMat
     private fun <T> createSource(element: T): Source<T, NotUsed> =
             Source.single(element)
 
-    private fun createSerializeFlow(): Flow<TransformedDataDescriptors, ByteArray, NotUsed> =
-            Flow.of(getClazz<TransformedDataDescriptors>())
+    private fun createSerializeFlow(): Flow<TransformedDataDescriptor, ByteArray, NotUsed> =
+            Flow.of(getClazz<TransformedDataDescriptor>())
                     .map { ToSerializeMessage(it) }
                     .ask(actorService.getSerializerActor(), SerializedMessage::class.java, infiniteTimeout)
                     .map { it.bytes }

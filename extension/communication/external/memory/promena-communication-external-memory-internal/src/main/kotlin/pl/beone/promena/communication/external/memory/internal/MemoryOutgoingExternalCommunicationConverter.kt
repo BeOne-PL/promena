@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import pl.beone.promena.communication.internal.memory.internal.convertIfItIsNecessary
 import pl.beone.promena.core.contract.communication.external.OutgoingExternalCommunicationConverter
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 class MemoryOutgoingExternalCommunicationConverter : OutgoingExternalCommunicationConverter {
 
@@ -12,8 +12,8 @@ class MemoryOutgoingExternalCommunicationConverter : OutgoingExternalCommunicati
         private val logger = LoggerFactory.getLogger(MemoryOutgoingExternalCommunicationConverter::class.java)
     }
 
-    override fun convert(transformedDataDescriptors: TransformedDataDescriptors,
-                         externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptors =
-            convertIfItIsNecessary(logger, transformedDataDescriptors)
+    override fun convert(transformedDataDescriptor: TransformedDataDescriptor,
+                         externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptor =
+            convertIfItIsNecessary(logger, transformedDataDescriptor)
 }
 

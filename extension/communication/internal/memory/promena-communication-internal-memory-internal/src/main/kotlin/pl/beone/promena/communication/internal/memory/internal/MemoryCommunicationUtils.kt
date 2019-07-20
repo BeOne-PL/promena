@@ -11,10 +11,10 @@ fun convertIfItIsNecessary(logger: Logger, dataDescriptor: DataDescriptor): Data
             singleDataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
         }.toDataDescriptor()
 
-fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptors: TransformedDataDescriptors): TransformedDataDescriptors =
-        convertIfItIsNecessary(logger, transformedDataDescriptors.descriptors, { it.data }) { newData, oldDescriptor ->
-            transformedDataDescriptor(newData, oldDescriptor.metadata)
-        }.toTransformedDataDescriptors()
+fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
+        convertIfItIsNecessary(logger, transformedDataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
+            singleTransformedDataDescriptor(newData, oldDescriptor.metadata)
+        }.toTransformedDataDescriptor()
 
 private fun <T> convertIfItIsNecessary(logger: Logger,
                                        descriptors: List<T>,

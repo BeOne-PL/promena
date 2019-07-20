@@ -9,7 +9,7 @@ import pl.beone.promena.core.external.akka.actor.serializer.message.SerializedMe
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToDeserializeMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToSerializeMessage
 import pl.beone.promena.core.external.akka.util.*
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 class SerializerActor(private val serializationService: SerializationService) : AbstractLoggingActor() {
 
@@ -21,7 +21,7 @@ class SerializerActor(private val serializationService: SerializationService) : 
             receiveBuilder()
                     .match(ToSerializeMessage::class.java) {
                         try {
-                            sender.tell(SerializedMessage(serialize(it.transformedDataDescriptors)), self)
+                            sender.tell(SerializedMessage(serialize(it.transformedDataDescriptor)), self)
                         } catch (e: Exception) {
                             sender.tell(Status.Failure(e), self)
                         }
@@ -36,9 +36,9 @@ class SerializerActor(private val serializationService: SerializationService) : 
                     .matchAny {}
                     .build()!!
 
-    private fun serialize(transformedDataDescriptors: TransformedDataDescriptors): ByteArray {
+    private fun serialize(transformedDataDescriptor: TransformedDataDescriptor): ByteArray {
         val (bytes, measuredTimeMs) = measureTimeMillisWithContent {
-            serializationService.serialize(transformedDataDescriptors)
+            serializationService.serialize(transformedDataDescriptor)
         }
 
         if (log().isDebugEnabled) {

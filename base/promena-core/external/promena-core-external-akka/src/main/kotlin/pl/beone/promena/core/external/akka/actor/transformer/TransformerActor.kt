@@ -11,7 +11,7 @@ import pl.beone.promena.core.external.akka.util.*
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import java.util.concurrent.TimeoutException
 
@@ -23,8 +23,8 @@ class TransformerActor(private val transformerId: String,
             receiveBuilder()
                     .match(ToTransformMessage::class.java) {
                         try {
-                            val transformedDataDescriptors = performTransformation(it.dataDescriptor, it.targetMediaType, it.parameters)
-                            sender.tell(TransformedMessage(transformedDataDescriptors), self)
+                            val transformedDataDescriptor = performTransformation(it.dataDescriptor, it.targetMediaType, it.parameters)
+                            sender.tell(TransformedMessage(transformedDataDescriptor), self)
                         }
                         catch (e: Exception) {
                             val processedException = processException(e, it.parameters)
@@ -38,13 +38,13 @@ class TransformerActor(private val transformerId: String,
 
     private fun performTransformation(dataDescriptor: DataDescriptor,
                                       targetMediaType: MediaType,
-                                      parameters: Parameters): TransformedDataDescriptors {
-        val (transformedDataDescriptors, measuredTimeMs) = measureTimeMillisWithContent {
+                                      parameters: Parameters): TransformedDataDescriptor {
+        val (transformedDataDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
             val transformer = determineTransformer(dataDescriptor, targetMediaType, parameters) ?: throw createException()
 
-            val transformedDataDescriptors = transformer.transform(dataDescriptor, targetMediaType, parameters)
+            val transformedDataDescriptor = transformer.transform(dataDescriptor, targetMediaType, parameters)
 
-            internalCommunicationConverter.convert(dataDescriptor, transformedDataDescriptors)
+            internalCommunicationConverter.convert(dataDescriptor, transformedDataDescriptor)
         }
 
         if (log().isDebugEnabled) {
@@ -54,12 +54,12 @@ class TransformerActor(private val transformerId: String,
                                 .replace(":2", parameters.toString())
                                 .replace(":3", dataDescriptor.descriptors.map { it.data.getBytes() }.toMB().format(2))
                                 .replace(":4", dataDescriptor.descriptors.size.toString())
-                                .replace(":5", transformedDataDescriptors.descriptors.map { it.data.getBytes() }.toMB().format(2))
-                                .replace(":6", transformedDataDescriptors.descriptors.size.toString())
+                                .replace(":5", transformedDataDescriptor.descriptors.map { it.data.getBytes() }.toMB().format(2))
+                                .replace(":6", transformedDataDescriptor.descriptors.size.toString())
                                 .replace(":7", measuredTimeMs.toSeconds().toString()))
         }
 
-        return transformedDataDescriptors
+        return transformedDataDescriptor
     }
 
     private fun determineTransformer(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): Transformer? =

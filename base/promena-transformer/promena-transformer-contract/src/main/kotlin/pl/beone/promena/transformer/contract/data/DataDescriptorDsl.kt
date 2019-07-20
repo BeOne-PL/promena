@@ -1,4 +1,4 @@
-@file:JvmName("DataDescriptorsDsl")
+@file:JvmName("DataDescriptorDsl")
 
 package pl.beone.promena.transformer.contract.data
 

@@ -5,9 +5,9 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptors
-import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
-import pl.beone.promena.transformer.contract.data.transformedDataDescriptors
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.toTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.model.Parameters
@@ -16,11 +16,11 @@ import pl.beone.promena.transformer.internal.model.metadata.plus
 
 class FromTextToXmlAppenderTransformer : Transformer {
 
-    override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptors =
-            transformedDataDescriptors(dataDescriptor.descriptors.map {
-                transformedDataDescriptor(it.data.surroundWithTag(parameters.getTag()).toMemoryData(),
-                                          it.metadata.addTransformerId())
-            })
+    override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor =
+            dataDescriptor.descriptors.map { (data, _, metadata) ->
+                singleTransformedDataDescriptor(data.surroundWithTag(parameters.getTag()).toMemoryData(),
+                                                metadata.addTransformerId())
+            }.toTransformedDataDescriptor()
 
     private fun Parameters.getTag(): String =
             get("tag", String::class.java)

@@ -34,12 +34,13 @@ class MemoryInternalCommunicationConverterTest {
 
     @Test
     fun `convert _ all MemoryData instances _ should do nothing`() {
-        val transformedDataDescriptors =
-                transformedDataDescriptor("test".toMemoryData(), metadata) + transformedDataDescriptor("test2".toMemoryData(), metadata)
+        val transformedDataDescriptor =
+                singleTransformedDataDescriptor("test".toMemoryData(), metadata) + singleTransformedDataDescriptor("test2".toMemoryData(), metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(singleDataDescriptor("test".toMemoryData(), mediaType, metadata) + singleDataDescriptor("test2".toMemoryData(), mediaType, metadata),
-                         transformedDataDescriptors) shouldBe transformedDataDescriptors
+                .convert(singleDataDescriptor("test".toMemoryData(), mediaType, metadata) +
+                                 singleDataDescriptor("test2".toMemoryData(), mediaType, metadata),
+                         transformedDataDescriptor) shouldBe transformedDataDescriptor
     }
 
     @Test
@@ -49,22 +50,22 @@ class MemoryInternalCommunicationConverterTest {
             every { getBytes() } returns bytes
             every { delete() } just Runs
         }
-        val transformedDataDescriptors =
-                transformedDataDescriptor(data, metadata) + transformedDataDescriptor("test2".toMemoryData(), metadata)
+        val transformedDataDescriptor =
+                singleTransformedDataDescriptor(data, metadata) + singleTransformedDataDescriptor("test2".toMemoryData(), metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(emptyDataDescriptor(),
-                         transformedDataDescriptors)
-                .let { resultTransformedDataDescriptors ->
-                    val descriptors = resultTransformedDataDescriptors.descriptors
+                .convert(emptyDataDescriptor(), transformedDataDescriptor)
+                .let { resultTransformedDataDescriptor ->
+                    val descriptors = resultTransformedDataDescriptor.descriptors
                     descriptors shouldHaveSize 2
 
-                    val transformedDataDescriptor = descriptors[1]
-                    transformedDataDescriptor.data should instanceOf(MemoryData::class)
-                    transformedDataDescriptor.data.getBytes() shouldBe bytes
-                    transformedDataDescriptor.metadata shouldBe metadata
+                    descriptors[1].let { singleTransformedDataDescriptor ->
+                        singleTransformedDataDescriptor.data should instanceOf(MemoryData::class)
+                        singleTransformedDataDescriptor.data.getBytes() shouldBe bytes
+                        singleTransformedDataDescriptor.metadata shouldBe metadata
+                    }
 
-                    descriptors[0] shouldBe transformedDataDescriptors.descriptors[1]
+                    descriptors[0] shouldBe transformedDataDescriptor.descriptors[1]
                 }
 
         verify { data.getBytes() }
@@ -78,22 +79,22 @@ class MemoryInternalCommunicationConverterTest {
             every { getBytes() } returns bytes
             every { delete() } throws DataDeleteException("Exception")
         }
-        val transformedDataDescriptors =
-                transformedDataDescriptor(data, metadata) + transformedDataDescriptor("test2".toMemoryData(), metadata)
+        val transformedDataDescriptor =
+                singleTransformedDataDescriptor(data, metadata) + singleTransformedDataDescriptor("test2".toMemoryData(), metadata)
 
         MemoryInternalCommunicationConverter()
-                .convert(emptyDataDescriptor(),
-                         transformedDataDescriptors)
-                .let { resultTransformedDataDescriptors ->
-                    val descriptors = resultTransformedDataDescriptors.descriptors
+                .convert(emptyDataDescriptor(), transformedDataDescriptor)
+                .let { resultTransformedDataDescriptor ->
+                    val descriptors = resultTransformedDataDescriptor.descriptors
                     descriptors shouldHaveSize 2
 
-                    val transformedDataDescriptor = descriptors[1]
-                    transformedDataDescriptor.data should instanceOf(MemoryData::class)
-                    transformedDataDescriptor.data.getBytes() shouldBe bytes
-                    transformedDataDescriptor.metadata shouldBe metadata
+                    descriptors[1].let { singleTransformedDataDescriptor ->
+                        singleTransformedDataDescriptor.data should instanceOf(MemoryData::class)
+                        singleTransformedDataDescriptor.data.getBytes() shouldBe bytes
+                        singleTransformedDataDescriptor.metadata shouldBe metadata
+                    }
 
-                    descriptors[0] shouldBe transformedDataDescriptors.descriptors[1]
+                    descriptors[0] shouldBe transformedDataDescriptor.descriptors[1]
                 }
 
         verify { data.getBytes() }

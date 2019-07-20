@@ -33,7 +33,7 @@ class DefaultTransformationUseCaseTest {
 
         private val dataDescriptor = singleDataDescriptor(mockk(), TEXT_PLAIN, mockk())
         private val transformationFlow = singleTransformation("test", targetMediaType, parameters)
-        private val transformedDataDescriptors = transformedDataDescriptor(mockk(), mockk())
+        private val transformedDataDescriptor = transformedDataDescriptor(mockk(), mockk())
     }
 
     @Before
@@ -53,8 +53,8 @@ class DefaultTransformationUseCaseTest {
         }
         val outgoingCommunicationConverter = mockk<OutgoingExternalCommunicationConverter> {
             every {
-                convert(transformedDataDescriptors, externalCommunicationParameters)
-            } returns transformedDataDescriptors
+                convert(transformedDataDescriptor, externalCommunicationParameters)
+            } returns transformedDataDescriptor
         }
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
@@ -63,11 +63,11 @@ class DefaultTransformationUseCaseTest {
         }
 
         val transformerService = mockk<TransformationService> {
-            every { transform(transformationFlow, dataDescriptor) } returns transformedDataDescriptors
+            every { transform(transformationFlow, dataDescriptor) } returns transformedDataDescriptor
         }
 
         DefaultTransformationUseCase(externalCommunicationManager, transformerService)
-                .transform(transformationFlow, dataDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptors
+                .transform(transformationFlow, dataDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptor
     }
 
     @Test
