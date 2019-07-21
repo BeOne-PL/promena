@@ -1,7 +1,6 @@
 package pl.beone.promena.transformer.internal.model.parameters
 
 import pl.beone.promena.transformer.contract.model.Parameters
-import pl.beone.promena.transformer.contract.model.Parameters.Companion.TIMEOUT
 import pl.beone.promena.transformer.internal.model._get
 import pl.beone.promena.transformer.internal.model.get
 import pl.beone.promena.transformer.internal.model.getList
@@ -19,7 +18,7 @@ data class MapParameters internal constructor(private val parameters: Map<String
         @JvmStatic
         fun of(parameters: Map<String, Any>, timeout: Duration? = null): MapParameters =
                 MapParameters(parameters +
-                                      if (timeout != null) mapOf(TIMEOUT to timeout) else emptyMap())
+                                      if (timeout != null) mapOf(Parameters.TIMEOUT to timeout) else emptyMap())
     }
 
     override fun get(key: String): Any =
@@ -29,7 +28,7 @@ data class MapParameters internal constructor(private val parameters: Map<String
             parameters.get(key, clazz)
 
     override fun getTimeout(): Duration =
-            parameters.get(TIMEOUT, Duration::class.java)
+            parameters.get(Parameters.TIMEOUT, Duration::class.java)
 
     override fun getParameters(key: String): Parameters =
             parameters.get(key, Parameters::class.java)

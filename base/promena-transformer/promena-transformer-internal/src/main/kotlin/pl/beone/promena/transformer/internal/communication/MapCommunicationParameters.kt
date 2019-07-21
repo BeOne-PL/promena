@@ -1,7 +1,6 @@
 package pl.beone.promena.transformer.internal.communication
 
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import pl.beone.promena.transformer.contract.communication.CommunicationParameters.Companion.ID
 import pl.beone.promena.transformer.internal.model._get
 import pl.beone.promena.transformer.internal.model.get
 
@@ -11,7 +10,7 @@ data class MapCommunicationParameters internal constructor(private val parameter
 
         @JvmStatic
         fun of(id: String, parameters: Map<String, Any> = emptyMap()): MapCommunicationParameters =
-                MapCommunicationParameters(parameters + mapOf(ID to id))
+                MapCommunicationParameters(parameters + mapOf(CommunicationParameters.ID to id))
     }
 
     override fun get(key: String): Any =

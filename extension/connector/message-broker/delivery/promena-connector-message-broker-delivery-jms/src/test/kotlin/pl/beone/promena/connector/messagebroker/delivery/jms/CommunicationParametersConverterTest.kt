@@ -5,7 +5,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.connector.messagebroker.applicationmodel.PromenaJmsHeaders
-import pl.beone.promena.transformer.contract.communication.CommunicationParameters.Companion.ID
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 
 class CommunicationParametersConverterTest {
 
@@ -19,7 +19,7 @@ class CommunicationParametersConverterTest {
                                                        PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID to "memory",
                                                        "promena_communication_parameter_key" to "promena_communication_parameter_value",
                                                        "promena_communication_parameter_location" to "locationValue"))
-                .getAll() shouldContainExactly mapOf(ID to "memory",
+                .getAll() shouldContainExactly mapOf(CommunicationParameters.ID to "memory",
                                                      "key" to "promena_communication_parameter_value",
                                                      "location" to "locationValue")
     }
