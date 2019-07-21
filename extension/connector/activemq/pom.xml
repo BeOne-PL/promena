@@ -11,19 +11,19 @@
     </parent>
 
     <groupId>pl.beone.promena.connector</groupId>
-    <artifactId>promena-connector-message-broker</artifactId>
+    <artifactId>promena-connector-activemq</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][CONNECTOR] Message broker</name>
+    <name>[EXTENSION][CONNECTOR] ActiveMQ</name>
 
     <packaging>pom</packaging>
     <modules>
-        <module>promena-connector-message-broker-application-model</module>
-        <module>promena-connector-message-broker-contract</module>
-        <module>promena-connector-message-broker-internal</module>
-        <module>delivery/promena-connector-message-broker-delivery-jms</module>
-        <module>promena-connector-message-broker-configuration</module>
-        <module>promena-connector-message-broker-integration-test</module>
+        <module>promena-connector-activemq-application-model</module>
+        <module>promena-connector-activemq-contract</module>
+        <module>promena-connector-activemq-internal</module>
+        <module>delivery/promena-connector-activemq-delivery-jms</module>
+        <module>promena-connector-activemq-configuration</module>
+        <module>promena-connector-activemq-integration-test</module>
     </modules>
 
     <repositories>
@@ -52,7 +52,7 @@
     </pluginRepositories>
 
     <properties>
-        <promena-connector-message-broker.version>0.9.0-SNAPSHOT</promena-connector-message-broker.version>
+        <promena-connector-activemq.version>0.9.0-SNAPSHOT</promena-connector-activemq.version>
 
         <kryo-message-converter.version>0.9.0-SNAPSHOT</kryo-message-converter.version>
 

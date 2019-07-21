@@ -54,7 +54,7 @@
         <promena.communication.internal.file.version>0.9.0</promena.communication.internal.file.version>
 
         <promena.connector.http.version>0.9.0</promena.connector.http.version>
-        <promena.connector.message-broker.version>0.9.0</promena.connector.message-broker.version>
+        <promena.connector.activemq.version>0.9.0</promena.connector.activemq.version>
 
         <promena.cluster.management.kubernetes.version>0.9.0</promena.cluster.management.kubernetes.version>
 
@@ -117,8 +117,8 @@
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>pl.beone.promena.connector</groupId>-->
-<!--            <artifactId>promena-connector-message-broker-configuration</artifactId>-->
-<!--            <version>${promena.connector.message-broker.version}</version>-->
+<!--            <artifactId>promena-connector-activemq-configuration</artifactId>-->
+<!--            <version>${promena.connector.activemq.version}</version>-->
 <!--        </dependency>-->
 
         <!-- Management -->
