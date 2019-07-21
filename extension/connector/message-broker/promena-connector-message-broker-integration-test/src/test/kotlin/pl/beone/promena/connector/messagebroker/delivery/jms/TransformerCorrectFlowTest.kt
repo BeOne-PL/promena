@@ -26,7 +26,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.messagebroker.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.connector.messagebroker.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.messagebroker.integrationtest.IntegrationTestApplication
-import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
+import pl.beone.promena.connector.messagebroker.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.messagebroker.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformationResponseConsumer
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
@@ -49,11 +49,11 @@ import java.util.*
 class TransformerCorrectFlowTest {
 
     companion object {
-        private val transformerIds = listOf(MockContext.transformerId)
+        private val transformerIds = listOf(TestTransformerMockContext.TRANSFORMER_ID)
         private const val location = "file:/tmp"
         private val correlationId = UUID.randomUUID().toString()
         private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata())
-        private val transformation = singleTransformation(MockContext.transformerId, APPLICATION_JSON, emptyParameters())
+        private val transformation = singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters())
         private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptor)
         private val transformedData = """" {"test":"test"} """.toMemoryData()
     }

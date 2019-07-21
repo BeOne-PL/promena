@@ -5,7 +5,7 @@ import java.time.Duration
 interface Parameters {
 
     companion object {
-        const val Timeout = "timeout"
+        const val TIMEOUT = "timeout"
     }
 
     @Throws(NoSuchElementException::class)

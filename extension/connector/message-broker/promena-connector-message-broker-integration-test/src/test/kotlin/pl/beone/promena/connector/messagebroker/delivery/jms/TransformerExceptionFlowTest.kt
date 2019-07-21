@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.messagebroker.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.connector.messagebroker.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.messagebroker.integrationtest.IntegrationTestApplication
-import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
+import pl.beone.promena.connector.messagebroker.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.messagebroker.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformationResponseConsumer
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
@@ -48,7 +48,7 @@ import java.util.*
 class TransformerExceptionFlowTest {
 
     companion object {
-        private val transformerIds = listOf(MockContext.transformerId)
+        private val transformerIds = listOf(TestTransformerMockContext.TRANSFORMER_ID)
         private val correlationId = UUID.randomUUID().toString()
         private val expectException = TransformerTimeoutException("Time expired")
     }
@@ -129,7 +129,7 @@ class TransformerExceptionFlowTest {
 
     private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
-                                   TransformationDescriptor.of(singleTransformation(MockContext.transformerId, APPLICATION_JSON, emptyParameters()),
+                                   TransformationDescriptor.of(singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters()),
                                                                singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata()))) { message ->
             message.apply {
                 jmsCorrelationID = correlationId

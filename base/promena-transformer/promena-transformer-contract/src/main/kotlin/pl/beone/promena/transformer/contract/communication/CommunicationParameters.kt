@@ -3,7 +3,7 @@ package pl.beone.promena.transformer.contract.communication
 interface CommunicationParameters {
 
     companion object {
-        const val Id = "id"
+        const val ID = "id"
     }
 
     @Throws(NoSuchElementException::class)

@@ -8,10 +8,10 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 
 @Configuration
-class MockContext {
+class TestTransformerMockContext {
 
     companion object {
-        internal const val transformerId = "test"
+        internal const val TRANSFORMER_ID = "test"
     }
 
     @Bean
@@ -21,6 +21,6 @@ class MockContext {
     @Bean
     fun transformerConfig(testTransformer: Transformer) =
             mockk<TransformerConfig> {
-                every { getId(testTransformer) } returns transformerId
+                every { getId(testTransformer) } returns TRANSFORMER_ID
             }
 }

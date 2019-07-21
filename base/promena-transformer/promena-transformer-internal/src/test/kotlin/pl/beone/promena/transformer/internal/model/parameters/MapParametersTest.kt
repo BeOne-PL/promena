@@ -5,7 +5,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
-import pl.beone.promena.transformer.contract.model.Parameters.Companion.Timeout
+import pl.beone.promena.transformer.contract.model.Parameters.Companion.TIMEOUT
 import java.time.Duration
 
 class MapParametersTest {
@@ -48,7 +48,7 @@ class MapParametersTest {
     @Test
     fun `of _ timeout specified`() {
         val duration = Duration.ofSeconds(3)
-        MapParameters.of(mapOf("test" to "value"), duration).getAll() shouldBe mapOf("test" to "value", Timeout to duration)
+        MapParameters.of(mapOf("test" to "value"), duration).getAll() shouldBe mapOf("test" to "value", TIMEOUT to duration)
     }
 
     @Test
@@ -101,7 +101,7 @@ class MapParametersTest {
         (emptyParameters() addTimeout timeout).getTimeout() shouldBe timeout
 
         shouldThrow<NoSuchElementException> { MapParameters.empty().getTimeout() }
-                .message shouldBe "There is no <$Timeout> element"
+                .message shouldBe "There is no <$TIMEOUT> element"
     }
 
     @Test

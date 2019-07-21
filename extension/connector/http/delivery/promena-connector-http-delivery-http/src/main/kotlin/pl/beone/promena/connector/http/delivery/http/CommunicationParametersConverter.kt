@@ -2,7 +2,7 @@ package pl.beone.promena.connector.http.delivery.http
 
 import org.springframework.util.MultiValueMap
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import pl.beone.promena.transformer.contract.communication.CommunicationParameters.Companion.Id
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters.Companion.ID
 import pl.beone.promena.transformer.internal.communication.communicationParameters
 
 internal class CommunicationParametersConverter {
@@ -14,7 +14,7 @@ internal class CommunicationParametersConverter {
                                             .toMap())
 
     private fun MultiValueMap<String, String>.getCommunicationId(): String =
-            get(Id)?.first() ?: throw NoSuchElementException("Query string must contain at least <id> communication parameter")
+        get(ID)?.first() ?: throw NoSuchElementException("Query string must contain at least <id> communication parameter")
 
     private fun convert(values: List<Any>): Any =
             unWrapIfArrayContainsOnlyOneElement(
