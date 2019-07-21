@@ -6,27 +6,16 @@
         <groupId>pl.beone.promena.connector</groupId>
         <artifactId>promena-connector-message-broker</artifactId>
         <version>0.9.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>promena-connector-message-broker-delivery-jms</artifactId>
+    <artifactId>promena-connector-message-broker-contract</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
             <artifactId>promena-connector-message-broker-application-model</artifactId>
             <version>${promena-connector-message-broker.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>pl.beone.promena.core</groupId>
-            <artifactId>promena-core-internal</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
         </dependency>
     </dependencies>
 </project>

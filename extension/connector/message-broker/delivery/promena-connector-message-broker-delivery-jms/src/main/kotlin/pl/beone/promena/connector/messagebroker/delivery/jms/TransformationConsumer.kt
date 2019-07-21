@@ -8,52 +8,46 @@ import org.springframework.jms.support.JmsHeaders
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
+import pl.beone.promena.connector.messagebroker.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
-import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationNotFoundException
 
-class TransformerConsumer(jmsTemplate: JmsTemplate,
-                          private val responseQueue: ActiveMQQueue,
-                          private val errorResponseQueue: ActiveMQQueue,
-                          private val transformationUseCase: TransformationUseCase) {
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(TransformerConsumer::class.java)
-    }
+class TransformationConsumer(jmsTemplate: JmsTemplate,
+                             private val responseQueue: ActiveMQQueue,
+                             private val errorResponseQueue: ActiveMQQueue,
+                             private val transformationUseCase: TransformationUseCase) {
 
     private val communicationParametersConverter = CommunicationParametersConverter()
     private val headersToSentBackDeterminer = HeadersToSentBackDeterminer()
-    private val transformerProducer = TransformerProducer(jmsTemplate)
+    private val transformerProducer = TransformationProducer(jmsTemplate)
 
     @JmsListener(destination = "\${promena.connector.message-broker.consumer.queue.request}",
-                 selector = "\${promena.connector.message-broker.consumer.queue.request.selector}")
+                 selector = "\${promena.connector.message-broker.consumer.queue.request.message-selector}")
     fun receiveQueue(@Header(JmsHeaders.CORRELATION_ID) correlationId: String,
-                     @Header(PromenaJmsHeader.PROMENA_TRANSFORMER_ID) transformerId: String,
+                     @Header(PromenaJmsHeaders.TRANSFORMATION_ID) transformationId: String,
                      @Headers headers: Map<String, Any>,
                      @Payload transformationDescriptor: TransformationDescriptor) {
         val startTimestamp = getTimestamp()
 
         val (queue, payload) = try {
-            val communicationParameters = communicationParametersConverter.convert(headers)
-
-            responseQueue to transformationUseCase.transform(transformerId, transformationDescriptor, communicationParameters)
-        } catch (e: TransforN) {
-            throw e
+            responseQueue to transformationUseCase.transform(transformationDescriptor.transformation,
+                                                             transformationDescriptor.dataDescriptor,
+                                                             communicationParametersConverter.convert(headers))
         } catch (e: Exception) {
             errorResponseQueue to e
         }
 
         val headersToSend = headersToSentBackDeterminer.determine(headers) +
-                            (PromenaJmsHeader.PROMENA_TRANSFORMER_ID to transformerId) +
+                            (PromenaJmsHeaders.TRANSFORMATION_ID to transformationId) +
                             determineTimestampHeaders(startTimestamp, getTimestamp())
 
         transformerProducer.send(queue, correlationId, headersToSend, payload)
     }
 
     private fun determineTimestampHeaders(startTimestamp: Long, endTimestamp: Long): Map<String, Long> =
-            mapOf(PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP to startTimestamp,
-                  PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP to endTimestamp)
+        mapOf(PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP to startTimestamp,
+              PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP to endTimestamp)
 
     private fun getTimestamp(): Long =
-            System.currentTimeMillis()
+        System.currentTimeMillis()
 }

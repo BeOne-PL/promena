@@ -20,22 +20,27 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
+import org.springframework.jms.support.JmsHeaders
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
+import pl.beone.promena.connector.messagebroker.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.messagebroker.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.messagebroker.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.messagebroker.integrationtest.test.MockContext
 import pl.beone.promena.connector.messagebroker.integrationtest.test.QueueClearer
-import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformerResponseConsumer
+import pl.beone.promena.connector.messagebroker.integrationtest.test.TransformationResponseConsumer
+import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.communication.MapCommunicationParameters
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
-import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
+import pl.beone.promena.transformer.contract.transformation.singleTransformation
+import pl.beone.promena.transformer.internal.communication.communicationParameters
+import pl.beone.promena.transformer.internal.communication.plus
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.util.*
 
 @RunWith(SpringRunner::class)
@@ -44,12 +49,12 @@ import java.util.*
 class TransformerCorrectFlowTest {
 
     companion object {
+        private val transformerIds = listOf(MockContext.transformerId)
         private const val location = "file:/tmp"
         private val correlationId = UUID.randomUUID().toString()
-        private val transformationDescriptor =
-                TransformationDescriptor(listOf(DataDescriptor("test".toMemoryData(), TEXT_PLAIN, MapMetadata.empty())),
-                                         APPLICATION_JSON,
-                                         MapParameters.empty())
+        private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+        private val transformation = singleTransformation(MockContext.transformerId, APPLICATION_JSON, emptyParameters())
+        private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptor)
         private val transformedData = """" {"test":"test"} """.toMemoryData()
     }
 
@@ -63,7 +68,10 @@ class TransformerCorrectFlowTest {
     private lateinit var queueClearer: QueueClearer
 
     @Autowired
-    private lateinit var transformerResponseConsumer: TransformerResponseConsumer
+    private lateinit var transformationResponseConsumer: TransformationResponseConsumer
+
+    @Autowired
+    private lateinit var transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer
 
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
@@ -79,19 +87,19 @@ class TransformerCorrectFlowTest {
     @Test
     fun `send data to transformation request queue _ should transform and send result to response queue`() {
         every {
-            transformationUseCase.transform(MockContext.transformerId,
-                                            transformationDescriptor,
-                                            MapCommunicationParameters(mapOf("location" to location)))
+            transformationUseCase.transform(transformation,
+                                            dataDescriptor,
+                                            communicationParameters("memory") + ("location" to location))
         } answers {
             Thread.sleep(300)
-            listOf(TransformedDataDescriptor(transformedData, MapMetadata.empty()))
+            singleTransformedDataDescriptor(transformedData, emptyMetadata())
         }
 
         //
         val startTimestamp = getTimestamp()
         sendRequestMessage()
         val (headers, transformedDataDescriptors) = try {
-            transformerResponseConsumer.getMessage(3000)
+            transformationResponseConsumer.getMessage(3000)
         } catch (e: IllegalStateException) {
             throw AssertionError("Couldn't get message from response queue")
         }
@@ -99,14 +107,14 @@ class TransformerCorrectFlowTest {
 
         //
         headers.let {
-            it shouldContainAll mapOf(CORRELATION_ID to correlationId,
-                                      PromenaJmsHeader.PROMENA_TRANSFORMER_ID to MockContext.transformerId)
-            it shouldContainKey PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP
-            it shouldContainKey PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP
+            it shouldContainAll mapOf(JmsHeaders.CORRELATION_ID to correlationId,
+                                      PromenaJmsHeaders.TRANSFORMATION_ID to transformationHashFunctionDeterminer.determine(transformerIds))
+            it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
+            it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
         }
 
-        val transformationStartTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_START_TIMESTAMP] as Long
-        val transformationEndTimestamp = headers[PromenaJmsHeader.PROMENA_TRANSFORMATION_END_TIMESTAMP] as Long
+        val transformationStartTimestamp = headers[PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP] as Long
+        val transformationEndTimestamp = headers[PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP] as Long
 
         transformationStartTimestamp.let {
             it.shouldBeInRange(startTimestamp..endTimestamp)
@@ -120,20 +128,21 @@ class TransformerCorrectFlowTest {
 
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
-        transformedDataDescriptors shouldHaveSize 1
-        transformedDataDescriptors[0].let {
-            it.data.getBytes() shouldBe transformedData.getBytes()
-            it.metadata.getAll() shouldBe emptyMap()
+        transformedDataDescriptors.descriptors shouldHaveSize 1
+        transformedDataDescriptors.descriptors[0].let { transformedDataDescriptor ->
+            transformedDataDescriptor.data.getBytes() shouldBe transformedData.getBytes()
+            transformedDataDescriptor.metadata.getAll() shouldBe emptyMap()
         }
     }
 
     private fun sendRequestMessage() {
-        jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), listOf(transformationDescriptor)) { message ->
+        jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), transformationDescriptor) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(PromenaJmsHeader.PROMENA_TRANSFORMER_ID, MockContext.transformerId)
+                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_ID, transformationHashFunctionDeterminer.determine(transformerIds))
 
-                setStringProperty(PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION, location)
+                setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
+                setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX + "location", location)
             }
         }
     }

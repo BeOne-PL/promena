@@ -11,7 +11,7 @@ import pl.beone.promena.transformer.contract.Transformer
 class MockContext {
 
     companion object {
-        internal const val transformerId = "test-transformer"
+        internal const val transformerId = "test"
     }
 
     @Bean
