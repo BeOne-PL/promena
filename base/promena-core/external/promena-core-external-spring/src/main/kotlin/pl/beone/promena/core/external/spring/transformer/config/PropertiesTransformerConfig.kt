@@ -11,7 +11,7 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
         private val logger = LoggerFactory.getLogger(PropertiesTransformerConfig::class.java)
     }
 
-    override fun getTransformationId(transformer: Transformer): String =
+    override fun getId(transformer: Transformer): String =
             determine(transformer, "transformationId", String::class.java, null)
 
     override fun getActors(transformer: Transformer): Int =

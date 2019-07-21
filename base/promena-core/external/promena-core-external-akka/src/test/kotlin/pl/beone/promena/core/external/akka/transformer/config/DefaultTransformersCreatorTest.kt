@@ -19,9 +19,9 @@ class DefaultTransformersCreatorTest {
         val transformer3 = mockk<Transformer>()
 
         val transformerConfig = mockk<TransformerConfig> {
-            every { getTransformationId(transformer) } returns "transformer"
-            every { getTransformationId(transformer2) } returns "transformer"
-            every { getTransformationId(transformer3) } returns "transformer2"
+            every { getId(transformer) } returns "transformer"
+            every { getId(transformer2) } returns "transformer"
+            every { getId(transformer3) } returns "transformer2"
 
             every { getActors(transformer) } returns 1
             every { getActors(transformer2) } returns 2

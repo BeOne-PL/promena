@@ -4,7 +4,7 @@ import pl.beone.promena.transformer.contract.Transformer
 
 interface TransformerConfig {
 
-    fun getTransformationId(transformer: Transformer): String
+    fun getId(transformer: Transformer): String
 
     fun getPriority(transformer: Transformer): Int
 

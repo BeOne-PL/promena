@@ -20,7 +20,7 @@ internal class TransformationIdMessageSelectorDeterminer {
                 .let(this::createMessageSelector)
 
     private fun getTransformerIds(transformers: List<Transformer>, transformerConfig: TransformerConfig): TransformerIds =
-        transformers.map { transformerConfig.getTransformationId(it) }
+        transformers.map { transformerConfig.getId(it) }
 
     private fun createMessageSelector(transformationHashFunctionAllCombinations: List<String>): String =
         PromenaJmsHeaders.TRANSFORMATION_ID + " IN (" + transformationHashFunctionAllCombinations.joinToString(", ") { "'$it'" } + ")"

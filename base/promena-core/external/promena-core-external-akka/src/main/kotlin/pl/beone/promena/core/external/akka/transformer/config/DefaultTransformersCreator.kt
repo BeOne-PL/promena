@@ -24,7 +24,7 @@ class DefaultTransformersCreator(private val transformerConfig: TransformerConfi
     override fun create(transformers: List<Transformer>): List<ActorRefWithId> {
         logger.info("Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.qualifiedName}")
 
-        return transformers.groupBy { transformerConfig.getTransformationId(it) }
+        return transformers.groupBy { transformerConfig.getId(it) }
                 .map { (transformerId, transformers) ->
                     val maxActors = transformers.map { transformerConfig.getActors(it) }
                             .max()!!
