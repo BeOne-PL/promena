@@ -30,7 +30,7 @@ private class TransformerWithoutProperties : AbstractTransformer()
 @SpringBootTest(classes = [
     PropertiesTransformerConfig::class
 ], properties = [
-    "transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithProperties.transformationId=transformerWithProperties",
+    "transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithProperties.id=transformerWithProperties",
     "transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithProperties.actors=3",
     "transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithProperties.priority=2"
 ])
@@ -57,7 +57,7 @@ class PropertiesTransformerConfigTest {
     @Test
     fun `getTransformationId _ no property _ should throw IllegalStateException`() {
         shouldThrow<IllegalStateException> { propertiesTransformerConfig.getId(TransformerWithoutProperties()) }
-                .message shouldBe "There is no <transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithoutProperties.transformationId> property. Transformer must have <transformerId>"
+                .message shouldBe "There is no <transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithoutProperties.id> property. Transformer must have <transformerId>"
     }
 
     @Test
