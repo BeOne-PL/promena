@@ -10,7 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>promena-connector-activemq-integration-test</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
 
     <properties>
         <testcontainers.version>1.11.2</testcontainers.version>
