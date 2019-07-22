@@ -5,7 +5,6 @@ import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDe
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 
-// TODO test it
 internal class TransformationIdMessageSelectorDeterminer {
 
     companion object {

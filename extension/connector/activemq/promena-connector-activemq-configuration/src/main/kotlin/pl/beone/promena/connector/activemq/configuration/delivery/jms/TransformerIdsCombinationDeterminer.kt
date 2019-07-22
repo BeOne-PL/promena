@@ -2,7 +2,6 @@ package pl.beone.promena.connector.activemq.configuration.delivery.jms
 
 import org.apache.commons.math3.util.Combinations
 
-// TODO test it
 internal class TransformerIdsCombinationDeterminer {
 
     fun determine(transformerIds: TransformerIds): List<TransformerIds> {
