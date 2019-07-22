@@ -101,7 +101,7 @@ class MapParametersTest {
         (emptyParameters() addTimeout timeout).getTimeout() shouldBe timeout
 
         shouldThrow<NoSuchElementException> { MapParameters.empty().getTimeout() }
-                .message shouldBe "There is no <$Parameters.TIMEOUT> element"
+                .message shouldBe "There is no <${Parameters.TIMEOUT}> element"
     }
 
     @Test

@@ -7,7 +7,7 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-parent</artifactId>
-        <version>0.9.0-SNAPHSOT</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <groupId>pl.beone.promena.transformer</groupId>
