@@ -5,10 +5,13 @@ import org.junit.Test;
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException;
 import pl.beone.promena.transformer.contract.model.Parameters;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -39,6 +42,30 @@ public class MapParametersJavaTest {
             .add("stringList", Arrays.asList("1", "2", "3"))
 
             .build();
+
+    @Test
+    public void empty() {
+        assertThat(MapParameters.empty().getAll())
+                .isEmpty();
+    }
+
+    @Test
+    public void of_timeoutNotSpecified() {
+        assertThat(MapParameters.of(Map.ofEntries(entry("key", "value"),
+                                                  entry("key2", "value2")))
+                           .getAll())
+                .containsOnly(entry("key", "value"),
+                              entry("key2", "value2"));
+    }
+
+    @Test
+    public void of_timeoutSpecified() {
+        assertThat(MapParameters.of(Map.ofEntries(entry("key", "value")),
+                                    Duration.ofMillis(100))
+                           .getAll())
+                .containsOnly(entry("key", "value"),
+                              entry(Parameters.TIMEOUT, Duration.ofMillis(100)));
+    }
 
     @Test
     public void get() {

@@ -4,6 +4,7 @@ import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
 import org.junit.Test
 
+// The same parent as MapParameters. It is covered by MapParametersJavaTest and MapParametersTest tests
 class MapCommunicationParametersTest {
 
     companion object {

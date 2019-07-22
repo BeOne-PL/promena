@@ -7,6 +7,6 @@ class MapMetadataBuilder {
     fun add(key: String, value: Any): MapMetadataBuilder =
             apply { metadata[key] = value }
 
-    fun build(): MapMetadata = MapMetadata(metadata)
+    fun build(): MapMetadata = metadata(metadata)
 
 }

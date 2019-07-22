@@ -4,20 +4,21 @@ import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
 import org.junit.Test
 
+// The same parent as MapParameters. It is covered by MapParametersJavaTest and MapParametersTest tests
 class MapMetadataTest {
 
     companion object {
         private val metadata = emptyMetadata() +
-                ("int" to 3) +
-                ("string" to "value") +
+                               ("int" to 3) +
+                               ("string" to "value") +
 
-                ("stringInt" to "3") +
+                               ("stringInt" to "3") +
 
-                ("metadata" to metadata(mapOf("key" to "value"))) +
-                ("mapMetadata" to mapOf("mapKey" to "mapValue")) +
+                               ("metadata" to metadata(mapOf("key" to "value"))) +
+                               ("mapMetadata" to mapOf("mapKey" to "mapValue")) +
 
-                ("intList" to listOf(1, 2, 3)) +
-                ("stringList" to listOf("1", "2", "3"))
+                               ("intList" to listOf(1, 2, 3)) +
+                               ("stringList" to listOf("1", "2", "3"))
     }
 
     @Test
@@ -65,6 +66,6 @@ class MapMetadataTest {
     fun getAll() {
         metadata.getAll().size shouldBe 7
         metadata.getAll() shouldContainAll mapOf("int" to 3,
-                                                 "metadata" to MapMetadata(mapOf("key" to "value")))
+                                                 "metadata" to emptyMetadata() + ("key" to "value"))
     }
 }

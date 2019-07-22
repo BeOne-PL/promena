@@ -9,6 +9,7 @@ data class MapCommunicationParameters internal constructor(private val parameter
     companion object {
 
         @JvmStatic
+        @JvmOverloads
         fun of(id: String, parameters: Map<String, Any> = emptyMap()): MapCommunicationParameters =
                 MapCommunicationParameters(parameters + mapOf(CommunicationParameters.ID to id))
     }

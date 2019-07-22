@@ -7,16 +7,16 @@ class MapCommunicationParametersBuilder {
     private val parameters = HashMap<String, Any>()
 
     fun id(value: Any): MapCommunicationParametersBuilder =
-            apply { parameters[CommunicationParameters.ID] = value }
+        apply { parameters[CommunicationParameters.ID] = value }
 
     fun add(key: String, value: Any): MapCommunicationParametersBuilder =
-            apply { parameters[key] = value }
+        apply { parameters[key] = value }
 
     fun build(): MapCommunicationParameters =
-            if (parameters.containsKey(CommunicationParameters.ID)) {
-                MapCommunicationParameters(parameters)
-            } else {
-                throw IllegalStateException("Communication parameters has to contain <id>")
-            }
+        if (parameters.containsKey(CommunicationParameters.ID)) {
+            MapCommunicationParameters(parameters)
+        } else {
+            throw IllegalArgumentException("Communication parameters must contain <id>")
+        }
 
 }

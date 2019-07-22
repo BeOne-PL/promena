@@ -14,6 +14,6 @@ class MapParametersBuilder {
             apply { parameters[Parameters.TIMEOUT] = timeout }
 
     fun build(): MapParameters =
-            MapParameters(parameters)
+            parameters(parameters)
 
 }

@@ -16,6 +16,7 @@ data class MapParameters internal constructor(private val parameters: Map<String
                 MapParameters(emptyMap())
 
         @JvmStatic
+        @JvmOverloads
         fun of(parameters: Map<String, Any>, timeout: Duration? = null): MapParameters =
                 MapParameters(parameters +
                                       if (timeout != null) mapOf(Parameters.TIMEOUT to timeout) else emptyMap())
