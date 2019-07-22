@@ -27,6 +27,7 @@ import pl.beone.promena.core.external.akka.transformation.converter.MirrorIntern
 import pl.beone.promena.core.external.akka.transformation.transformer.FromTextToXmlAppenderTransformer
 import pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer
 import pl.beone.promena.core.external.akka.transformation.transformer.TimeoutTransformer
+import pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_EPUB_ZIP
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML
@@ -135,7 +136,7 @@ class AkkaTransformationServiceTest {
     }
 
     @Test
-    fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException (created from TransformerCanNotTransformException)`() {
+    fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException (created from TransformersCouldNotTransformException)`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation(textAppenderTransformerId, APPLICATION_EPUB_ZIP, emptyParameters())
@@ -146,8 +147,8 @@ class AkkaTransformationServiceTest {
             transformerService.transform(transformation, dataDescriptor)
         }.apply {
             this.transformation shouldBe transformation
-            this.message shouldBe "Couldn't perform the transformation | There is no <text-appender-transformer> transformer that can transform it. The following <1> transformers are available: <pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer>"
-            this.getStringStackTrace() shouldContain "TransformerCanNotTransformException"
+            this.message shouldBe "Couldn't perform the transformation | There is no <text-appender-transformer> transformer that can transform data descriptors [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>: [<pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer, Only a transformation from text/plain to text/plain is supported>, <pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer, I can't transform nothing. I'm useless>]"
+            this.getStringStackTrace() shouldContain "TransformersCouldNotTransformException"
         }
     }
 
@@ -227,7 +228,9 @@ class AkkaTransformationServiceTest {
     private fun prepareTransformationService(actorMaterializer: ActorMaterializer = ActorMaterializer.create(actorSystem)): AkkaTransformationService {
         val textAppenderTransformerActorRef = actorSystem.actorOf(
                 Props.create(TransformerActor::class.java) {
-                    TransformerActor(textAppenderTransformerId, listOf(TextAppenderTransformer()), internalCommunicationConverter)
+                    TransformerActor(textAppenderTransformerId,
+                                     listOf(TextAppenderTransformer(), UselessTextAppenderTransformer()),
+                                     internalCommunicationConverter)
                 }, textAppenderTransformerId
         )
 

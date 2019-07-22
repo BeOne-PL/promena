@@ -1,21 +1,19 @@
 package pl.beone.promena.core.external.akka.transformation.transformer
 
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
-import java.util.concurrent.TimeoutException
 
-class TimeoutTransformer : Transformer {
+class UselessTextAppenderTransformer : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor {
-        Thread.sleep(parameters.getTimeout().toMillis())
-        throw TimeoutException()
+        throw IllegalStateException("It shouldn't be invoked")
     }
 
     override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
-
+        throw TransformerCouldNotTransformException("I can't transform nothing. I'm useless")
     }
-
 }

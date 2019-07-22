@@ -48,9 +48,9 @@ class DefaultTransformationUseCase(private val externalCommunicationManager: Ext
         "<:1> <:2 source(s)>: [:3]"
                 .replace(":1", transformation.toString())
                 .replace(":2", dataDescriptor.descriptors.size.toString())
-                .replace(":3", dataDescriptor.getLocationsInString())
+                .replace(":3", dataDescriptor.generateDescription())
 
-    private fun DataDescriptor.getLocationsInString(): String =
+    private fun DataDescriptor.generateDescription(): String =
         descriptors.joinToString(", ") {
             try {
                 "<${it.data.getLocation()}, ${it.mediaType}, ${it.metadata}>"

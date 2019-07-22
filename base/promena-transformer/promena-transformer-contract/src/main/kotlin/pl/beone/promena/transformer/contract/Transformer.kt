@@ -1,5 +1,6 @@
 package pl.beone.promena.transformer.contract
 
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
@@ -13,7 +14,8 @@ interface Transformer {
                   targetMediaType: MediaType,
                   parameters: Parameters): TransformedDataDescriptor
 
+    @Throws(TransformerCouldNotTransformException::class)
     fun canTransform(dataDescriptor: DataDescriptor,
                      targetMediaType: MediaType,
-                     parameters: Parameters): Boolean
+                     parameters: Parameters)
 }

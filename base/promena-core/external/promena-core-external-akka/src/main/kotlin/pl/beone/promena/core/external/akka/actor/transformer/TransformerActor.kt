@@ -2,12 +2,13 @@ package pl.beone.promena.core.external.akka.actor.transformer
 
 import akka.actor.AbstractLoggingActor
 import akka.actor.Status
-import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerCanNotTransformException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
+import pl.beone.promena.core.applicationmodel.exception.transformer.TransformersCouldNotTransformException
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
 import pl.beone.promena.core.external.akka.util.*
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
@@ -20,27 +21,26 @@ class TransformerActor(private val transformerId: String,
                        private val internalCommunicationConverter: InternalCommunicationConverter) : AbstractLoggingActor() {
 
     override fun createReceive(): Receive =
-            receiveBuilder()
-                    .match(ToTransformMessage::class.java) {
-                        try {
-                            val transformedDataDescriptor = performTransformation(it.dataDescriptor, it.targetMediaType, it.parameters)
-                            sender.tell(TransformedMessage(transformedDataDescriptor), self)
-                        }
-                        catch (e: Exception) {
-                            val processedException = processException(e, it.parameters)
-                            sender.tell(Status.Failure(processedException), self)
-                        } catch (e: Error) {
-                            sender.tell(Status.Failure(e), self)
-                        }
+        receiveBuilder()
+                .match(ToTransformMessage::class.java) {
+                    try {
+                        val transformedDataDescriptor = performTransformation(it.dataDescriptor, it.targetMediaType, it.parameters)
+                        sender.tell(TransformedMessage(transformedDataDescriptor), self)
+                    } catch (e: Exception) {
+                        val processedException = processException(e, it.parameters)
+                        sender.tell(Status.Failure(processedException), self)
+                    } catch (e: Error) {
+                        sender.tell(Status.Failure(e), self)
                     }
-                    .matchAny {}
-                    .build()
+                }
+                .matchAny {}
+                .build()
 
     private fun performTransformation(dataDescriptor: DataDescriptor,
                                       targetMediaType: MediaType,
                                       parameters: Parameters): TransformedDataDescriptor {
         val (transformedDataDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
-            val transformer = determineTransformer(dataDescriptor, targetMediaType, parameters) ?: throw createException()
+            val transformer = determineTransformer(dataDescriptor, targetMediaType, parameters)
 
             val transformedDataDescriptor = transformer.transform(dataDescriptor, targetMediaType, parameters)
 
@@ -62,17 +62,39 @@ class TransformerActor(private val transformerId: String,
         return transformedDataDescriptor
     }
 
-    private fun determineTransformer(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): Transformer? =
-            transformers.firstOrNull { it.canTransform(dataDescriptor, targetMediaType, parameters) }
+    private fun determineTransformer(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): Transformer {
+        val transformerExceptionsAccumulator = TransformerExceptionsAccumulator()
+        return transformers.firstOrNull { transformer ->
+            try {
+                transformer.canTransform(dataDescriptor, targetMediaType, parameters)
+                true
+            } catch (e: TransformerCouldNotTransformException) {
+                transformerExceptionsAccumulator.add(transformer, e.message!!)
+                false
+            }
+        } ?: throw createException(dataDescriptor, targetMediaType, parameters, transformerExceptionsAccumulator)
+    }
 
     private fun processException(exception: Exception, parameters: Parameters): Exception =
-            when (exception) {
-                is TimeoutException -> TransformerTimeoutException("Couldn't transform because the transformer <$transformerId> timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
-                else                -> exception
-            }
+        when (exception) {
+            is TimeoutException -> TransformerTimeoutException("Couldn't transform because the transformer <$transformerId> timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
+            else                -> exception
+        }
 
-    private fun createException(): TransformerCanNotTransformException =
-            TransformerCanNotTransformException("There is no <$transformerId> transformer that can transform it. " +
-                                                "The following <${transformers.size}> transformers are available: " +
-                                                "<${transformers.joinToString(", ") { it.javaClass.canonicalName }}>")
+    private fun createException(dataDescriptor: DataDescriptor,
+                                targetMediaType: MediaType,
+                                parameters: Parameters,
+                                transformerExceptionsAccumulator: TransformerExceptionsAccumulator): TransformersCouldNotTransformException =
+        TransformersCouldNotTransformException(
+                "There is no <$transformerId> transformer that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
+        )
+
+    private fun DataDescriptor.generateDescription(): String =
+        descriptors.joinToString(", ") {
+            try {
+                "<${it.data.getLocation()}, ${it.mediaType}, ${it.metadata}>"
+            } catch (e: UnsupportedOperationException) {
+                "<no location, ${it.mediaType}>"
+            }
+        }
 }

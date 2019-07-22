@@ -18,8 +18,9 @@ private abstract class AbstractTransformer : Transformer {
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor =
             throw Exception("No matter")
 
-    override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): Boolean =
-            throw Exception("No matter")
+    override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
+        throw Exception("No matter")
+    }
 
 }
 
