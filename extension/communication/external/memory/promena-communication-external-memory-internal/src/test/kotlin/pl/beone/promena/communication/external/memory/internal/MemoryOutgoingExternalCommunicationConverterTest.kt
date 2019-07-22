@@ -2,6 +2,7 @@ package pl.beone.promena.communication.external.memory.internal
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
+import io.kotlintest.shouldBe
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.communication.communicationParameters
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 
 class MemoryOutgoingExternalCommunicationConverterTest {
@@ -24,15 +26,11 @@ class MemoryOutgoingExternalCommunicationConverterTest {
 
     @Test
     fun convert() {
-        val data = mockk<Data> {
-            every { getBytes() } returns "test".toByteArray()
-            every { delete() } just Runs
-        }
+        val data = "test".toMemoryData()
 
-        // TODO test it
         MemoryOutgoingExternalCommunicationConverter()
-                .convert(singleTransformedDataDescriptor(data, emptyMetadata()),
-                         communicationParameters("memory"))
+                .convert(singleTransformedDataDescriptor(data, emptyMetadata()), communicationParameters("memory")) shouldBe
+                singleTransformedDataDescriptor(data, emptyMetadata())
     }
 
 }

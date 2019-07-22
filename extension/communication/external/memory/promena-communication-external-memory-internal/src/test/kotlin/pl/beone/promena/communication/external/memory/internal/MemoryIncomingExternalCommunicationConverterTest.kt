@@ -12,8 +12,8 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.communication.communicationParameters
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
@@ -40,7 +40,6 @@ class MemoryIncomingExternalCommunicationConverterTest {
         val convertedData2 = "test2".toMemoryData()
         val metadata2 = emptyMetadata() + ("key" to "value")
 
-        // TODO test it
         MemoryIncomingExternalCommunicationConverter()
                 .convert(singleDataDescriptor(data, TEXT_PLAIN, metadata) + singleDataDescriptor(data2, APPLICATION_PDF, metadata2),
                          communicationParameters("memory")) shouldBe
