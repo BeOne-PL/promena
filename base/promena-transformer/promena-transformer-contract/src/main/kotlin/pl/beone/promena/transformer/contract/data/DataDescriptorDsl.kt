@@ -21,6 +21,10 @@ fun multiDataDescriptor(descriptor: DataDescriptor.Single,
                         descriptors: List<DataDescriptor.Single>): DataDescriptor.Multi =
         DataDescriptor.Multi(listOf(descriptor) + descriptors)
 
+fun multiDataDescriptor(descriptor: DataDescriptor.Single,
+                        vararg descriptors: DataDescriptor.Single): DataDescriptor.Multi =
+        multiDataDescriptor(descriptor, descriptors.toList())
+
 operator fun DataDescriptor.Multi.plus(descriptor: DataDescriptor.Single): DataDescriptor.Multi =
         DataDescriptor.Multi(descriptors + descriptor)
 
