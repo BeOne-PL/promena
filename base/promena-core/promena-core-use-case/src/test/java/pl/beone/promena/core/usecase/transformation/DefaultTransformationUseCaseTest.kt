@@ -3,7 +3,6 @@ package pl.beone.promena.core.usecase.transformation
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import io.kotlintest.shouldBe
-import io.kotlintest.shouldNotBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
@@ -18,22 +17,29 @@ import pl.beone.promena.core.contract.communication.external.manager.ExternalCom
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.communication.CommunicationParameters
+import pl.beone.promena.transformer.contract.data.emptyDataDescriptor
+import pl.beone.promena.transformer.contract.data.emptyTransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
-import pl.beone.promena.transformer.contract.data.transformedDataDescriptor
-import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
+import pl.beone.promena.transformer.internal.communication.communicationParameters
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
+import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
+import pl.beone.promena.transformer.internal.model.parameters.plus
+import java.net.URI
 
 class DefaultTransformationUseCaseTest {
 
     companion object {
         private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
-        private val parameters = mockk<Parameters>()
+        private val parameters = emptyParameters() + ("key" to "value")
 
-        private val dataDescriptor = singleDataDescriptor(mockk(), TEXT_PLAIN, mockk())
-        private val transformationFlow = singleTransformation("test", targetMediaType, parameters)
-        private val transformedDataDescriptor = transformedDataDescriptor(mockk(), mockk())
+        private val transformation = singleTransformation("test", targetMediaType, parameters)
+        private val transformedDataDescriptor = emptyTransformedDataDescriptor()
     }
 
     @Before
@@ -44,10 +50,10 @@ class DefaultTransformationUseCaseTest {
 
     @Test
     fun transform() {
+        val dataDescriptor = singleDataDescriptor(mockk(), TEXT_PLAIN, emptyMetadata())
+
         val externalCommunicationId = "memory"
-        val externalCommunicationParameters = mockk<CommunicationParameters> {
-            every { getId() } returns externalCommunicationId
-        }
+        val externalCommunicationParameters = communicationParameters(externalCommunicationId)
         val incomingCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
             every { convert(dataDescriptor, externalCommunicationParameters) } returns dataDescriptor
         }
@@ -63,40 +69,47 @@ class DefaultTransformationUseCaseTest {
         }
 
         val transformerService = mockk<TransformationService> {
-            every { transform(transformationFlow, dataDescriptor) } returns transformedDataDescriptor
+            every { transform(transformation, dataDescriptor) } returns transformedDataDescriptor
         }
 
         DefaultTransformationUseCase(externalCommunicationManager, transformerService)
-                .transform(transformationFlow, dataDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptor
+                .transform(transformation, dataDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptor
     }
 
     @Test
-    fun `transform _ externalCommunicationManager throws ExternalCommunicationManagerException _ should rethrow exception`() {
+    fun `transform _ externalCommunicationManager throws ExternalCommunicationManagerException _ should throw exception with error message without stack to hide Promena implementation details`() {
+        val dataDescriptor = emptyDataDescriptor()
+
         val externalCommunicationId = "memory"
-        val externalCommunicationParameters = mockk<CommunicationParameters> {
-            every { getId() } returns externalCommunicationId
-        }
+        val externalCommunicationParameters = communicationParameters(externalCommunicationId)
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
             every { getCommunication(externalCommunicationId) } throws
                     ExternalCommunicationManagerException("Exception occurred", RuntimeException("Stack exception"))
         }
 
-        shouldThrow<ExternalCommunicationManagerException> {
+        shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, mockk())
-                    .transform(transformationFlow, dataDescriptor, externalCommunicationParameters)
+                    .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
-            it.message shouldBe "Exception occurred"
-            it.cause shouldNotBe null
+            it.message shouldBe "Couldn't perform the transformation because an error occurred. Check Promena logs for more details"
+            it.cause shouldBe null
         }
     }
 
     @Test
-    fun `transform _ transformationService throws TransformationException _ should unwrap and rethrow exception`() {
-        val externalCommunicationId = "memory"
-        val externalCommunicationParameters = mockk<CommunicationParameters> {
-            every { getId() } returns externalCommunicationId
+    fun `transform _ transformationService throws TransformationException _ should unwrap and throw exception only with message to hide Promena implementation details`() {
+        val data = mockk<Data> {
+            every { getLocation() } throws UnsupportedOperationException()
         }
+        val data2 = mockk<Data> {
+            every { getLocation() } returns URI("file:/tmp/test.tmp")
+        }
+        val dataDescriptor = singleDataDescriptor(data, TEXT_PLAIN, emptyMetadata()) +
+                             singleDataDescriptor(data2, APPLICATION_JSON, emptyMetadata() + ("key" to "value"))
+
+        val externalCommunicationId = "memory"
+        val externalCommunicationParameters = communicationParameters(externalCommunicationId)
         val incomingCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
             every { convert(dataDescriptor, externalCommunicationParameters) } returns dataDescriptor
         }
@@ -107,13 +120,13 @@ class DefaultTransformationUseCaseTest {
         }
 
         val transformerService = mockk<TransformationService> {
-            every { transform(transformationFlow, dataDescriptor) } throws
-                    TransformationException("Exception occurred", RuntimeException("Stack exception"))
+            every { transform(transformation, dataDescriptor) } throws
+                    TransformationException(transformation, "Exception occurred", RuntimeException("Stack exception"))
         }
 
         shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, transformerService)
-                    .transform(transformationFlow, dataDescriptor, externalCommunicationParameters)
+                    .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message shouldBe "Exception occurred"
             it.cause shouldBe null

@@ -17,6 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
 import pl.beone.promena.connector.http.configuration.HttpConnectorModuleConfig
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.serialization.DescriptorSerializationService
@@ -104,13 +105,13 @@ class TransformerHandlerTest {
     }
 
     @Test
-    fun `transform _ should throw TransformerNotFoundException and return InternalServerError with serialized exception`() {
-        val exception = TransformerNotFoundException("exception")
+    fun `transform _ should throw TransformationException and return InternalServerError with serialized exception`() {
+        val exception = TransformationException(singleTransformation("test", TEXT_PLAIN, emptyParameters()), "exception")
         val messageByteArray = exception.message!!.toByteArray()
 
         every { descriptorSerializationService.deserialize(requestBody) } returns transformationDescriptor
 
-        every { serializationService.serialize(any<TransformerNotFoundException>()) } returns messageByteArray
+        every { serializationService.serialize(any<TransformationException>()) } returns messageByteArray
 
         every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("memory")) } throws exception
 
@@ -119,7 +120,7 @@ class TransformerHandlerTest {
                 .exchange()
                 .expectHeader()
                 .valueEquals("serialization-class",
-                             "pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException")
+                             "pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException")
                 .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
                 .expectBody<ByteArray>().isEqualTo(messageByteArray)
     }

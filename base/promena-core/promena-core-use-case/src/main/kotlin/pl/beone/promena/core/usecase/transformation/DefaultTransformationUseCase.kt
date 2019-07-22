@@ -23,21 +23,39 @@ class DefaultTransformationUseCase(private val externalCommunicationManager: Ext
                            externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptor {
         try {
             val (_, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) =
-                    externalCommunicationManager.getCommunication(externalCommunicationParameters.getId())
+                externalCommunicationManager.getCommunication(externalCommunicationParameters.getId())
 
             return dataDescriptor
                     .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
                     .let { transformationService.transform(transformation, it) }
                     .let { outgoingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
         } catch (e: Exception) {
-            logger.error("Couldn't transform <{}, {}>", externalCommunicationParameters, transformation, e)
+            logger.error("Couldn't perform the transformation {} <{}>",
+                         generateTransformationExceptionDescription(transformation, dataDescriptor),
+                         externalCommunicationParameters,
+                         e)
 
             // unwrap expected exception to not show user unnecessary information
             if (e is TransformationException) {
-                throw TransformationException(e.message!!)
+                throw TransformationException(transformation, e.message!!)
             } else {
-                throw e
+                throw TransformationException(transformation, "Couldn't perform the transformation because an error occurred. Check Promena logs for more details")
             }
         }
     }
+
+    private fun generateTransformationExceptionDescription(transformation: Transformation, dataDescriptor: DataDescriptor): String =
+        "<:1> <:2 source(s)>: [:3]"
+                .replace(":1", transformation.toString())
+                .replace(":2", dataDescriptor.descriptors.size.toString())
+                .replace(":3", dataDescriptor.getLocationsInString())
+
+    private fun DataDescriptor.getLocationsInString(): String =
+        descriptors.joinToString(", ") {
+            try {
+                "<${it.data.getLocation()}, ${it.mediaType}, ${it.metadata}>"
+            } catch (e: UnsupportedOperationException) {
+                "<no location, ${it.mediaType}>"
+            }
+        }
 }

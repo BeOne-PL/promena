@@ -54,7 +54,7 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                             .get()
                 }
             } catch (e: Exception) {
-                throw processException(transformation, dataDescriptor, e)
+                throw convertException(transformation, e)
             }
         }
 
@@ -78,27 +78,27 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
     }
 
     private fun getTransformerDescriptorsWithActorRef(transformation: Transformation): List<ActorTransformerDescriptor> =
-            transformation.transformers.map { (id, mediaType, parameters) ->
-                ActorTransformerDescriptor(actorService.getTransformationActor(id), mediaType, parameters)
-            }
+        transformation.transformers.map { (id, mediaType, parameters) ->
+            ActorTransformerDescriptor(actorService.getTransformationActor(id), mediaType, parameters)
+        }
 
     private fun createSource(dataDescriptor: DataDescriptor): Source<DataDescriptor, NotUsed> =
-            Source.single(dataDescriptor)
+        Source.single(dataDescriptor)
 
     private fun getIntermediateTransformers(actorTransformerDescriptors: List<ActorTransformerDescriptor>): List<ActorTransformerDescriptor> =
-            actorTransformerDescriptors.dropLast(1)
+        actorTransformerDescriptors.dropLast(1)
 
     private fun Source<DataDescriptor, NotUsed>.viaIntermediateTransformers(actorTransformerDescriptors: List<ActorTransformerDescriptor>): Source<DataDescriptor, NotUsed> =
-            actorTransformerDescriptors.map { (actorRef, targetMediaType, parameters) ->
-                createTransformerFlow(actorRef, targetMediaType, parameters)
-                        .map { it.toSequentialDataDescriptors(targetMediaType) }
-            }.applyFlows(this)
+        actorTransformerDescriptors.map { (actorRef, targetMediaType, parameters) ->
+            createTransformerFlow(actorRef, targetMediaType, parameters)
+                    .map { it.toSequentialDataDescriptors(targetMediaType) }
+        }.applyFlows(this)
 
     private fun <T> List<Flow<T, T, NotUsed>>.applyFlows(source: Source<T, NotUsed>): Source<T, NotUsed> =
-            fold(source, { acc, flow -> acc.via(flow) })
+        fold(source, { acc, flow -> acc.via(flow) })
 
     private fun getFinalTransformer(actorTransformerDescriptors: List<ActorTransformerDescriptor>): ActorTransformerDescriptor =
-            actorTransformerDescriptors.last()
+        actorTransformerDescriptors.last()
 
     private fun Source<DataDescriptor, NotUsed>.viaFinalTransformer(actorTransformerDescriptor: ActorTransformerDescriptor): Source<TransformedDataDescriptor, NotUsed> {
         val (actorRef, targetMediaType, parameters) = actorTransformerDescriptor
@@ -108,16 +108,17 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
     private fun createTransformerFlow(actorRef: ActorRef,
                                       mediaType: MediaType,
                                       parameters: Parameters): Flow<DataDescriptor, TransformedDataDescriptor, NotUsed> =
-            Flow.of(getClazz<DataDescriptor>())
-                    .map { dataDescriptor -> ToTransformMessage(dataDescriptor, mediaType, parameters) }
-                    .ask(actorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound().toTimeout())
-                    .map { it.transformedDataDescriptor }
+        Flow.of(getClazz<DataDescriptor>())
+                .map { dataDescriptor -> ToTransformMessage(dataDescriptor, mediaType, parameters) }
+                .ask(actorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound().toTimeout())
+                .map { it.transformedDataDescriptor }
 
     private fun TransformedDataDescriptor.toSequentialDataDescriptors(mediaType: MediaType): DataDescriptor =
-            descriptors.map { (data, metadata) -> singleDataDescriptor(data, mediaType, metadata) }
-                    .toDataDescriptor()
+        descriptors.map { (data, metadata) -> singleDataDescriptor(data, mediaType, metadata) }
+                .toDataDescriptor()
 
-    private fun Duration.toTimeout(): Timeout = Timeout.create(this)
+    private fun Duration.toTimeout(): Timeout =
+        Timeout.create(this)
 
     private fun logAfterTransformation(transformation: Transformation,
                                        measuredTimeMs: Long,
@@ -137,37 +138,17 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         }
     }
 
-    private fun processException(transformation: Transformation, dataDescriptor: DataDescriptor, exception: Exception): Exception {
-        val exceptionDescriptor = generateExceptionDescriptor(transformation, dataDescriptor)
-
-        return when (exception) {
+    private fun convertException(transformation: Transformation, exception: Exception): Exception =
+        when (exception) {
             is TransformerException            ->
-                TransformationException("Couldn't perform the transformation | ${exception.message} | $exceptionDescriptor", exception)
+                TransformationException(transformation, "Couldn't perform the transformation | ${exception.message}", exception)
             is AskTimeoutException             ->
-                TransformationException("Couldn't perform the transformation because timeout has been reached | $exceptionDescriptor",
+                TransformationException(transformation, "Couldn't perform the transformation because timeout has been reached",
                                         exception)
             is AbruptStageTerminationException ->
-                TransformationTerminationException("Couldn't transform because the transformation was abruptly terminated | $exceptionDescriptor",
+                TransformationTerminationException(transformation,
+                                                   "Could not perform the transformation because it was abruptly terminated",
                                                    exception)
-            else                               ->
-                TransformationException("Couldn't transform because a unknown error occurred. Check Promena logs for more details | $exceptionDescriptor",
-                                        exception)
+            else                               -> exception
         }
-    }
-
-    private fun generateExceptionDescriptor(transformation: Transformation,
-                                            dataDescriptor: DataDescriptor): String =
-            "<:1> <:2 source(s)>: [:3]"
-                    .replace(":1", transformation.toString())
-                    .replace(":2", dataDescriptor.descriptors.size.toString())
-                    .replace(":3", dataDescriptor.getLocationsInString())
-
-    private fun DataDescriptor.getLocationsInString(): String =
-            descriptors.joinToString(", ") {
-                try {
-                    "<${it.data.getLocation()}, ${it.mediaType}>"
-                } catch (e: UnsupportedOperationException) {
-                    "<no location, ${it.mediaType}>"
-                }
-            }
 }

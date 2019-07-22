@@ -27,10 +27,10 @@ import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.activemq.integrationtest.IntegrationTestApplication
-import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
+import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.activemq.integrationtest.test.TransformationResponseConsumer
-import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
@@ -50,7 +50,7 @@ class TransformerExceptionFlowTest {
     companion object {
         private val transformerIds = listOf(TestTransformerMockContext.TRANSFORMER_ID)
         private val correlationId = UUID.randomUUID().toString()
-        private val expectException = TransformerTimeoutException("Time expired")
+        private val expectedException = TransformationException(singleTransformation("test", TEXT_PLAIN, emptyParameters()), "Time expired")
     }
 
     @Autowired
@@ -83,7 +83,7 @@ class TransformerExceptionFlowTest {
     fun `send data to transformation request queue _ should handle exception to response error queue`() {
         every { transformationUseCase.transform(any(), any(), any()) } answers {
             Thread.sleep(300)
-            throw expectException
+            throw expectedException
         }
 
         val startTimestamp = getTimestamp()
@@ -120,16 +120,19 @@ class TransformerExceptionFlowTest {
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
         exception.let {
-            it should beInstanceOf(expectException::class)
-            it.message shouldBe expectException.message
-            it.localizedMessage shouldBe expectException.localizedMessage
-            it.cause shouldBe expectException.cause
+            it should beInstanceOf(expectedException::class)
+            (it as TransformationException).transformation shouldBe expectedException.transformation
+            it.message shouldBe expectedException.message
+            it.localizedMessage shouldBe expectedException.localizedMessage
+            it.cause shouldBe expectedException.cause
         }
     }
 
     private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
-                                   TransformationDescriptor.of(singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters()),
+                                   TransformationDescriptor.of(singleTransformation(TestTransformerMockContext.TRANSFORMER_ID,
+                                                                                    APPLICATION_JSON,
+                                                                                    emptyParameters()),
                                                                singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata()))) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
