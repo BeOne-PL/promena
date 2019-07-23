@@ -30,7 +30,7 @@ public class TransformationBuilderTest {
 
         Transformation.Single singleTransformation = singleTransformation(id, mediaType, parameters);
         assertThat(new TransformationBuilder()
-                           .add(singleTransformation)
+                           .next(singleTransformation)
                            .build())
                 .isEqualTo(new Transformation.Single(id, mediaType, parameters));
     }
@@ -40,8 +40,8 @@ public class TransformationBuilderTest {
         Transformation.Single singleTransformation = singleTransformation("test", TEXT_PLAIN, mock(Parameters.class));
         Transformation.Single singleTransformation2 = singleTransformation("test2", TEXT_XML, mock(Parameters.class));
         assertThat(new TransformationBuilder()
-                           .add(singleTransformation)
-                           .add(singleTransformation2)
+                           .next(singleTransformation)
+                           .next(singleTransformation2)
                            .build())
                 .isEqualTo(new Transformation.Composite(Arrays.asList(singleTransformation, singleTransformation2)));
     }
