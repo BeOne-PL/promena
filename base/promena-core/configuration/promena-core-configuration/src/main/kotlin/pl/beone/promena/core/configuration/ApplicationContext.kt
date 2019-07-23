@@ -9,6 +9,5 @@ import org.springframework.context.annotation.PropertySource
     "pl.beone.promena"
 ])
 @PropertySource("classpath:application-ts.properties",
-                "classpath:application-akka.properties",
-                "classpath:application-kryo-classes.properties")
+                "classpath:application-akka.properties")
 class ApplicationContext

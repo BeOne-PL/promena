@@ -9,6 +9,7 @@ import akka.stream.BufferOverflowException
 import akka.testkit.javadsl.TestKit
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
+import com.typesafe.config.ConfigFactory
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.string.shouldContain
 import io.kotlintest.shouldBe
@@ -60,7 +61,7 @@ class AkkaTransformationServiceTest {
 
     @Before
     fun setUp() {
-        actorSystem = ActorSystem.create()
+        actorSystem = ActorSystem.create("Promena", ConfigFactory.load("resource-test.conf"))
 
         (LoggerFactory.getLogger("pl.beone.promena.core.external.akka.transformer.AkkaTransformerService") as Logger).level = Level.DEBUG
     }
