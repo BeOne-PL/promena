@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>pl.beone.promena.connector</groupId>
+        <artifactId>promena-connector-activemq</artifactId>
+        <version>0.9.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>promena-connector-activemq-delivery-jms-message-converter</artifactId>
+
+    <properties>
+        <javax.jms-api.version>2.0.1</javax.jms-api.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.core</groupId>
+            <artifactId>promena-core-internal-serialization</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- TODO verify if it is needed -->
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
+            <version>${javax.jms-api.version}</version>
+        </dependency>
+    </dependencies>
+</project>

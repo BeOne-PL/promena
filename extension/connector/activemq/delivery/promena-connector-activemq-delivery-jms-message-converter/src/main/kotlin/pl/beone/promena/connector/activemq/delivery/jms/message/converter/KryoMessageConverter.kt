@@ -1,4 +1,4 @@
-package pl.beone.lib.jms.message.converter
+package pl.beone.promena.connector.activemq.delivery.jms.message.converter
 
 import org.springframework.jms.support.converter.MessageConverter
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
