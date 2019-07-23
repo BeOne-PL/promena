@@ -7,52 +7,100 @@ import org.junit.Test
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import java.io.File
+import java.io.IOException
 import java.net.URI
 
 class FileDataTest {
 
     companion object {
-        private val fileUri = createTempFile().apply { writeText("test") }.toURI()
+        private const val fileString = "test"
+        private val fileBytes = fileString.toByteArray()
+        private val fileUri = fileString.createTmpFile().toURI()
 
         private val notReachableFileUri = URI("file:/doesNotExist")
     }
 
     @Test
-    fun init() {
-        FileData.of(fileUri)
+    fun `of _ uri`() {
+        FileData.of(fileUri).getBytes() shouldBe
+                fileBytes
+    }
+
+    @Test
+    fun `of _ file`() {
+        val string = "test"
+
+        FileData.of(string.createTmpFile()).getBytes() shouldBe
+                string.toByteArray()
+    }
+
+    @Test
+    fun `of _ input stream and directory uri`() {
+        val directory = createTempDir()
+
+        FileData.of(fileString.createTmpFile(directory).inputStream(), directory.toURI()).getBytes() shouldBe
+                fileString.toByteArray()
+
+        FileData.of(fileString.byteInputStream(), directory.toURI()).getBytes() shouldBe
+                fileString.toByteArray()
+    }
+
+    @Test
+    fun `of _ input stream and directory file`() {
+        FileData.of(fileString.byteInputStream(), createTempDir()).getBytes() shouldBe
+                fileString.toByteArray()
+    }
+
+    @Test
+    fun `of _ input stream and not reachable directory uri _ should throw IOException`() {
+        shouldThrow<IOException> {
+            FileData.of(fileString.byteInputStream(), notReachableFileUri).getBytes()
+        }.message shouldBe "URI <$notReachableFileUri> doesn't exist or isn't a directory"
+    }
+
+    @Test
+    fun `of _ input stream and directory which is file uri _ should throw IOException`() {
+        val fileUri = createTempFile().toURI()
+
+        shouldThrow<IOException> {
+            FileData.of(fileString.byteInputStream(), fileUri).getBytes()
+        }.message shouldBe "URI <$fileUri> doesn't exist or isn't a directory"
     }
 
     @Test
     fun `init _ http scheme _ should throw UnsupportedOperationException`() {
-        shouldThrow<UnsupportedOperationException> { FileData.of(URI("http://noMatter.com/")) }
-                .message shouldBe "Location URI <http://noMatter.com/> has <http> scheme but this implementation supports only <file> scheme"
+        shouldThrow<UnsupportedOperationException> { FileData.of(URI("http://noMatter.com/")) }.message shouldBe
+                "Location URI <http://noMatter.com/> has <http> scheme but this implementation supports only <file> scheme"
     }
 
     @Test
     fun getBytes() {
-        FileData.of(fileUri).getBytes() shouldBe "test".toByteArray()
+        FileData.of(fileUri).getBytes() shouldBe
+                fileBytes
     }
 
     @Test
     fun getInputStream() {
-        FileData.of(fileUri).getInputStream().readAllBytes() shouldBe "test".toByteArray()
+        FileData.of(fileUri).getInputStream().readAllBytes() shouldBe
+                fileBytes
     }
 
     @Test
     fun `getInputStream _ unreachable file _ should throw ResourceIsNotReachableException`() {
-        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).getInputStream() shouldBe "test".toByteArray() }
-                .message shouldBe "File <file:/doesNotExist> doesn't exist"
+        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).getInputStream() shouldBe fileBytes }.message shouldBe
+                "File <file:/doesNotExist> doesn't exist"
     }
 
     @Test
     fun `getBytes _ unreachable file _ should throw ResourceIsNotReachableException`() {
-        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).getBytes() }
-                .message shouldBe "File <file:/doesNotExist> doesn't exist"
+        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).getBytes() }.message shouldBe
+                "File <file:/doesNotExist> doesn't exist"
     }
 
     @Test
     fun getLocation() {
-        FileData.of(fileUri).getLocation() shouldBe fileUri
+        FileData.of(fileUri).getLocation() shouldBe
+                fileUri
     }
 
     @Test
@@ -68,7 +116,8 @@ class FileDataTest {
 
         FileData.of(file.toURI()).delete()
 
-        file.exists() shouldBe false
+        file.exists() shouldBe
+                false
     }
 
     @Test
@@ -82,7 +131,14 @@ class FileDataTest {
 
     @Test
     fun `isAvailable _ should throw DataAccessibilityException`() {
-        shouldThrow<DataAccessibilityException> { FileData.of(notReachableFileUri).isAccessible() }
-                .message shouldBe "File <file:/doesNotExist> doesn't exist"
+        shouldThrow<DataAccessibilityException> {
+            FileData.of(notReachableFileUri).isAccessible()
+        }.message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
+
 }
+
+private fun String.createTmpFile(directory: File = createTempDir()): File =
+    createTempFile(directory = directory).apply {
+        writeText(this@createTmpFile)
+    }

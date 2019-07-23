@@ -12,40 +12,52 @@ class MemoryDataTest {
     }
 
     @Test
+    fun `of _ byteArray`() {
+        MemoryData.of(bytes).getBytes() shouldBe
+                bytes
+    }
+
+    @Test
     fun `of _ inputStream`() {
-        MemoryData.of(bytes.inputStream()).getBytes() shouldBe bytes
+        MemoryData.of(bytes.inputStream()).getBytes() shouldBe
+                bytes
     }
 
     @Test
     fun getBytes() {
-        MemoryData.of(bytes).getBytes() shouldBe bytes
+        bytes.toMemoryData().getBytes() shouldBe
+                bytes
     }
 
     @Test
     fun getInputStream() {
-        MemoryData.of(bytes).getInputStream().readAllBytes() shouldBe bytes
+        bytes.toMemoryData().getInputStream().readAllBytes() shouldBe
+                bytes
     }
 
     @Test
     fun `getLocation _ should throw UnsupportedOperationException`() {
-        shouldThrow<UnsupportedOperationException> { MemoryData.of(bytes).getLocation() }
-                .message shouldBe "This resource exists only in memory"
+        shouldThrow<UnsupportedOperationException> { bytes.toMemoryData().getLocation() }.message shouldBe
+                "This resource exists only in memory"
     }
 
     @Test
     fun isAvailable() {
-        shouldNotThrowAny { MemoryData.of(bytes).isAccessible() }
+        shouldNotThrowAny {
+            bytes.toMemoryData().isAccessible()
+        }
     }
 
     @Test
     fun delete() {
         shouldThrow<UnsupportedOperationException> {
-            MemoryData.of(bytes).delete()
-        }.message shouldBe "This resource exists only in memory"
+            bytes.toMemoryData().delete()
+        }.message shouldBe
+                "This resource exists only in memory"
     }
 
     @Test
     fun equals() {
-        MemoryData.of(bytes) shouldBe MemoryData.of("test".byteInputStream())
+        bytes.toMemoryData() shouldBe "test".byteInputStream().toMemoryData()
     }
 }
