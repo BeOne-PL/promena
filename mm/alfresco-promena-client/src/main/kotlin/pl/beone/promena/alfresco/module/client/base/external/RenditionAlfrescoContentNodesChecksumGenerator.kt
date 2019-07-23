@@ -12,7 +12,7 @@ class RenditionAlfrescoContentNodesChecksumGenerator(private val nodeService: No
 
     override fun generateChecksum(nodeRefs: List<NodeRef>): String =
             if (nodeRefs.isEmpty()) {
-                throw IllegalArgumentException("You have to pass at least one node")
+                throw IllegalArgumentException("You must pass at least one node")
             } else {
                 nodeRefs.joinToString("") { getSourceContentHashCode(it).toString() }
             }

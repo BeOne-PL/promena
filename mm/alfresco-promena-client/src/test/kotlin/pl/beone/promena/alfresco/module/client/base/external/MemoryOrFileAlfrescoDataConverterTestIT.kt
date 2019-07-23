@@ -10,7 +10,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.communicati
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.Memory
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.internal.model.data.FileData
-import pl.beone.promena.transformer.internal.model.data.MemoryData
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
 
 @RunWith(AlfrescoTestRunner::class)
 class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
@@ -50,7 +50,7 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
     fun saveDataInContentWriter_memoryData() {
         val node = createOrGetIntegrationTestsFolder().createNode()
 
-        val data = MemoryData("test".toByteArray())
+        val data = "test".toMemoryData()
 
         MemoryOrFileAlfrescoDataConverter(Memory, null)
                 .saveDataInContentWriter(data, node.getContentWriter())
@@ -62,11 +62,7 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
     fun saveDataInContentWriter_fileData() {
         val node = createOrGetIntegrationTestsFolder().createNode()
 
-        val file = createTempFile().apply {
-            writeText("test")
-        }
-
-        val data = FileData(file.toURI())
+        val data = FileData.of("test".byteInputStream(), createTempDir())
 
         MemoryOrFileAlfrescoDataConverter(Memory, null)
                 .saveDataInContentWriter(data, node.getContentWriter())

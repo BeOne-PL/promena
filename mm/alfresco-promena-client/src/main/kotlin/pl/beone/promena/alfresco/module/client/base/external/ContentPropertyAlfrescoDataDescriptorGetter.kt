@@ -8,17 +8,19 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.N
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
+import pl.beone.promena.transformer.contract.data.DataDescriptor
+import pl.beone.promena.transformer.contract.data.dataDescriptor
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import java.nio.charset.Charset
 
 class ContentPropertyAlfrescoDataDescriptorGetter(private val nodeService: NodeService,
                                                   private val contentService: ContentService,
                                                   private val alfrescoDataConverter: AlfrescoDataConverter) : AlfrescoDataDescriptorGetter {
 
-    override fun get(nodeRefs: List<NodeRef>): List<DataDescriptor> {
+    override fun get(nodeRefs: List<NodeRef>): DataDescriptor {
         nodeRefs.forEach { it.checkIfExists() }
-        return nodeRefs.map { it.convertToDataDescriptor() }
+        return dataDescriptor(nodeRefs.map { it.convertToSingleDataDescriptor() })
     }
 
     private fun NodeRef.checkIfExists() {
@@ -27,10 +29,10 @@ class ContentPropertyAlfrescoDataDescriptorGetter(private val nodeService: NodeS
         }
     }
 
-    private fun NodeRef.convertToDataDescriptor(): DataDescriptor {
+    private fun NodeRef.convertToSingleDataDescriptor(): DataDescriptor.Single {
         val contentReader = contentService.getReader(this, ContentModel.PROP_CONTENT)
-        val mediaType = MediaType.create(contentReader.mimetype, Charset.forName(contentReader.encoding))
+        val mediaType = MediaType.of(contentReader.mimetype, Charset.forName(contentReader.encoding))
 
-        return DataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType, MapMetadata.empty())
+        return singleDataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType, emptyMetadata())
     }
 }

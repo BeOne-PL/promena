@@ -13,7 +13,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.Prome
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
 import java.io.Serializable
@@ -33,15 +33,15 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
     override fun save(transformerId: String,
                       nodeRefs: List<NodeRef>,
                       targetMediaType: MediaType,
-                      transformedDataDescriptors: List<TransformedDataDescriptor>): List<NodeRef> =
+                      transformedDataDescriptors: TransformedDataDescriptor): List<NodeRef> =
             transactionService.retryingTransactionHelper.doInTransaction {
                 val sourceNodeRef = nodeRefs.first()
 
                 val renditionsNodeRefs = when {
-                    transformedDataDescriptors.size > 1  ->
-                        handleMany(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors)
-                    transformedDataDescriptors.size == 1 ->
-                        handleOne(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors.first())
+                    transformedDataDescriptors.descriptors.size > 1  ->
+                        handleMany(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors.descriptors)
+                    transformedDataDescriptors.descriptors.size == 1 ->
+                        handleOne(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors.descriptors.first())
                     else                                 ->
                         if (saveIfZero) {
                             handleZero(sourceNodeRef, transformerId)
@@ -58,7 +58,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
     private fun handleMany(sourceNodeRef: NodeRef,
                            transformerId: String,
                            targetMediaType: MediaType,
-                           transformedDataDescriptors: List<TransformedDataDescriptor>): List<NodeRef> =
+                           transformedDataDescriptors: List<TransformedDataDescriptor.Single>): List<NodeRef> =
             transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
                 val properties =
                         determineTransformationProperties(transformerId, index, transformedDataDescriptors.size) +
@@ -73,7 +73,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
     private fun handleOne(sourceNodeRef: NodeRef,
                           transformerId: String,
                           targetMediaType: MediaType,
-                          transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> {
+                          transformedDataDescriptor: TransformedDataDescriptor.Single): List<NodeRef> {
         val properties = determineTransformationProperties(transformerId, 0, 1) +
                          createContentProperty() +
                          transformedDataDescriptor.metadata.getAlfrescoProperties()

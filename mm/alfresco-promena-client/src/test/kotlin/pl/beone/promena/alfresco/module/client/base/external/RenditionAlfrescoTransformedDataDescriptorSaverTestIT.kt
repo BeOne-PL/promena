@@ -20,16 +20,19 @@ import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
+import pl.beone.promena.transformer.contract.data.emptyTransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.plus
+import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
 
 @RunWith(AlfrescoTestRunner::class)
 class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfrescoIT() {
 
     companion object {
         private const val transformerId = "transformer-test"
-        private val data = MemoryData("test".toByteArray())
+        private val data = "test".toMemoryData()
         private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
     }
 
@@ -50,13 +53,14 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                 .save(transformerId,
                       listOf(integrationNode),
                       targetMediaType,
-                      listOf(TransformedDataDescriptor(data, MapMetadata.empty()),
-                             TransformedDataDescriptor(data, MapMetadata(mapOf("alf_string" to "string",
-                                                                               "alf_int" to 10,
-                                                                               "alf_long" to 20L,
-                                                                               "alf_float" to 30.0f,
-                                                                               "alf_double" to 40.0,
-                                                                               "alf_boolean" to true)))))
+                      singleTransformedDataDescriptor(data, emptyMetadata()) +
+                      singleTransformedDataDescriptor(data, emptyMetadata() +
+                                                            ("alf_string" to "string") +
+                                                            ("alf_int" to 10) +
+                                                            ("alf_long" to 20L) +
+                                                            ("alf_float" to 30.0f) +
+                                                            ("alf_double" to 40.0) +
+                                                            ("alf_boolean" to true)))
 
         nodes shouldHaveSize 2
         val (node, node2) = nodes
@@ -118,7 +122,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                 .save(transformerId,
                       listOf(integrationNode),
                       targetMediaType,
-                      listOf(TransformedDataDescriptor(data, MapMetadata(mapOf("alf_string" to "string")))))
+                      singleTransformedDataDescriptor(data, emptyMetadata() + ("alf_string" to "string")))
 
         nodes shouldHaveSize 1
         val (node) = nodes
@@ -154,7 +158,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                                                     serviceRegistry.namespaceService,
                                                                     serviceRegistry.transactionService,
                                                                     alfrescoDataConverter)
-                .save(transformerId, listOf(integrationNode), targetMediaType, listOf())
+                .save(transformerId, listOf(integrationNode), targetMediaType, emptyTransformedDataDescriptor())
 
         nodes shouldHaveSize 1
         val (node) = nodes
@@ -189,14 +193,14 @@ class RenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfre
                                                                     serviceRegistry.namespaceService,
                                                                     serviceRegistry.transactionService,
                                                                     alfrescoDataConverter)
-                .save(transformerId, listOf(integrationNode), targetMediaType, emptyList())
+                .save(transformerId, listOf(integrationNode), targetMediaType, emptyTransformedDataDescriptor())
 
         nodes shouldHaveSize 0
         nodes shouldBe integrationNode.getRenditionAssociations()
     }
 
     private fun createNodeInIntegrationFolder(): NodeRef =
-            with(createOrGetIntegrationTestsFolder()) {
-                createNode()
-            }
+        with(createOrGetIntegrationTestsFolder()) {
+            createNode()
+        }
 }

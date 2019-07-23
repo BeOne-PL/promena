@@ -1,6 +1,5 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
-import com.google.common.io.ByteStreams
 import org.alfresco.service.cmr.repository.ContentReader
 import org.alfresco.service.cmr.repository.ContentWriter
 import org.alfresco.service.cmr.repository.FileContentReader
@@ -12,8 +11,7 @@ import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteEx
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.FileData
 import pl.beone.promena.transformer.internal.model.data.MemoryData
-import java.io.ByteArrayInputStream
-import java.io.File
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import java.net.URI
 
 class MemoryOrFileAlfrescoDataConverter(private val externalCommunicationId: String,
@@ -24,43 +22,28 @@ class MemoryOrFileAlfrescoDataConverter(private val externalCommunicationId: Str
     }
 
     override fun createData(contentReader: ContentReader): Data =
-            if (externalCommunicationId == File) {
-                if (contentReader is FileContentReader) {
-                    FileData(
-                            createTmpFileInLocation().apply {
-                                contentReader.file.copyTo(this, true)
-                            }.toURI()
-                    )
-                } else {
-                    logger.warn("Content reader type isn't FileContentReader (<{}>). Implementation <MemoryData> will be use as back pressure",
-                                contentReader::class.java.name)
-                    contentReader.toMemoryData()
-                }
-            } else if (externalCommunicationId == Memory) {
-                contentReader.toMemoryData()
+        if (externalCommunicationId == File) {
+            if (contentReader is FileContentReader) {
+                FileData.of(contentReader.contentInputStream, externalCommunicationLocation!!)
             } else {
-                throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
+                logger.warn("Content reader type isn't FileContentReader (<{}>). Implementation <MemoryData> will be use as back pressure",
+                            contentReader::class.java.simpleName)
+                contentReader.toMemoryData()
             }
+        } else if (externalCommunicationId == Memory) {
+            contentReader.toMemoryData()
+        } else {
+            throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
+        }
 
     override fun saveDataInContentWriter(data: Data, contentWriter: ContentWriter) {
-        data.getBytes().save(contentWriter)
+        contentWriter.putContent(data.getInputStream())
 
         deleteDataResource(data)
     }
 
-    private fun createTmpFileInLocation(): File =
-            createTempFile(directory = File(externalCommunicationLocation!!))
-
-    @Suppress("UnstableApiUsage")
-    private fun ContentReader.getBytes(): ByteArray =
-            ByteStreams.toByteArray(this.contentInputStream)
-
     private fun ContentReader.toMemoryData(): MemoryData =
-            MemoryData(this.getBytes())
-
-    private fun ByteArray.save(contentWriter: ContentWriter) {
-        contentWriter.putContent(ByteArrayInputStream(this))
-    }
+        contentInputStream.toMemoryData()
 
     // Trying to delete resource because it is possible that Promena returns different implementation than MemoryData or FileData
     private fun deleteDataResource(data: Data) {
@@ -78,9 +61,9 @@ class MemoryOrFileAlfrescoDataConverter(private val externalCommunicationId: Str
     }
 
     private fun Data.toSimplifiedString(): String =
-            try {
-                "${this::class.java.simpleName}(location=${getLocation()})"
-            } catch (e: Exception) {
-                "${this::class.java.simpleName}(location=<isn't available>)"
-            }
+        try {
+            "${this::class.java.simpleName}(location=${getLocation()})"
+        } catch (e: Exception) {
+            "${this::class.java.simpleName}(location=<isn't available>)"
+        }
 }

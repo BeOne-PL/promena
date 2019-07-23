@@ -10,10 +10,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.NodeDoesNotExist
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import java.util.*
 
 @RunWith(AlfrescoTestRunner::class)
@@ -21,8 +21,8 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
 
     @Test
     fun get_shouldDetermineDataDescriptor() {
-        val data = MemoryData("test".toByteArray())
-        val mediaType = MediaTypeConstants.TEXT_PLAIN
+        val data = "test".toMemoryData()
+        val mediaType = TEXT_PLAIN
         val node = with(createOrGetIntegrationTestsFolder()) {
             createNode().apply { saveContent(mediaType, "no matter") }
         }
@@ -33,7 +33,7 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
 
         ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, alfrescoDataConverter)
                 .get(listOf(node)).let {
-                    it shouldBe listOf(DataDescriptor(data, mediaType, MapMetadata.empty()))
+                    it shouldBe singleDataDescriptor(data, mediaType, emptyMetadata())
                 }
     }
 

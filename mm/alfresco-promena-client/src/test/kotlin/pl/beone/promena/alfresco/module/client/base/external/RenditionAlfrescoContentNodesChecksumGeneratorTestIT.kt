@@ -27,6 +27,6 @@ class RenditionAlfrescoContentNodesChecksumGeneratorTestIT : AbstractUtilsAlfres
     fun generateChecksum_shouldThrowIllegalArgumentException() {
         shouldThrow<IllegalArgumentException> {
             RenditionAlfrescoContentNodesChecksumGenerator(serviceRegistry.nodeService).generateChecksum(emptyList())
-        }.message shouldBe "You have to pass at least one node"
+        }.message shouldBe "You must pass at least one node"
     }
 }

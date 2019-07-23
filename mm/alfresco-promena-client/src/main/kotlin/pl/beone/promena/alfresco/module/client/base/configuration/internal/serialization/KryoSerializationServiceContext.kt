@@ -12,5 +12,5 @@ class KryoSerializationServiceContext {
 
     @Bean
     fun kryoSerializationService(@Qualifier("global-properties") properties: Properties) =
-            KryoSerializationService(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.serializer.kryo.buffer-size").toInt())
+        KryoSerializationService(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.serializer.kryo.buffer-size").toInt())
 }
