@@ -18,6 +18,7 @@
 
     <packaging>pom</packaging>
     <modules>
+        <module>promena-connector-http-application-model</module>
         <module>delivery/promena-connector-http-delivery-http</module>
         <module>promena-connector-http-configuration</module>
         <module>promena-connector-http-integration-test</module>

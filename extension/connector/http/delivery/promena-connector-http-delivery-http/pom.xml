@@ -23,6 +23,12 @@
         </dependency>
 
         <dependency>
+            <groupId>pl.beone.promena.connector</groupId>
+            <artifactId>promena-connector-http-application-model</artifactId>
+            <version>${promena-connector-http.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
