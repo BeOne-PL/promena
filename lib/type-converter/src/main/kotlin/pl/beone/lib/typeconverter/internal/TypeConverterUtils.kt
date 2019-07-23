@@ -43,7 +43,7 @@ private fun toBoolean(value: Any): Boolean =
         when (value.toString()) {
             "true" -> true
             "false" -> false
-            else -> throw Exception("Boolean has to be <true> or <false> but is <$value>")
+            else -> throw Exception("Boolean must be <true> or <false> but is <$value>")
         }
 
 inline fun <reified T : Any> getClazz(): Class<T> =

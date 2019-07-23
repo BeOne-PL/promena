@@ -143,7 +143,7 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
             is TransformerException            ->
                 TransformationException(transformation, "Couldn't perform the transformation | ${exception.message}", exception)
             is AskTimeoutException             ->
-                TransformationException(transformation, "Couldn't perform the transformation because timeout has been reached",
+                TransformationException(transformation, "Couldn't perform the transformation because the timeout has been reached",
                                         exception)
             is AbruptStageTerminationException ->
                 TransformationTerminationException(transformation,

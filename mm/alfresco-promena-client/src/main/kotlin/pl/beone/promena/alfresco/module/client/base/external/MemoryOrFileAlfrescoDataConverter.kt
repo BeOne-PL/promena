@@ -39,7 +39,7 @@ class MemoryOrFileAlfrescoDataConverter(private val externalCommunicationId: Str
             } else if (externalCommunicationId == Memory) {
                 contentReader.toMemoryData()
             } else {
-                throw UnsupportedOperationException("External communication has to be <$Memory> or <$File>")
+                throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
             }
 
     override fun saveDataInContentWriter(data: Data, contentWriter: ContentWriter) {

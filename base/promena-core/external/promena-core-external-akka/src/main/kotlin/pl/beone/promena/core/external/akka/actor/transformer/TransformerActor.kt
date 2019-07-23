@@ -77,7 +77,7 @@ class TransformerActor(private val transformerId: String,
 
     private fun processException(exception: Exception, parameters: Parameters): Exception =
         when (exception) {
-            is TimeoutException -> TransformerTimeoutException("Couldn't transform because the transformer <$transformerId> timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
+            is TimeoutException -> TransformerTimeoutException("Couldn't transform because <$transformerId> transformer timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
             else                -> exception
         }
 

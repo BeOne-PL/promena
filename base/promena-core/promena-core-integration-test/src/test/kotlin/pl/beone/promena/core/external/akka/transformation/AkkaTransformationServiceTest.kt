@@ -147,7 +147,7 @@ class AkkaTransformationServiceTest {
             transformerService.transform(transformation, dataDescriptor)
         }.apply {
             this.transformation shouldBe transformation
-            this.message shouldBe "Couldn't perform the transformation | There is no <text-appender-transformer> transformer that can transform data descriptors [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>: [<pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer, Only a transformation from text/plain to text/plain is supported>, <pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer, I can't transform nothing. I'm useless>]"
+            this.message shouldBe "Couldn't perform the transformation | There is no <text-appender-transformer> transformer that can transform data descriptors [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>: [<pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer, Only the transformation from text/plain to text/plain is supported>, <pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer, I can't transform nothing. I'm useless>]"
             this.getStringStackTrace() shouldContain "TransformersCouldNotTransformException"
         }
     }
@@ -165,7 +165,7 @@ class AkkaTransformationServiceTest {
             transformerService.transform(transformation, dataDescriptor)
         }.apply {
             this.transformation shouldBe transformation
-            this.message shouldBe "Couldn't perform the transformation | Couldn't transform because the transformer <timeout-transformer> timeout <PT0.001S> has been reached"
+            this.message shouldBe "Couldn't perform the transformation | Couldn't transform because <timeout-transformer> transformer timeout <PT0.001S> has been reached"
             this.getStringStackTrace() shouldContain "TransformerTimeoutException"
         }
     }
@@ -184,7 +184,7 @@ class AkkaTransformationServiceTest {
             transformerService.transform(transformation, dataDescriptor)
         }.apply {
             this.transformation shouldBe transformation
-            this.message shouldBe "Couldn't perform the transformation because timeout has been reached"
+            this.message shouldBe "Couldn't perform the transformation because the timeout has been reached"
             this.getStringStackTrace() shouldContain "AskTimeoutException"
         }
     }

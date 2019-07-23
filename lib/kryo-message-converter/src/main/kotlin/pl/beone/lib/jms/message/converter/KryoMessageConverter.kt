@@ -21,7 +21,7 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
 
     override fun fromMessage(message: Message): Any {
         if (message !is BytesMessage) {
-            throw IllegalArgumentException("This implementation supports only <javax.jms.BytesMessage> but received <${message.javaClass.canonicalName}>")
+            throw IllegalArgumentException("This implementation supports only <javax.jms.BytesMessage> but it received <${message.javaClass.canonicalName}>")
         }
 
         val bytes = message.getBytes()
@@ -36,7 +36,7 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
 
     private fun throwWrappedExceptionIfErrorOccurredForExceptionClass(clazz: Class<*>, exception: ClassNotFoundException) {
         if (clazz is Throwable) {
-            throw DeserializationException("Couldn't deserialize exception class <${clazz.javaClass.canonicalName}> because some class isn't available in ClassLoader",
+            throw DeserializationException("Couldn't deserialize <${clazz.javaClass.canonicalName}> exception class because some class isn't available in ClassLoader",
                                            exception)
         } else {
             throw exception
@@ -54,7 +54,7 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
                 Class.forName(getStringProperty(PROPERTY_SERIALIZATION_CLASS))
                 ?: throw NoSuchElementException("Properties don't contain <$PROPERTY_SERIALIZATION_CLASS> entry")
             } catch (e: ClassNotFoundException) {
-                throw IllegalArgumentException("Class determined in <$PROPERTY_SERIALIZATION_CLASS> message property isn't available", e)
+                throw IllegalArgumentException("Class given in <$PROPERTY_SERIALIZATION_CLASS> message property isn't available", e)
             }
 
 }

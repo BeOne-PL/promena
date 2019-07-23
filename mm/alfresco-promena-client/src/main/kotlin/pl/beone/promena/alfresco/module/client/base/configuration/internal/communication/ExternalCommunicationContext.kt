@@ -27,7 +27,7 @@ class ExternalCommunicationContext {
         return when (externalCommunicationId) {
             Memory -> ExternalCommunication(externalCommunicationId, null)
             File   -> ExternalCommunication(externalCommunicationId, properties.getLocation())
-            else   -> throw UnsupportedOperationException("External communication has to be <$Memory> or <$File>")
+            else   -> throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
         }
     }
 }
