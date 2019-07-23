@@ -90,6 +90,11 @@
             </dependency>
             <dependency>
                 <groupId>pl.beone.promena.core</groupId>
+                <artifactId>promena-core-internal-serialization</artifactId>
+                <version>${promena-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.beone.promena.core</groupId>
                 <artifactId>promena-core-use-case</artifactId>
                 <version>${promena-core.version}</version>
             </dependency>

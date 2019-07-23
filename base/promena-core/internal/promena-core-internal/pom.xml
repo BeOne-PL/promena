@@ -3,22 +3,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>promena-communication-internal-memory</artifactId>
-        <groupId>pl.beone.promena.communication.internal</groupId>
+        <artifactId>promena-core</artifactId>
+        <groupId>pl.beone.promena.core</groupId>
         <version>0.9.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>promena-communication-internal-memory-internal</artifactId>
+    <artifactId>promena-core-internal</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>promena-transformer-internal</artifactId>
-        </dependency>
-        <dependency>
             <groupId>pl.beone.promena.core</groupId>
-            <artifactId>promena-core-internal</artifactId>
+            <artifactId>promena-core-contract</artifactId>
         </dependency>
 
         <dependency>

@@ -35,6 +35,7 @@ class KryoSerializationService(private val bufferSize: Int = 100 * 1024 * 1024) 
                         register(Collections.singletonMap("", "")::class.java, CollectionsSingletonMapSerializer())
                         register(GregorianCalendar::class.java, GregorianCalendarSerializer())
                         register(InvocationHandler::class.java, JdkProxySerializer())
+                        register(URI::class.java, URISerializer())
                         UnmodifiableCollectionsSerializer.registerSerializers(this)
                         SynchronizedCollectionsSerializer.registerSerializers(this)
 
