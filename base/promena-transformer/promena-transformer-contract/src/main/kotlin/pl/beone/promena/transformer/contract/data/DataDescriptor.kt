@@ -16,11 +16,27 @@ sealed class DataDescriptor {
                                            val mediaType: MediaType,
                                            val metadata: Metadata) : DataDescriptor() {
 
+        companion object {
+
+            @JvmStatic
+            fun of(data: Data, mediaType: MediaType, metadata: Metadata): Single =
+                Single(data, mediaType, metadata)
+        }
+
         override val descriptors: List<Single>
             get() = listOf(this)
     }
 
-    data class Multi internal constructor(override val descriptors: List<Single>) : DataDescriptor()
+    data class Multi internal constructor(override val descriptors: List<Single>) : DataDescriptor() {
+
+        companion object {
+
+            @JvmStatic
+            fun of(descriptors: List<Single>): Multi =
+                Multi(descriptors)
+        }
+
+    }
 
     abstract val descriptors: List<Single>
 }

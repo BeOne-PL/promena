@@ -9,6 +9,13 @@ sealed class Transformation {
                                            val targetMediaType: MediaType,
                                            val parameters: Parameters) : Transformation() {
 
+        companion object {
+
+            @JvmStatic
+            fun of(id: String, targetMediaType: MediaType, parameters: Parameters): Single =
+                Single(id, targetMediaType, parameters)
+        }
+
         override val transformers: List<Single>
             get() = listOf(this)
     }
@@ -19,7 +26,7 @@ sealed class Transformation {
 
             @JvmStatic
             fun of(transformers: List<Single>): Composite =
-                    Composite(transformers)
+                Composite(transformers)
         }
     }
 

@@ -3,7 +3,7 @@ package pl.beone.promena.transformer.internal.model.data
 import io.kotlintest.shouldBe
 import org.junit.Test
 
-class MemoryDataDslKtTest {
+class MemoryDataDslTest {
 
     companion object {
         private const val string = "bytes"

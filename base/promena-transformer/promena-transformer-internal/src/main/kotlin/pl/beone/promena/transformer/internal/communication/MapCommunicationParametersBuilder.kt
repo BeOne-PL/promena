@@ -16,7 +16,7 @@ class MapCommunicationParametersBuilder {
         if (parameters.containsKey(CommunicationParameters.ID)) {
             MapCommunicationParameters(parameters)
         } else {
-            throw IllegalArgumentException("Communication parameters must contain <id>")
+            throw IllegalArgumentException("Communication parameters must contain <${CommunicationParameters.ID}>")
         }
 
 }
