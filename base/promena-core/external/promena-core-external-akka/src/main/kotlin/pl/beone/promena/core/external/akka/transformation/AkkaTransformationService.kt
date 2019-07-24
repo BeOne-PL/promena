@@ -25,9 +25,11 @@ import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.toDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.contract.transformation.Transformation
+import pl.beone.promena.transformer.contract.transformer.TransformerId
 import java.time.Duration
 
-private data class ActorTransformerDescriptor(val actorRef: ActorRef,
+private data class ActorTransformerDescriptor(val transformerId: TransformerId,
+                                              val transformerActorRef: ActorRef,
                                               val targetMediaType: MediaType,
                                               val parameters: Parameters)
 
@@ -79,7 +81,7 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
 
     private fun getTransformerDescriptorsWithActorRef(transformation: Transformation): List<ActorTransformerDescriptor> =
         transformation.transformers.map { (id, mediaType, parameters) ->
-            ActorTransformerDescriptor(actorService.getTransformationActor(id), mediaType, parameters)
+            ActorTransformerDescriptor(id, actorService.getTransformerActor(id), mediaType, parameters)
         }
 
     private fun createSource(dataDescriptor: DataDescriptor): Source<DataDescriptor, NotUsed> =
@@ -89,8 +91,8 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         actorTransformerDescriptors.dropLast(1)
 
     private fun Source<DataDescriptor, NotUsed>.viaIntermediateTransformers(actorTransformerDescriptors: List<ActorTransformerDescriptor>): Source<DataDescriptor, NotUsed> =
-        actorTransformerDescriptors.map { (actorRef, targetMediaType, parameters) ->
-            createTransformerFlow(actorRef, targetMediaType, parameters)
+        actorTransformerDescriptors.map { (transformerId, transformerActorRef, targetMediaType, parameters) ->
+            createTransformerFlow(transformerId, transformerActorRef, targetMediaType, parameters)
                     .map { it.toSequentialDataDescriptors(targetMediaType) }
         }.applyFlows(this)
 
@@ -101,16 +103,17 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         actorTransformerDescriptors.last()
 
     private fun Source<DataDescriptor, NotUsed>.viaFinalTransformer(actorTransformerDescriptor: ActorTransformerDescriptor): Source<TransformedDataDescriptor, NotUsed> {
-        val (actorRef, targetMediaType, parameters) = actorTransformerDescriptor
-        return via(createTransformerFlow(actorRef, targetMediaType, parameters))
+        val (transformerId, targetActorRef, targetMediaType, parameters) = actorTransformerDescriptor
+        return via(createTransformerFlow(transformerId, targetActorRef, targetMediaType, parameters))
     }
 
-    private fun createTransformerFlow(actorRef: ActorRef,
+    private fun createTransformerFlow(transformerId: TransformerId,
+                                      transformerActorRef: ActorRef,
                                       mediaType: MediaType,
                                       parameters: Parameters): Flow<DataDescriptor, TransformedDataDescriptor, NotUsed> =
         Flow.of(getClazz<DataDescriptor>())
-                .map { dataDescriptor -> ToTransformMessage(dataDescriptor, mediaType, parameters) }
-                .ask(actorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound().toTimeout())
+                .map { dataDescriptor -> ToTransformMessage(transformerId, dataDescriptor, mediaType, parameters) }
+                .ask(transformerActorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound().toTimeout())
                 .map { it.transformedDataDescriptor }
 
     private fun TransformedDataDescriptor.toSequentialDataDescriptors(mediaType: MediaType): DataDescriptor =
@@ -149,6 +152,7 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
                 TransformationTerminationException(transformation,
                                                    "Could not perform the transformation because it was abruptly terminated",
                                                    exception)
-            else                               -> exception
+            else                               ->
+                exception
         }
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
 import pl.beone.promena.transformer.contract.Transformer
+import pl.beone.promena.transformer.contract.transformer.TransformerId
 import java.util.*
 import javax.annotation.PostConstruct
 
@@ -15,8 +16,11 @@ class TransformerActorsBeanRegister(private val beanFactory: ConfigurableBeanFac
     @PostConstruct
     fun register() {
         transformerActorsCreator.create(transformers.orElse(emptyList()))
-                .forEach { beanFactory.registerSingleton(it.id, it) }
+                .forEach { beanFactory.registerSingleton(createName(it.transformerId), it) }
     }
+
+    private fun createName(transformerId: TransformerId): String =
+        transformerId.name + "-" + transformerId.subName
 
 
 }

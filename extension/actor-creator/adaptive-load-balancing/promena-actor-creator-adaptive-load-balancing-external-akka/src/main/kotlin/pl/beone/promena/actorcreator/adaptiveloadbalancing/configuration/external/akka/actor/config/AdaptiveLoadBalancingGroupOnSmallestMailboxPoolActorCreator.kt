@@ -8,18 +8,18 @@ import akka.cluster.metrics.MetricsSelector
 import akka.cluster.routing.ClusterRouterGroup
 import akka.cluster.routing.ClusterRouterGroupSettings
 import akka.routing.SmallestMailboxPool
-import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithId
+import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithTransformerId
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 
 class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(private val actorSystem: ActorSystem,
                                                                   private val metricsSelector: MetricsSelector) : ActorCreator {
 
-    override fun create(transformerId: String, props: Props, actors: Int): ActorRefWithId {
+    override fun create(transformerId: String, props: Props, actors: Int): ActorRefWithTransformerId {
         createSmallestMailboxPool(transformerId, props, actors)
 
         val actorRef = createAdaptiveLoadBalancingGroupOnSmallestMailboxPoolPath(transformerId)
 
-        return ActorRefWithId(actorRef, transformerId)
+        return ActorRefWithTransformerId(actorRef, transformerId)
 
     }
 

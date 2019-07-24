@@ -14,17 +14,19 @@ import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.transformer.TransformerId
 import java.util.concurrent.TimeoutException
 
-class TransformerActor(private val transformerId: String,
-                       private val transformers: List<Transformer>,
-                       private val internalCommunicationConverter: InternalCommunicationConverter) : AbstractLoggingActor() {
+class GroupedByNameTransformerActor(private val transformerName: String,
+                                    private val transformers: List<Transformer>,
+                                    private val internalCommunicationConverter: InternalCommunicationConverter) : AbstractLoggingActor() {
 
     override fun createReceive(): Receive =
         receiveBuilder()
                 .match(ToTransformMessage::class.java) {
                     try {
-                        val transformedDataDescriptor = performTransformation(it.dataDescriptor, it.targetMediaType, it.parameters)
+                        val transformedDataDescriptor =
+                            performTransformation(it.transformerId, it.dataDescriptor, it.targetMediaType, it.parameters)
                         sender.tell(TransformedMessage(transformedDataDescriptor), self)
                     } catch (e: Exception) {
                         val processedException = processException(e, it.parameters)
@@ -36,11 +38,12 @@ class TransformerActor(private val transformerId: String,
                 .matchAny {}
                 .build()
 
-    private fun performTransformation(dataDescriptor: DataDescriptor,
+    private fun performTransformation(transformerId: TransformerId,
+                                      dataDescriptor: DataDescriptor,
                                       targetMediaType: MediaType,
                                       parameters: Parameters): TransformedDataDescriptor {
         val (transformedDataDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
-            val transformer = determineTransformer(dataDescriptor, targetMediaType, parameters)
+            val transformer = determineTransformer(transformerId, dataDescriptor, targetMediaType, parameters)
 
             val transformedDataDescriptor = transformer.transform(dataDescriptor, targetMediaType, parameters)
 
@@ -62,9 +65,14 @@ class TransformerActor(private val transformerId: String,
         return transformedDataDescriptor
     }
 
-    private fun determineTransformer(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): Transformer {
+    private fun determineTransformer(transformerId: TransformerId,
+                                     dataDescriptor: DataDescriptor,
+                                     targetMediaType: MediaType,
+                                     parameters: Parameters): Transformer {
         val transformerExceptionsAccumulator = TransformerExceptionsAccumulator()
         return transformers.firstOrNull { transformer ->
+            // TODO filter that matches subName first and add to exceptions and test it
+
             try {
                 transformer.canTransform(dataDescriptor, targetMediaType, parameters)
                 true
@@ -72,21 +80,16 @@ class TransformerActor(private val transformerId: String,
                 transformerExceptionsAccumulator.add(transformer, e.message!!)
                 false
             }
-        } ?: throw createException(dataDescriptor, targetMediaType, parameters, transformerExceptionsAccumulator)
+        } ?: throw createException(transformerId, dataDescriptor, targetMediaType, parameters, transformerExceptionsAccumulator)
     }
 
-    private fun processException(exception: Exception, parameters: Parameters): Exception =
-        when (exception) {
-            is TimeoutException -> TransformerTimeoutException("Couldn't transform because <$transformerId> transformer timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
-            else                -> exception
-        }
-
-    private fun createException(dataDescriptor: DataDescriptor,
+    private fun createException(transformerId: TransformerId,
+                                dataDescriptor: DataDescriptor,
                                 targetMediaType: MediaType,
                                 parameters: Parameters,
                                 transformerExceptionsAccumulator: TransformerExceptionsAccumulator): TransformersCouldNotTransformException =
         TransformersCouldNotTransformException(
-                "There is no <$transformerId> transformer that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
+                "There is no <$transformerName> transformer that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$transformerId, $targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
         )
 
     private fun DataDescriptor.generateDescription(): String =
@@ -96,5 +99,11 @@ class TransformerActor(private val transformerId: String,
             } catch (e: UnsupportedOperationException) {
                 "<no location, ${it.mediaType}>"
             }
+        }
+
+    private fun processException(exception: Exception, parameters: Parameters): Exception =
+        when (exception) {
+            is TimeoutException -> TransformerTimeoutException("Couldn't transform because <$transformerName> transformer timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
+            else                -> exception
         }
 }

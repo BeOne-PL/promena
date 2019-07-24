@@ -4,6 +4,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
+import pl.beone.promena.transformer.contract.transformer.TransformerId
+import pl.beone.promena.transformer.contract.transformer.transformerId
 
 class PropertiesTransformerConfig(private val environment: Environment) : TransformerConfig {
 
@@ -11,14 +13,15 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
         private val logger = LoggerFactory.getLogger(PropertiesTransformerConfig::class.java)
     }
 
-    override fun getId(transformer: Transformer): String =
-            determine(transformer, "id", String::class.java, null)
+    override fun getTransformerId(transformer: Transformer): TransformerId =
+        transformerId(determine(transformer, "id.name", String::class.java, null),
+                      determine(transformer, "id.sub-name", String::class.java, null))
 
     override fun getActors(transformer: Transformer): Int =
-            determine(transformer, "actors", Int::class.java, 1)
+        determine(transformer, "actors", Int::class.java, 1)
 
     override fun getPriority(transformer: Transformer): Int =
-            determine(transformer, "priority", Int::class.java, 0)
+        determine(transformer, "priority", Int::class.java, 0)
 
     private fun <T> determine(transformer: Transformer, keyElement: String, clazz: Class<T>, default: T?): T {
         val key = "transformer.${transformer.javaClass.canonicalName}.$keyElement"
@@ -27,7 +30,7 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
             environment.getRequiredProperty(key, clazz)
         } else {
             if (default == null) {
-                throw IllegalStateException("There is no <$key> property. Transformer must have <transformerId>")
+                throw IllegalStateException("There is no <$key> property")
             } else {
                 logger.warn("There is no <$key> property. Set $keyElement to <$default>")
                 default

@@ -7,48 +7,64 @@ import org.junit.Test
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML
 import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class TransformationDslTest {
 
     companion object {
-        private const val id = "test"
+        private const val transformerName = "test"
         private val targetMediaType = TEXT_PLAIN
         private val parameters = mockk<Parameters>()
 
-        private const val id2 = "test2"
+        private const val transformerName2 = "test2"
         private val targetMediaType2 = TEXT_XML
         private val parameters2 = mockk<Parameters>()
 
-        private val singleTransformation = Transformation.Single(id, targetMediaType, parameters)
-        private val singleTransformation2 = Transformation.Single(id2, targetMediaType2, parameters2)
+        private const val transformerSubName = "sub-test"
+
+        private val singleTransformation = Transformation.Single.of(transformerName, targetMediaType, parameters)
+        private val singleTransformationWithSubName = Transformation.Single.of(transformerName, transformerSubName, targetMediaType, parameters)
+        private val singleTransformation2 = Transformation.Single.of(transformerName2, targetMediaType2, parameters2)
     }
 
     @Test
     fun singleTransformation() {
-        singleTransformation(id, targetMediaType, parameters) shouldBe
+        singleTransformation(transformerName, targetMediaType, parameters) shouldBe
                 singleTransformation
     }
 
     @Test
+    fun `singleTransformation _ transformation id`() {
+        singleTransformation((transformerName to transformerSubName).toTransformerId(), targetMediaType, parameters) shouldBe
+                singleTransformationWithSubName
+    }
+
+    @Test
+    fun `singleTransformation _ with null sub name`() {
+        singleTransformation(transformerName, transformerSubName, targetMediaType, parameters) shouldBe
+                singleTransformationWithSubName
+    }
+
+    @Test
     fun `next _ single transformation`() {
-        singleTransformation(id, targetMediaType, parameters) next singleTransformation(id2, targetMediaType2, parameters2) shouldBe
-                Transformation.Composite(listOf(singleTransformation, singleTransformation2))
+        singleTransformation(transformerName, targetMediaType, parameters) next singleTransformation(transformerName2, targetMediaType2, parameters2) shouldBe
+                Transformation.Composite.of(listOf(singleTransformation, singleTransformation2))
     }
 
     @Test
     fun compositeTransformation() {
         compositeTransformation(singleTransformation, listOf(singleTransformation2)) shouldBe
-                Transformation.Composite(listOf(singleTransformation, singleTransformation2))
+                Transformation.Composite.of(listOf(singleTransformation, singleTransformation2))
 
         compositeTransformation(singleTransformation, singleTransformation2) shouldBe
-                Transformation.Composite(listOf(singleTransformation, singleTransformation2))
+                Transformation.Composite.of(listOf(singleTransformation, singleTransformation2))
     }
 
     @Test
     fun `next _ composite transformation`() {
-        compositeTransformation(singleTransformation(id, targetMediaType, parameters), singleTransformation(id2, targetMediaType2, parameters2)) next
-                singleTransformation(id, targetMediaType, parameters) shouldBe
-                Transformation.Composite(listOf(singleTransformation, singleTransformation2, singleTransformation))
+        compositeTransformation(singleTransformation(transformerName, targetMediaType, parameters), singleTransformation(transformerName2, targetMediaType2, parameters2)) next
+                singleTransformation(transformerName, targetMediaType, parameters) shouldBe
+                Transformation.Composite.of(listOf(singleTransformation, singleTransformation2, singleTransformation))
     }
 
     @Test
@@ -61,22 +77,22 @@ class TransformationDslTest {
     @Test
     fun `transformation _ one single transformation - Single`() {
         transformation(singleTransformation) shouldBe
-                Transformation.Single(id, targetMediaType, parameters)
+                Transformation.Single.of(transformerName, targetMediaType, parameters)
     }
 
     @Test
     fun `transformation _ two single transformations - Composite`() {
         transformation(listOf(singleTransformation, singleTransformation2)) shouldBe
-                Transformation.Composite(listOf(singleTransformation, singleTransformation2))
+                Transformation.Composite.of(listOf(singleTransformation, singleTransformation2))
 
         transformation(singleTransformation, singleTransformation2) shouldBe
-                Transformation.Composite(listOf(singleTransformation, singleTransformation2))
+                Transformation.Composite.of(listOf(singleTransformation, singleTransformation2))
     }
 
     @Test
     fun toTransformation() {
         listOf(singleTransformation).toTransformation() shouldBe
-                Transformation.Single(id, targetMediaType, parameters)
+                Transformation.Single.of(transformerName, targetMediaType, parameters)
     }
 
 }

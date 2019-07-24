@@ -4,6 +4,10 @@ package pl.beone.promena.transformer.contract.transformation
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.transformer.TransformerId
+
+fun singleTransformation(transformerId: TransformerId, targetMediaType: MediaType, parameters: Parameters): Transformation.Single =
+    Transformation.Single.of(transformerId, targetMediaType, parameters)
 
 fun singleTransformation(transformerName: String, transformerSubName: String, targetMediaType: MediaType, parameters: Parameters): Transformation.Single =
     Transformation.Single.of(transformerName, transformerSubName, targetMediaType, parameters)

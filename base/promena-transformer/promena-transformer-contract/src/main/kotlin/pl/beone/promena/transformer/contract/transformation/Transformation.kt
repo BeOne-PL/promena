@@ -13,6 +13,10 @@ sealed class Transformation {
         companion object {
 
             @JvmStatic
+            fun of(transformerId: TransformerId, targetMediaType: MediaType, parameters: Parameters): Single =
+                Single(transformerId, targetMediaType, parameters)
+
+            @JvmStatic
             fun of(transformerName: String, transformerSubName: String, targetMediaType: MediaType, parameters: Parameters): Single =
                 Single(TransformerId.of(transformerName, transformerSubName), targetMediaType, parameters)
 

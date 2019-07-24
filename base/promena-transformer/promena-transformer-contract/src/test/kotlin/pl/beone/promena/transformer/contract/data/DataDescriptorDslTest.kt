@@ -19,8 +19,8 @@ class DataDescriptorDslTest {
         private val mediaType2 = TEXT_XML
         private val metadata2 = mockk<Metadata>()
 
-        private val singleDataDescriptor = DataDescriptor.Single(data, mediaType, metadata)
-        private val singleDataDescriptor2 = DataDescriptor.Single(data2, mediaType2, metadata2)
+        private val singleDataDescriptor = DataDescriptor.Single.of(data, mediaType, metadata)
+        private val singleDataDescriptor2 = DataDescriptor.Single.of(data2, mediaType2, metadata2)
     }
 
     @Test
@@ -44,22 +44,22 @@ class DataDescriptorDslTest {
     @Test
     fun `plus _ single data descriptor`() {
         singleDataDescriptor + singleDataDescriptor2 shouldBe
-                DataDescriptor.Multi(listOf(singleDataDescriptor, singleDataDescriptor2))
+                DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2))
     }
 
     @Test
     fun multiDataDescriptor() {
         multiDataDescriptor(singleDataDescriptor, listOf(singleDataDescriptor2)) shouldBe
-                DataDescriptor.Multi(listOf(singleDataDescriptor, singleDataDescriptor2))
+                DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2))
 
         multiDataDescriptor(singleDataDescriptor, singleDataDescriptor2) shouldBe
-                DataDescriptor.Multi(listOf(singleDataDescriptor, singleDataDescriptor2))
+                DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2))
     }
 
     @Test
     fun `plus _ multi data descriptor`() {
         multiDataDescriptor(singleDataDescriptor, singleDataDescriptor2) + singleDataDescriptor shouldBe
-                DataDescriptor.Multi(listOf(singleDataDescriptor, singleDataDescriptor2, singleDataDescriptor))
+                DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2, singleDataDescriptor))
     }
 
     @Test
@@ -71,21 +71,21 @@ class DataDescriptorDslTest {
     @Test
     fun `dataDescriptor _ one single data descriptors - Single`() {
         dataDescriptor(singleDataDescriptor) shouldBe
-                DataDescriptor.Single(data, mediaType, metadata)
+                DataDescriptor.Single.of(data, mediaType, metadata)
     }
 
     @Test
     fun `dataDescriptor _ two single data descriptors - Multi`() {
         dataDescriptor(listOf(singleDataDescriptor, singleDataDescriptor2)) shouldBe
-                DataDescriptor.Multi(listOf(singleDataDescriptor, singleDataDescriptor2))
+                DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2))
 
         dataDescriptor(singleDataDescriptor, singleDataDescriptor2) shouldBe
-                DataDescriptor.Multi(listOf(singleDataDescriptor, singleDataDescriptor2))
+                DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2))
     }
 
     @Test
     fun toDataDescriptor() {
         listOf(singleDataDescriptor).toDataDescriptor() shouldBe
-                DataDescriptor.Single(data, mediaType, metadata)
+                DataDescriptor.Single.of(data, mediaType, metadata)
     }
 }
