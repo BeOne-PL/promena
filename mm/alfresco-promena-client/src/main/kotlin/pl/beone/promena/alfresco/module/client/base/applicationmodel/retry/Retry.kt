@@ -7,9 +7,12 @@ sealed class Retry {
     object No : Retry() {
 
         override val maxAttempts: Long
-            get() = throw UnsupportedOperationException("")
+            get() = throw throwUnsupportedException()
         override val nextAttemptDelay: Duration
-            get() = throw UnsupportedOperationException("")
+            get() = throw throwUnsupportedException()
+
+        private fun throwUnsupportedException(): UnsupportedOperationException =
+            UnsupportedOperationException("You can't get this value for <Retry.No> policy")
     }
 
     data class Custom internal constructor(override val maxAttempts: Long,
