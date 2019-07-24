@@ -11,8 +11,8 @@ sealed class TransformedDataDescriptor {
             get() = emptyList()
     }
 
-    data class Single internal constructor(val data: Data,
-                                           val metadata: Metadata) : TransformedDataDescriptor() {
+    data class Single private constructor(val data: Data,
+                                          val metadata: Metadata) : TransformedDataDescriptor() {
 
         companion object {
 
@@ -25,7 +25,7 @@ sealed class TransformedDataDescriptor {
             get() = listOf(this)
     }
 
-    data class Multi internal constructor(override val descriptors: List<Single>) : TransformedDataDescriptor() {
+    data class Multi private constructor(override val descriptors: List<Single>) : TransformedDataDescriptor() {
 
         companion object {
 

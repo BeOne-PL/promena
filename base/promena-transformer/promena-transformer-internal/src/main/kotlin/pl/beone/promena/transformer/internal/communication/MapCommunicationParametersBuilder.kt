@@ -13,10 +13,10 @@ class MapCommunicationParametersBuilder {
         apply { parameters[key] = value }
 
     fun build(): MapCommunicationParameters =
-        if (parameters.containsKey(CommunicationParameters.ID)) {
-            MapCommunicationParameters(parameters)
-        } else {
-            throw IllegalArgumentException("Communication parameters must contain <${CommunicationParameters.ID}>")
-        }
+        MapCommunicationParameters.of(
+                parameters[CommunicationParameters.ID]?.toString()
+                ?: throw IllegalArgumentException("Communication parameters must contain <${CommunicationParameters.ID}>"),
+                parameters
+        )
 
 }

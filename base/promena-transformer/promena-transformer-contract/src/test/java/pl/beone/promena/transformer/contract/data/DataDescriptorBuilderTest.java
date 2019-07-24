@@ -32,7 +32,7 @@ public class DataDescriptorBuilderTest {
         assertThat(new DataDescriptorBuilder()
                            .add(singleDataDescriptor)
                            .build())
-                .isEqualTo(new DataDescriptor.Single(data, mediaType, metadata));
+                .isEqualTo(DataDescriptor.Single.of(data, mediaType, metadata));
     }
 
     @Test
@@ -43,6 +43,6 @@ public class DataDescriptorBuilderTest {
                            .add(singleDataDescriptor)
                            .add(singleDataDescriptor2)
                            .build())
-                .isEqualTo(new DataDescriptor.Multi(Arrays.asList(singleDataDescriptor, singleDataDescriptor2)));
+                .isEqualTo(DataDescriptor.Multi.of(Arrays.asList(singleDataDescriptor, singleDataDescriptor2)));
     }
 }

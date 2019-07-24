@@ -52,19 +52,19 @@ public class MapParametersJavaTest {
     @Test
     public void of_timeoutNotSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value"),
-                                                  entry("key2", "value2")))
-                           .getAll())
+                entry("key2", "value2")))
+                .getAll())
                 .containsOnly(entry("key", "value"),
-                              entry("key2", "value2"));
+                        entry("key2", "value2"));
     }
 
     @Test
     public void of_timeoutSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value")),
-                                    Duration.ofMillis(100))
-                           .getAll())
+                Duration.ofMillis(100))
+                .getAll())
                 .containsOnly(entry("key", "value"),
-                              entry(Parameters.TIMEOUT, Duration.ofMillis(100)));
+                        entry(Parameters.TIMEOUT, Duration.ofMillis(100)));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class MapParametersJavaTest {
     @Test
     public void getParameters() {
         assertThat(parameters.getParameters("parameters"))
-                .isEqualTo(new MapParameters(new HashMap<>() {{
+                .isEqualTo(MapParameters.of(new HashMap<>() {{
                     put("key", "value");
                 }}));
 
@@ -175,7 +175,7 @@ public class MapParametersJavaTest {
                 .containsEntry("int", 3)
                 .containsEntry("boolean", true)
                 .containsEntry("stringFloat", "4.1")
-                .containsEntry("parameters", new MapParameters(new HashMap<>() {{
+                .containsEntry("parameters", MapParameters.of(new HashMap<>() {{
                     put("key", "value");
                 }}))
                 .containsEntry("mixList", Arrays.asList(1, "string", true));

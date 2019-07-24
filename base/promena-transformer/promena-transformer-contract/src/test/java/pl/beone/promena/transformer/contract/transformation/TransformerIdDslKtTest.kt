@@ -7,17 +7,17 @@ class TransformerIdDslKtTest {
 
     @Test
     fun transformerId() {
-        transformerId("transfomer", "libreoffice").let {
+        pl.beone.promena.transformer.contract.transformer.transformerId("transfomer", "libreoffice").let {
             it.name shouldBe "transfomer"
-            it.implementationName shouldBe "libreoffice"
+            it.subName shouldBe "libreoffice"
         }
     }
 
     @Test
     fun `transformerId _ null implementation names`() {
-        transformerId("transfomer").let {
+        pl.beone.promena.transformer.contract.transformer.transformerId("transfomer").let {
             it.name shouldBe "transfomer"
-            it.implementationName shouldBe null
+            it.subName shouldBe null
         }
     }
 }

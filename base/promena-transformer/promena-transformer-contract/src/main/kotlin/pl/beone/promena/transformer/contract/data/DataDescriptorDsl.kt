@@ -12,27 +12,27 @@ operator fun DataDescriptor.Empty.plus(single: DataDescriptor.Single): DataDescr
         single
 
 fun singleDataDescriptor(data: Data, mediaType: MediaType, metadata: Metadata): DataDescriptor.Single =
-        DataDescriptor.Single(data, mediaType, metadata)
+        DataDescriptor.Single.of(data, mediaType, metadata)
 
 operator fun DataDescriptor.Single.plus(descriptor: DataDescriptor.Single): DataDescriptor.Multi =
-        DataDescriptor.Multi(descriptors + descriptor)
+        DataDescriptor.Multi.of(descriptors + descriptor)
 
 fun multiDataDescriptor(descriptor: DataDescriptor.Single,
                         descriptors: List<DataDescriptor.Single>): DataDescriptor.Multi =
-        DataDescriptor.Multi(listOf(descriptor) + descriptors)
+        DataDescriptor.Multi.of(listOf(descriptor) + descriptors)
 
 fun multiDataDescriptor(descriptor: DataDescriptor.Single,
                         vararg descriptors: DataDescriptor.Single): DataDescriptor.Multi =
         multiDataDescriptor(descriptor, descriptors.toList())
 
 operator fun DataDescriptor.Multi.plus(descriptor: DataDescriptor.Single): DataDescriptor.Multi =
-        DataDescriptor.Multi(descriptors + descriptor)
+        DataDescriptor.Multi.of(descriptors + descriptor)
 
 fun dataDescriptor(descriptors: List<DataDescriptor.Single>): DataDescriptor =
         when (descriptors.size) {
             0    -> DataDescriptor.Empty
             1    -> descriptors.first()
-            else -> DataDescriptor.Multi(descriptors.toList())
+            else -> DataDescriptor.Multi.of(descriptors.toList())
         }
 
 fun dataDescriptor(vararg descriptors: DataDescriptor.Single): DataDescriptor =

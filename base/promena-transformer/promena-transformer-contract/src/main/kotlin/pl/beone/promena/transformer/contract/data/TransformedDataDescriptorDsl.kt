@@ -12,27 +12,27 @@ operator fun TransformedDataDescriptor.Empty.plus(single: TransformedDataDescrip
     single
 
 fun singleTransformedDataDescriptor(data: Data, metadata: Metadata): TransformedDataDescriptor.Single =
-    TransformedDataDescriptor.Single(data, metadata)
+    TransformedDataDescriptor.Single.of(data, metadata)
 
 operator fun TransformedDataDescriptor.Single.plus(descriptor: TransformedDataDescriptor.Single): TransformedDataDescriptor.Multi =
-    TransformedDataDescriptor.Multi(descriptors + descriptor)
+    TransformedDataDescriptor.Multi.of(descriptors + descriptor)
 
 fun multiTransformedDataDescriptor(descriptor: TransformedDataDescriptor.Single,
                                    descriptors: List<TransformedDataDescriptor.Single>): TransformedDataDescriptor.Multi =
-    TransformedDataDescriptor.Multi(listOf(descriptor) + descriptors)
+    TransformedDataDescriptor.Multi.of(listOf(descriptor) + descriptors)
 
 fun multiTransformedDataDescriptor(descriptor: TransformedDataDescriptor.Single,
                                    vararg descriptors: TransformedDataDescriptor.Single): TransformedDataDescriptor.Multi =
     multiTransformedDataDescriptor(descriptor, descriptors.toList())
 
 operator fun TransformedDataDescriptor.Multi.plus(descriptor: TransformedDataDescriptor.Single): TransformedDataDescriptor.Multi =
-    TransformedDataDescriptor.Multi(descriptors + descriptor)
+    TransformedDataDescriptor.Multi.of(descriptors + descriptor)
 
 fun transformedDataDescriptor(descriptors: List<TransformedDataDescriptor.Single>): TransformedDataDescriptor =
     when (descriptors.size) {
         0    -> TransformedDataDescriptor.Empty
         1    -> descriptors.first()
-        else -> TransformedDataDescriptor.Multi(descriptors)
+        else -> TransformedDataDescriptor.Multi.of(descriptors)
     }
 
 fun transformedDataDescriptor(vararg descriptors: TransformedDataDescriptor.Single): TransformedDataDescriptor =

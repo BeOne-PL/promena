@@ -15,7 +15,7 @@ public class TransformedDataDescriptorBuilderTest {
     @Test
     public void build_zeroTransformedDataDescriptors() {
         assertThat(new TransformedDataDescriptorBuilder()
-                           .build())
+                .build())
                 .isEqualTo(TransformedDataDescriptor.Empty.INSTANCE);
     }
 
@@ -26,9 +26,9 @@ public class TransformedDataDescriptorBuilderTest {
 
         TransformedDataDescriptor.Single singleTransformedDataDescriptor = singleTransformedDataDescriptor(data, metadata);
         assertThat(new TransformedDataDescriptorBuilder()
-                           .add(singleTransformedDataDescriptor)
-                           .build())
-                .isEqualTo(new TransformedDataDescriptor.Single(data, metadata));
+                .add(singleTransformedDataDescriptor)
+                .build())
+                .isEqualTo(TransformedDataDescriptor.Single.of(data, metadata));
     }
 
     @Test
@@ -36,9 +36,9 @@ public class TransformedDataDescriptorBuilderTest {
         TransformedDataDescriptor.Single singleTransformedDataDescriptor = singleTransformedDataDescriptor(mock(Data.class), mock(Metadata.class));
         TransformedDataDescriptor.Single singleTransformedDataDescriptor2 = singleTransformedDataDescriptor(mock(Data.class), mock(Metadata.class));
         assertThat(new TransformedDataDescriptorBuilder()
-                           .add(singleTransformedDataDescriptor)
-                           .add(singleTransformedDataDescriptor2)
-                           .build())
-                .isEqualTo(new TransformedDataDescriptor.Multi(Arrays.asList(singleTransformedDataDescriptor, singleTransformedDataDescriptor2)));
+                .add(singleTransformedDataDescriptor)
+                .add(singleTransformedDataDescriptor2)
+                .build())
+                .isEqualTo(TransformedDataDescriptor.Multi.of(Arrays.asList(singleTransformedDataDescriptor, singleTransformedDataDescriptor2)));
     }
 }

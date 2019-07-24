@@ -9,7 +9,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URI
 
-data class FileData internal constructor(private val uri: URI) : Data {
+data class FileData private constructor(private val uri: URI) : Data {
 
     companion object {
 
