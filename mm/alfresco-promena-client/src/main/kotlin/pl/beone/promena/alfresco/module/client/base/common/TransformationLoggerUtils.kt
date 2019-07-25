@@ -2,126 +2,93 @@ package pl.beone.promena.alfresco.module.client.base.common
 
 import org.alfresco.service.cmr.repository.NodeRef
 import org.slf4j.Logger
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.time.Duration
 
-fun Logger.startSync(transformerId: String,
+fun Logger.startSync(transformation: Transformation,
                      nodeRefs: List<NodeRef>,
-                     targetMediaType: MediaType,
-                     parameters: Parameters,
                      waitMax: Duration?) {
-    info("Transforming <{}> <{}> nodes <{}> to <{}>. Waiting <{}> for response...",
-         transformerId,
-         parameters,
+    info("Transforming <{}> nodes <{}>. Waiting <{}> for response...",
+         transformation,
          nodeRefs,
-         targetMediaType,
          waitMax)
 }
 
-fun Logger.startAsync(transformerId: String,
-                      nodeRefs: List<NodeRef>,
-                      targetMediaType: MediaType,
-                      parameters: Parameters) {
-    info("Transforming <{}> <{}> nodes <{}> to <{}>...",
-         transformerId,
-         parameters,
-         nodeRefs,
-         targetMediaType)
+fun Logger.startAsync(transformation: Transformation,
+                      nodeRefs: List<NodeRef>) {
+    info("Transforming <{}> nodes <{}>...",
+         transformation,
+         nodeRefs)
 }
 
-fun Logger.transformedSuccessfully(transformerId: String,
+fun Logger.transformedSuccessfully(transformation: Transformation,
                                    nodeRefs: List<NodeRef>,
-                                   targetMediaType: MediaType,
-                                   parameters: Parameters,
                                    targetNodeRefs: List<NodeRef>,
                                    startTimestamp: Long,
                                    endTimestamp: Long) {
-    info("Transformed <{}> <{}> nodes <{}> to <{}> <{}> in <{} s>",
-         transformerId,
-         parameters,
+    info("Transformed <{}> nodes <{}> to <{}> in <{} s>",
+         transformation,
          nodeRefs,
-         targetMediaType,
          targetNodeRefs,
          calculateExecutionTimeInSeconds(startTimestamp, endTimestamp))
 }
 
-fun Logger.skippedSavingResult(transformerId: String,
+fun Logger.skippedSavingResult(transformation: Transformation,
                                nodeRefs: List<NodeRef>,
-                               targetMediaType: MediaType,
-                               parameters: Parameters,
                                oldNodesChecksum: String,
                                currentNodesChecksum: String) {
-    warn("Skipped saving result <{}> transformation <{}> nodes <{}> to <{}> because nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
-         transformerId,
-         parameters,
+    warn("Skipped saving result <{}> nodes <{}> because nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+         transformation,
          nodeRefs,
-         targetMediaType,
          oldNodesChecksum,
          currentNodesChecksum)
 }
 
-fun Logger.couldNotTransformButChecksumsAreDifferent(transformerId: String,
+fun Logger.couldNotTransformButChecksumsAreDifferent(transformation: Transformation,
                                                      nodeRefs: List<NodeRef>,
-                                                     targetMediaType: MediaType,
-                                                     parameters: Parameters,
                                                      nodesChecksum: String,
                                                      currentNodesChecksum: String,
                                                      exception: Throwable) {
-    warn("Couldn't transform <{}> <{}> nodes <{}> to <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
-         transformerId,
-         parameters,
+    warn("Couldn't transform <{}> nodes <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+         transformation,
          nodeRefs,
-         targetMediaType,
          nodesChecksum,
          currentNodesChecksum,
          exception)
 }
 
-fun Logger.couldNotTransform(transformerId: String,
+fun Logger.couldNotTransform(transformation: Transformation,
                              nodeRefs: List<NodeRef>,
-                             targetMediaType: MediaType,
-                             parameters: Parameters,
                              exception: Throwable) {
-    error("Couldn't transform <{}> <{}> nodes <{}> to <{}>",
-          transformerId,
-          parameters,
+    error("Couldn't transform <{}> nodes <{}>",
+          transformation,
           nodeRefs,
-          targetMediaType,
           exception)
 }
 
 fun Logger.logOnRetry(attempt: Long,
                       retryOnErrorMaxAttempts: Long,
-                      transformerId: String,
-                      parameters: Parameters,
+                      transformation: Transformation,
                       nodeRefs: List<NodeRef>,
-                      targetMediaType: MediaType,
                       duration: Duration) {
-    warn("Attempt ({}/{}). Transformation <{}> <{}> nodes <{}> to <{}> will be run after <{}>",
+    warn("Attempt ({}/{}). Transformation <{}> nodes <{}> will be run after <{}>",
          attempt,
          retryOnErrorMaxAttempts,
-         transformerId,
-         parameters,
+         transformation,
          nodeRefs,
-         targetMediaType,
          duration)
 }
 
 fun Logger.logOnRetry(attempt: Long,
                       retryOnErrorMaxAttempts: Long,
-                      transformerId: String,
-                      parameters: Parameters,
-                      nodeRefs: List<NodeRef>,
-                      targetMediaType: MediaType) {
-    warn("Attempt ({}/{}). Transforming <{}> <{}> nodes <{}> to <{}>...",
+                      transformation: Transformation,
+                      nodeRefs: List<NodeRef>) {
+    warn("Attempt ({}/{}). Transforming <{}> nodes <{}>...",
          attempt,
          retryOnErrorMaxAttempts,
-         transformerId,
-         parameters,
-         nodeRefs,
-         targetMediaType)
+         transformation,
+         nodeRefs)
 }
 
 private fun calculateExecutionTimeInSeconds(millisStart: Long, millisEnd: Long): String =
-        String.format("%.3f", (millisEnd - millisStart) / 1000.0)
+    String.format("%.3f", (millisEnd - millisStart) / 1000.0)

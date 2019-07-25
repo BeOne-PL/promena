@@ -16,6 +16,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
+import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.io.Serializable
 
 class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Boolean,
@@ -30,27 +31,26 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
         private val logger = LoggerFactory.getLogger(RenditionAlfrescoTransformedDataDescriptorSaver::class.java)
     }
 
-    override fun save(transformerId: String,
+    override fun save(transformation: Transformation,
                       nodeRefs: List<NodeRef>,
-                      targetMediaType: MediaType,
-                      transformedDataDescriptors: TransformedDataDescriptor): List<NodeRef> =
+                      transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
             transactionService.retryingTransactionHelper.doInTransaction {
                 val sourceNodeRef = nodeRefs.first()
 
                 val renditionsNodeRefs = when {
-                    transformedDataDescriptors.descriptors.size > 1  ->
-                        handleMany(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors.descriptors)
-                    transformedDataDescriptors.descriptors.size == 1 ->
-                        handleOne(sourceNodeRef, transformerId, targetMediaType, transformedDataDescriptors.descriptors.first())
+                    transformedDataDescriptor.descriptors.size > 1  ->
+                        handleMany(sourceNodeRef, transformation, transformedDataDescriptor.descriptors)
+                    transformedDataDescriptor.descriptors.size == 1 ->
+                        handleOne(sourceNodeRef, transformation, transformedDataDescriptor.descriptors.first())
                     else                                 ->
                         if (saveIfZero) {
-                            handleZero(sourceNodeRef, transformerId)
+                            handleZero(sourceNodeRef, transformation)
                         } else {
                             emptyList()
                         }
                 }
 
-                logger.debug("Created <{}> rendition nodes <{}> as a child of <{}>", transformerId, renditionsNodeRefs, sourceNodeRef)
+                logger.debug("Created <{}> rendition nodes <{}> as a child of <{}>", transformation, renditionsNodeRefs, sourceNodeRef)
 
                 renditionsNodeRefs
             }

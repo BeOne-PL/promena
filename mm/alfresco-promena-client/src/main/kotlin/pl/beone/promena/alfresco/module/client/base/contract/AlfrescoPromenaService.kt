@@ -8,13 +8,13 @@ import java.time.Duration
 
 interface AlfrescoPromenaService {
 
-    fun transform(nodeRefs: List<NodeRef>,
-                  transformation: Transformation,
+    fun transform(transformation: Transformation,
+                  nodeRefs: List<NodeRef>,
                   waitMax: Duration? = null,
                   retry: Retry? = null): List<NodeRef>
 
-    fun transformAsync(nodeRefs: List<NodeRef>,
-                       transformation: Transformation,
+    fun transformAsync(transformation: Transformation,
+                       nodeRefs: List<NodeRef>,
                        retry: Retry? = null): Mono<List<NodeRef>>
 
 }

@@ -3,11 +3,11 @@ package pl.beone.promena.alfresco.module.client.base.contract
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.transformation.Transformation
 
 interface AlfrescoTransformedDataDescriptorSaver {
 
-    fun save(transformerId: String,
+    fun save(transformation: Transformation,
              nodeRefs: List<NodeRef>,
-             targetMediaType: MediaType,
-             transformedDataDescriptors: TransformedDataDescriptor): List<NodeRef>
+             transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef>
 }

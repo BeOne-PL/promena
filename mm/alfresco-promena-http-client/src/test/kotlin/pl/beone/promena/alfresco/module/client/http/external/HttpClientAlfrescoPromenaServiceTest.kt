@@ -83,7 +83,7 @@ class HttpClientAlfrescoPromenaServiceTest {
                                          alfrescoTransformedDataDescriptorSaver,
                                          serializationService,
                                          httpServer.createHttpClient())
-                .transform("success", nodeRefs, targetMediaType, parameters) shouldBe transformedNodeRefs
+                .transform(nodeRefs, "success", targetMediaType, parameters) shouldBe transformedNodeRefs
     }
 
     @Test
@@ -104,7 +104,7 @@ class HttpClientAlfrescoPromenaServiceTest {
                                          alfrescoTransformedDataDescriptorSaver,
                                          serializationService,
                                          httpServer.createHttpClient())
-                .transform("success", nodeRefs, targetMediaType, parameters) shouldBe transformedNodeRefs
+                .transform(nodeRefs, "success", targetMediaType, parameters) shouldBe transformedNodeRefs
 
         // test server should remove file from "location" if URI contains "location" param
         tmpFile.exists() shouldBe false
