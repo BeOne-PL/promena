@@ -8,29 +8,20 @@ import akka.cluster.metrics.MetricsSelector
 import akka.cluster.routing.ClusterRouterGroup
 import akka.cluster.routing.ClusterRouterGroupSettings
 import akka.routing.SmallestMailboxPool
-import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithTransformerId
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 
 class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(private val actorSystem: ActorSystem,
                                                                   private val metricsSelector: MetricsSelector) : ActorCreator {
 
-    override fun create(transformerId: String, props: Props, actors: Int): ActorRefWithTransformerId {
-        createSmallestMailboxPool(transformerId, props, actors)
+    override fun create(name: String, props: Props, actors: Int): ActorRef =
+        actorSystem.actorOf(
+                ClusterRouterGroup(AdaptiveLoadBalancingGroup(metricsSelector, emptySet()),
+                                   ClusterRouterGroupSettings(Int.MAX_VALUE, listOf("/user/$name"), true, emptySet()))
+                        .props(),
+                "$name-router"
+        )
 
-        val actorRef = createAdaptiveLoadBalancingGroupOnSmallestMailboxPoolPath(transformerId)
-
-        return ActorRefWithTransformerId(actorRef, transformerId)
-
-    }
-
-    private fun createAdaptiveLoadBalancingGroupOnSmallestMailboxPoolPath(transformerId: String): ActorRef =
-            actorSystem.actorOf(
-                    ClusterRouterGroup(AdaptiveLoadBalancingGroup(metricsSelector, emptySet()),
-                                       ClusterRouterGroupSettings(Int.MAX_VALUE, listOf("/user/$transformerId"), true, emptySet()))
-                            .props(),
-                    "$transformerId-router"
-            )
-
+    // TODO it should be use
     private fun createSmallestMailboxPool(transformerId: String, props: Props, actors: Int) {
         actorSystem.actorOf(SmallestMailboxPool(actors).props(props), transformerId)
     }

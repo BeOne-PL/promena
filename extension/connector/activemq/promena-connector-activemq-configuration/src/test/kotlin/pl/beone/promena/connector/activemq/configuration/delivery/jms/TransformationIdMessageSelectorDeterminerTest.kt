@@ -6,9 +6,9 @@ import io.mockk.mockk
 import org.junit.Test
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
-import pl.beone.promena.connector.activemq.internal.HashCodeTransformationHashFunctionDeterminer
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
+import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class TransformationIdMessageSelectorDeterminerTest {
 
@@ -18,20 +18,20 @@ class TransformationIdMessageSelectorDeterminerTest {
 
     @Test
     fun determine() {
-        val converterId = "converter"
+        val converterTransformerId = "converter".toTransformerId()
         val converterTransformer = mockk<Transformer>()
-        val barcodeId = "barcode"
+        val barcodeTransformerId = "barcode".toTransformerId()
         val barcodeTransformer = mockk<Transformer>()
 
         val transformerConfig = mockk<TransformerConfig> {
-            every { getId(converterTransformer) } returns converterId
-            every { getId(barcodeTransformer) } returns barcodeId
+            every { getTransformerId(converterTransformer) } returns converterTransformerId
+            every { getTransformerId(barcodeTransformer) } returns barcodeTransformerId
         }
 
         val transformationHashFunctionDeterminer = mockk<TransformationHashFunctionDeterminer> {
-            every { determine(listOf(converterId)) } returns "1"
-            every { determine(listOf(barcodeId)) } returns "2"
-            every { determine(listOf(converterId, barcodeId)) } returns "3"
+            every { determine(listOf(converterTransformerId)) } returns "1"
+            every { determine(listOf(barcodeTransformerId)) } returns "2"
+            every { determine(listOf(converterTransformerId, barcodeTransformerId)) } returns "3"
         }
 
         transformationIdMessageSelectorDeterminer.determine(transformerConfig,

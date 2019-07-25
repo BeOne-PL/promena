@@ -2,10 +2,8 @@ package pl.beone.promena.connector.activemq.configuration.delivery.jms
 
 import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.matchers.collections.shouldHaveSize
-import io.kotlintest.shouldBe
 import org.junit.Test
-
-import org.junit.Assert.*
+import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class TransformerIdsCombinationDeterminerTest {
 
@@ -15,18 +13,30 @@ class TransformerIdsCombinationDeterminerTest {
 
     @Test
     fun determine() {
-        transformerIdsCombinationDeterminer.determine(listOf("barcode", "converter", "jasper")).let {
-            it shouldHaveSize 7
+        transformerIdsCombinationDeterminer.determine(listOf(("barcode" to "zxing").toTransformerId(),
+                                                             ("converter" to "libreoffice").toTransformerId(),
+                                                             ("converter" to "microsoft-office").toTransformerId())).let {
+            it shouldHaveSize 31
 
-            it shouldContain listOf("barcode")
-            it shouldContain listOf("converter")
-            it shouldContain listOf("jasper")
+            it shouldContain listOf("barcode".toTransformerId())
 
-            it shouldContain listOf("barcode", "converter")
-            it shouldContain listOf("barcode", "jasper")
-            it shouldContain listOf("converter", "jasper")
+            it shouldContain listOf("barcode".toTransformerId(),
+                                    ("converter" to "libreoffice").toTransformerId())
 
-            it shouldContain listOf("barcode", "converter", "jasper")
+            it shouldContain listOf("barcode".toTransformerId(),
+                                    ("barcode" to "zxing").toTransformerId(),
+                                    ("converter" to "microsoft-office").toTransformerId())
+
+            it shouldContain listOf("barcode".toTransformerId(),
+                                    ("barcode" to "zxing").toTransformerId(),
+                                    ("converter" to "libreoffice").toTransformerId(),
+                                    ("converter" to "microsoft-office").toTransformerId())
+
+            it shouldContain listOf("barcode".toTransformerId(),
+                                    "converter".toTransformerId(),
+                                    ("barcode" to "zxing").toTransformerId(),
+                                    ("converter" to "libreoffice").toTransformerId(),
+                                    ("converter" to "microsoft-office").toTransformerId())
         }
     }
 }

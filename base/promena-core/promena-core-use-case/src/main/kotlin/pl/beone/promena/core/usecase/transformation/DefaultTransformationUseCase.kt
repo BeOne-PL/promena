@@ -28,7 +28,7 @@ class DefaultTransformationUseCase(private val externalCommunicationManager: Ext
             return dataDescriptor
                     .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
                     .let { transformationService.transform(transformation, it) }
-                    .let { outgoingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
+                    .let { transformedDataDescriptor -> outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters) }
         } catch (e: Exception) {
             logger.error("Couldn't perform the transformation {} <{}>",
                          generateTransformationExceptionDescription(transformation, dataDescriptor),

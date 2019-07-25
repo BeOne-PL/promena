@@ -14,8 +14,6 @@ import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 
-internal typealias TransformerIds = List<String>
-
 @Configuration
 class TransformationConsumerContext {
 

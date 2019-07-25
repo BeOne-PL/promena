@@ -1,17 +1,18 @@
 package pl.beone.promena.core.external.akka.transformer.config
 
+import akka.actor.ActorRef
 import io.kotlintest.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
-import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithTransformerId
+import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
-class AkkaGroupedByNameTransformersCreatorTest {
+class GroupedByNameTransformersCreatorTest {
 
     @Test
     fun create() {
@@ -35,17 +36,19 @@ class AkkaGroupedByNameTransformersCreatorTest {
 
         val internalCommunicationConverter = mockk<InternalCommunicationConverter>()
 
-        val transformerActorRefWithId = ActorRefWithTransformerId(mockk(), "transformer".toTransformerId())
-        val transformer2ActorRefWithId = ActorRefWithTransformerId(mockk(), "transformer2".toTransformerId())
+        val actorRef = mockk<ActorRef>()
+        val actorRef2 = mockk<ActorRef>()
+
         val actorCreator = mockk<ActorCreator> {
-            every { create("transformer", any(), 2) } returns transformerActorRefWithId
-            every { create("transformer2", any(), 3) } returns transformer2ActorRefWithId
+            every { create("transformer", any(), 2) } returns actorRef
+            every { create("transformer2", any(), 3) } returns actorRef2
         }
 
-        AkkaGroupedByNameTransformersCreator(transformerConfig, internalCommunicationConverter, actorCreator)
-                .create(listOf(transformer, transformer2, transformer3))
-                .map { it.transformerId } shouldBe
-                listOf("transformer".toTransformerId(), "transformer2".toTransformerId())
+        GroupedByNameTransformersCreator(transformerConfig, internalCommunicationConverter, actorCreator)
+                .create(listOf(transformer, transformer2, transformer3)) shouldBe
+                listOf(TransformerActorDescriptor("transformer".toTransformerId(), actorRef),
+                       TransformerActorDescriptor(("transformer" to "sub").toTransformerId(), actorRef),
+                       TransformerActorDescriptor("transformer2".toTransformerId(), actorRef2))
     }
 
 }

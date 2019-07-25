@@ -26,10 +26,10 @@ class TransformerHandler(private val serializationService: SerializationService,
                                                     communicationParametersConverter.convert(serverRequest.queryParams()))
                 }
                 .map(descriptorSerializationService::serialize)
-                .flatMap(this::createResponse)
+                .flatMap(::createResponse)
                 // CommunicationParametersConverter -> no <id> communication parameter
                 .onErrorMap(NoSuchElementException::class.java) { ResponseStatusException(BAD_REQUEST, it.message!!) }
-                .onErrorResume({ it !is ResponseStatusException }, this::createExceptionResponse)
+                .onErrorResume({ it !is ResponseStatusException }, ::createExceptionResponse)
 
     private fun createResponse(bytes: ByteArray): Mono<ServerResponse> =
         ServerResponse.ok().body(Mono.just(bytes), ByteArray::class.java)

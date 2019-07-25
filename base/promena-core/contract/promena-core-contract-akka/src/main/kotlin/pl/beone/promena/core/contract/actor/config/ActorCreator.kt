@@ -1,9 +1,9 @@
 package pl.beone.promena.core.contract.actor.config
 
+import akka.actor.ActorRef
 import akka.actor.Props
-import pl.beone.promena.core.applicationmodel.akka.actor.ActorRefWithTransformerId
 
 interface ActorCreator {
 
-    fun create(transformerId: String, props: Props, actors: Int): ActorRefWithTransformerId
+    fun create(name: String, props: Props, actors: Int): ActorRef
 }

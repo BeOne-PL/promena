@@ -18,6 +18,6 @@ class SerializerActorContext(private val actorCreator: ActorCreator) {
                         serializationService: SerializationService) =
             actorCreator.create(SerializerActor.actorName,
                                 Props.create(SerializerActor::class.java) { SerializerActor(serializationService) },
-                                environment.getRequiredProperty("core.serializer.actors", Int::class.java)).ref
+                                environment.getRequiredProperty("core.serializer.actors", Int::class.java))
 
 }

@@ -1,7 +1,9 @@
 package pl.beone.promena.connector.activemq.internal
 
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 import org.junit.Test
+import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class HashCodeTransformationHashFunctionDeterminerTest {
 
@@ -11,15 +13,26 @@ class HashCodeTransformationHashFunctionDeterminerTest {
 
     @Test
     fun determine() {
-        val hashCode = "-2100906783"
+        val hashCode = "-1922677359"
 
-        transformationHashFunctionDeterminer.determine(listOf("converter", "barcode")) shouldBe hashCode
-        transformationHashFunctionDeterminer.determine(listOf("barcode", "converter")) shouldBe hashCode
+        val converterTransformerId = "converter".toTransformerId()
+        val libreOfficeConverterTransformerId = ("converter" to "libreoffice").toTransformerId()
+        val barcodeTransformerId = "barcode".toTransformerId()
+        val zxingBarcodeTransformerId = ("barcode" to "zxing").toTransformerId()
+
+        transformationHashFunctionDeterminer.determine(listOf(converterTransformerId,
+                                                              libreOfficeConverterTransformerId,
+                                                              barcodeTransformerId,
+                                                              zxingBarcodeTransformerId)) shouldBe hashCode
+        transformationHashFunctionDeterminer.determine(listOf(zxingBarcodeTransformerId,
+                                                              barcodeTransformerId,
+                                                              libreOfficeConverterTransformerId,
+                                                              converterTransformerId)) shouldBe hashCode
     }
 
     @Test
     fun `determine _ different order`() {
-        transformationHashFunctionDeterminer.determine(listOf("converter", "barcode", "report")) shouldBe
-                transformationHashFunctionDeterminer.determine(listOf("report", "converter", "barcode"))
+        transformationHashFunctionDeterminer.determine(listOf("converter".toTransformerId())) shouldNotBe
+                transformationHashFunctionDeterminer.determine(listOf(("converter" to "libreoffice").toTransformerId()))
     }
 }

@@ -7,17 +7,17 @@ import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
-import pl.beone.promena.core.external.akka.transformer.config.AkkaGroupedByNameTransformersCreator
+import pl.beone.promena.core.external.akka.transformer.config.GroupedByNameTransformersCreator
 
 @Configuration
-class AkkaGroupedByNameTransformersCreatorContext {
+class GroupedByNameTransformersCreatorContext {
 
     @Bean
     @ConditionalOnMissingBean(TransformersCreator::class)
-    fun akkaGroupedByNameTransformersCreator(transformerConfig: TransformerConfig,
-                                             internalCommunicationConverter: InternalCommunicationConverter,
-                                             actorCreator: ActorCreator) =
-        AkkaGroupedByNameTransformersCreator(transformerConfig,
-                                             internalCommunicationConverter,
-                                             actorCreator)
+    fun groupedByNameTransformersCreator(transformerConfig: TransformerConfig,
+                                         internalCommunicationConverter: InternalCommunicationConverter,
+                                         actorCreator: ActorCreator) =
+        GroupedByNameTransformersCreator(transformerConfig,
+                                         internalCommunicationConverter,
+                                         actorCreator)
 }

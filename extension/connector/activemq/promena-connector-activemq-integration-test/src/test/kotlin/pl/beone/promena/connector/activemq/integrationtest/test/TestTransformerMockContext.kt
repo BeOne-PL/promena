@@ -6,12 +6,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
+import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 @Configuration
 class TestTransformerMockContext {
 
     companion object {
-        internal const val TRANSFORMER_ID = "test"
+        internal val TRANSFORMER_ID = ("test" to "sub").toTransformerId()
     }
 
     @Bean
@@ -21,6 +22,6 @@ class TestTransformerMockContext {
     @Bean
     fun transformerConfig(testTransformer: Transformer) =
             mockk<TransformerConfig> {
-                every { getId(testTransformer) } returns TRANSFORMER_ID
+                every { getTransformerId(testTransformer) } returns TRANSFORMER_ID
             }
 }
