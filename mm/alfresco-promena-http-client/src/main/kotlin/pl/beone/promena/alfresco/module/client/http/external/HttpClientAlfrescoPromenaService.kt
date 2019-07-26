@@ -144,7 +144,7 @@ class HttpClientAlfrescoPromenaService(private val externalCommunication: Extern
     private fun <T> HttpHeaders.getSerializationClass(): Class<T> =
         try {
             Class.forName(get(PromenaHttpHeaders.SERIALIZATION_CLASS)
-                          ?: throw NoSuchElementException("Headers don't contain <${PromenaHttpHeaders.SERIALIZATION_CLASS}> entry")) as Class<T>
+                          ?: throw NoSuchElementException("Headers don't contain <${PromenaHttpHeaders.SERIALIZATION_CLASS}> entry. An unknown error occurred on Promena.")) as Class<T>
         } catch (e: ClassNotFoundException) {
             throw IllegalArgumentException("Class indicated in <${PromenaHttpHeaders.SERIALIZATION_CLASS}> header isn't available", e)
         }

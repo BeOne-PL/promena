@@ -15,7 +15,16 @@
     <aspects>
         <aspect name="promena:transformation">
             <properties>
-                <property name="promena:transformationIndex">
+                <property name="promena:transformation">
+                    <type>d:text</type>
+                    <multiple>true</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+                <property name="promena:transformationDataIndex">
                     <type>d:int</type>
                     <index enabled="true">
                         <atomic>true</atomic>
@@ -23,7 +32,7 @@
                         <tokenised>false</tokenised>
                     </index>
                 </property>
-                <property name="promena:transformationSize">
+                <property name="promena:transformationDataSize">
                     <type>d:int</type>
                     <index enabled="true">
                         <atomic>true</atomic>

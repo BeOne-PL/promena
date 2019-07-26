@@ -9,149 +9,202 @@ import io.mockk.verify
 import io.netty.handler.codec.http.HttpResponseStatus
 import io.netty.handler.codec.http.QueryStringDecoder
 import org.alfresco.service.cmr.repository.NodeRef
-import org.junit.Before
+import org.junit.After
 import org.junit.Test
+import org.reactivestreams.Publisher
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.File
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.Memory
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
+import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformedDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
-import pl.beone.promena.transformer.internal.model.parameters.MapParameters
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
+import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
+import pl.beone.promena.transformer.contract.transformation.singleTransformation
+import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
+import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
+import pl.beone.promena.transformer.internal.model.parameters.plus
 import reactor.core.publisher.Mono
 import reactor.netty.ByteBufFlux
 import reactor.netty.DisposableServer
+import reactor.netty.NettyOutbound
 import reactor.netty.http.client.HttpClient
 import reactor.netty.http.server.HttpServer
 import reactor.netty.http.server.HttpServerRequest
+import reactor.netty.http.server.HttpServerResponse
 import reactor.test.StepVerifier
 import reactor.test.expectError
-import java.io.File
-import java.net.URI
 import java.time.Duration
 
 private data class Mocks(val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
-                         val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
-                         val serializationService: SerializationService)
+                         val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver)
 
 class HttpClientAlfrescoPromenaServiceTest {
 
     companion object {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
-        private val targetMediaType = TEXT_PLAIN
-        private val parameters = MapParameters(mapOf("key" to "value"))
-        private val dataDescriptors = listOf(DataDescriptor(MemoryData("test".toByteArray()), TEXT_PLAIN, MapMetadata(mapOf("key" to "value"))))
-        private val transformationDescriptor = TransformationDescriptor(dataDescriptors, targetMediaType, parameters)
-        private val transformedDataDescriptors = listOf(TransformedDataDescriptor(MemoryData("test".toByteArray()), MapMetadata.empty()))
-        private val serverException = RuntimeException("Exception")
+        private val transformation = singleTransformation("transformer", TEXT_PLAIN, emptyParameters() + ("key" to "value"))
+        private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
+        private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptor)
+        private val transformedDataDescriptor = singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata())
         private val transformedNodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"))
 
         private lateinit var httpServer: DisposableServer
-
-        private val successBytes = "/success.bin".readBytes()
-        private val exceptionBytes = "/exception.bin".readBytes()
     }
 
-    @Before
-    fun server() {
-        httpServer = startServer()
+    @After
+    fun stopServer() {
+        httpServer.disposeNow()
     }
 
     @Test
     fun transform() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serializedTransformedDataDescriptor = "transformedDataDescriptor".toByteArray()
+
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                    request.receive()
+                            .asByteArray()
+                            .map { it shouldBe serializedTransformationDescriptor }
+                            .then(Mono.just(serializedTransformedDataDescriptor)))
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedTransformedDataDescriptor, getClazz<TransformedDataDescriptor>()) } returns transformedDataDescriptor
+        }
 
-        HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
-                                         false,
-                                         0,
-                                         Duration.ofMillis(0),
+        HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                         noRetry(),
                                          alfrescoNodesChecksumGenerator,
                                          alfrescoDataDescriptorGetter,
                                          alfrescoTransformedDataDescriptorSaver,
                                          serializationService,
                                          httpServer.createHttpClient())
-                .transform(nodeRefs, "success", targetMediaType, parameters) shouldBe transformedNodeRefs
+                .transform(transformation, nodeRefs) shouldBe transformedNodeRefs
     }
 
     @Test
     fun `transform _ with communication location`() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serializedTransformedDataDescriptor = "transformedDataDescriptor".toByteArray()
+
+        val tmpDirUri = createTempDir().toURI()
+
+        httpServer = startServer { request, response ->
+            val location = QueryStringDecoder(request.uri()).parameters()["location"]
+
+            val serialized = if (location == null || location.first() != tmpDirUri.toString()) {
+                "not expected".toByteArray()
+            } else {
+                serializedTransformedDataDescriptor
+            }
+            response.send(serialized)
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedTransformedDataDescriptor, getClazz<TransformedDataDescriptor>()) } returns transformedDataDescriptor
+        }
 
-        val tmpFile = createTempFile()
-
-        HttpClientAlfrescoPromenaService(ExternalCommunication(File, tmpFile.toURI()),
-                                         false,
-                                         0,
-                                         Duration.ofMillis(0),
+        HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.File, tmpDirUri),
+                                         noRetry(),
                                          alfrescoNodesChecksumGenerator,
                                          alfrescoDataDescriptorGetter,
                                          alfrescoTransformedDataDescriptorSaver,
                                          serializationService,
                                          httpServer.createHttpClient())
-                .transform(nodeRefs, "success", targetMediaType, parameters) shouldBe transformedNodeRefs
-
-        // test server should remove file from "location" if URI contains "location" param
-        tmpFile.exists() shouldBe false
+                .transform(transformation, nodeRefs) shouldBe transformedNodeRefs
     }
 
     @Test
     fun `transform _ timeout expires before the end of transformation _ should throw TransformationSynchronizationException and finish transformation after it`() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serializedTransformedDataDescriptor = "transformedDataDescriptor".toByteArray()
+
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                    request.receive()
+                            .asByteArray()
+                            .map { it shouldBe serializedTransformationDescriptor }
+                            .then(Mono.just(serializedTransformedDataDescriptor)))
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedTransformedDataDescriptor, getClazz<TransformedDataDescriptor>()) } returns transformedDataDescriptor
+        }
 
         shouldThrow<TransformationSynchronizationException> {
-            HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
-                                             false,
-                                             0,
-                                             Duration.ofMillis(0),
+            HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                             noRetry(),
                                              alfrescoNodesChecksumGenerator,
                                              alfrescoDataDescriptorGetter,
                                              alfrescoTransformedDataDescriptorSaver,
                                              serializationService,
                                              httpServer.createHttpClient())
-                    .transform("success", nodeRefs, targetMediaType, parameters, Duration.ofMillis(0))
+                    .transform(transformation, nodeRefs, Duration.ofMillis(0))
         }
 
         Thread.sleep(500)
 
-        verify { alfrescoTransformedDataDescriptorSaver.save("success", nodeRefs, targetMediaType, transformedDataDescriptors) }
+        verify { alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor) }
     }
 
     @Test
     fun transformAsync() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serializedTransformedDataDescriptor = "transformedDataDescriptor".toByteArray()
+
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                    request.receive()
+                            .asByteArray()
+                            .map { it shouldBe serializedTransformationDescriptor }
+                            .then(Mono.just(serializedTransformedDataDescriptor)))
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedTransformedDataDescriptor, getClazz<TransformedDataDescriptor>()) } returns transformedDataDescriptor
+        }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
-                                                             false,
-                                                             0,
-                                                             Duration.ofMillis(0),
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                                             noRetry(),
                                                              alfrescoNodesChecksumGenerator,
                                                              alfrescoDataDescriptorGetter,
                                                              alfrescoTransformedDataDescriptorSaver,
                                                              serializationService,
                                                              httpServer.createHttpClient())
-                                    .transformAsync("success", nodeRefs, targetMediaType, parameters))
+                                    .transformAsync(transformation, nodeRefs))
                 .expectNext(transformedNodeRefs)
                 .expectComplete()
                 .verify()
@@ -159,22 +212,39 @@ class HttpClientAlfrescoPromenaServiceTest {
 
     @Test
     fun `transformAsync _ exception on server side _ should throw RuntimeException`() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serverException = RuntimeException("Exception")
+        val serializedServerException = "serverException".toByteArray()
 
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                    request.receive()
+                            .asByteArray()
+                            .map { it shouldBe serializedTransformationDescriptor }
+                            .doOnNext {
+                                response.header(PromenaHttpHeaders.SERIALIZATION_CLASS, "java.lang.RuntimeException")
+                                        .status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+                            }
+                            .then(Mono.just(serializedServerException)))
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedServerException, getClazz<RuntimeException>()) } returns serverException
+        }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
-                                                             false,
-                                                             0,
-                                                             Duration.ofMillis(0),
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                                             noRetry(),
                                                              alfrescoNodesChecksumGenerator,
                                                              alfrescoDataDescriptorGetter,
                                                              alfrescoTransformedDataDescriptorSaver,
                                                              serializationService,
                                                              httpServer.createHttpClient())
-                                    .transformAsync("exception", nodeRefs, targetMediaType, parameters))
+                                    .transformAsync(transformation, nodeRefs))
                 .expectErrorSatisfies {
                     it shouldBeSameInstanceAs serverException
                     it.message shouldBe serverException.message
@@ -184,66 +254,123 @@ class HttpClientAlfrescoPromenaServiceTest {
 
     @Test
     fun `transformAsync _ nodes checksum were changed in the meantime _ should throw AnotherTransformationIsInProgressException`() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serializedTransformedDataDescriptor = "transformedDataDescriptor".toByteArray()
 
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                    request.receive()
+                            .asByteArray()
+                            .map { it shouldBe serializedTransformationDescriptor }
+                            .then(Mono.just(serializedTransformedDataDescriptor)))
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedTransformedDataDescriptor, getClazz<TransformedDataDescriptor>()) } returns transformedDataDescriptor
+        }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
-                                                             false,
-                                                             0,
-                                                             Duration.ofMillis(0),
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                                             noRetry(),
                                                              alfrescoNodesChecksumGenerator,
                                                              alfrescoDataDescriptorGetter,
                                                              alfrescoTransformedDataDescriptorSaver,
                                                              serializationService,
                                                              httpServer.createHttpClient())
-                                    .transformAsync("success", nodeRefs, targetMediaType, parameters))
+                                    .transformAsync(transformation, nodeRefs))
                 .expectError(AnotherTransformationIsInProgressException::class)
                 .verify()
     }
 
     @Test
     fun `transformAsync _ error on server side but nodes checksum were changed in the meantime _ should throw AnotherTransformationIsInProgressException`() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serializedTransformedDataDescriptor = "transformedDataDescriptor".toByteArray()
 
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                    request.receive()
+                            .asByteArray()
+                            .map { it shouldBe serializedTransformationDescriptor }
+                            .then(Mono.just(serializedTransformedDataDescriptor)))
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedTransformedDataDescriptor, getClazz<TransformedDataDescriptor>()) } returns transformedDataDescriptor
+        }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
-                                                             false,
-                                                             0,
-                                                             Duration.ofMillis(0),
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                                             noRetry(),
                                                              alfrescoNodesChecksumGenerator,
                                                              alfrescoDataDescriptorGetter,
                                                              alfrescoTransformedDataDescriptorSaver,
                                                              serializationService,
                                                              httpServer.createHttpClient())
-                                    .transformAsync("exception", nodeRefs, targetMediaType, parameters))
+                                    .transformAsync(transformation, nodeRefs))
                 .expectError(AnotherTransformationIsInProgressException::class)
                 .verify()
     }
 
     @Test
     fun `transformAsync _ exception on server side with retry policy _ should throw RetryExhaustedException with RuntimeException on stack`() {
-        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService) = mock()
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serverException = RuntimeException("Exception")
+        val serializedServerException = "serverException".toByteArray()
 
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                    request.receive()
+                            .asByteArray()
+                            .map { it shouldBe serializedTransformationDescriptor }
+                            .doOnNext {
+                                response.header(PromenaHttpHeaders.SERIALIZATION_CLASS, "java.lang.RuntimeException")
+                                        .status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+                            }
+                            .then(Mono.just(serializedServerException)))
+        }
+
+        val (alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver) = mock()
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every { deserialize(serializedServerException, getClazz<RuntimeException>()) } returns serverException
+        }
 
-        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(Memory),
-                                                             true,
-                                                             3,
-                                                             Duration.ofMillis(300),
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                                             customRetry(3, Duration.ofMillis(300)),
                                                              alfrescoNodesChecksumGenerator,
                                                              alfrescoDataDescriptorGetter,
                                                              alfrescoTransformedDataDescriptorSaver,
                                                              serializationService,
                                                              httpServer.createHttpClient())
-                                    .transformAsync("exception", nodeRefs, targetMediaType, parameters))
+                                    .transformAsync(transformation, nodeRefs))
+                .expectSubscription()
+                .expectNoEvent(Duration.ofMillis(600))
+                .expectErrorSatisfies {
+                    it shouldBeSameInstanceAs serverException
+                    it.message shouldBe serverException.message
+                }
+                .verify()
+
+        StepVerifier.create(HttpClientAlfrescoPromenaService(ExternalCommunication(ExternalCommunicationConstants.Memory),
+                                                             noRetry(),
+                                                             alfrescoNodesChecksumGenerator,
+                                                             alfrescoDataDescriptorGetter,
+                                                             alfrescoTransformedDataDescriptorSaver,
+                                                             serializationService,
+                                                             httpServer.createHttpClient())
+                                    .transformAsync(transformation, nodeRefs, customRetry(3, Duration.ofMillis(300))))
                 .expectSubscription()
                 .expectNoEvent(Duration.ofMillis(600))
                 .expectErrorSatisfies {
@@ -253,55 +380,30 @@ class HttpClientAlfrescoPromenaServiceTest {
                 .verify()
     }
 
-    private fun startServer(): DisposableServer =
-            HttpServer.create()
-                    .port(0)
-                    .wiretap(true)
-                    .route {
-                        it.post("/transform/success") { request, response ->
-                            deleteFileFromLocationPath(request)
+    private fun HttpServerResponse.send(data: ByteArray): NettyOutbound =
+        send(ByteBufFlux.fromInbound(Mono.just(data)))
 
-                            response.send(ByteBufFlux.fromInbound(Mono.just(successBytes)))
-                        }
-                        it.post("/transform/exception") { _, response ->
-                            response.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-                                    .header("serialization-class", "java.lang.RuntimeException")
-                                    .send(ByteBufFlux.fromInbound(Mono.just(exceptionBytes)))
-                        }
-                    }.bindNow()
+    private fun startServer(handler: (request: HttpServerRequest, response: HttpServerResponse) -> Publisher<Void>): DisposableServer =
+        HttpServer.create()
+                .port(0)
+                .route {
+                    it.post("/transform") { request, response -> handler(request, response) }
+                }.bindNow()
 
-    // a bit stupid. If URI contain "location" - remove that file. Only for test purposes
-    private fun deleteFileFromLocationPath(request: HttpServerRequest) {
-        val location = QueryStringDecoder(request.uri()).parameters()["location"]
-        if (location != null) {
-            File(URI(location.first())).delete()
-        }
-    }
 
     private fun DisposableServer.createHttpClient(): HttpClient =
-            HttpClient.create()
-                    .port(address().port)
+        HttpClient.create()
+                .port(address().port)
 
     private fun mock(): Mocks {
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
-            every { get(nodeRefs) } returns dataDescriptors
-        }
-
-        val serializationService = mockk<SerializationService> {
-            every { serialize(transformationDescriptor) } returns successBytes
-            every { deserialize(successBytes, getClazz<List<TransformedDataDescriptor>>()) } returns transformedDataDescriptors
-
-            every { deserialize(exceptionBytes, getClazz<RuntimeException>()) } returns serverException
+            every { get(nodeRefs) } returns dataDescriptor
         }
 
         val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
-            every { save("success", nodeRefs, targetMediaType, transformedDataDescriptors) } returns transformedNodeRefs
+            every { save(transformation, nodeRefs, transformedDataDescriptor) } returns transformedNodeRefs
         }
 
-        return Mocks(alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver, serializationService)
+        return Mocks(alfrescoDataDescriptorGetter, alfrescoTransformedDataDescriptorSaver)
     }
 }
-
-
-private fun String.readBytes(): ByteArray =
-        object {}::class.java.getResourceAsStream(this).readAllBytes()
