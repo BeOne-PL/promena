@@ -3,12 +3,13 @@ package pl.beone.promena.core.internal.serialization
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
+import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
-import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.next
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
@@ -36,8 +37,8 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ list of TransformedDataDescriptor`() {
         val transformedDataDescriptor =
-                singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
-                        singleTransformedDataDescriptor("""{ "key": "value" }""".toMemoryData(), emptyMetadata())
+            singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
+                    singleTransformedDataDescriptor("""{ "key": "value" }""".toMemoryData(), emptyMetadata())
 
         serializationService.deserialize(serializationService.serialize(transformedDataDescriptor), getClazz<TransformationDescriptor>()) shouldBe
                 transformedDataDescriptor
@@ -46,9 +47,9 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ TransformationDescriptor with single flow`() {
         val transformationDescriptor = TransformationDescriptor.of(
-                singleTransformation("test", APPLICATION_PDF, emptyParameters()),
-                singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                        singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
+            singleTransformation("test", APPLICATION_PDF, emptyParameters()),
+            singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
+                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 
         serializationService.deserialize(serializationService.serialize(transformationDescriptor), getClazz<TransformationDescriptor>()) shouldBe
@@ -58,10 +59,10 @@ class KryoSerializationServiceTest {
     @Test
     fun `serialize and deserialize _ TransformationDescriptor with composite flow`() {
         val transformationDescriptor = TransformationDescriptor.of(
-                singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
-                        singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
-                singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                        singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
+            singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
+                    singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
+            singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
+                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 
         serializationService.deserialize(serializationService.serialize(transformationDescriptor), getClazz<TransformationDescriptor>()) shouldBe
@@ -77,8 +78,8 @@ class KryoSerializationServiceTest {
                 serializationService.deserialize(serializationService.serialize("test"), String::class.java)
             })
         }
-                .map { it.get() }
-                .forEach { it shouldBe "test" }
+            .map { it.get() }
+            .forEach { it shouldBe "test" }
     }
 
     @Test
@@ -87,7 +88,4 @@ class KryoSerializationServiceTest {
             serializationService.deserialize("incorrect data".toByteArray(), getClazz<String>())
         }.message shouldBe "Couldn't deserialize"
     }
-
-    private inline fun <reified T : Any> getClazz(): Class<T> =
-            T::class.java
 }

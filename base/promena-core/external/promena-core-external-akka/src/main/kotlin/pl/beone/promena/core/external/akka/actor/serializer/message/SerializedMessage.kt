@@ -1,6 +1,8 @@
 package pl.beone.promena.core.external.akka.actor.serializer.message
 
-data class SerializedMessage(val bytes: ByteArray) {
+data class SerializedMessage(
+    val bytes: ByteArray
+) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

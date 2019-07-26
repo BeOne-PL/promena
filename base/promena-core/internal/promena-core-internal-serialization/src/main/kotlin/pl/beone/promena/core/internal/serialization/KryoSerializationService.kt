@@ -18,49 +18,49 @@ class KryoSerializationService(private val bufferSize: Int = 100 * 1024 * 1024) 
     companion object {
         private val kryoThreadLocal = object : ThreadLocal<Kryo>() {
             override fun initialValue(): Kryo =
-                    Kryo().apply {
-                        // classes with no-args constructors
-                        val instStrategy =
-                                instantiatorStrategy.newInstantiatorOf(Kryo.DefaultInstantiatorStrategy::class.java).newInstance()
-                        instStrategy.fallbackInstantiatorStrategy = StdInstantiatorStrategy()
-                        instantiatorStrategy = instStrategy
+                Kryo().apply {
+                    // classes with no-args constructors
+                    val instStrategy =
+                        instantiatorStrategy.newInstantiatorOf(Kryo.DefaultInstantiatorStrategy::class.java).newInstance()
+                    instStrategy.fallbackInstantiatorStrategy = StdInstantiatorStrategy()
+                    instantiatorStrategy = instStrategy
 
-                        // custom serializers
-                        register(Arrays.asList("")::class.java, ArraysAsListSerializer())
-                        register(Collections.EMPTY_LIST::class.java, CollectionsEmptyListSerializer())
-                        register(Collections.EMPTY_MAP::class.java, CollectionsEmptyMapSerializer())
-                        register(Collections.EMPTY_SET::class.java, CollectionsEmptySetSerializer())
-                        register(Collections.singletonList("")::class.java, CollectionsSingletonListSerializer())
-                        register(Collections.singleton("")::class.java, CollectionsSingletonSetSerializer())
-                        register(Collections.singletonMap("", "")::class.java, CollectionsSingletonMapSerializer())
-                        register(GregorianCalendar::class.java, GregorianCalendarSerializer())
-                        register(InvocationHandler::class.java, JdkProxySerializer())
-                        register(URI::class.java, URISerializer())
-                        UnmodifiableCollectionsSerializer.registerSerializers(this)
-                        SynchronizedCollectionsSerializer.registerSerializers(this)
+                    // custom serializers
+                    register(listOf("")::class.java, ArraysAsListSerializer())
+                    register(Collections.EMPTY_LIST::class.java, CollectionsEmptyListSerializer())
+                    register(Collections.EMPTY_MAP::class.java, CollectionsEmptyMapSerializer())
+                    register(Collections.EMPTY_SET::class.java, CollectionsEmptySetSerializer())
+                    register(Collections.singletonList("")::class.java, CollectionsSingletonListSerializer())
+                    register(Collections.singleton("")::class.java, CollectionsSingletonSetSerializer())
+                    register(Collections.singletonMap("", "")::class.java, CollectionsSingletonMapSerializer())
+                    register(GregorianCalendar::class.java, GregorianCalendarSerializer())
+                    register(InvocationHandler::class.java, JdkProxySerializer())
+                    register(URI::class.java, URISerializer())
+                    UnmodifiableCollectionsSerializer.registerSerializers(this)
+                    SynchronizedCollectionsSerializer.registerSerializers(this)
 
-                        register(URI::class.java, URISerializer())
-                    }
+                    register(URI::class.java, URISerializer())
+                }
         }
 
 
     }
 
     override fun <T> serialize(element: T): ByteArray =
-            try {
-                with(ByteBufferOutput(bufferSize)) {
-                    kryoThreadLocal.get().writeClassAndObject(this, element)
-                    return this.toBytes()
-                }
-            } catch (e: Exception) {
-                throw SerializationException("Couldn't serialize", e)
+        try {
+            with(ByteBufferOutput(bufferSize)) {
+                kryoThreadLocal.get().writeClassAndObject(this, element)
+                return this.toBytes()
             }
+        } catch (e: Exception) {
+            throw SerializationException("Couldn't serialize", e)
+        }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> deserialize(bytes: ByteArray, clazz: Class<T>): T =
-            try {
-                kryoThreadLocal.get().readClassAndObject(ByteBufferInput(bytes)) as T
-            } catch (e: Exception) {
-                throw DeserializationException("Couldn't deserialize", e)
-            }
+        try {
+            kryoThreadLocal.get().readClassAndObject(ByteBufferInput(bytes)) as T
+        } catch (e: Exception) {
+            throw DeserializationException("Couldn't deserialize", e)
+        }
 }

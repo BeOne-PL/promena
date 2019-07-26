@@ -96,10 +96,14 @@ class TransformerExceptionFlowTest {
         val endTimestamp = getTimestamp()
 
         headers.let {
-            it shouldContainAll mapOf(CORRELATION_ID to correlationId,
-                                      PromenaJmsHeaders.TRANSFORMATION_ID to transformationHashFunctionDeterminer.determine(transformerIds),
-                                      "send_back_nodeRefs" to listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
-                                                                     "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
+            it shouldContainAll mapOf(
+                CORRELATION_ID to correlationId,
+                PromenaJmsHeaders.TRANSFORMATION_ID to transformationHashFunctionDeterminer.determine(transformerIds),
+                "send_back_nodeRefs" to listOf(
+                    "workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
+                    "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"
+                )
+            )
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
         }
@@ -129,19 +133,29 @@ class TransformerExceptionFlowTest {
     }
 
     private fun sendRequestMessage() {
-        jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest),
-                                   TransformationDescriptor.of(singleTransformation(TestTransformerMockContext.TRANSFORMER_ID,
-                                                                                    APPLICATION_JSON,
-                                                                                    emptyParameters()),
-                                                               singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata()))) { message ->
+        jmsTemplate.convertAndSend(
+            ActiveMQQueue(queueRequest),
+            TransformationDescriptor.of(
+                singleTransformation(
+                    TestTransformerMockContext.TRANSFORMER_ID,
+                    APPLICATION_JSON,
+                    emptyParameters()
+                ),
+                singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+            )
+        ) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_ID, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
 
-                setObjectProperty("send_back_nodeRefs", listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
-                                                               "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"))
+                setObjectProperty(
+                    "send_back_nodeRefs", listOf(
+                        "workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
+                        "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"
+                    )
+                )
             }
         }
     }

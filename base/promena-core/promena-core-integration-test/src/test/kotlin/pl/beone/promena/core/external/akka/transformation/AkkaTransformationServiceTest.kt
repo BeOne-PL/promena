@@ -102,7 +102,7 @@ class AkkaTransformationServiceTest {
     @Test
     fun `transform _ composite transformation`() {
         val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true)) +
-                             singleDataDescriptor("test2".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin2" to true))
+                singleDataDescriptor("test2".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin2" to true))
 
 
         val transformation =
@@ -242,35 +242,45 @@ class AkkaTransformationServiceTest {
         val timeoutTransformerId = (timeoutTransformerName to timeoutTransformerSubName).toTransformerId()
 
         val textAppenderTransformerActorRef = actorSystem.actorOf(
-                Props.create(GroupedByNameTransformerActor::class.java) {
-                    GroupedByNameTransformerActor(kotlinTextAppenderTransformerName,
-                                                  listOf(TransformerDescriptor(textAppenderTransformerId, TextAppenderTransformer()),
-                                                         TransformerDescriptor(uselessTextAppenderTransformerId, UselessTextAppenderTransformer())),
-                                                  internalCommunicationConverter)
-                }, kotlinTextAppenderTransformerName
+            Props.create(GroupedByNameTransformerActor::class.java) {
+                GroupedByNameTransformerActor(
+                    kotlinTextAppenderTransformerName,
+                    listOf(
+                        TransformerDescriptor(textAppenderTransformerId, TextAppenderTransformer()),
+                        TransformerDescriptor(uselessTextAppenderTransformerId, UselessTextAppenderTransformer())
+                    ),
+                    internalCommunicationConverter
+                )
+            }, kotlinTextAppenderTransformerName
         )
 
         val fromTextToXmlAppenderTransformerActorRef = actorSystem.actorOf(
-                Props.create(GroupedByNameTransformerActor::class.java) {
-                    GroupedByNameTransformerActor(fromTextToXmlAppenderTransformerName,
-                                                  listOf(TransformerDescriptor(fromTextToXmlAppenderTransformerId, FromTextToXmlAppenderTransformer())),
-                                                  internalCommunicationConverter)
-                }, fromTextToXmlAppenderTransformerName
+            Props.create(GroupedByNameTransformerActor::class.java) {
+                GroupedByNameTransformerActor(
+                    fromTextToXmlAppenderTransformerName,
+                    listOf(TransformerDescriptor(fromTextToXmlAppenderTransformerId, FromTextToXmlAppenderTransformer())),
+                    internalCommunicationConverter
+                )
+            }, fromTextToXmlAppenderTransformerName
         )
 
         val timeoutTransformerActorRef = actorSystem.actorOf(
-                Props.create(GroupedByNameTransformerActor::class.java) {
-                    GroupedByNameTransformerActor(timeoutTransformerName,
-                                                  listOf(TransformerDescriptor(timeoutTransformerId, TimeoutTransformer())),
-                                                  internalCommunicationConverter)
-                }, timeoutTransformerName
+            Props.create(GroupedByNameTransformerActor::class.java) {
+                GroupedByNameTransformerActor(
+                    timeoutTransformerName,
+                    listOf(TransformerDescriptor(timeoutTransformerId, TimeoutTransformer())),
+                    internalCommunicationConverter
+                )
+            }, timeoutTransformerName
         )
 
         val actorService = GroupedByNameActorService(
-                listOf(TransformerActorDescriptor(textAppenderTransformerId, textAppenderTransformerActorRef),
-                       TransformerActorDescriptor(fromTextToXmlAppenderTransformerId, fromTextToXmlAppenderTransformerActorRef),
-                       TransformerActorDescriptor(timeoutTransformerId, timeoutTransformerActorRef)),
-                mockk()
+            listOf(
+                TransformerActorDescriptor(textAppenderTransformerId, textAppenderTransformerActorRef),
+                TransformerActorDescriptor(fromTextToXmlAppenderTransformerId, fromTextToXmlAppenderTransformerActorRef),
+                TransformerActorDescriptor(timeoutTransformerId, timeoutTransformerActorRef)
+            ),
+            mockk()
         )
 
         return AkkaTransformationService(actorMaterializer, actorService)

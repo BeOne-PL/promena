@@ -10,45 +10,58 @@ import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
-class DefaultTransformationUseCase(private val externalCommunicationManager: ExternalCommunicationManager,
-                                   private val transformationService: TransformationService)
-    : TransformationUseCase {
+class DefaultTransformationUseCase(
+    private val externalCommunicationManager: ExternalCommunicationManager,
+    private val transformationService: TransformationService
+) : TransformationUseCase {
 
     companion object {
         private val logger = LoggerFactory.getLogger(DefaultTransformationUseCase::class.java)
     }
 
-    override fun transform(transformation: Transformation,
-                           dataDescriptor: DataDescriptor,
-                           externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptor {
+    override fun transform(
+        transformation: Transformation,
+        dataDescriptor: DataDescriptor,
+        externalCommunicationParameters: CommunicationParameters
+    ): TransformedDataDescriptor {
         try {
             val (_, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) =
                 externalCommunicationManager.getCommunication(externalCommunicationParameters.getId())
 
             return dataDescriptor
-                    .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
-                    .let { transformationService.transform(transformation, it) }
-                    .let { transformedDataDescriptor -> outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters) }
+                .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
+                .let { transformationService.transform(transformation, it) }
+                .let { transformedDataDescriptor ->
+                    outgoingExternalCommunicationConverter.convert(
+                        transformedDataDescriptor,
+                        externalCommunicationParameters
+                    )
+                }
         } catch (e: Exception) {
-            logger.error("Couldn't perform the transformation {} <{}>",
-                         generateTransformationExceptionDescription(transformation, dataDescriptor),
-                         externalCommunicationParameters,
-                         e)
+            logger.error(
+                "Couldn't perform the transformation {} <{}>",
+                generateTransformationExceptionDescription(transformation, dataDescriptor),
+                externalCommunicationParameters,
+                e
+            )
 
             // unwrap expected exception to not show user unnecessary information
             if (e is TransformationException) {
                 throw TransformationException(transformation, e.message!!)
             } else {
-                throw TransformationException(transformation, "Couldn't perform the transformation because an error occurred. Check Promena logs for more details")
+                throw TransformationException(
+                    transformation,
+                    "Couldn't perform the transformation because an error occurred. Check Promena logs for more details"
+                )
             }
         }
     }
 
     private fun generateTransformationExceptionDescription(transformation: Transformation, dataDescriptor: DataDescriptor): String =
         "<:1> <:2 source(s)>: [:3]"
-                .replace(":1", transformation.toString())
-                .replace(":2", dataDescriptor.descriptors.size.toString())
-                .replace(":3", dataDescriptor.generateDescription())
+            .replace(":1", transformation.toString())
+            .replace(":2", dataDescriptor.descriptors.size.toString())
+            .replace(":3", dataDescriptor.generateDescription())
 
     private fun DataDescriptor.generateDescription(): String =
         descriptors.joinToString(", ") {

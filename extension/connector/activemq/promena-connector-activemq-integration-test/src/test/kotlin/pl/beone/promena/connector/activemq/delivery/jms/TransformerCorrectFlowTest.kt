@@ -26,8 +26,8 @@ import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.activemq.integrationtest.IntegrationTestApplication
-import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
+import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.activemq.integrationtest.test.TransformationResponseConsumer
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
@@ -87,28 +87,30 @@ class TransformerCorrectFlowTest {
     @Test
     fun `send data to transformation request queue _ should transform and send result to response queue`() {
         every {
-            transformationUseCase.transform(transformation,
-                                            dataDescriptor,
-                                            communicationParameters("memory") + ("location" to location))
+            transformationUseCase.transform(
+                transformation,
+                dataDescriptor,
+                communicationParameters("memory") + ("location" to location)
+            )
         } answers {
             Thread.sleep(300)
             singleTransformedDataDescriptor(transformedData, emptyMetadata())
         }
 
-        //
         val startTimestamp = getTimestamp()
         sendRequestMessage()
-        val (headers, transformedDataDescriptors) = try {
+        val (headers, performedTransformationDescriptor) = try {
             transformationResponseConsumer.getMessage(3000)
         } catch (e: IllegalStateException) {
             throw AssertionError("Couldn't get message from response queue")
         }
         val endTimestamp = getTimestamp()
 
-        //
         headers.let {
-            it shouldContainAll mapOf(JmsHeaders.CORRELATION_ID to correlationId,
-                                      PromenaJmsHeaders.TRANSFORMATION_ID to transformationHashFunctionDeterminer.determine(transformerIds))
+            it shouldContainAll mapOf(
+                JmsHeaders.CORRELATION_ID to correlationId,
+                PromenaJmsHeaders.TRANSFORMATION_ID to transformationHashFunctionDeterminer.determine(transformerIds)
+            )
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
         }
@@ -128,10 +130,13 @@ class TransformerCorrectFlowTest {
 
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
-        transformedDataDescriptors.descriptors shouldHaveSize 1
-        transformedDataDescriptors.descriptors[0].let { transformedDataDescriptor ->
-            transformedDataDescriptor.data.getBytes() shouldBe transformedData.getBytes()
-            transformedDataDescriptor.metadata.getAll() shouldBe emptyMap()
+        performedTransformationDescriptor.transformation shouldBe transformation
+        performedTransformationDescriptor.transformedDataDescriptor.descriptors.let { descriptors ->
+            descriptors shouldHaveSize 1
+            descriptors[0].let { transformedDataDescriptor ->
+                transformedDataDescriptor.data.getBytes() shouldBe transformedData.getBytes()
+                transformedDataDescriptor.metadata.getAll() shouldBe emptyMap()
+            }
         }
     }
 
