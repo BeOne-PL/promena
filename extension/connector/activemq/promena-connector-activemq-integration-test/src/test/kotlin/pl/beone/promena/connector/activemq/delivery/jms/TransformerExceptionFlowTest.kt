@@ -136,11 +136,7 @@ class TransformerExceptionFlowTest {
         jmsTemplate.convertAndSend(
             ActiveMQQueue(queueRequest),
             TransformationDescriptor.of(
-                singleTransformation(
-                    TestTransformerMockContext.TRANSFORMER_ID,
-                    APPLICATION_JSON,
-                    emptyParameters()
-                ),
+                singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters()),
                 singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
             )
         ) { message ->
