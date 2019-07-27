@@ -21,7 +21,7 @@ class RetryTest {
 
     @Test
     fun `getMaxAttempts and nextAttemptDelay _ custom retry`() {
-        val maxAttempts: Long = 5
+        val maxAttempts = 5L
         val nextAttemptDelay = Duration.ofMillis(100)
 
         val customRetry = customRetry(maxAttempts, nextAttemptDelay)

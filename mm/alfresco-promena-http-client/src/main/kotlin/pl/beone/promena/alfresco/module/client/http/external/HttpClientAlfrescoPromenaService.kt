@@ -55,10 +55,8 @@ class HttpClientAlfrescoPromenaService(
     ): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
-        val determinedRetry = determineRetry(retry)
-
         return try {
-            transformReactive(transformation, nodeRefs, determinedRetry)
+            transformReactive(transformation, nodeRefs, determineRetry(retry))
                 .doOnCancel {} // without it, if timeout in block(Duration) expires, reactive stream is cancelled
                 .get(waitMax)
         } catch (e: IllegalStateException) {
@@ -80,9 +78,7 @@ class HttpClientAlfrescoPromenaService(
     ): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
-        val determinedRetry = determineRetry(retry)
-
-        return transformReactive(transformation, nodeRefs, determinedRetry).apply {
+        return transformReactive(transformation, nodeRefs, determineRetry(retry)).apply {
             subscribe()
         }
     }
@@ -200,7 +196,7 @@ class HttpClientAlfrescoPromenaService(
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
                           .fixedBackoff(retry.nextAttemptDelay)
                           .retryMax(retry.maxAttempts)
-                          .doOnRetry { logger.logOnRetry(it.iteration(), retry.maxAttempts, transformation, nodeRefs) })
+                          .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
         } else {
             this
         }

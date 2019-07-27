@@ -16,7 +16,7 @@ class RetryDslTest {
 
     @Test
     fun customRetry() {
-        val maxAttempts: Long = 5
+        val maxAttempts = 5L
         val nextAttemptDelay = Duration.ofMillis(1000)
 
         customRetry(maxAttempts, nextAttemptDelay) shouldBe
