@@ -22,17 +22,10 @@ internal class TransformerExceptionsAccumulator {
         transformerAndReasonList.add(
             TransformerAndReason(
                 transformerDescriptor.transformer,
-                "Transformer <${transformerId.toDescription()}> isn't suitable for <${transformationTransformerId.toDescription()}>"
+                "Transformer <$transformerId> isn't suitable for <$transformationTransformerId>"
             )
         )
     }
-
-    private fun TransformerId.toDescription(): String =
-        if (isSubNameSet()) {
-            "$name, $subName"
-        } else {
-            name
-        }
 
     fun generateDescription(): String =
         "[" + transformerAndReasonList.joinToString(", ") { (transformer, reason) -> "<${transformer.javaClass.canonicalName}, $reason>" } + "]"

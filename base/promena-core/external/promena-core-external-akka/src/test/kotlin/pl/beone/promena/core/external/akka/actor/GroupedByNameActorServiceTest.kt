@@ -27,19 +27,19 @@ class GroupedByNameActorServiceTest {
 
         shouldThrow<TransformerNotFoundException> {
             actorService.getTransformerActor("absent".toTransformerId())
-        }.message shouldBe "There is no <absent> transformer"
+        }.message shouldBe "There is no <TransformerId(name=absent, subName=null)> transformer"
 
         shouldThrow<TransformerNotFoundException> {
             actorService.getTransformerActor(("empty" to "not-much").toTransformerId())
-        }.message shouldBe "There is no <empty, not-much> transformer"
+        }.message shouldBe "There is no <TransformerId(name=empty, subName=not-much)> transformer"
 
         shouldThrow<TransformerNotFoundException> {
             actorService.getTransformerActor("absent".toTransformerId())
-        }.message shouldBe "There is no <absent> transformer"
+        }.message shouldBe "There is no <TransformerId(name=absent, subName=null)> transformer"
 
         shouldThrow<TransformerNotFoundException> {
             actorService.getTransformerActor(("absent" to "sub-absent").toTransformerId())
-        }.message shouldBe "There is no <absent, sub-absent> transformer"
+        }.message shouldBe "There is no <TransformerId(name=absent, subName=sub-absent)> transformer"
     }
 
     @Test

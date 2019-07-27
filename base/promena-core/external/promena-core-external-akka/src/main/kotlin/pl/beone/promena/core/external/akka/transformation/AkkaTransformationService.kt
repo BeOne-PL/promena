@@ -37,6 +37,7 @@ private data class ActorTransformerDescriptor(
 )
 
 class AkkaTransformationService(
+    private val interruptionTimeoutDelay: Duration,
     private val actorMaterializer: ActorMaterializer,
     private val actorService: ActorService
 ) : TransformationService {
@@ -124,7 +125,7 @@ class AkkaTransformationService(
     ): Flow<DataDescriptor, TransformedDataDescriptor, NotUsed> =
         Flow.of(getClazz<DataDescriptor>())
             .map { dataDescriptor -> ToTransformMessage(transformerId, dataDescriptor, mediaType, parameters) }
-            .ask(transformerActorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound().toTimeout())
+            .ask(transformerActorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound(interruptionTimeoutDelay).toTimeout())
             .map { (transformedDataDescriptor) -> transformedDataDescriptor }
 
     private fun TransformedDataDescriptor.toSequentialDataDescriptors(mediaType: MediaType): DataDescriptor =

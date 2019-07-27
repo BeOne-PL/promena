@@ -125,7 +125,6 @@ class AkkaTransformationServiceTest {
         val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true)) +
                 singleDataDescriptor("test2".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin2" to true))
 
-
         val transformation =
             singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$")) next
                     singleTransformation(fromTextToXmlAppenderTransformerName, TEXT_XML, emptyParameters() + ("tag" to "root"))
@@ -161,7 +160,7 @@ class AkkaTransformationServiceTest {
             transformerService.transform(transformation, dataDescriptor)
         }.apply {
             this.transformation shouldBe transformation
-            this.message shouldBe "Couldn't perform the transformation | There is no <absentTransformer> transformer"
+            this.message shouldBe "Couldn't perform the transformation | There is no <TransformerId(name=absentTransformer, subName=null)> transformer"
             this.getStringStackTrace() shouldContain "TransformerNotFoundException"
         }
     }
@@ -308,7 +307,7 @@ class AkkaTransformationServiceTest {
             mockk()
         )
 
-        return AkkaTransformationService(actorMaterializer, actorService)
+        return AkkaTransformationService(Duration.ofSeconds(3), actorMaterializer, actorService)
     }
 
     private fun Data.getString(): String =
