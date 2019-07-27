@@ -7,10 +7,11 @@ import pl.beone.promena.transformer.internal.model.getList
 import pl.beone.promena.transformer.internal.model.getListWithoutType
 import java.time.Duration
 
-data class MapParameters private constructor(private val parameters: Map<String, Any>) : Parameters {
+data class MapParameters private constructor(
+    private val parameters: Map<String, Any>
+) : Parameters {
 
     companion object {
-
         @JvmStatic
         fun empty(): MapParameters =
             MapParameters(emptyMap())
@@ -18,8 +19,10 @@ data class MapParameters private constructor(private val parameters: Map<String,
         @JvmStatic
         @JvmOverloads
         fun of(parameters: Map<String, Any>, timeout: Duration? = null): MapParameters =
-            MapParameters(parameters +
-                          if (timeout != null) mapOf(Parameters.TIMEOUT to timeout) else emptyMap())
+            MapParameters(
+                parameters +
+                        if (timeout != null) mapOf(Parameters.TIMEOUT to timeout) else emptyMap()
+            )
     }
 
     override fun get(key: String): Any =
@@ -42,6 +45,4 @@ data class MapParameters private constructor(private val parameters: Map<String,
 
     override fun getAll(): Map<String, Any> =
         parameters
-
-
 }

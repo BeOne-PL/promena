@@ -47,7 +47,8 @@ class TransformationDslTest {
 
     @Test
     fun `next _ single transformation`() {
-        singleTransformation(transformerName, targetMediaType, parameters) next singleTransformation(transformerName2, targetMediaType2, parameters2) shouldBe
+        singleTransformation(transformerName, targetMediaType, parameters) next
+                singleTransformation(transformerName2, targetMediaType2, parameters2) shouldBe
                 Transformation.Composite.of(listOf(singleTransformation, singleTransformation2))
     }
 
@@ -62,8 +63,10 @@ class TransformationDslTest {
 
     @Test
     fun `next _ composite transformation`() {
-        compositeTransformation(singleTransformation(transformerName, targetMediaType, parameters), singleTransformation(transformerName2, targetMediaType2, parameters2)) next
-                singleTransformation(transformerName, targetMediaType, parameters) shouldBe
+        compositeTransformation(
+            singleTransformation(transformerName, targetMediaType, parameters),
+            singleTransformation(transformerName2, targetMediaType2, parameters2)
+        ) next singleTransformation(transformerName, targetMediaType, parameters) shouldBe
                 Transformation.Composite.of(listOf(singleTransformation, singleTransformation2, singleTransformation))
     }
 

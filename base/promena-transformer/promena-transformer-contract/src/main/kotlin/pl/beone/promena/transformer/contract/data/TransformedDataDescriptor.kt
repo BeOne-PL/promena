@@ -11,8 +11,10 @@ sealed class TransformedDataDescriptor {
             get() = emptyList()
     }
 
-    data class Single private constructor(val data: Data,
-                                          val metadata: Metadata) : TransformedDataDescriptor() {
+    data class Single private constructor(
+        val data: Data,
+        val metadata: Metadata
+    ) : TransformedDataDescriptor() {
 
         companion object {
 

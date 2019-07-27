@@ -11,5 +11,5 @@ class TransformedDataDescriptorBuilder {
     }
 
     fun build(): TransformedDataDescriptor =
-            descriptors.toTransformedDataDescriptor()
+        descriptors.toTransformedDataDescriptor()
 }

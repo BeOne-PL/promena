@@ -11,14 +11,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN;
 import static pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML;
-import static pl.beone.promena.transformer.contract.data.DataDescriptorDsl.singleDataDescriptor;
 
 public class DataDescriptorBuilderTest {
 
     @Test
     public void build_zeroDataDescriptors() {
-        assertThat(new DataDescriptorBuilder()
-                           .build())
+        assertThat(new DataDescriptorBuilder().build())
                 .isEqualTo(DataDescriptor.Empty.INSTANCE);
     }
 
@@ -28,21 +26,25 @@ public class DataDescriptorBuilderTest {
         MediaType mediaType = TEXT_PLAIN;
         Metadata metadata = mock(Metadata.class);
 
-        DataDescriptor.Single singleDataDescriptor = singleDataDescriptor(data, mediaType, metadata);
-        assertThat(new DataDescriptorBuilder()
-                           .add(singleDataDescriptor)
-                           .build())
+        DataDescriptor.Single singleDataDescriptor = DataDescriptor.Single.of(data, mediaType, metadata);
+        assertThat(
+                new DataDescriptorBuilder()
+                        .add(singleDataDescriptor)
+                        .build()
+        )
                 .isEqualTo(DataDescriptor.Single.of(data, mediaType, metadata));
     }
 
     @Test
     public void build_twoSingleDataDescriptors() {
-        DataDescriptor.Single singleDataDescriptor = singleDataDescriptor(mock(Data.class), TEXT_PLAIN, mock(Metadata.class));
-        DataDescriptor.Single singleDataDescriptor2 = singleDataDescriptor(mock(Data.class), TEXT_XML, mock(Metadata.class));
-        assertThat(new DataDescriptorBuilder()
-                           .add(singleDataDescriptor)
-                           .add(singleDataDescriptor2)
-                           .build())
+        DataDescriptor.Single singleDataDescriptor = DataDescriptor.Single.of(mock(Data.class), TEXT_PLAIN, mock(Metadata.class));
+        DataDescriptor.Single singleDataDescriptor2 = DataDescriptor.Single.of(mock(Data.class), TEXT_XML, mock(Metadata.class));
+        assertThat(
+                new DataDescriptorBuilder()
+                        .add(singleDataDescriptor)
+                        .add(singleDataDescriptor2)
+                        .build()
+        )
                 .isEqualTo(DataDescriptor.Multi.of(Arrays.asList(singleDataDescriptor, singleDataDescriptor2)));
     }
 }

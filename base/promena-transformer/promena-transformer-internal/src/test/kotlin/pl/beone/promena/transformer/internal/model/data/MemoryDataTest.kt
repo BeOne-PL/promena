@@ -37,8 +37,9 @@ class MemoryDataTest {
 
     @Test
     fun `getLocation _ should throw UnsupportedOperationException`() {
-        shouldThrow<UnsupportedOperationException> { bytes.toMemoryData().getLocation() }.message shouldBe
-                "This resource exists only in memory"
+        shouldThrow<UnsupportedOperationException> {
+            bytes.toMemoryData().getLocation()
+        }.message shouldBe "This resource exists only in memory"
     }
 
     @Test
@@ -52,12 +53,12 @@ class MemoryDataTest {
     fun delete() {
         shouldThrow<UnsupportedOperationException> {
             bytes.toMemoryData().delete()
-        }.message shouldBe
-                "This resource exists only in memory"
+        }.message shouldBe "This resource exists only in memory"
     }
 
     @Test
     fun equals() {
-        bytes.toMemoryData() shouldBe "test".byteInputStream().toMemoryData()
+        bytes.toMemoryData() shouldBe
+                "test".byteInputStream().toMemoryData()
     }
 }

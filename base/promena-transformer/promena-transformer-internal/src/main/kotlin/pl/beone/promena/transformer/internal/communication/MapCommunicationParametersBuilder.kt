@@ -14,9 +14,9 @@ class MapCommunicationParametersBuilder {
 
     fun build(): MapCommunicationParameters =
         MapCommunicationParameters.of(
-                parameters[CommunicationParameters.ID]?.toString()
+            parameters[CommunicationParameters.ID]?.toString()
                 ?: throw IllegalArgumentException("Communication parameters must contain <${CommunicationParameters.ID}>"),
-                parameters
+            parameters
         )
 
 }

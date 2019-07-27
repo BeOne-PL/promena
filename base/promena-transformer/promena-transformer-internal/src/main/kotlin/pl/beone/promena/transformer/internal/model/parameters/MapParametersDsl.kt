@@ -4,13 +4,13 @@ import pl.beone.promena.transformer.contract.model.Parameters
 import java.time.Duration
 
 fun emptyParameters(): MapParameters =
-        parameters(emptyMap())
+    parameters(emptyMap())
 
 fun parameters(parameters: Map<String, Any>): MapParameters =
-        MapParameters.of(parameters)
+    MapParameters.of(parameters)
 
 operator fun Parameters.plus(entry: Pair<String, Any>): MapParameters =
-        MapParameters.of(getAll() + entry)
+    MapParameters.of(getAll() + entry)
 
 infix fun Parameters.addTimeout(timeout: Duration): MapParameters =
-        MapParameters.of(getAll() + (Parameters.TIMEOUT to timeout))
+    MapParameters.of(getAll() + (Parameters.TIMEOUT to timeout))

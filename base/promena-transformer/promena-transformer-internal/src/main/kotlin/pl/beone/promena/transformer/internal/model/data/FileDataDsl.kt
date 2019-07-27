@@ -5,13 +5,13 @@ import java.io.InputStream
 import java.net.URI
 
 fun URI.toFileData(): FileData =
-        FileData.of(this)
+    FileData.of(this)
 
 fun File.toFileData(): FileData =
-        FileData.of(this)
+    FileData.of(this)
 
 fun InputStream.toFileData(directoryUri: URI): FileData =
-        FileData.of(this, directoryUri)
+    FileData.of(this, directoryUri)
 
 fun InputStream.toFileData(directoryFile: File): FileData =
-        FileData.of(this, directoryFile)
+    FileData.of(this, directoryFile)

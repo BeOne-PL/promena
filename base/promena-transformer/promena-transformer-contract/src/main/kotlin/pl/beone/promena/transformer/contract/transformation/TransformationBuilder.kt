@@ -11,5 +11,5 @@ class TransformationBuilder {
     }
 
     fun build(): Transformation =
-            transformers.toTransformation()
+        transformers.toTransformation()
 }

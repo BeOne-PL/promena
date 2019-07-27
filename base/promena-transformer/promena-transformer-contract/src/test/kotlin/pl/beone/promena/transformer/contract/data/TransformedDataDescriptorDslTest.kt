@@ -55,11 +55,17 @@ class TransformedDataDescriptorDslTest {
     @Test
     fun `plus _ multi data descriptor`() {
         multiTransformedDataDescriptor(singleTransformedDataDescriptor, singleTransformedDataDescriptor2) + singleTransformedDataDescriptor shouldBe
-                TransformedDataDescriptor.Multi.of(listOf(singleTransformedDataDescriptor, singleTransformedDataDescriptor2, singleTransformedDataDescriptor))
+                TransformedDataDescriptor.Multi.of(
+                    listOf(
+                        singleTransformedDataDescriptor,
+                        singleTransformedDataDescriptor2,
+                        singleTransformedDataDescriptor
+                    )
+                )
     }
 
     @Test
-    fun `transformedDataDescriptor _ zero transformed data descriptors _ Empty`() {
+    fun `transformedDataDescriptor _ zero transformed data descriptors - Empty`() {
         transformedDataDescriptor() shouldBe
                 TransformedDataDescriptor.Empty
     }

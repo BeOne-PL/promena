@@ -7,7 +7,7 @@ import pl.beone.lib.typeconverter.internal.castOrConvert
 import pl.beone.lib.typeconverter.internal.getClazz
 
 internal fun Map<String, Any>._get(key: String): Any =
-        this[key] ?: throw NoSuchElementException("There is no <$key> element")
+    this[key] ?: throw NoSuchElementException("There is no <$key> element")
 
 internal fun <T> Map<String, Any>.get(key: String, clazz: Class<T>): T {
     val element = this._get(key)
@@ -16,7 +16,7 @@ internal fun <T> Map<String, Any>.get(key: String, clazz: Class<T>): T {
 }
 
 internal fun Map<String, Any>.getListWithoutType(key: String): List<Any> =
-        this.get(key, getClazz())
+    this.get(key, getClazz())
 
 internal fun <T> Map<String, Any>.getList(key: String, clazz: Class<T>): List<T> {
     val list = this.getListWithoutType(key)

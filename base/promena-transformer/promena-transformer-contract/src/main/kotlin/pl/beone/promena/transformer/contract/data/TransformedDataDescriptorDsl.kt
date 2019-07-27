@@ -1,5 +1,3 @@
-@file:JvmName("TransformedDataDescriptorDsl")
-
 package pl.beone.promena.transformer.contract.data
 
 import pl.beone.promena.transformer.contract.model.Data
@@ -17,12 +15,16 @@ fun singleTransformedDataDescriptor(data: Data, metadata: Metadata): Transformed
 operator fun TransformedDataDescriptor.Single.plus(descriptor: TransformedDataDescriptor.Single): TransformedDataDescriptor.Multi =
     TransformedDataDescriptor.Multi.of(descriptors + descriptor)
 
-fun multiTransformedDataDescriptor(descriptor: TransformedDataDescriptor.Single,
-                                   descriptors: List<TransformedDataDescriptor.Single>): TransformedDataDescriptor.Multi =
+fun multiTransformedDataDescriptor(
+    descriptor: TransformedDataDescriptor.Single,
+    descriptors: List<TransformedDataDescriptor.Single>
+): TransformedDataDescriptor.Multi =
     TransformedDataDescriptor.Multi.of(listOf(descriptor) + descriptors)
 
-fun multiTransformedDataDescriptor(descriptor: TransformedDataDescriptor.Single,
-                                   vararg descriptors: TransformedDataDescriptor.Single): TransformedDataDescriptor.Multi =
+fun multiTransformedDataDescriptor(
+    descriptor: TransformedDataDescriptor.Single,
+    vararg descriptors: TransformedDataDescriptor.Single
+): TransformedDataDescriptor.Multi =
     multiTransformedDataDescriptor(descriptor, descriptors.toList())
 
 operator fun TransformedDataDescriptor.Multi.plus(descriptor: TransformedDataDescriptor.Single): TransformedDataDescriptor.Multi =
@@ -30,8 +32,8 @@ operator fun TransformedDataDescriptor.Multi.plus(descriptor: TransformedDataDes
 
 fun transformedDataDescriptor(descriptors: List<TransformedDataDescriptor.Single>): TransformedDataDescriptor =
     when (descriptors.size) {
-        0    -> TransformedDataDescriptor.Empty
-        1    -> descriptors.first()
+        0 -> TransformedDataDescriptor.Empty
+        1 -> descriptors.first()
         else -> TransformedDataDescriptor.Multi.of(descriptors)
     }
 

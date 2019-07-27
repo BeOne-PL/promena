@@ -1,5 +1,3 @@
-@file:JvmName("TransformationDsl")
-
 package pl.beone.promena.transformer.contract.transformation
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -18,12 +16,10 @@ fun singleTransformation(transformerName: String, targetMediaType: MediaType, pa
 infix fun Transformation.Single.next(transformer: Transformation.Single): Transformation.Composite =
     Transformation.Composite.of(transformers + transformer)
 
-fun compositeTransformation(transformer: Transformation.Single,
-                            transformers: List<Transformation.Single>): Transformation.Composite =
+fun compositeTransformation(transformer: Transformation.Single, transformers: List<Transformation.Single>): Transformation.Composite =
     Transformation.Composite.of(listOf(transformer) + transformers)
 
-fun compositeTransformation(transformer: Transformation.Single,
-                            vararg transformers: Transformation.Single): Transformation.Composite =
+fun compositeTransformation(transformer: Transformation.Single, vararg transformers: Transformation.Single): Transformation.Composite =
     compositeTransformation(transformer, transformers.toList())
 
 infix fun Transformation.Composite.next(transformer: Transformation.Single): Transformation.Composite =

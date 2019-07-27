@@ -63,7 +63,7 @@ class DataDescriptorDslTest {
     }
 
     @Test
-    fun `dataDescriptor _ zero data descriptors _ Empty`() {
+    fun `dataDescriptor _ zero data descriptors - Empty`() {
         dataDescriptor() shouldBe
                 DataDescriptor.Empty
     }

@@ -5,7 +5,7 @@ class MapMetadataBuilder {
     private val metadata = HashMap<String, Any>()
 
     fun add(key: String, value: Any): MapMetadataBuilder =
-            apply { metadata[key] = value }
+        apply { metadata[key] = value }
 
     fun build(): MapMetadata = metadata(metadata)
 

@@ -44,13 +44,13 @@ object MediaTypeConstants {
     val APPLICATION_VND_OASIS_OPENDOCUMENT_TEXT = MediaType.of("application/vnd.oasis.opendocument.text", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_PRESENTATIONML_PRESENTATION =
-            MediaType.of("application/vnd.openxmlformats-officedocument.presentationml.presentation", Charsets.UTF_8)
+        MediaType.of("application/vnd.openxmlformats-officedocument.presentationml.presentation", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_SPREADSHEETML_SHEET =
-            MediaType.of("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Charsets.UTF_8)
+        MediaType.of("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_WORDPROCESSINGML_DOCUMENT =
-            MediaType.of("application/vnd.openxmlformats-officedocument.wordprocessingml.document", Charsets.UTF_8)
+        MediaType.of("application/vnd.openxmlformats-officedocument.wordprocessingml.document", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_VISIO = MediaType.of("application/vnd.visio", Charsets.UTF_8)
     @JvmField
@@ -133,5 +133,4 @@ object MediaTypeConstants {
     val VIDEO_WEBM = MediaType.of("video/webm", Charsets.UTF_8)
     @JvmField
     val VIDEO_X_MSVIDEO = MediaType.of("video/x-msvideo", Charsets.UTF_8)
-
 }

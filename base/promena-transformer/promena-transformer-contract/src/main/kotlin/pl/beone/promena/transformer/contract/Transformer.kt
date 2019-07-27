@@ -10,12 +10,8 @@ import java.util.concurrent.TimeoutException
 interface Transformer {
 
     @Throws(TimeoutException::class)
-    fun transform(dataDescriptor: DataDescriptor,
-                  targetMediaType: MediaType,
-                  parameters: Parameters): TransformedDataDescriptor
+    fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor
 
     @Throws(TransformerCouldNotTransformException::class)
-    fun canTransform(dataDescriptor: DataDescriptor,
-                     targetMediaType: MediaType,
-                     parameters: Parameters)
+    fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters)
 }

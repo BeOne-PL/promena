@@ -12,8 +12,10 @@ class MapCommunicationParametersDslTest {
                 mapOf(CommunicationParameters.ID to "memory")
 
         communicationParameters("memory", mapOf("key" to "value")).getAll() shouldBe
-                mapOf(CommunicationParameters.ID to "memory",
-                      "key" to "value")
+                mapOf(
+                    CommunicationParameters.ID to "memory",
+                    "key" to "value"
+                )
     }
 
     @Test

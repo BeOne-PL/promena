@@ -11,5 +11,5 @@ class DataDescriptorBuilder {
     }
 
     fun build(): DataDescriptor =
-            descriptors.toDataDescriptor()
+        descriptors.toDataDescriptor()
 }

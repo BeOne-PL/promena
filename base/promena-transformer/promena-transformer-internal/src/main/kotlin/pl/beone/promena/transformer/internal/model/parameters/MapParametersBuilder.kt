@@ -8,12 +8,11 @@ class MapParametersBuilder {
     private val parameters = HashMap<String, Any>()
 
     fun add(key: String, value: Any): MapParametersBuilder =
-            apply { parameters[key] = value }
+        apply { parameters[key] = value }
 
     fun addTimeout(timeout: Duration): MapParametersBuilder =
-            apply { parameters[Parameters.TIMEOUT] = timeout }
+        apply { parameters[Parameters.TIMEOUT] = timeout }
 
     fun build(): MapParameters =
-            parameters(parameters)
-
+        parameters(parameters)
 }

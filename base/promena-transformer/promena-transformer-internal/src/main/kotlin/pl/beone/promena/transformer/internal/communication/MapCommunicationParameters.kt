@@ -4,10 +4,11 @@ import pl.beone.promena.transformer.contract.communication.CommunicationParamete
 import pl.beone.promena.transformer.internal.model._get
 import pl.beone.promena.transformer.internal.model.get
 
-data class MapCommunicationParameters private constructor(private val parameters: Map<String, Any>) : CommunicationParameters {
+data class MapCommunicationParameters private constructor(
+    private val parameters: Map<String, Any>
+) : CommunicationParameters {
 
     companion object {
-
         @JvmStatic
         @JvmOverloads
         fun of(id: String, parameters: Map<String, Any> = emptyMap()): MapCommunicationParameters =

@@ -9,10 +9,11 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URI
 
-data class FileData private constructor(private val uri: URI) : Data {
+data class FileData private constructor(
+    private val uri: URI
+) : Data {
 
     companion object {
-
         @JvmStatic
         fun of(uri: URI): FileData =
             FileData(uri)
@@ -39,7 +40,6 @@ data class FileData private constructor(private val uri: URI) : Data {
         @JvmStatic
         fun of(inputStream: InputStream, directoryFile: File): FileData =
             of(inputStream, directoryFile.toURI())
-
     }
 
     init {

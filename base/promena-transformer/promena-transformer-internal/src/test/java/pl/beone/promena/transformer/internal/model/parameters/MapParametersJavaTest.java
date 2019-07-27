@@ -52,19 +52,19 @@ public class MapParametersJavaTest {
     @Test
     public void of_timeoutNotSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value"),
-                entry("key2", "value2")))
-                .getAll())
+                                                  entry("key2", "value2")))
+                           .getAll())
                 .containsOnly(entry("key", "value"),
-                        entry("key2", "value2"));
+                              entry("key2", "value2"));
     }
 
     @Test
     public void of_timeoutSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value")),
-                Duration.ofMillis(100))
-                .getAll())
+                                    Duration.ofMillis(100))
+                           .getAll())
                 .containsOnly(entry("key", "value"),
-                        entry(Parameters.TIMEOUT, Duration.ofMillis(100)));
+                              entry(Parameters.TIMEOUT, Duration.ofMillis(100)));
     }
 
     @Test

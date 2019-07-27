@@ -4,10 +4,11 @@ import pl.beone.promena.transformer.contract.model.Data
 import java.io.InputStream
 import java.net.URI
 
-data class MemoryData private constructor(private val bytes: ByteArray) : Data {
+data class MemoryData private constructor(
+    private val bytes: ByteArray
+) : Data {
 
     companion object {
-
         @JvmStatic
         fun of(bytes: ByteArray): MemoryData =
             MemoryData(bytes)
@@ -15,7 +16,6 @@ data class MemoryData private constructor(private val bytes: ByteArray) : Data {
         @JvmStatic
         fun of(inputStream: InputStream): MemoryData =
             MemoryData(inputStream.readAllBytes())
-
     }
 
     override fun getBytes(): ByteArray =

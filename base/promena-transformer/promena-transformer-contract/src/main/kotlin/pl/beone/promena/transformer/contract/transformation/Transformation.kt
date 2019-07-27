@@ -6,12 +6,13 @@ import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 sealed class Transformation {
 
-    data class Single private constructor(val transformerId: TransformerId,
-                                          val targetMediaType: MediaType,
-                                          val parameters: Parameters) : Transformation() {
+    data class Single private constructor(
+        val transformerId: TransformerId,
+        val targetMediaType: MediaType,
+        val parameters: Parameters
+    ) : Transformation() {
 
         companion object {
-
             @JvmStatic
             fun of(transformerId: TransformerId, targetMediaType: MediaType, parameters: Parameters): Single =
                 Single(transformerId, targetMediaType, parameters)
@@ -29,10 +30,11 @@ sealed class Transformation {
             get() = listOf(this)
     }
 
-    data class Composite private constructor(override val transformers: List<Single>) : Transformation() {
+    data class Composite private constructor(
+        override val transformers: List<Single>
+    ) : Transformation() {
 
         companion object {
-
             @JvmStatic
             fun of(transformers: List<Single>): Composite =
                 Composite(transformers)
@@ -40,5 +42,4 @@ sealed class Transformation {
     }
 
     abstract val transformers: List<Single>
-
 }

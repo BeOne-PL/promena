@@ -5,10 +5,10 @@ package pl.beone.promena.transformer.internal.model.metadata
 import pl.beone.promena.transformer.contract.model.Metadata
 
 fun emptyMetadata(): MapMetadata =
-        metadata(emptyMap())
+    metadata(emptyMap())
 
 fun metadata(metadata: Map<String, Any>): MapMetadata =
-        MapMetadata.of(metadata)
+    MapMetadata.of(metadata)
 
 operator fun Metadata.plus(entry: Pair<String, Any>): MapMetadata =
-        MapMetadata.of(getAll() + entry)
+    MapMetadata.of(getAll() + entry)

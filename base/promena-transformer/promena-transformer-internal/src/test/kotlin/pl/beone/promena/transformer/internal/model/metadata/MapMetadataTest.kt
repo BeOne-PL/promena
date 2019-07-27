@@ -9,27 +9,29 @@ class MapMetadataTest {
 
     companion object {
         private val metadata = emptyMetadata() +
-                               ("int" to 3) +
-                               ("string" to "value") +
+                ("int" to 3) +
+                ("string" to "value") +
 
-                               ("stringInt" to "3") +
+                ("stringInt" to "3") +
 
-                               ("metadata" to metadata(mapOf("key" to "value"))) +
-                               ("mapMetadata" to mapOf("mapKey" to "mapValue")) +
+                ("metadata" to metadata(mapOf("key" to "value"))) +
+                ("mapMetadata" to mapOf("mapKey" to "mapValue")) +
 
-                               ("intList" to listOf(1, 2, 3)) +
-                               ("stringList" to listOf("1", "2", "3"))
+                ("intList" to listOf(1, 2, 3)) +
+                ("stringList" to listOf("1", "2", "3"))
     }
 
     @Test
     fun empty() {
-        MapMetadata.empty().getAll().size shouldBe 0
+        MapMetadata.empty().getAll().size shouldBe
+                0
     }
 
     @Test
     fun of() {
         val metadata = mapOf("test" to "value")
-        MapMetadata.of(metadata).getAll() shouldBe metadata
+        MapMetadata.of(metadata).getAll() shouldBe
+                metadata
     }
 
     @Test
@@ -48,12 +50,14 @@ class MapMetadataTest {
 
     @Test
     fun getMetadata() {
-        metadata.getMetadata("metadata") shouldBe (emptyMetadata() + ("key" to "value"))
+        metadata.getMetadata("metadata") shouldBe
+                (emptyMetadata() + ("key" to "value"))
     }
 
     @Test
     fun getList() {
-        metadata.getList("intList") shouldBe listOf(1, 2, 3)
+        metadata.getList("intList") shouldBe
+                listOf(1, 2, 3)
     }
 
     @Test
@@ -65,7 +69,10 @@ class MapMetadataTest {
     @Test
     fun getAll() {
         metadata.getAll().size shouldBe 7
-        metadata.getAll() shouldContainAll mapOf("int" to 3,
-                                                 "metadata" to emptyMetadata() + ("key" to "value"))
+        metadata.getAll() shouldContainAll
+                mapOf(
+                    "int" to 3,
+                    "metadata" to emptyMetadata() + ("key" to "value")
+                )
     }
 }
