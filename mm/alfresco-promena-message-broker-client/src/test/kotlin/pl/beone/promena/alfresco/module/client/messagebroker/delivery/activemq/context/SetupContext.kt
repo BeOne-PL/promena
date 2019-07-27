@@ -4,8 +4,10 @@ import io.mockk.mockk
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.JmsQueueUtils
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 
 @Configuration
@@ -14,9 +16,14 @@ import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAl
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.autoconfigure",
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.internal",
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.framework",
+        "pl.beone.promena.alfresco.module.client.messagebroker.configuration.external.springmessaging",
         "pl.beone.promena.alfresco.module.client.messagebroker.configuration.delivery.activemq"
 )
 class SetupContext {
+
+    @Bean
+    fun jmsQueueUtils(jmsTemplate: JmsTemplate) =
+            JmsQueueUtils(jmsTemplate)
 
     @Bean
     fun alfrescoNodesChecksumGenerator() =

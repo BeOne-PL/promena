@@ -9,7 +9,7 @@ class ActiveMQContainerContext {
 
     @Bean
     fun activeMQContainer(): GenericContainer<Nothing> =
-            GenericContainer<Nothing>("rmohr/activemq:5.15.6-alpine").apply {
-                start()
-            }
+        GenericContainer<Nothing>("rmohr/activemq:5.15.6-alpine").apply {
+            start()
+        }
 }

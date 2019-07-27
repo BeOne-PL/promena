@@ -4,47 +4,68 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_COMMUNICATION_ID
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_COMMUNICATION_LOCATION
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_ATTEMPT
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODE_REFS
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.descriptor.DataDescriptor
-import pl.beone.promena.transformer.contract.descriptor.TransformationDescriptor
-import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
+import pl.beone.promena.alfresco.module.client.messagebroker.applicationmodel.PromenaAlfrescoJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
+import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.transformer.contract.transformation.Transformation
+import java.time.Duration
+import javax.jms.Message
 
-class TransformerSender(private val externalCommunication: ExternalCommunication,
-                        private val queueRequest: ActiveMQQueue,
-                        private val jmsTemplate: JmsTemplate) {
+class TransformerSender(
+    private val externalCommunication: ExternalCommunication,
+    private val transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
+    private val queueRequest: ActiveMQQueue,
+    private val jmsTemplate: JmsTemplate
+) {
 
-    fun send(dataDescriptors: List<DataDescriptor>,
-             id: String,
-             transformerId: String,
-             nodeRefs: List<NodeRef>,
-             nodesChecksum: String,
-             targetMediaType: MediaType,
-             parameters: Parameters,
-             attempt: Long) {
-        jmsTemplate.convertAndSend(queueRequest, TransformationDescriptor(dataDescriptors, targetMediaType, parameters)) { message ->
+    fun send(
+        id: String,
+        transformationDescriptor: TransformationDescriptor,
+        nodeRefs: List<NodeRef>,
+        nodesChecksum: String,
+        retry: Retry,
+        attempt: Long
+    ) {
+        jmsTemplate.convertAndSend(queueRequest, transformationDescriptor) { message ->
             message.apply {
                 jmsCorrelationID = id
-                setStringProperty(PROMENA_TRANSFORMER_ID, transformerId)
 
-                setObjectProperty(PROMENA_COMMUNICATION_ID, externalCommunication.id)
-                externalCommunication.location?.let { setObjectProperty(PROMENA_COMMUNICATION_LOCATION, externalCommunication.location.toString()) }
+                val transformerIds = transformationDescriptor.transformation.transformers.map { it.transformerId }
+                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
-                setObjectProperty(SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
-                setObjectProperty(SEND_BACK_NODES_CHECKSUM, nodesChecksum)
-                setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE, targetMediaType.mimeType)
-                setStringProperty(SEND_BACK_TARGET_MEDIA_TYPE_CHARSET, targetMediaType.charset.name())
-                setObjectProperty(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS, parameters.getAll())
-                setObjectProperty(SEND_BACK_ATTEMPT, attempt)
+                setObjectProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, externalCommunication.id)
+                externalCommunication.location?.let {
+                    setObjectProperty(PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_LOCATION, it.toString())
+                }
+
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
+
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, attempt)
+                if (retry == noRetry()) {
+                    setRetryHeaders(false, 0, Duration.ZERO)
+                } else {
+                    setRetryHeaders(true, retry.maxAttempts, retry.nextAttemptDelay)
+                }
             }
         }
     }
+
+    private fun Message.setRetryHeaders(enabled: Boolean, maxAttempts: Long, nextAttemptDelay: Duration?) {
+        setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED, enabled)
+        setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS, maxAttempts)
+        setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY, nextAttemptDelay.toString())
+    }
+
+    private fun determineId(transformation: Transformation): String =
+        transformation.transformers.joinToString(", ") {
+            if (it.transformerId.subName != null) {
+                "${it.transformerId.name}-${it.transformerId.subName}"
+            } else {
+                it.transformerId.name
+            }
+        }
 }

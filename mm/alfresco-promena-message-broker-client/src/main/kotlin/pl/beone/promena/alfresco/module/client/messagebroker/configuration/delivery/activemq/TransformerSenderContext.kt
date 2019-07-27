@@ -9,6 +9,7 @@ import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.messagebroker.configuration.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
+import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import java.util.*
 
 @Configuration
@@ -19,10 +20,16 @@ class TransformerSenderContext {
     }
 
     @Bean
-    fun transformerSender(@Qualifier("global-properties") properties: Properties,
-                          externalCommunication: ExternalCommunication,
-                          jmsTemplate: JmsTemplate) =
-            TransformerSender(externalCommunication,
-                              ActiveMQQueue(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.message-broker.consumer.queue.request")),
-                              jmsTemplate)
+    fun transformerSender(
+        @Qualifier("global-properties") properties: Properties,
+        externalCommunication: ExternalCommunication,
+        transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
+        jmsTemplate: JmsTemplate
+    ) =
+        TransformerSender(
+            externalCommunication,
+            transformationHashFunctionDeterminer,
+            ActiveMQQueue(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.message-broker.consumer.queue.request")),
+            jmsTemplate
+        )
 }

@@ -7,116 +7,110 @@ import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.common.couldNotTransform
 import pl.beone.promena.alfresco.module.client.base.common.couldNotTransformButChecksumsAreDifferent
 import pl.beone.promena.alfresco.module.client.base.common.logOnRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.PROMENA_TRANSFORMER_ID
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_ATTEMPT
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODES_CHECKSUM
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_NODE_REFS
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_CHARSET
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.PromenaJmsHeader.SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.MediaTypeConverter
+import pl.beone.promena.alfresco.module.client.messagebroker.applicationmodel.PromenaAlfrescoJmsHeaders
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.NodeRefsConverter
-import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.ParametersConverter
+import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.convert.RetryConverter
 import pl.beone.promena.alfresco.module.client.messagebroker.external.ActiveMQAlfrescoPromenaService
 import pl.beone.promena.alfresco.module.client.messagebroker.internal.ReactiveTransformationManager
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
+import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono
-import java.time.Duration
 
-private data class ErrorTransformationDescriptor(val id: String,
-                                                 val transformerId: String,
-                                                 val nodeRefs: List<NodeRef>,
-                                                 val targetMediaType: MediaType,
-                                                 val parameters: Parameters,
-                                                 val attempt: Long)
+private data class ErrorTransformationDescriptor(
+    val id: String,
+    val transformation: Transformation,
+    val nodeRefs: List<NodeRef>,
+    val retry: Retry,
+    val attempt: Long
+)
 
-class TransformerResponseErrorConsumer(private val retryOnError: Boolean,
-                                       private val retryOnErrorMaxAttempts: Long,
-                                       private val retryOnErrorNextAttemptsDelay: Duration,
-                                       private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-                                       private val reactiveTransformationManager: ReactiveTransformationManager,
-                                       private val activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService) {
+class TransformerResponseErrorConsumer(
+    private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
+    private val reactiveTransformationManager: ReactiveTransformationManager,
+    private val activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService
+) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(TransformerResponseErrorConsumer::class.java)
+
+        private val nodeRefsConverter = NodeRefsConverter()
+        private val retryConverter = RetryConverter()
     }
 
-    private val nodeRefsConverter = NodeRefsConverter()
-    private val mediaTypeConverter = MediaTypeConverter()
-    private val parametersConverter = ParametersConverter()
-
-    @JmsListener(destination = "\${promena.client.message-broker.consumer.queue.response.error}",
-                 selector = "\${promena.client.message-broker.consumer.queue.response.error.selector}")
-    fun receiveQueue(@Header(CORRELATION_ID) correlationId: String,
-                     @Header(PROMENA_TRANSFORMER_ID) transformerId: String,
-                     @Header(SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
-                     @Header(SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
-                     @Header(SEND_BACK_TARGET_MEDIA_TYPE_MIME_TYPE) rawMimeType: String,
-                     @Header(SEND_BACK_TARGET_MEDIA_TYPE_CHARSET) rawCharset: String,
-                     @Header(SEND_BACK_TARGET_MEDIA_TYPE_PARAMETERS) rawParameters: Map<String, Any>,
-                     @Header(SEND_BACK_ATTEMPT) attempt: Long,
-                     @Payload exception: Exception) {
+    @JmsListener(
+        destination = "\${promena.client.message-broker.consumer.queue.response.error}",
+        selector = "\${promena.client.message-broker.consumer.queue.response.error.selector}"
+    )
+    fun receiveQueue(
+        @Header(CORRELATION_ID) correlationId: String,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT) attempt: Long,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED) retryEnabled: Boolean,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS) retryMaxAttempts: Long,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY) retryNextAttemptDelay: String,
+        @Payload transformationException: TransformationException
+    ) {
         val nodeRefs = nodeRefsConverter.convert(rawNodeRefs)
-        val targetMediaType = mediaTypeConverter.convert(rawMimeType, rawCharset)
-        val parameters = parametersConverter.convert(rawParameters)
+        val retry = retryConverter.convert(retryEnabled, retryMaxAttempts, retryNextAttemptDelay)
+
+        val transformation = transformationException.transformation
 
         val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
         if (nodesChecksum != currentNodesChecksum) {
             reactiveTransformationManager.completeErrorTransformation(
-                    correlationId,
-                    AnotherTransformationIsInProgressException(
-                            transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum
-                    )
+                correlationId,
+                AnotherTransformationIsInProgressException(transformation, nodeRefs, nodesChecksum, currentNodesChecksum)
             )
-            logger.couldNotTransformButChecksumsAreDifferent(
-                    transformerId, nodeRefs, targetMediaType, parameters, nodesChecksum, currentNodesChecksum, exception
-            )
+            logger.couldNotTransformButChecksumsAreDifferent(transformation, nodeRefs, nodesChecksum, currentNodesChecksum, transformationException)
         } else {
-            logger.couldNotTransform(transformerId, nodeRefs, targetMediaType, parameters, exception)
+            logger.couldNotTransform(transformation, nodeRefs, transformationException)
 
-            if (makeAnotherAttempt(attempt)) {
-                retry(correlationId, transformerId, nodeRefs, targetMediaType, parameters, attempt)
-
-                if (lastAttempt(attempt)) {
-                    reactiveTransformationManager.completeErrorTransformation(correlationId, exception)
-                }
-            }
+            retry(correlationId, transformation, nodeRefs, retry, attempt + 1, transformationException)
         }
     }
 
-    private fun makeAnotherAttempt(attempt: Long): Boolean =
-            retryOnError && attempt < retryOnErrorMaxAttempts
-
-    private fun lastAttempt(attempt: Long): Boolean =
-            attempt == retryOnErrorMaxAttempts - 1
-
-    private fun retry(id: String,
-                      transformerId: String,
-                      nodeRefs: List<NodeRef>,
-                      targetMediaType: MediaType,
-                      parameters: Parameters,
-                      attempt: Long) {
-        val currentAttempt = attempt + 1
-
-        Mono.just(ErrorTransformationDescriptor(id, transformerId, nodeRefs, targetMediaType, parameters, currentAttempt))
-                .doOnNext {
-                    logger.logOnRetry(currentAttempt,
-                                      retryOnErrorMaxAttempts,
-                                      transformerId,
-                                      parameters,
-                                      nodeRefs,
-                                      targetMediaType,
-                                      retryOnErrorNextAttemptsDelay)
-                }
-                .delayElement(retryOnErrorNextAttemptsDelay)
-                .doOnNext {
-                    activeMQAlfrescoPromenaService.transformAsync(it.id, it.transformerId, it.nodeRefs, it.targetMediaType, it.parameters, it.attempt)
-                }
-                .subscribe()
+    private fun retry(
+        id: String,
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        retry: Retry,
+        attempt: Long,
+        exception: TransformationException
+    ) {
+        Mono.just("no matter")
+            .doOnNext { logger.logOnRetry(transformation, nodeRefs, attempt, retry.maxAttempts, retry.nextAttemptDelay) }
+            .delayElement(retry.nextAttemptDelay)
+            .doOnNext {
+                activeMQAlfrescoPromenaService.transformAsync(id, transformation, nodeRefs, retry, attempt)
+                    .subscribeAndCompleteErrorTransformationIfLastAttemptFails(id, retry, attempt, exception)
+            }
+            .subscribe()
     }
+
+    private fun Mono<*>.subscribeAndCompleteErrorTransformationIfLastAttemptFails(
+        id: String,
+        retry: Retry,
+        attempt: Long,
+        exception: Exception
+    ) {
+        if (retry.lastAttempt(attempt)) {
+            subscribe(
+                {},
+                {
+                    reactiveTransformationManager.completeErrorTransformation(id, exception)
+                }
+            )
+        } else {
+            subscribe()
+        }
+    }
+
+    private fun Retry.lastAttempt(attempt: Long): Boolean =
+        attempt == maxAttempts
 }

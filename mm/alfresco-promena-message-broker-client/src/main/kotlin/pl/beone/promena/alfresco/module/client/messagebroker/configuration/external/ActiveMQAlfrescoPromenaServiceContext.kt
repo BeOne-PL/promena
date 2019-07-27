@@ -3,6 +3,7 @@ package pl.beone.promena.alfresco.module.client.messagebroker.configuration.exte
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.messagebroker.delivery.activemq.TransformerSender
@@ -15,13 +16,19 @@ class ActiveMQAlfrescoPromenaServiceContext {
 
 
     @Bean
-    fun activeMQAlfrescoPromenaService(@Qualifier("global-properties") properties: Properties,
-                                       alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-                                       alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
-                                       reactiveTransformationManager: ReactiveTransformationManager,
-                                       transformerSender: TransformerSender) =
-            ActiveMQAlfrescoPromenaService(alfrescoNodesChecksumGenerator,
-                                           alfrescoDataDescriptorGetter,
-                                           reactiveTransformationManager,
-                                           transformerSender)
+    fun activeMQAlfrescoPromenaService(
+        @Qualifier("global-properties") properties: Properties,
+        retry: Retry,
+        alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
+        alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
+        reactiveTransformationManager: ReactiveTransformationManager,
+        transformerSender: TransformerSender
+    ) =
+        ActiveMQAlfrescoPromenaService(
+            retry,
+            alfrescoNodesChecksumGenerator,
+            alfrescoDataDescriptorGetter,
+            reactiveTransformationManager,
+            transformerSender
+        )
 }
