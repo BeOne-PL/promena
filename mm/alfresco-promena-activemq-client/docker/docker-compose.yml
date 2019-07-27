@@ -1,13 +1,13 @@
 version: '3.4'
 services:
-#  Optional
-#  alfresco-promena-activemq-client-share:
-#    image: ${docker.share.image}:${alfresco.share.version}
-#    environment:
-#      REPO_HOST: alfresco-promena-activemq-client-acs
-#      REPO_PORT: 8080
-#    ports:
-#      - "${share.port}:8080"
+  alfresco-promena-activemq-client-share:
+    image: ${docker.share.image}:${alfresco.share.version}
+    environment:
+      REPO_HOST: alfresco-promena-activemq-client-acs
+      REPO_PORT: 8080
+    ports:
+      - "${share.port}:8080"
+
   alfresco-promena-activemq-client-acs:
     image: alfresco-content-services-alfresco-promena-activemq-client:development
     build:
@@ -22,6 +22,7 @@ services:
       - alfresco-promena-activemq-client-acs-volume:/usr/local/tomcat/alf_data
     depends_on:
       - alfresco-promena-activemq-client-postgres
+
   alfresco-promena-activemq-client-postgres:
     image: postgres:9.6
     environment:
@@ -33,6 +34,7 @@ services:
       - "${postgres.port}:5432"
     volumes:
       - alfresco-promena-activemq-client-db-volume:/var/lib/postgresql/data
+
   alfresco-promena-activemq-client-ass:
     image: alfresco/alfresco-search-services:1.2.0
     environment:
@@ -46,10 +48,29 @@ services:
     volumes:
       - alfresco-promena-activemq-client-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-activemq-client-ass-volume:/opt/alfresco-search-services/data
+
+  activemq:
+    image: alfresco/alfresco-activemq:5.15.6
+    ports:
+      - 8161:8161 # Web Console
+      - 5672:5672 # AMQP
+      - 61616:61616 # OpenWire
+      - 61613:61613 # STOMP
+    volumes:
+      - alfresco-promena-message-broker-client-activemq-conf-volume:/opt/activemq/conf
+      - alfresco-promena-message-broker-client-activemq-log-volume:/var/log/activemq
+      - alfresco-promena-message-broker-client-activemq-data-volume:/opt/activemq/data
+
 volumes:
   alfresco-promena-activemq-client-acs-volume:
     external: true
   alfresco-promena-activemq-client-db-volume:
     external: true
   alfresco-promena-activemq-client-ass-volume:
+    external: true
+  alfresco-promena-message-broker-client-activemq-conf-volume:
+    external: true
+  alfresco-promena-message-broker-client-activemq-log-volume:
+    external: true
+  alfresco-promena-message-broker-client-activemq-data-volume:
     external: true
