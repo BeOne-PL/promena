@@ -20,29 +20,35 @@ class TransformationConsumerContext {
     companion object {
         private val logger = LoggerFactory.getLogger(TransformationConsumerContext::class.java)
 
-        private val transformationIdMessageSelectorDeterminer = TransformationIdMessageSelectorDeterminer()
+        private val transformationHashCodeMessageSelectorDeterminer = TransformationHashCodeMessageSelectorDeterminer()
     }
 
     @Bean
-    fun transformationConsumer(environment: StandardEnvironment,
-                               transformers: List<Transformer>,
-                               transformerConfig: TransformerConfig,
-                               transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
-                               jmsTemplate: JmsTemplate,
-                               transformationUseCase: TransformationUseCase): TransformationConsumer {
-        val messageSelector = transformationIdMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
+    fun transformationConsumer(
+        environment: StandardEnvironment,
+        transformers: List<Transformer>,
+        transformerConfig: TransformerConfig,
+        transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
+        jmsTemplate: JmsTemplate,
+        transformationUseCase: TransformationUseCase
+    ): TransformationConsumer {
+        val messageSelector = transformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
 
-        logger.info("Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_ID}>: {}", messageSelector)
+        logger.info("Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE}>: {}", messageSelector)
 
         environment.propertySources.addLast(
-                MapPropertySource("transformationConsumer",
-                                  mapOf("promena.connector.activemq.consumer.queue.request.message-selector" to messageSelector))
+            MapPropertySource(
+                "transformationConsumer",
+                mapOf("promena.connector.activemq.consumer.queue.request.message-selector" to messageSelector)
+            )
         )
 
-        return TransformationConsumer(jmsTemplate,
-                                      ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")),
-                                      ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")),
-                                      transformationUseCase)
+        return TransformationConsumer(
+            jmsTemplate,
+            ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")),
+            ActiveMQQueue(environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")),
+            transformationUseCase
+        )
     }
 
 }

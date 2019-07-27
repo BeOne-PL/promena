@@ -6,7 +6,7 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 
-internal class TransformationIdMessageSelectorDeterminer {
+internal class TransformationHashCodeMessageSelectorDeterminer {
 
     companion object {
         private val transformerIdsCombinationDeterminer = TransformerIdsCombinationDeterminer()
@@ -23,5 +23,5 @@ internal class TransformationIdMessageSelectorDeterminer {
         transformers.map { transformerConfig.getTransformerId(it) }
 
     private fun createMessageSelector(transformationHashFunctionAllCombinations: List<String>): String =
-        PromenaJmsHeaders.TRANSFORMATION_ID + " IN (" + transformationHashFunctionAllCombinations.joinToString(", ") { "'$it'" } + ")"
+        PromenaJmsHeaders.TRANSFORMATION_HASH_CODE + " IN (" + transformationHashFunctionAllCombinations.joinToString(", ") { "'$it'" } + ")"
 }

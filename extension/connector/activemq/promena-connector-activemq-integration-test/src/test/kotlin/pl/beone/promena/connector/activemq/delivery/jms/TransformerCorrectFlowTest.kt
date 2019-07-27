@@ -109,7 +109,7 @@ class TransformerCorrectFlowTest {
         headers.let {
             it shouldContainAll mapOf(
                 JmsHeaders.CORRELATION_ID to correlationId,
-                PromenaJmsHeaders.TRANSFORMATION_ID to transformationHashFunctionDeterminer.determine(transformerIds)
+                PromenaJmsHeaders.TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds)
             )
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
@@ -131,9 +131,9 @@ class TransformerCorrectFlowTest {
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
         performedTransformationDescriptor.transformation shouldBe transformation
-        performedTransformationDescriptor.transformedDataDescriptor.descriptors.let { descriptors ->
-            descriptors shouldHaveSize 1
-            descriptors[0].let { transformedDataDescriptor ->
+        performedTransformationDescriptor.transformedDataDescriptor.descriptors.let {
+            it shouldHaveSize 1
+            it[0].let { transformedDataDescriptor ->
                 transformedDataDescriptor.data.getBytes() shouldBe transformedData.getBytes()
                 transformedDataDescriptor.metadata.getAll() shouldBe emptyMap()
             }
@@ -144,7 +144,11 @@ class TransformerCorrectFlowTest {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), transformationDescriptor) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_ID, transformationHashFunctionDeterminer.determine(transformerIds))
+                setStringProperty(
+                    PromenaJmsHeaders.TRANSFORMATION_ID,
+                    TestTransformerMockContext.TRANSFORMER_ID.name + TestTransformerMockContext.TRANSFORMER_ID.subName
+                )
+                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
                 setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX + "location", location)

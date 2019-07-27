@@ -30,6 +30,7 @@ class TransformationConsumer(
     fun receiveQueue(
         @Header(JmsHeaders.CORRELATION_ID) correlationId: String,
         @Header(PromenaJmsHeaders.TRANSFORMATION_ID) transformationId: String,
+        @Header(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE) transformationHashCode: String,
         @Headers headers: Map<String, Any>,
         @Payload transformationDescriptor: TransformationDescriptor
     ) {
@@ -48,6 +49,7 @@ class TransformationConsumer(
 
         val headersToSend = headersToSentBackDeterminer.determine(headers) +
                 (PromenaJmsHeaders.TRANSFORMATION_ID to transformationId) +
+                (PromenaJmsHeaders.TRANSFORMATION_HASH_CODE to transformationHashCode) +
                 determineTimestampHeaders(startTimestamp, getTimestamp())
 
         transformerProducer.send(queue, correlationId, headersToSend, payload)

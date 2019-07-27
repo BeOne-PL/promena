@@ -10,10 +10,10 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
-class TransformationIdMessageSelectorDeterminerTest {
+class TransformationHashCodeMessageSelectorDeterminerTest {
 
     companion object {
-        private val transformationIdMessageSelectorDeterminer = TransformationIdMessageSelectorDeterminer()
+        private val transformationHashCodeMessageSelectorDeterminer = TransformationHashCodeMessageSelectorDeterminer()
     }
 
     @Test
@@ -34,9 +34,11 @@ class TransformationIdMessageSelectorDeterminerTest {
             every { determine(listOf(converterTransformerId, barcodeTransformerId)) } returns "3"
         }
 
-        transformationIdMessageSelectorDeterminer.determine(transformerConfig,
-                                                            listOf(converterTransformer, barcodeTransformer),
-                                                            transformationHashFunctionDeterminer) shouldBe
-                "${PromenaJmsHeaders.TRANSFORMATION_ID} IN ('1', '2', '3')"
+        transformationHashCodeMessageSelectorDeterminer.determine(
+            transformerConfig,
+            listOf(converterTransformer, barcodeTransformer),
+            transformationHashFunctionDeterminer
+        ) shouldBe
+                "${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE} IN ('1', '2', '3')"
     }
 }

@@ -98,7 +98,7 @@ class TransformerExceptionFlowTest {
         headers.let {
             it shouldContainAll mapOf(
                 CORRELATION_ID to correlationId,
-                PromenaJmsHeaders.TRANSFORMATION_ID to transformationHashFunctionDeterminer.determine(transformerIds),
+                PromenaJmsHeaders.TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds),
                 "send_back_nodeRefs" to listOf(
                     "workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
                     "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"
@@ -142,7 +142,11 @@ class TransformerExceptionFlowTest {
         ) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_ID, transformationHashFunctionDeterminer.determine(transformerIds))
+                setStringProperty(
+                    PromenaJmsHeaders.TRANSFORMATION_ID,
+                    TestTransformerMockContext.TRANSFORMER_ID.name + TestTransformerMockContext.TRANSFORMER_ID.subName
+                )
+                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
 
