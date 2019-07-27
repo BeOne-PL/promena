@@ -46,13 +46,13 @@ fun Logger.skippedSavingResult(transformation: Transformation,
 
 fun Logger.couldNotTransformButChecksumsAreDifferent(transformation: Transformation,
                                                      nodeRefs: List<NodeRef>,
-                                                     nodesChecksum: String,
+                                                     oldNodesChecksum: String,
                                                      currentNodesChecksum: String,
                                                      exception: Throwable) {
     warn("Couldn't transform <{}> nodes <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
          transformation,
          nodeRefs,
-         nodesChecksum,
+         oldNodesChecksum,
          currentNodesChecksum,
          exception)
 }
