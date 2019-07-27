@@ -1,3 +1,5 @@
+@file:JvmName("TransformationDsl")
+
 package pl.beone.promena.transformer.contract.transformation
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType

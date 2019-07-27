@@ -1,3 +1,5 @@
+@file:JvmName("MapCommunicationParametersDsl")
+
 package pl.beone.promena.transformer.internal.communication
 
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters

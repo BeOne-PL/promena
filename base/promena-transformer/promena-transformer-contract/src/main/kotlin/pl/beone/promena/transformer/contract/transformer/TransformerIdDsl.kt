@@ -1,3 +1,5 @@
+@file:JvmName("TransformerIdDsl")
+
 package pl.beone.promena.transformer.contract.transformer
 
 fun transformerId(name: String, subName: String? = null): TransformerId =

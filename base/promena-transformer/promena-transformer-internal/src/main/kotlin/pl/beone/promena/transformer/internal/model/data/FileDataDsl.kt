@@ -1,3 +1,5 @@
+@file:JvmName("FileDataDsl")
+
 package pl.beone.promena.transformer.internal.model.data
 
 import java.io.File

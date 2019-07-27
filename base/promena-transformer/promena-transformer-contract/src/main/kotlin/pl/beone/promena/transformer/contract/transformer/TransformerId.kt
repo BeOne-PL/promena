@@ -11,4 +11,7 @@ data class TransformerId private constructor(
         fun of(name: String, subName: String? = null): TransformerId =
             TransformerId(name, subName)
     }
+
+    fun isSubNameSet(): Boolean =
+        subName != null
 }

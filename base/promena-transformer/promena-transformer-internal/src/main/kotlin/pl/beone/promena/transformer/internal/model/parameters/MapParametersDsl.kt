@@ -1,3 +1,5 @@
+@file:JvmName("MapParametersDsl")
+
 package pl.beone.promena.transformer.internal.model.parameters
 
 import pl.beone.promena.transformer.contract.model.Parameters

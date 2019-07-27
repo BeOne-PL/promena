@@ -1,3 +1,5 @@
+@file:JvmName("DataDescriptorDsl")
+
 package pl.beone.promena.transformer.contract.data
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
