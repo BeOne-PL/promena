@@ -18,23 +18,22 @@ import pl.beone.promena.transformer.internal.model.metadata.plus
 class FromTextToXmlAppenderTransformer : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor =
-            dataDescriptor.descriptors.map { (data, _, metadata) ->
-                singleTransformedDataDescriptor(data.surroundWithTag(parameters.getTag()).toMemoryData(),
-                                                metadata.addTransformerId())
-            }.toTransformedDataDescriptor()
+        dataDescriptor.descriptors.map { (data, _, metadata) ->
+            singleTransformedDataDescriptor(data.surroundWithTag(parameters.getTag()).toMemoryData(), metadata.addTransformerId())
+        }.toTransformedDataDescriptor()
 
     private fun Parameters.getTag(): String =
-            get("tag", String::class.java)
+        get("tag", String::class.java)
 
     private fun Data.surroundWithTag(tag: String): String =
-            "<$tag>" + String(getBytes()) + "</$tag>"
+        "<$tag>" + String(getBytes()) + "</$tag>"
 
     private fun Metadata.addTransformerId(): Metadata =
-            this + ("from-text-to-xml-appender-transformer" to true)
+        this + ("from-text-to-xml-appender-transformer" to true)
 
     override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         dataDescriptor.descriptors.forEach {
-            if(it.mediaType != TEXT_PLAIN) {
+            if (it.mediaType != TEXT_PLAIN) {
                 throwException()
             }
         }

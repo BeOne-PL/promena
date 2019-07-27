@@ -13,8 +13,12 @@ class AkkaTransformerServiceContext {
 
     @Bean
     @ConditionalOnMissingBean(TransformationService::class)
-    fun akkaTransformationService(actorMaterializer: ActorMaterializer,
-                                  actorService: ActorService) =
-            AkkaTransformationService(actorMaterializer,
-                                      actorService)
+    fun akkaTransformationService(
+        actorMaterializer: ActorMaterializer,
+        actorService: ActorService
+    ) =
+        AkkaTransformationService(
+            actorMaterializer,
+            actorService
+        )
 }

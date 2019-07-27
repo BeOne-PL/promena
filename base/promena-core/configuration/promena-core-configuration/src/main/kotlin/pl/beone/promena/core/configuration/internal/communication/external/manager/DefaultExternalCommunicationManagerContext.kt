@@ -5,17 +5,21 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
+import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.internal.communication.external.manager.DefaultExternalCommunicationManager
 
 @Configuration
 class DefaultExternalCommunicationManagerContext {
 
     @Bean
-    @ConditionalOnMissingBean
-    fun defaultExternalCommunicationManager(environment: Environment,
-                                            externalCommunications: List<ExternalCommunication>) =
-            DefaultExternalCommunicationManager(externalCommunications,
-                                                environment.getRequiredProperty("communication.external.manager.back-pressure.enabled",
-                                                                                Boolean::class.java),
-                                                environment.getRequiredProperty("communication.external.manager.back-pressure.id"))
+    @ConditionalOnMissingBean(ExternalCommunicationManager::class)
+    fun defaultExternalCommunicationManager(
+        environment: Environment,
+        externalCommunications: List<ExternalCommunication>
+    ) =
+        DefaultExternalCommunicationManager(
+            externalCommunications,
+            environment.getRequiredProperty("communication.external.manager.back-pressure.enabled", Boolean::class.java),
+            environment.getRequiredProperty("communication.external.manager.back-pressure.id")
+        )
 }

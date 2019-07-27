@@ -5,6 +5,5 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 interface OutgoingExternalCommunicationConverter {
 
-    fun convert(transformedDataDescriptor: TransformedDataDescriptor,
-                externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptor
+    fun convert(transformedDataDescriptor: TransformedDataDescriptor, externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptor
 }

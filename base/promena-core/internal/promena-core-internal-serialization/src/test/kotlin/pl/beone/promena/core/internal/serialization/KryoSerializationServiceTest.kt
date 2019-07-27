@@ -31,7 +31,8 @@ class KryoSerializationServiceTest {
     fun `serialize and deserialize _ URI`() {
         val uri = URI("file:/tmp/tomcat.7182112197177744335.8010/")
 
-        uri shouldBe serializationService.deserialize(serializationService.serialize(uri), URI::class.java)
+        uri shouldBe
+                serializationService.deserialize(serializationService.serialize(uri), URI::class.java)
     }
 
     @Test
@@ -45,7 +46,7 @@ class KryoSerializationServiceTest {
     }
 
     @Test
-    fun `serialize and deserialize _ TransformationDescriptor with single flow`() {
+    fun `serialize and deserialize _ single TransformationDescriptor`() {
         val transformationDescriptor = TransformationDescriptor.of(
             singleTransformation("test", APPLICATION_PDF, emptyParameters()),
             singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
@@ -57,7 +58,7 @@ class KryoSerializationServiceTest {
     }
 
     @Test
-    fun `serialize and deserialize _ TransformationDescriptor with composite flow`() {
+    fun `serialize and deserialize _ composite TransformationDescriptor`() {
         val transformationDescriptor = TransformationDescriptor.of(
             singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
                     singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),

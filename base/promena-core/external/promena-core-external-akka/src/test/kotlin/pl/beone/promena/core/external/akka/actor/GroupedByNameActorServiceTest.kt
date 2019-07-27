@@ -17,8 +17,7 @@ class GroupedByNameActorServiceTest {
         val veryEmptyTransformerId = ("empty" to "very").toTransformerId()
         val veryEmptyTransformerActorDescriptor = TransformerActorDescriptor(veryEmptyTransformerId, mockk())
 
-        val actorService = GroupedByNameActorService(listOf(veryEmptyTransformerActorDescriptor),
-                                                     mockk())
+        val actorService = GroupedByNameActorService(listOf(veryEmptyTransformerActorDescriptor), mockk())
 
         actorService.getTransformerActor("empty".toTransformerId()) shouldBeSameInstanceAs
                 veryEmptyTransformerActorDescriptor.actorRef
@@ -26,25 +25,28 @@ class GroupedByNameActorServiceTest {
         actorService.getTransformerActor(veryEmptyTransformerId) shouldBeSameInstanceAs
                 veryEmptyTransformerActorDescriptor.actorRef
 
-        shouldThrow<TransformerNotFoundException> { actorService.getTransformerActor("absent".toTransformerId()) }.message shouldBe
-                "There is no <absent> transformer"
+        shouldThrow<TransformerNotFoundException> {
+            actorService.getTransformerActor("absent".toTransformerId())
+        }.message shouldBe "There is no <absent> transformer"
 
-        shouldThrow<TransformerNotFoundException> { actorService.getTransformerActor(("empty" to "not-much").toTransformerId()) }.message shouldBe
-                "There is no <empty, not-much> transformer"
+        shouldThrow<TransformerNotFoundException> {
+            actorService.getTransformerActor(("empty" to "not-much").toTransformerId())
+        }.message shouldBe "There is no <empty, not-much> transformer"
 
-        shouldThrow<TransformerNotFoundException> { actorService.getTransformerActor("absent".toTransformerId()) }.message shouldBe
-                "There is no <absent> transformer"
+        shouldThrow<TransformerNotFoundException> {
+            actorService.getTransformerActor("absent".toTransformerId())
+        }.message shouldBe "There is no <absent> transformer"
 
-        shouldThrow<TransformerNotFoundException> { actorService.getTransformerActor(("absent" to "sub-absent").toTransformerId()) }.message shouldBe
-                "There is no <absent, sub-absent> transformer"
+        shouldThrow<TransformerNotFoundException> {
+            actorService.getTransformerActor(("absent" to "sub-absent").toTransformerId())
+        }.message shouldBe "There is no <absent, sub-absent> transformer"
     }
 
     @Test
     fun getSerializerActor() {
         val serializerActorRef = mockk<ActorRef>()
 
-        val actorService = GroupedByNameActorService(emptyList(),
-                                                     serializerActorRef)
+        val actorService = GroupedByNameActorService(emptyList(), serializerActorRef)
 
         actorService.getSerializerActor() shouldBe
                 serializerActorRef

@@ -23,28 +23,27 @@ class DefaultExternalCommunicationManagerTest {
 
     @Before
     fun setUp() {
-        (LoggerFactory.getLogger("pl.beone.promena.core.internal.communication.external.manager.DefaultExternalCommunicationManager") as Logger).level = Level.DEBUG
-
+        (LoggerFactory.getLogger("pl.beone.promena.core.internal.communication.external.manager.DefaultExternalCommunicationManager") as Logger)
+            .level = Level.DEBUG
     }
 
     @Test
     fun getCommunication() {
         DefaultExternalCommunicationManager(externalCommunications, false, externalId)
-                .getCommunication(externalId) shouldBe externalCommunication
+            .getCommunication(externalId) shouldBe externalCommunication
     }
 
     @Test
     fun `getCommunication _ should throw ExternalCommunicationManagerException`() {
         shouldThrowExactly<ExternalCommunicationManagerException> {
-            DefaultExternalCommunicationManager(externalCommunications, false, externalId)
-                    .getCommunication("absent")
+            DefaultExternalCommunicationManager(externalCommunications, false, externalId).getCommunication("absent")
         }.message shouldBe "There is no <absent> external communication: <[external, external2]>"
     }
 
     @Test
     fun `getCommunication _ back pressure`() {
-        DefaultExternalCommunicationManager(externalCommunications, true, externalId)
-                .getCommunication("absent") shouldBe externalCommunication
+        DefaultExternalCommunicationManager(externalCommunications, true, externalId).getCommunication("absent") shouldBe
+                externalCommunication
     }
 
     @Test

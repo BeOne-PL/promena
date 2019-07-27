@@ -14,8 +14,10 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
     }
 
     override fun getTransformerId(transformer: Transformer): TransformerId =
-        transformerId(determine(transformer, "id.name", String::class.java, null),
-                      determine(transformer, "id.sub-name", String::class.java, null))
+        transformerId(
+            determine(transformer, "id.name", String::class.java, null),
+            determine(transformer, "id.sub-name", String::class.java, null)
+        )
 
     override fun getActors(transformer: Transformer): Int =
         determine(transformer, "actors", Int::class.java, 1)

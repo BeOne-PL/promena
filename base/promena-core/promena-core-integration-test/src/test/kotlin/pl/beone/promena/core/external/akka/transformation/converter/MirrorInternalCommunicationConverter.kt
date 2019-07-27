@@ -7,6 +7,6 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 class MirrorInternalCommunicationConverter : InternalCommunicationConverter {
 
     override fun convert(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
-            transformedDataDescriptor
+        transformedDataDescriptor
 
 }

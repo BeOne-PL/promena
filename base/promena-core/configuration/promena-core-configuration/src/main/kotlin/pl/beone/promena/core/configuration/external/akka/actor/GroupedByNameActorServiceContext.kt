@@ -14,9 +14,13 @@ class GroupedByNameActorServiceContext {
 
     @Bean
     @ConditionalOnMissingBean(ActorService::class)
-    fun groupedByNameActorService(transformerActorsBeanRegister: TransformerActorsBeanRegister, // it forces the creation of transformer actors before injecting transformerActorDescriptors
-                                  transformerActorDescriptors: List<TransformerActorDescriptor>,
-                                  @Qualifier("serializerActor") serializerActorRef: ActorRef) =
-        GroupedByNameActorService(transformerActorDescriptors,
-                                  serializerActorRef)
+    fun groupedByNameActorService(
+        transformerActorsBeanRegister: TransformerActorsBeanRegister, // it forces the creation of transformer actors before injecting transformerActorDescriptors
+        transformerActorDescriptors: List<TransformerActorDescriptor>,
+        @Qualifier("serializerActor") serializerActorRef: ActorRef
+    ) =
+        GroupedByNameActorService(
+            transformerActorDescriptors,
+            serializerActorRef
+        )
 }

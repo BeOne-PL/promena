@@ -4,8 +4,8 @@ import pl.beone.promena.transformer.contract.model.Parameters
 import java.time.Duration
 
 internal fun Parameters.getTimeoutOrInfiniteIfNotFound(): Duration =
-        try {
-            this.getTimeout()
-        } catch (e: Exception) {
-            infiniteDuration
-        }
+    try {
+        this.getTimeout()
+    } catch (e: Exception) {
+        infiniteDuration
+    }

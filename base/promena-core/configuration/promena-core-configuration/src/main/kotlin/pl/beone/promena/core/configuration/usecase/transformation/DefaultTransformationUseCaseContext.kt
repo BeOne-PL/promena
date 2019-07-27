@@ -13,8 +13,12 @@ class DefaultTransformationUseCaseContext {
 
     @Bean
     @ConditionalOnMissingBean(TransformationUseCase::class)
-    fun defaultTransformationUseCase(externalCommunicationManager: ExternalCommunicationManager,
-                                     transformationService: TransformationService) =
-            DefaultTransformationUseCase(externalCommunicationManager,
-                                         transformationService)
+    fun defaultTransformationUseCase(
+        externalCommunicationManager: ExternalCommunicationManager,
+        transformationService: TransformationService
+    ) =
+        DefaultTransformationUseCase(
+            externalCommunicationManager,
+            transformationService
+        )
 }

@@ -14,10 +14,14 @@ class GroupedByNameTransformersCreatorContext {
 
     @Bean
     @ConditionalOnMissingBean(TransformersCreator::class)
-    fun groupedByNameTransformersCreator(transformerConfig: TransformerConfig,
-                                         internalCommunicationConverter: InternalCommunicationConverter,
-                                         actorCreator: ActorCreator) =
-        GroupedByNameTransformersCreator(transformerConfig,
-                                         internalCommunicationConverter,
-                                         actorCreator)
+    fun groupedByNameTransformersCreator(
+        transformerConfig: TransformerConfig,
+        internalCommunicationConverter: InternalCommunicationConverter,
+        actorCreator: ActorCreator
+    ) =
+        GroupedByNameTransformersCreator(
+            transformerConfig,
+            internalCommunicationConverter,
+            actorCreator
+        )
 }

@@ -7,13 +7,13 @@ import akka.stream.ActorMaterializer
 import akka.stream.javadsl.Flow
 import akka.stream.javadsl.Sink
 import akka.stream.javadsl.Source
+import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.message.DeserializedMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.SerializedMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToDeserializeMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToSerializeMessage
-import pl.beone.promena.core.external.akka.util.getClazz
 import pl.beone.promena.core.external.akka.util.infiniteTimeout
 import pl.beone.promena.core.external.akka.util.unwrapExecutionException
 
@@ -52,7 +52,7 @@ class AkkaKryoSerializationService(
 
     private fun <T> createDeserializeFlow(clazz: Class<T>): Flow<ByteArray, T, NotUsed> =
         Flow.of(getClazz<ByteArray>())
-            .map { ToDeserializeMessage(it, clazz) }
+            .map { bytes -> ToDeserializeMessage(bytes, clazz) }
             .ask(actorService.getSerializerActor(), DeserializedMessage::class.java, infiniteTimeout)
-            .map { it.element as T }
+            .map { (element) -> element as T }
 }

@@ -9,14 +9,16 @@ import java.util.*
 import javax.annotation.PostConstruct
 
 @Configuration
-class TransformerActorsBeanRegister(private val beanFactory: ConfigurableBeanFactory,
-                                    private val transformers: Optional<List<Transformer>>,
-                                    private val transformerActorsCreator: TransformersCreator) {
+class TransformerActorsBeanRegister(
+    private val beanFactory: ConfigurableBeanFactory,
+    private val transformers: Optional<List<Transformer>>,
+    private val transformerActorsCreator: TransformersCreator
+) {
 
     @PostConstruct
     fun register() {
         transformerActorsCreator.create(transformers.orElse(emptyList()))
-                .forEach { beanFactory.registerSingleton(createName(it.transformerId), it) }
+            .forEach { beanFactory.registerSingleton(createName(it.transformerId), it) }
     }
 
     private fun createName(transformerId: TransformerId): String =

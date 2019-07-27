@@ -26,11 +26,11 @@ class ActorSystemContext {
     }
 
     private fun getAkkaProperties(environment: Environment): List<Pair<String, String>> =
-            (environment as StandardEnvironment).propertySources
-                    .filterIsInstance<MapPropertySource>()
-                    .flatMap { it.source.keys }
-                    .filter { key -> key.startsWith("akka.") }
-                    .map { key -> key to environment.getRequiredProperty(key) }
+        (environment as StandardEnvironment).propertySources
+            .filterIsInstance<MapPropertySource>()
+            .flatMap { it.source.keys }
+            .filter { key -> key.startsWith("akka.") }
+            .map { key -> key to environment.getRequiredProperty(key) }
 
     private fun setAkkaProperties(akkaProperties: List<Pair<String, String>>) {
         logger.info("Found <{}> AKKA property(ies)", akkaProperties.size)

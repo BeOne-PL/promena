@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Configuration
 import javax.annotation.PostConstruct
 
 @Configuration
-class ApplyAkkaDebugLogging(private val actorSystem: ActorSystem) {
+class ApplyAkkaDebugLogging(
+    private val actorSystem: ActorSystem
+) {
 
     // apply DEBUG because everything is controlled by Spring Boot logging
     @PostConstruct

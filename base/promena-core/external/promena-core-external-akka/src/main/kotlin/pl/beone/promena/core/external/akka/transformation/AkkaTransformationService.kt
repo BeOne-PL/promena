@@ -10,6 +10,7 @@ import akka.stream.javadsl.Sink
 import akka.stream.javadsl.Source
 import akka.util.Timeout
 import org.slf4j.LoggerFactory
+import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerException
@@ -28,13 +29,17 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 import java.time.Duration
 
-private data class ActorTransformerDescriptor(val transformerId: TransformerId,
-                                              val transformerActorRef: ActorRef,
-                                              val targetMediaType: MediaType,
-                                              val parameters: Parameters)
+private data class ActorTransformerDescriptor(
+    val transformerId: TransformerId,
+    val transformerActorRef: ActorRef,
+    val targetMediaType: MediaType,
+    val parameters: Parameters
+)
 
-class AkkaTransformationService(private val actorMaterializer: ActorMaterializer,
-                                private val actorService: ActorService) : TransformationService {
+class AkkaTransformationService(
+    private val actorMaterializer: ActorMaterializer,
+    private val actorService: ActorService
+) : TransformationService {
 
     companion object {
         private val logger = LoggerFactory.getLogger(AkkaTransformationService::class.java)
@@ -45,15 +50,15 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
 
         val (transformedDataDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
             try {
-                val actorTransformerDescriptors = getTransformerDescriptorsWithActorRef(transformation)
+                val actorTransformerDescriptors = getActorTransformerDescriptors(transformation)
 
                 unwrapExecutionException {
                     createSource(dataDescriptor)
-                            .viaIntermediateTransformers(getIntermediateTransformers(actorTransformerDescriptors))
-                            .viaFinalTransformer(getFinalTransformer(actorTransformerDescriptors))
-                            .runWith(Sink.head(), actorMaterializer)
-                            .toCompletableFuture()
-                            .get()
+                        .viaIntermediateTransformers(getIntermediateTransformers(actorTransformerDescriptors))
+                        .viaFinalTransformer(getFinalTransformer(actorTransformerDescriptors))
+                        .runWith(Sink.head(), actorMaterializer)
+                        .toCompletableFuture()
+                        .get()
                 }
             } catch (e: Exception) {
                 throw convertException(transformation, e)
@@ -67,19 +72,23 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
 
     private fun logBeforeTransformation(transformation: Transformation, dataDescriptor: DataDescriptor) {
         if (logger.isDebugEnabled) {
-            logger.debug("Transforming <{}> <{} source(s)>: [{}]...",
-                         transformation,
-                         dataDescriptor.descriptors.size,
-                         dataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" })
+            logger.debug(
+                "Transforming <{}> <{} source(s)>: [{}]...",
+                transformation,
+                dataDescriptor.descriptors.size,
+                dataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" }
+            )
         } else {
-            logger.info("Transforming <{}> <{} source(s)>: [{}]...",
-                        transformation,
-                        dataDescriptor.descriptors.size,
-                        dataDescriptor.descriptors.joinToString(", ") { "<${it.mediaType}>" })
+            logger.info(
+                "Transforming <{}> <{} source(s)>: [{}]...",
+                transformation,
+                dataDescriptor.descriptors.size,
+                dataDescriptor.descriptors.joinToString(", ") { "<${it.mediaType}>" }
+            )
         }
     }
 
-    private fun getTransformerDescriptorsWithActorRef(transformation: Transformation): List<ActorTransformerDescriptor> =
+    private fun getActorTransformerDescriptors(transformation: Transformation): List<ActorTransformerDescriptor> =
         transformation.transformers.map { (id, mediaType, parameters) ->
             ActorTransformerDescriptor(id, actorService.getTransformerActor(id), mediaType, parameters)
         }
@@ -93,7 +102,7 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
     private fun Source<DataDescriptor, NotUsed>.viaIntermediateTransformers(actorTransformerDescriptors: List<ActorTransformerDescriptor>): Source<DataDescriptor, NotUsed> =
         actorTransformerDescriptors.map { (transformerId, transformerActorRef, targetMediaType, parameters) ->
             createTransformerFlow(transformerId, transformerActorRef, targetMediaType, parameters)
-                    .map { it.toSequentialDataDescriptors(targetMediaType) }
+                .map { it.toSequentialDataDescriptors(targetMediaType) }
         }.applyFlows(this)
 
     private fun <T> List<Flow<T, T, NotUsed>>.applyFlows(source: Source<T, NotUsed>): Source<T, NotUsed> =
@@ -107,52 +116,57 @@ class AkkaTransformationService(private val actorMaterializer: ActorMaterializer
         return via(createTransformerFlow(transformerId, targetActorRef, targetMediaType, parameters))
     }
 
-    private fun createTransformerFlow(transformerId: TransformerId,
-                                      transformerActorRef: ActorRef,
-                                      mediaType: MediaType,
-                                      parameters: Parameters): Flow<DataDescriptor, TransformedDataDescriptor, NotUsed> =
+    private fun createTransformerFlow(
+        transformerId: TransformerId,
+        transformerActorRef: ActorRef,
+        mediaType: MediaType,
+        parameters: Parameters
+    ): Flow<DataDescriptor, TransformedDataDescriptor, NotUsed> =
         Flow.of(getClazz<DataDescriptor>())
-                .map { dataDescriptor -> ToTransformMessage(transformerId, dataDescriptor, mediaType, parameters) }
-                .ask(transformerActorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound().toTimeout())
-                .map { it.transformedDataDescriptor }
+            .map { dataDescriptor -> ToTransformMessage(transformerId, dataDescriptor, mediaType, parameters) }
+            .ask(transformerActorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound().toTimeout())
+            .map { (transformedDataDescriptor) -> transformedDataDescriptor }
 
     private fun TransformedDataDescriptor.toSequentialDataDescriptors(mediaType: MediaType): DataDescriptor =
         descriptors.map { (data, metadata) -> singleDataDescriptor(data, mediaType, metadata) }
-                .toDataDescriptor()
+            .toDataDescriptor()
 
     private fun Duration.toTimeout(): Timeout =
         Timeout.create(this)
 
-    private fun logAfterTransformation(transformation: Transformation,
-                                       measuredTimeMs: Long,
-                                       transformedDataDescriptor: TransformedDataDescriptor) {
+    private fun logAfterTransformation(
+        transformation: Transformation,
+        measuredTimeMs: Long,
+        transformedDataDescriptor: TransformedDataDescriptor
+    ) {
         if (logger.isDebugEnabled) {
-            logger.debug("Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
-                         transformation,
-                         transformedDataDescriptor.descriptors.size,
-                         measuredTimeMs.toSeconds(),
-                         transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" })
+            logger.debug(
+                "Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
+                transformation,
+                transformedDataDescriptor.descriptors.size,
+                measuredTimeMs.toSeconds(),
+                transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" }
+            )
         } else {
-            logger.info("Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
-                        transformation,
-                        transformedDataDescriptor.descriptors.size,
-                        measuredTimeMs.toSeconds(),
-                        transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.metadata}>" })
+            logger.info(
+                "Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
+                transformation,
+                transformedDataDescriptor.descriptors.size,
+                measuredTimeMs.toSeconds(),
+                transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.metadata}>" }
+            )
         }
     }
 
     private fun convertException(transformation: Transformation, exception: Exception): Exception =
         when (exception) {
-            is TransformerException            ->
+            is TransformerException ->
                 TransformationException(transformation, "Couldn't perform the transformation | ${exception.message}", exception)
-            is AskTimeoutException             ->
-                TransformationException(transformation, "Couldn't perform the transformation because the timeout has been reached",
-                                        exception)
+            is AskTimeoutException ->
+                TransformationException(transformation, "Couldn't perform the transformation because the timeout has been reached", exception)
             is AbruptStageTerminationException ->
-                TransformationTerminationException(transformation,
-                                                   "Could not perform the transformation because it was abruptly terminated",
-                                                   exception)
-            else                               ->
+                TransformationTerminationException(transformation, "Could not perform the transformation because it was abruptly terminated", exception)
+            else ->
                 exception
         }
 }

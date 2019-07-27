@@ -12,9 +12,11 @@ import pl.beone.promena.core.external.akka.actor.transformer.GroupedByNameTransf
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
 import pl.beone.promena.transformer.contract.Transformer
 
-class GroupedByNameTransformersCreator(private val transformerConfig: TransformerConfig,
-                                       private val internalCommunicationConverter: InternalCommunicationConverter,
-                                       private val actorCreator: ActorCreator) : TransformersCreator {
+class GroupedByNameTransformersCreator(
+    private val transformerConfig: TransformerConfig,
+    private val internalCommunicationConverter: InternalCommunicationConverter,
+    private val actorCreator: ActorCreator
+) : TransformersCreator {
 
     companion object {
         private val logger = LoggerFactory.getLogger(GroupedByNameTransformersCreator::class.java)
@@ -24,23 +26,23 @@ class GroupedByNameTransformersCreator(private val transformerConfig: Transforme
         logger.info("Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.simpleName}")
 
         return transformers.groupBy { transformerConfig.getTransformerId(it).name }
-                .flatMap { (transformerId, transformers) ->
-                    val transformerDescriptors = transformers
-                            .map(::createTransformerDescriptor)
+            .flatMap { (transformerId, transformers) ->
+                val transformerDescriptors = transformers
+                    .map(::createTransformerDescriptor)
 
-                    val transformerActor = transformerDescriptors
-                            .sortedBy { transformerDescriptor -> transformerDescriptor.transformer.getPriority() }
-                            .let { transformerDescriptor -> createTransformerActor(transformerId, transformerDescriptor, transformers.getMaxActors()) }
-                    
-                    logSuccessfulActorCreation(transformerId, transformers)
+                val transformerActor = transformerDescriptors
+                    .sortedBy { transformerDescriptor -> transformerDescriptor.transformer.getPriority() }
+                    .let { transformerDescriptor -> createTransformerActor(transformerId, transformerDescriptor, transformers.getMaxActors()) }
 
-                    transformerDescriptors.map { TransformerActorDescriptor(it.transformerId, transformerActor) }
-                }
+                logSuccessfulActorCreation(transformerId, transformers)
+
+                transformerDescriptors.map { TransformerActorDescriptor(it.transformerId, transformerActor) }
+            }
     }
 
     private fun List<Transformer>.getMaxActors(): Int =
         map { transformerConfig.getActors(it) }
-                .max()!!
+            .max()!!
 
     private fun createTransformerDescriptor(transformer: Transformer): TransformerDescriptor =
         TransformerDescriptor(transformerConfig.getTransformerId(transformer), transformer)
@@ -48,18 +50,24 @@ class GroupedByNameTransformersCreator(private val transformerConfig: Transforme
     private fun Transformer.getPriority(): Int =
         transformerConfig.getPriority(this)
 
-    private fun createTransformerActor(transformerId: String,
-                                       transformerDescriptors: List<TransformerDescriptor>,
-                                       maxActors: Int): ActorRef =
-        actorCreator.create(transformerId,
-                            Props.create(GroupedByNameTransformerActor::class.java) {
-                                GroupedByNameTransformerActor(transformerId, transformerDescriptors, internalCommunicationConverter)
-                            },
-                            maxActors)
+    private fun createTransformerActor(
+        transformerId: String,
+        transformerDescriptors: List<TransformerDescriptor>,
+        maxActors: Int
+    ): ActorRef =
+        actorCreator.create(
+            transformerId,
+            Props.create(GroupedByNameTransformerActor::class.java) {
+                GroupedByNameTransformerActor(transformerId, transformerDescriptors, internalCommunicationConverter)
+            },
+            maxActors
+        )
 
     private fun logSuccessfulActorCreation(transformerId: String, transformers: List<Transformer>) {
-        logger.info("> Registered <$transformerId> with <${transformers.size}> transformer(s) " +
-                    "${transformers.map { "${it::class.simpleName}, ${it.getPriority()} priority" }} and <${transformers.getMaxActors()}> actor(s) ")
+        logger.info(
+            "> Registered <$transformerId> with <${transformers.size}> transformer(s) " +
+                    "${transformers.map { "${it::class.simpleName}, ${it.getPriority()} priority" }} and <${transformers.getMaxActors()}> actor(s) "
+        )
     }
 
 }

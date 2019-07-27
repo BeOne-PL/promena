@@ -12,5 +12,5 @@ class ActorMaterializerContext {
     @Bean
     @ConditionalOnMissingBean(ActorMaterializer::class)
     fun actorMaterializer(actorSystem: ActorSystem): ActorMaterializer =
-            ActorMaterializer.create(actorSystem)
+        ActorMaterializer.create(actorSystem)
 }

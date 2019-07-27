@@ -6,8 +6,10 @@ import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 internal class TransformerExceptionsAccumulator {
 
-    private data class TransformerAndReason(val transformer: Transformer,
-                                            val reason: String)
+    private data class TransformerAndReason(
+        val transformer: Transformer,
+        val reason: String
+    )
 
     private val transformerAndReasonList = ArrayList<TransformerAndReason>()
 
@@ -17,19 +19,21 @@ internal class TransformerExceptionsAccumulator {
 
     fun addUnsuitable(transformerDescriptor: TransformerDescriptor, transformationTransformerId: TransformerId) {
         val transformerId = transformerDescriptor.transformerId
-        transformerAndReasonList.add(TransformerAndReason(transformerDescriptor.transformer,
-                                                          "Transformer <${transformerId.toDescription()}> isn't suitable for <${transformationTransformerId.toDescription()}>"))
+        transformerAndReasonList.add(
+            TransformerAndReason(
+                transformerDescriptor.transformer,
+                "Transformer <${transformerId.toDescription()}> isn't suitable for <${transformationTransformerId.toDescription()}>"
+            )
+        )
     }
 
     private fun TransformerId.toDescription(): String =
-        if (subName == null) {
-            name
-        } else {
+        if (isSubNameSet()) {
             "$name, $subName"
+        } else {
+            name
         }
 
     fun generateDescription(): String =
-        "[" +
-        transformerAndReasonList.joinToString(", ") { (transformer, reason) -> "<${transformer.javaClass.canonicalName}, $reason>" } +
-        "]"
+        "[" + transformerAndReasonList.joinToString(", ") { (transformer, reason) -> "<${transformer.javaClass.canonicalName}, $reason>" } + "]"
 }

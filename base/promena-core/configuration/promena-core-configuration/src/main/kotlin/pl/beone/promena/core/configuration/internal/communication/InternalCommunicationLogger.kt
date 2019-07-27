@@ -8,8 +8,10 @@ import pl.beone.promena.transformer.contract.communication.CommunicationParamete
 import javax.annotation.PostConstruct
 
 @Configuration
-class InternalCommunicationLogger(private val internalCommunicationConverter: InternalCommunicationConverter,
-                                  @Qualifier("internalCommunicationParameters") private val communicationParameters: CommunicationParameters) {
+class InternalCommunicationLogger(
+    private val internalCommunicationConverter: InternalCommunicationConverter,
+    @Qualifier("internalCommunicationParameters") private val communicationParameters: CommunicationParameters
+) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(InternalCommunicationLogger::class.java)
@@ -17,9 +19,11 @@ class InternalCommunicationLogger(private val internalCommunicationConverter: In
 
     @PostConstruct
     private fun log() {
-        logger.info("Internal communication: <{}> <{}> <{}>",
-                    communicationParameters.getId(),
-                    internalCommunicationConverter::class.qualifiedName,
-                    communicationParameters)
+        logger.info(
+            "Internal communication: <{}> <{}> <{}>",
+            communicationParameters.getId(),
+            internalCommunicationConverter::class.qualifiedName,
+            communicationParameters
+        )
     }
 }

@@ -9,11 +9,8 @@ data class PerformedTransformationDescriptor private constructor(
 ) {
 
     companion object {
-
         @JvmStatic
         fun of(transformation: Transformation, transformedDataDescriptor: TransformedDataDescriptor): PerformedTransformationDescriptor =
             PerformedTransformationDescriptor(transformation, transformedDataDescriptor)
-
     }
-
 }

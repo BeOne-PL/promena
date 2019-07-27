@@ -54,11 +54,9 @@ class AkkaTransformationServiceTest {
     companion object {
         private val internalCommunicationConverter = MirrorInternalCommunicationConverter()
 
-        private const val kotlinTextAppenderTransformerName = "text-appender"
+        private const val textAppenderTransformerName = "text-appender"
         private const val kotlinTextAppenderTransformerSubName = "kotlin"
-        private const val javaTextAppenderTransformerName = "text-appender"
         private const val javaTextAppenderTransformerSubName = "java"
-        private const val uselessTextAppenderTransformerName = "text-appender"
         private const val uselessTextAppenderTransformerSubName = "kotlin"
         private const val fromTextToXmlAppenderTransformerName = "from-text-to-xml-appender"
         private const val fromTextToXmlAppenderTransformerSubName = "kotlin"
@@ -85,7 +83,7 @@ class AkkaTransformationServiceTest {
         val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
 
         val transformation =
-            singleTransformation(kotlinTextAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$"))
+            singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$"))
 
         val transformerService = prepareTransformationService()
 
@@ -100,13 +98,36 @@ class AkkaTransformationServiceTest {
     }
 
     @Test
+    fun `transform _ single transformation with sub name`() {
+        val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
+
+        val transformation =
+            singleTransformation(
+                (textAppenderTransformerName to javaTextAppenderTransformerSubName).toTransformerId(),
+                TEXT_PLAIN,
+                emptyParameters() + ("append" to "$")
+            )
+
+        val transformerService = prepareTransformationService()
+
+        transformerService.transform(transformation, dataDescriptor).descriptors.let { transformedDataDescriptor ->
+            transformedDataDescriptor shouldHaveSize 1
+
+            transformedDataDescriptor[0].let { singleTransformedDataDescriptor ->
+                singleTransformedDataDescriptor.data.getString() shouldBe "test$"
+                singleTransformedDataDescriptor.metadata shouldBe (emptyMetadata() + ("begin" to true) + ("java-text-appender-transformer" to true))
+            }
+        }
+    }
+
+    @Test
     fun `transform _ composite transformation`() {
         val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true)) +
                 singleDataDescriptor("test2".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin2" to true))
 
 
         val transformation =
-            singleTransformation(kotlinTextAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$")) next
+            singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$")) next
                     singleTransformation(fromTextToXmlAppenderTransformerName, TEXT_XML, emptyParameters() + ("tag" to "root"))
 
         val transformerService = prepareTransformationService()
@@ -149,7 +170,7 @@ class AkkaTransformationServiceTest {
     fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException (created from TransformersCouldNotTransformException)`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
-        val transformation = singleTransformation(kotlinTextAppenderTransformerName, APPLICATION_EPUB_ZIP, emptyParameters())
+        val transformation = singleTransformation(textAppenderTransformerName, APPLICATION_EPUB_ZIP, emptyParameters())
 
         val transformerService = prepareTransformationService()
 
@@ -157,7 +178,7 @@ class AkkaTransformationServiceTest {
             transformerService.transform(transformation, dataDescriptor)
         }.apply {
             this.transformation shouldBe transformation
-            this.message shouldBe "Couldn't perform the transformation | There is no <text-appender> transformer that can transform data descriptors [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>] using <TransformerId(name=text-appender, subName=null), MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>: [<pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer, Only the transformation from text/plain to text/plain is supported>, <pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer, I can't transform nothing. I'm useless>]"
+            this.message shouldBe "Couldn't perform the transformation | There is no <text-appender> transformer that can transform data descriptors [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>] using <TransformerId(name=text-appender, subName=null), MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>: [<pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer, Only the transformation from text/plain to text/plain is supported>, <pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer, I can't transform nothing. I'm useless>, <pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer, Only the transformation from text/plain to text/plain is supported>]"
             this.getStringStackTrace() shouldContain "TransformersCouldNotTransformException"
         }
     }
@@ -166,7 +187,7 @@ class AkkaTransformationServiceTest {
     fun `transform _ transformer timeout has been reached _ should throw TransformationException (created from TransformerTimeoutException)`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
 
-        val transformation = singleTransformation(kotlinTextAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$")) next
+        val transformation = singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$")) next
                 singleTransformation(timeoutTransformerName, TEXT_PLAIN, emptyParameters() addTimeout Duration.ofMillis(1))
 
         val transformerService = prepareTransformationService()
@@ -184,7 +205,7 @@ class AkkaTransformationServiceTest {
     fun `transform _ akka ask timeout has been reached _ should throw TransformationException (created from AskTimeoutException)`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
-        val transformation = singleTransformation(kotlinTextAppenderTransformerName, TEXT_PLAIN, emptyParameters())
+        val transformation = singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters())
 
         val transformerService = prepareTransformationService(mockk {
             every { materialize<Any>(any()) } throws AskTimeoutException("")
@@ -203,7 +224,7 @@ class AkkaTransformationServiceTest {
     fun `transform _ unexpected abrupt stage exception (generally caused by closing server suddenly) _ should throw TransformationException (created from AbruptStageTerminationException)`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
-        val transformation = singleTransformation(kotlinTextAppenderTransformerName, TEXT_PLAIN, emptyParameters())
+        val transformation = singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters())
 
         val transformerService = prepareTransformationService(mockk {
             every { materialize<Any>(any()) } throws AbruptStageTerminationException(null)
@@ -222,7 +243,7 @@ class AkkaTransformationServiceTest {
     fun `transform _ unknown exception _ should throw TransformationException`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
-        val transformation = singleTransformation(kotlinTextAppenderTransformerName, TEXT_PLAIN, emptyParameters())
+        val transformation = singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters())
 
         val transformerService = prepareTransformationService(mockk {
             every { materialize<Any>(any()) } throws BufferOverflowException("Bytes... Bytes everywhere")
@@ -236,22 +257,24 @@ class AkkaTransformationServiceTest {
     }
 
     private fun prepareTransformationService(actorMaterializer: ActorMaterializer = ActorMaterializer.create(actorSystem)): AkkaTransformationService {
-        val textAppenderTransformerId = (kotlinTextAppenderTransformerName to kotlinTextAppenderTransformerSubName).toTransformerId()
-        val uselessTextAppenderTransformerId = (uselessTextAppenderTransformerName to uselessTextAppenderTransformerSubName).toTransformerId()
+        val textAppenderTransformerId = (textAppenderTransformerName to kotlinTextAppenderTransformerSubName).toTransformerId()
+        val javaTextAppenderTransformerId = (textAppenderTransformerName to javaTextAppenderTransformerSubName).toTransformerId()
+        val uselessTextAppenderTransformerId = (textAppenderTransformerName to uselessTextAppenderTransformerSubName).toTransformerId()
         val fromTextToXmlAppenderTransformerId = (fromTextToXmlAppenderTransformerName to fromTextToXmlAppenderTransformerSubName).toTransformerId()
         val timeoutTransformerId = (timeoutTransformerName to timeoutTransformerSubName).toTransformerId()
 
         val textAppenderTransformerActorRef = actorSystem.actorOf(
             Props.create(GroupedByNameTransformerActor::class.java) {
                 GroupedByNameTransformerActor(
-                    kotlinTextAppenderTransformerName,
+                    textAppenderTransformerName,
                     listOf(
                         TransformerDescriptor(textAppenderTransformerId, TextAppenderTransformer()),
-                        TransformerDescriptor(uselessTextAppenderTransformerId, UselessTextAppenderTransformer())
+                        TransformerDescriptor(uselessTextAppenderTransformerId, UselessTextAppenderTransformer()),
+                        TransformerDescriptor(javaTextAppenderTransformerId, JavaTextAppenderTransformer())
                     ),
                     internalCommunicationConverter
                 )
-            }, kotlinTextAppenderTransformerName
+            }, textAppenderTransformerName
         )
 
         val fromTextToXmlAppenderTransformerActorRef = actorSystem.actorOf(
@@ -277,6 +300,8 @@ class AkkaTransformationServiceTest {
         val actorService = GroupedByNameActorService(
             listOf(
                 TransformerActorDescriptor(textAppenderTransformerId, textAppenderTransformerActorRef),
+                TransformerActorDescriptor(javaTextAppenderTransformerId, textAppenderTransformerActorRef),
+                TransformerActorDescriptor(uselessTextAppenderTransformerId, textAppenderTransformerActorRef),
                 TransformerActorDescriptor(fromTextToXmlAppenderTransformerId, fromTextToXmlAppenderTransformerActorRef),
                 TransformerActorDescriptor(timeoutTransformerId, timeoutTransformerActorRef)
             ),

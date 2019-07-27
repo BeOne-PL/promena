@@ -11,7 +11,9 @@ import pl.beone.promena.core.external.akka.actor.serializer.KryoSerializerActor
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 
 @Configuration
-class KryoSerializerActorContext(private val actorCreator: ActorCreator) {
+class KryoSerializerActorContext(
+    private val actorCreator: ActorCreator
+) {
 
     @Bean
     @ConditionalOnBean(name = ["serializerActor"])
@@ -22,11 +24,7 @@ class KryoSerializerActorContext(private val actorCreator: ActorCreator) {
         actorCreator.create(
             KryoSerializerActor.actorName,
             Props.create(KryoSerializerActor::class.java) {
-                KryoSerializerActor(
-                    KryoSerializationService(
-                        environment.getRequiredProperty("core.serializer.kryo.buffer-size", Int::class.java)
-                    )
-                )
+                KryoSerializerActor(KryoSerializationService(environment.getRequiredProperty("core.serializer.kryo.buffer-size", Int::class.java)))
             },
             environment.getRequiredProperty("core.serializer.actors", Int::class.java)
         )

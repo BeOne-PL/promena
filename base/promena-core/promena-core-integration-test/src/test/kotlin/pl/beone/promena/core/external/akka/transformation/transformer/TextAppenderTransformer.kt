@@ -18,8 +18,7 @@ class TextAppenderTransformer : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor =
         dataDescriptor.descriptors.map { (data, _, metadata) ->
-            singleTransformedDataDescriptor(data.addHashAtTheEnd(parameters.getAppend()).toMemoryData(),
-                                            metadata.addTransformerId())
+            singleTransformedDataDescriptor(data.addHashAtTheEnd(parameters.getAppend()).toMemoryData(), metadata.addTransformerId())
         }.toTransformedDataDescriptor()
 
     private fun Parameters.getAppend(): String =

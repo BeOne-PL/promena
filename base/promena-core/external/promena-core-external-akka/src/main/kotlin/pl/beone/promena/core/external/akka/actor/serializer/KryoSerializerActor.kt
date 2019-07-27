@@ -22,16 +22,16 @@ class KryoSerializerActor(
 
     override fun createReceive() =
         receiveBuilder()
-            .match(ToSerializeMessage::class.java) {
+            .match(ToSerializeMessage::class.java) { (element) ->
                 try {
-                    sender.tell(SerializedMessage(serialize(it.element)), self)
+                    sender.tell(SerializedMessage(serialize(element)), self)
                 } catch (e: Exception) {
                     sender.tell(Status.Failure(e), self)
                 }
             }
-            .match(ToDeserializeMessage::class.java) {
+            .match(ToDeserializeMessage::class.java) { (bytes, clazz) ->
                 try {
-                    sender.tell(DeserializedMessage(deserialize(it.bytes, it.clazz)), self)
+                    sender.tell(DeserializedMessage(deserialize(bytes, clazz)), self)
                 } catch (e: Exception) {
                     sender.tell(Status.Failure(e), self)
                 }

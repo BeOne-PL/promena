@@ -58,9 +58,7 @@ class DefaultTransformationUseCaseTest {
             every { convert(dataDescriptor, externalCommunicationParameters) } returns dataDescriptor
         }
         val outgoingCommunicationConverter = mockk<OutgoingExternalCommunicationConverter> {
-            every {
-                convert(transformedDataDescriptor, externalCommunicationParameters)
-            } returns transformedDataDescriptor
+            every { convert(transformedDataDescriptor, externalCommunicationParameters) } returns transformedDataDescriptor
         }
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
@@ -73,7 +71,7 @@ class DefaultTransformationUseCaseTest {
         }
 
         DefaultTransformationUseCase(externalCommunicationManager, transformerService)
-                .transform(transformation, dataDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptor
+            .transform(transformation, dataDescriptor, externalCommunicationParameters) shouldBe transformedDataDescriptor
     }
 
     @Test
@@ -90,7 +88,7 @@ class DefaultTransformationUseCaseTest {
 
         shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, mockk())
-                    .transform(transformation, dataDescriptor, externalCommunicationParameters)
+                .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message shouldBe "Couldn't perform the transformation because an error occurred. Check Promena logs for more details"
             it.cause shouldBe null
@@ -106,7 +104,7 @@ class DefaultTransformationUseCaseTest {
             every { getLocation() } returns URI("file:/tmp/test.tmp")
         }
         val dataDescriptor = singleDataDescriptor(data, TEXT_PLAIN, emptyMetadata()) +
-                             singleDataDescriptor(data2, APPLICATION_JSON, emptyMetadata() + ("key" to "value"))
+                singleDataDescriptor(data2, APPLICATION_JSON, emptyMetadata() + ("key" to "value"))
 
         val externalCommunicationId = "memory"
         val externalCommunicationParameters = communicationParameters(externalCommunicationId)
@@ -126,7 +124,7 @@ class DefaultTransformationUseCaseTest {
 
         shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, transformerService)
-                    .transform(transformation, dataDescriptor, externalCommunicationParameters)
+                .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message shouldBe "Exception occurred"
             it.cause shouldBe null

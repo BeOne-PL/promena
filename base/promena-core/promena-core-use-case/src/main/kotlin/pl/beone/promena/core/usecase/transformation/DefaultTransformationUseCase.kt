@@ -32,10 +32,7 @@ class DefaultTransformationUseCase(
                 .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
                 .let { transformationService.transform(transformation, it) }
                 .let { transformedDataDescriptor ->
-                    outgoingExternalCommunicationConverter.convert(
-                        transformedDataDescriptor,
-                        externalCommunicationParameters
-                    )
+                    outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters)
                 }
         } catch (e: Exception) {
             logger.error(

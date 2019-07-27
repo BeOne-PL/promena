@@ -26,18 +26,18 @@ class MetricsListener : AbstractActor() {
 
     override fun createReceive(): Receive {
         return receiveBuilder()
-                .match(ClusterMetricsChanged::class.java) {
-                    for (nodeMetrics in it.nodeMetrics) {
-                        if (nodeMetrics.address() == cluster.selfAddress()) {
-                            logHeap(nodeMetrics)
-                            logCpu(nodeMetrics)
-                        }
+            .match(ClusterMetricsChanged::class.java) {
+                for (nodeMetrics in it.nodeMetrics) {
+                    if (nodeMetrics.address() == cluster.selfAddress()) {
+                        logHeap(nodeMetrics)
+                        logCpu(nodeMetrics)
                     }
                 }
-                .match(CurrentClusterState::class.java) {
-                    // Ignore.
-                }
-                .build()
+            }
+            .match(CurrentClusterState::class.java) {
+                // Ignore.
+            }
+            .build()
     }
 
     private fun logHeap(nodeMetrics: NodeMetrics) {

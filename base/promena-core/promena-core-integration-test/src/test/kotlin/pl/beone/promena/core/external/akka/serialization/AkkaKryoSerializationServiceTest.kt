@@ -70,7 +70,8 @@ class AkkaKryoSerializationServiceTest {
     fun `serialize and deserialize _ URI`() {
         val uri = URI("file:/tmp/tomcat.7182112197177744335.8010/")
 
-        uri shouldBe akkaKryoSerializationService.deserialize(akkaKryoSerializationService.serialize(uri), URI::class.java)
+        uri shouldBe
+                akkaKryoSerializationService.deserialize(akkaKryoSerializationService.serialize(uri), URI::class.java)
     }
 
     @Test
@@ -87,7 +88,7 @@ class AkkaKryoSerializationServiceTest {
     }
 
     @Test
-    fun `serialize and deserialize _ TransformationDescriptor with single flow`() {
+    fun `serialize and deserialize _ single TransformationDescriptor`() {
         val transformationDescriptor = TransformationDescriptor.of(
             singleTransformation("test", MediaTypeConstants.APPLICATION_PDF, emptyParameters()),
             singleDataDescriptor("test".toMemoryData(), MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
@@ -102,7 +103,7 @@ class AkkaKryoSerializationServiceTest {
     }
 
     @Test
-    fun `serialize and deserialize _ TransformationDescriptor with composite flow`() {
+    fun `serialize and deserialize _ composite TransformationDescriptor`() {
         val transformationDescriptor = TransformationDescriptor.of(
             singleTransformation("test", MediaTypeConstants.APPLICATION_PDF, emptyParameters()) next
                     singleTransformation("test2", MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyParameters()),
