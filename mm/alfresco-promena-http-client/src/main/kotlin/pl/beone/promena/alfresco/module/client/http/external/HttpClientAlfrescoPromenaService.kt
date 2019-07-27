@@ -113,9 +113,7 @@ class HttpClientAlfrescoPromenaService(
             .map { byteArrayAndClientResponse -> handleTransformationResult(byteArrayAndClientResponse.t2, byteArrayAndClientResponse.t1) }
             .doOnNext { verifyConsistency(nodeRefs, nodesChecksum) }
             .map { (_, transformedDataDescriptor) -> alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor) }
-            .doOnNext { resultNodeRefs ->
-                logger.transformedSuccessfully(transformation, nodeRefs, resultNodeRefs, startTimestamp, currentTimeMillis())
-            }
+            .doOnNext { resultNodeRefs -> logger.transformedSuccessfully(transformation, nodeRefs, resultNodeRefs, startTimestamp, currentTimeMillis()) }
             .doOnError { exception -> handleError(transformation, nodeRefs, nodesChecksum, exception) }
             .retryOnError(transformation, nodeRefs, retry)
             .onErrorMap(::unwrapRetryExhaustedException)
@@ -174,20 +172,14 @@ class HttpClientAlfrescoPromenaService(
         exception: Throwable
     ) {
         if (exception is NodesInconsistencyException) {
-            logger.skippedSavingResult(
-                transformation, nodeRefs, exception.oldNodesChecksum, exception.currentNodesChecksum
-            )
+            logger.skippedSavingResult(transformation, nodeRefs, exception.oldNodesChecksum, exception.currentNodesChecksum)
 
-            throw AnotherTransformationIsInProgressException(
-                transformation, nodeRefs, exception.oldNodesChecksum, exception.currentNodesChecksum
-            )
+            throw AnotherTransformationIsInProgressException(transformation, nodeRefs, exception.oldNodesChecksum, exception.currentNodesChecksum)
         }
 
         val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
         if (nodesChecksum != currentNodesChecksum) {
-            logger.couldNotTransformButChecksumsAreDifferent(
-                transformation, nodeRefs, nodesChecksum, currentNodesChecksum, exception
-            )
+            logger.couldNotTransformButChecksumsAreDifferent(transformation, nodeRefs, nodesChecksum, currentNodesChecksum, exception)
 
             throw AnotherTransformationIsInProgressException(
                 transformation, nodeRefs, nodesChecksum, currentNodesChecksum
@@ -208,14 +200,7 @@ class HttpClientAlfrescoPromenaService(
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
                           .fixedBackoff(retry.nextAttemptDelay)
                           .retryMax(retry.maxAttempts)
-                          .doOnRetry {
-                              logger.logOnRetry(
-                                  it.iteration(),
-                                  retry.maxAttempts,
-                                  transformation,
-                                  nodeRefs
-                              )
-                          })
+                          .doOnRetry { logger.logOnRetry(it.iteration(), retry.maxAttempts, transformation, nodeRefs) })
         } else {
             this
         }
