@@ -4,7 +4,6 @@ import pl.beone.promena.transformer.contract.communication.CommunicationParamete
 
 object PromenaJmsHeaders {
 
-    const val TRANSFORMATION_ID = "promena_transformation_id"
     const val TRANSFORMATION_HASH_CODE = "promena_transformation_hash_code"
     const val TRANSFORMATION_START_TIMESTAMP = "promena_transformation_timestamp_start"
     const val TRANSFORMATION_END_TIMESTAMP = "promena_transformation_timestamp_end"
