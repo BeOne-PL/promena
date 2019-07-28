@@ -5,7 +5,6 @@ import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
-import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
@@ -16,14 +15,12 @@ class TransformationResponseConsumer {
     private val errorMessages = LinkedBlockingQueue<HeadersWithPayload<Exception>>()
 
     @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.response}")
-    fun receiveQueue(@Headers headers: Map<String, Any>,
-                     @Payload performedTransformationDescriptor: PerformedTransformationDescriptor) {
+    fun receiveQueue(@Headers headers: Map<String, Any>, @Payload performedTransformationDescriptor: PerformedTransformationDescriptor) {
         messages.add(HeadersWithPayload(headers, performedTransformationDescriptor))
     }
 
     @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.response.error}")
-    fun receiveErrorQueue(@Headers headers: Map<String, Any>,
-                          @Payload exception: Exception) {
+    fun receiveErrorQueue(@Headers headers: Map<String, Any>, @Payload exception: Exception) {
         errorMessages.add(HeadersWithPayload(headers, exception))
     }
 

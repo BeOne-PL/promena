@@ -15,13 +15,19 @@ class CommunicationParametersConverterTest {
 
     @Test
     fun convert() {
-        communicationParametersConverter.convert(mapOf("key" to "value",
-                                                       PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID to "memory",
-                                                       "promena_communication_parameter_key" to "promena_communication_parameter_value",
-                                                       "promena_communication_parameter_location" to "locationValue"))
-                .getAll() shouldContainExactly mapOf(CommunicationParameters.ID to "memory",
-                                                     "key" to "promena_communication_parameter_value",
-                                                     "location" to "locationValue")
+        communicationParametersConverter.convert(
+            mapOf(
+                "key" to "value",
+                PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID to "memory",
+                "promena_communication_parameter_key" to "promena_communication_parameter_value",
+                "promena_communication_parameter_location" to "locationValue"
+            )
+        ).getAll() shouldContainExactly
+                mapOf(
+                    CommunicationParameters.ID to "memory",
+                    "key" to "promena_communication_parameter_value",
+                    "location" to "locationValue"
+                )
     }
 
     @Test

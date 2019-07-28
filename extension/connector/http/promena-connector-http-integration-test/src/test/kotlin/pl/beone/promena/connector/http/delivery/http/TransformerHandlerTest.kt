@@ -94,7 +94,8 @@ class TransformerHandlerTest {
         every { serializationService.serialize(performedTransformationDescriptor) } returns responseBody
 
         every {
-            transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("file") + ("location" to "file:/tmp")
+            transformationUseCase.transform(
+                transformation, dataDescriptor, communicationParameters("file") + ("location" to "file:/tmp")
             )
         } returns transformedDataDescriptor
 

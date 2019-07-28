@@ -13,30 +13,42 @@ class TransformerIdsCombinationDeterminerTest {
 
     @Test
     fun determine() {
-        transformerIdsCombinationDeterminer.determine(listOf(("barcode" to "zxing").toTransformerId(),
-                                                             ("converter" to "libreoffice").toTransformerId(),
-                                                             ("converter" to "microsoft-office").toTransformerId())).let {
+        transformerIdsCombinationDeterminer.determine(
+            listOf(
+                ("barcode" to "zxing").toTransformerId(),
+                ("converter" to "libreoffice").toTransformerId(),
+                ("converter" to "microsoft-office").toTransformerId()
+            )
+        ).let {
             it shouldHaveSize 31
 
             it shouldContain listOf("barcode".toTransformerId())
 
-            it shouldContain listOf("barcode".toTransformerId(),
-                                    ("converter" to "libreoffice").toTransformerId())
+            it shouldContain listOf(
+                "barcode".toTransformerId(),
+                ("converter" to "libreoffice").toTransformerId()
+            )
 
-            it shouldContain listOf("barcode".toTransformerId(),
-                                    ("barcode" to "zxing").toTransformerId(),
-                                    ("converter" to "microsoft-office").toTransformerId())
+            it shouldContain listOf(
+                "barcode".toTransformerId(),
+                ("barcode" to "zxing").toTransformerId(),
+                ("converter" to "microsoft-office").toTransformerId()
+            )
 
-            it shouldContain listOf("barcode".toTransformerId(),
-                                    ("barcode" to "zxing").toTransformerId(),
-                                    ("converter" to "libreoffice").toTransformerId(),
-                                    ("converter" to "microsoft-office").toTransformerId())
+            it shouldContain listOf(
+                "barcode".toTransformerId(),
+                ("barcode" to "zxing").toTransformerId(),
+                ("converter" to "libreoffice").toTransformerId(),
+                ("converter" to "microsoft-office").toTransformerId()
+            )
 
-            it shouldContain listOf("barcode".toTransformerId(),
-                                    "converter".toTransformerId(),
-                                    ("barcode" to "zxing").toTransformerId(),
-                                    ("converter" to "libreoffice").toTransformerId(),
-                                    ("converter" to "microsoft-office").toTransformerId())
+            it shouldContain listOf(
+                "barcode".toTransformerId(),
+                "converter".toTransformerId(),
+                ("barcode" to "zxing").toTransformerId(),
+                ("converter" to "libreoffice").toTransformerId(),
+                ("converter" to "microsoft-office").toTransformerId()
+            )
         }
     }
 }

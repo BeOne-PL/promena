@@ -7,13 +7,15 @@ import pl.beone.promena.transformer.internal.communication.communicationParamete
 internal class CommunicationParametersConverter {
 
     fun convert(headers: Map<String, Any>): CommunicationParameters =
-        communicationParameters(headers.getCommunicationId(),
-                                headers.filter { (key, _) -> key.startsWith(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX) }
-                                        .map { (key, value) -> key.removePrefix(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX) to value }
-                                        .toMap())
+        communicationParameters(
+            headers.getCommunicationId(),
+            headers.filter { (key, _) -> key.startsWith(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX) }
+                .map { (key, value) -> key.removePrefix(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX) to value }
+                .toMap()
+        )
 
     private fun Map<String, Any>.getCommunicationId(): String =
         get(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID)?.toString()
-        ?: throw NoSuchElementException("Headers must contain at least <${PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID}> communication parameter")
+            ?: throw NoSuchElementException("Headers must contain at least <${PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID}> communication parameter")
 
 }

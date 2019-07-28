@@ -32,7 +32,8 @@ class TransformationConsumerContext {
         jmsTemplate: JmsTemplate,
         transformationUseCase: TransformationUseCase
     ): TransformationConsumer {
-        val messageSelector = transformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
+        val messageSelector =
+            transformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
 
         logger.info("Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE}>: {}", messageSelector)
 

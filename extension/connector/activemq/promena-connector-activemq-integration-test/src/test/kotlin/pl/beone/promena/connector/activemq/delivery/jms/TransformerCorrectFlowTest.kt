@@ -81,7 +81,7 @@ class TransformerCorrectFlowTest {
         mockkObject(transformationUseCase)
         clearMocks(transformationUseCase)
 
-        queueClearer.clearQueues()
+        queueClearer.dequeueQueues()
     }
 
     @Test
@@ -130,12 +130,15 @@ class TransformerCorrectFlowTest {
 
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
-        performedTransformationDescriptor.transformation shouldBe transformation
+        performedTransformationDescriptor.transformation shouldBe
+                transformation
         performedTransformationDescriptor.transformedDataDescriptor.descriptors.let {
             it shouldHaveSize 1
             it[0].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data.getBytes() shouldBe transformedData.getBytes()
-                transformedDataDescriptor.metadata.getAll() shouldBe emptyMap()
+                transformedDataDescriptor.data.getBytes() shouldBe
+                        transformedData.getBytes()
+                transformedDataDescriptor.metadata.getAll() shouldBe
+                        emptyMap()
             }
         }
     }
@@ -144,10 +147,6 @@ class TransformerCorrectFlowTest {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), transformationDescriptor) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(
-                    PromenaJmsHeaders.TRANSFORMATION_ID,
-                    TestTransformerMockContext.TRANSFORMER_ID.name + TestTransformerMockContext.TRANSFORMER_ID.subName
-                )
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")

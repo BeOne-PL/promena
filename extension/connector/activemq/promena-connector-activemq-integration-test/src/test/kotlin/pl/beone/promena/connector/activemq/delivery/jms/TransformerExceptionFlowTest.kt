@@ -76,7 +76,7 @@ class TransformerExceptionFlowTest {
         mockkObject(transformationUseCase)
         clearMocks(transformationUseCase)
 
-        queueClearer.clearQueues()
+        queueClearer.dequeueQueues()
     }
 
     @Test
@@ -142,19 +142,13 @@ class TransformerExceptionFlowTest {
         ) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(
-                    PromenaJmsHeaders.TRANSFORMATION_ID,
-                    TestTransformerMockContext.TRANSFORMER_ID.name + TestTransformerMockContext.TRANSFORMER_ID.subName
-                )
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
 
                 setObjectProperty(
-                    "send_back_nodeRefs", listOf(
-                        "workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
-                        "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"
-                    )
+                    "send_back_nodeRefs",
+                    listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f", "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")
                 )
             }
         }

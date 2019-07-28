@@ -20,14 +20,12 @@ class HashCodeTransformationHashFunctionDeterminerTest {
         val barcodeTransformerId = "barcode".toTransformerId()
         val zxingBarcodeTransformerId = ("barcode" to "zxing").toTransformerId()
 
-        transformationHashFunctionDeterminer.determine(listOf(converterTransformerId,
-                                                              libreOfficeConverterTransformerId,
-                                                              barcodeTransformerId,
-                                                              zxingBarcodeTransformerId)) shouldBe hashCode
-        transformationHashFunctionDeterminer.determine(listOf(zxingBarcodeTransformerId,
-                                                              barcodeTransformerId,
-                                                              libreOfficeConverterTransformerId,
-                                                              converterTransformerId)) shouldBe hashCode
+        transformationHashFunctionDeterminer.determine(
+            listOf(converterTransformerId, libreOfficeConverterTransformerId, barcodeTransformerId, zxingBarcodeTransformerId)
+        ) shouldBe hashCode
+        transformationHashFunctionDeterminer.determine(
+            listOf(zxingBarcodeTransformerId, barcodeTransformerId, libreOfficeConverterTransformerId, converterTransformerId)
+        ) shouldBe hashCode
     }
 
     @Test

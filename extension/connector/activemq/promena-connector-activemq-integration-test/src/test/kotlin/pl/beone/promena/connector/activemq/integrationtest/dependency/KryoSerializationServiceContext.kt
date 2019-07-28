@@ -9,5 +9,5 @@ class KryoSerializationServiceContext {
 
     @Bean
     fun kryoSerializationService() =
-            KryoSerializationService()
+        KryoSerializationService()
 }

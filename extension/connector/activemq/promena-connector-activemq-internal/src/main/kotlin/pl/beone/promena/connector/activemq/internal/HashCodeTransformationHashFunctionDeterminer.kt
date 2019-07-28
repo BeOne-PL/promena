@@ -7,8 +7,8 @@ class HashCodeTransformationHashFunctionDeterminer : TransformationHashFunctionD
 
     override fun determine(transformerIds: List<TransformerId>): String =
         transformerIds.distinct()
-                .map { it.name + it.subName }
-                .sorted()
-                .hashCode()
-                .toString()
+            .map { it.name + it.subName }
+            .sorted()
+            .hashCode()
+            .toString()
 }

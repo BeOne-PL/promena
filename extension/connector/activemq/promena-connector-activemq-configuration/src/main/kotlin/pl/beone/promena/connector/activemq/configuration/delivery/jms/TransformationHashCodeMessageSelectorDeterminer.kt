@@ -12,12 +12,14 @@ internal class TransformationHashCodeMessageSelectorDeterminer {
         private val transformerIdsCombinationDeterminer = TransformerIdsCombinationDeterminer()
     }
 
-    fun determine(transformerConfig: TransformerConfig,
-                  transformers: List<Transformer>,
-                  transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer): String =
+    fun determine(
+        transformerConfig: TransformerConfig,
+        transformers: List<Transformer>,
+        transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer
+    ): String =
         transformerIdsCombinationDeterminer.determine(getTransformerIds(transformers, transformerConfig))
-                .map(transformationHashFunctionDeterminer::determine)
-                .let(::createMessageSelector)
+            .map(transformationHashFunctionDeterminer::determine)
+            .let(::createMessageSelector)
 
     private fun getTransformerIds(transformers: List<Transformer>, transformerConfig: TransformerConfig): List<TransformerId> =
         transformers.map { transformerConfig.getTransformerId(it) }

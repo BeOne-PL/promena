@@ -17,11 +17,11 @@ class TestTransformerMockContext {
 
     @Bean
     fun testTransformer() =
-            mockk<Transformer>()
+        mockk<Transformer>()
 
     @Bean
     fun transformerConfig(testTransformer: Transformer) =
-            mockk<TransformerConfig> {
-                every { getTransformerId(testTransformer) } returns TRANSFORMER_ID
-            }
+        mockk<TransformerConfig> {
+            every { getTransformerId(testTransformer) } returns TRANSFORMER_ID
+        }
 }

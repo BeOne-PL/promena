@@ -12,5 +12,4 @@ object PromenaJmsHeaders {
     const val COMMUNICATION_PARAMETERS_ID = "$COMMUNICATION_PARAMETERS_PREFIX${CommunicationParameters.ID}"
 
     const val SEND_BACK_PREFIX = "send_back_"
-
 }
