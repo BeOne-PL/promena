@@ -9,6 +9,8 @@ import pl.beone.promena.connector.http.delivery.http.route
 class RouterContext {
 
     @Bean
-    fun router(transformerHandler: TransformerHandler) =
-            route(transformerHandler)
+    fun router(
+        transformerHandler: TransformerHandler
+    ) =
+        route(transformerHandler)
 }

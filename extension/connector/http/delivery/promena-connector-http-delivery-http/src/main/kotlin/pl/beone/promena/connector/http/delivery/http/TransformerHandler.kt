@@ -1,7 +1,6 @@
 package pl.beone.promena.connector.http.delivery.http
 
-import org.springframework.http.HttpStatus.BAD_REQUEST
-import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
+import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.server.ResponseStatusException
@@ -18,7 +17,9 @@ class TransformerHandler(
     private val transformationUseCase: TransformationUseCase
 ) {
 
-    private val communicationParametersConverter = CommunicationParametersConverter()
+    companion object {
+        private val communicationParametersConverter = CommunicationParametersConverter()
+    }
 
     fun transform(serverRequest: ServerRequest): Mono<ServerResponse> =
         serverRequest.bodyToMono(ByteArray::class.java)
@@ -32,7 +33,7 @@ class TransformerHandler(
             .map(serializationService::serialize)
             .flatMap(::createResponse)
             // CommunicationParametersConverter -> no <id> communication parameter
-            .onErrorMap(NoSuchElementException::class.java) { ResponseStatusException(BAD_REQUEST, it.message!!) }
+            .onErrorMap(NoSuchElementException::class.java) { ResponseStatusException(HttpStatus.BAD_REQUEST, it.message!!) }
             .onErrorResume({ it !is ResponseStatusException }, ::createExceptionResponse)
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
@@ -45,7 +46,7 @@ class TransformerHandler(
         ServerResponse.ok().body(Mono.just(bytes), ByteArray::class.java)
 
     private fun createExceptionResponse(exception: Throwable): Mono<ServerResponse> =
-        ServerResponse.status(INTERNAL_SERVER_ERROR)
+        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .header(PromenaHttpHeaders.SERIALIZATION_CLASS, exception.javaClass.name)
             .body(Mono.just(exception).map(serializationService::serialize), ByteArray::class.java)
 

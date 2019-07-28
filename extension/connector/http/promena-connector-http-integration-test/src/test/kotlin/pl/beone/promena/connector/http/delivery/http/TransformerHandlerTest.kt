@@ -17,6 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
 import pl.beone.lib.typeconverter.internal.getClazz
+import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.connector.http.configuration.HttpConnectorModuleConfig
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
@@ -78,9 +79,7 @@ class TransformerHandlerTest {
         every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
         every { serializationService.serialize(performedTransformationDescriptor) } returns responseBody
 
-        every {
-            transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("memory"))
-        } returns transformedDataDescriptor
+        every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("memory")) } returns transformedDataDescriptor
 
         webTestClient.post().uri("/transform?id=memory")
             .body(BodyInserters.fromObject(requestBody))
@@ -95,7 +94,8 @@ class TransformerHandlerTest {
         every { serializationService.serialize(performedTransformationDescriptor) } returns responseBody
 
         every {
-            transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("file") + ("location" to "file:/tmp"))
+            transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("file") + ("location" to "file:/tmp")
+            )
         } returns transformedDataDescriptor
 
         webTestClient.post().uri("/transform/?id=file&location=file:/tmp")
@@ -120,7 +120,7 @@ class TransformerHandlerTest {
             .exchange()
             .expectHeader()
             .valueEquals(
-                "serialization-class",
+                PromenaHttpHeaders.SERIALIZATION_CLASS,
                 "pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException"
             )
             .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)

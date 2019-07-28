@@ -14,17 +14,21 @@ class CommunicationParametersConverterTest {
 
     @Test
     fun convert() {
-        val parameters = communicationParametersConverter.convert(LinkedMultiValueMap(mapOf(
-                "id" to listOf("memory"),
-                "firstPages" to listOf("2"),
-                "page" to listOf("4"),
-                "onlyHeader" to listOf("true"),
-                "onlyScan" to listOf("false"),
-                "barcode" to listOf("EAN"),
-                "value" to listOf("3.4"),
-                "stringValueLookingLikeIncorrectDouble" to listOf("3.4.5.6.7.8.9"),
-                "list" to listOf("1.0", "2.5")
-        )))
+        val parameters = communicationParametersConverter.convert(
+            LinkedMultiValueMap(
+                mapOf(
+                    "id" to listOf("memory"),
+                    "firstPages" to listOf("2"),
+                    "page" to listOf("4"),
+                    "onlyHeader" to listOf("true"),
+                    "onlyScan" to listOf("false"),
+                    "barcode" to listOf("EAN"),
+                    "value" to listOf("3.4"),
+                    "stringValueLookingLikeIncorrectDouble" to listOf("3.4.5.6.7.8.9"),
+                    "list" to listOf("1.0", "2.5")
+                )
+            )
+        )
 
         parameters.getAll().entries shouldHaveSize 9
 
