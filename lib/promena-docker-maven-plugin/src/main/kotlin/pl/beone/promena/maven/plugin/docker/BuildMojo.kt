@@ -35,9 +35,7 @@ class BuildMojo : AbstractMojo() {
     @Parameter(property = "dockerfileFragment", defaultValue = "Dockerfile-fragment", required = true)
     private lateinit var dockerfileFragment: String
 
-    @Parameter(property = "appJar",
-               defaultValue = "\${project.artifactId}-\${project.version}.jar",
-               required = true)
+    @Parameter(property = "appJar", defaultValue = "\${project.artifactId}-\${project.version}.jar", required = true)
     private lateinit var appJar: String
 
     @Parameter(property = "name", required = true)
@@ -55,38 +53,37 @@ class BuildMojo : AbstractMojo() {
 
         onProcessedDockerfile(transformerDockerfileFragments) {
             dockerClient.buildImageCmd(it)
-                    .withTags(setOf(getImageFullName()))
-                    .exec(BuildImageResultCallback())
-                    .awaitImageId()
+                .withTags(setOf(getImageFullName()))
+                .exec(BuildImageResultCallback())
+                .awaitImageId()
         }
     }
 
     private fun getImageFullName(): String =
-            "$name:$version"
+        "$name:$version"
 
-    private fun createDockerClient(): DockerClient {
-        val config = DefaultDockerClientConfig
-                .createDefaultConfigBuilder()
-        return DockerClientBuilder
-                .getInstance(config)
-                .build()
-    }
+    private fun createDockerClient(): DockerClient =
+        DockerClientBuilder
+            .getInstance(
+                DefaultDockerClientConfig.createDefaultConfigBuilder()
+            )
+            .build()
 
     private fun getTransformerDockerfileFragments(): List<String> =
-            pluginDescriptor.artifacts.mapNotNull {
-                val dockerfileFragment = URLClassLoader(arrayOf(it.file.toURI().toURL()))
-                        .getResource(dockerfileFragment)?.readText()
+        pluginDescriptor.artifacts.mapNotNull {
+            val dockerfileFragment = URLClassLoader(arrayOf(it.file.toURI().toURL()))
+                .getResource(dockerfileFragment)?.readText()
 
-                if (dockerfileFragment != null) {
-                    logger.info("Found Dockerfile fragment in <${it.getDescription()}>")
-                    "# ${it.getDescription()}\n$dockerfileFragment"
-                } else {
-                    null
-                }
+            if (dockerfileFragment != null) {
+                logger.info("Found Dockerfile fragment in <${it.getDescription()}>")
+                "# ${it.getDescription()}\n$dockerfileFragment"
+            } else {
+                null
             }
+        }
 
     private fun Artifact.getDescription(): String =
-            this.groupId + ":" + this.artifactId + ":" + this.version
+        this.groupId + ":" + this.artifactId + ":" + this.version
 
     private fun onProcessedDockerfile(transformerDockerfileFragments: List<String>, toRun: (dockerfile: File) -> Unit) {
         val transformerDockerfile = transformerDockerfileFragments.joinToString("\n\n")
@@ -116,10 +113,10 @@ class BuildMojo : AbstractMojo() {
         logger.debug("Writing to processed Dockerfile <$processedDockerfileFile> based on Dockerfile <$dockerfileFile>")
 
         val processedDockerfileContent =
-                dockerfileFile
-                        .readText()
-                        .replace("\${DOCKERFILE-FRAGMENT}", transformerDockerfile)
-                        .replace("\${APP_JAR}", appJar)
+            dockerfileFile
+                .readText()
+                .replace("\${DOCKERFILE-FRAGMENT}", transformerDockerfile)
+                .replace("\${APP_JAR}", appJar)
         logger.debug("Processed Dockerfile:\n$processedDockerfileContent")
 
         processedDockerfileFile.writeText(processedDockerfileContent)
