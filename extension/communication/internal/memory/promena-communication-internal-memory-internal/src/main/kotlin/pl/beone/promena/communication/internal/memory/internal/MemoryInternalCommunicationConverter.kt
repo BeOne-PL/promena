@@ -13,8 +13,7 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
         private val logger = LoggerFactory.getLogger(MemoryInternalCommunicationConverter::class.java)
     }
 
-    override fun convert(dataDescriptor: DataDescriptor,
-                         transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor {
+    override fun convert(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor {
         tryToRemoveResources(dataDescriptor)
         return convertIfItIsNecessary(logger, transformedDataDescriptor)
     }
@@ -24,15 +23,15 @@ class MemoryInternalCommunicationConverter : InternalCommunicationConverter {
 
         if (notMemoryDataDescriptors.isNotEmpty()) {
             notMemoryDataDescriptors
-                    .also { logger.debug("There are <{}> other than <MemoryData> data instances", it.size) }
-                    .also { logger.debug("Deleting...") }
-                    .map { deleteDataIfItIsPossible(logger, it.data) }
-                    .also { logger.debug("Finished deleting") }
+                .also { logger.debug("There are <{}> other than <MemoryData> data instances", it.size) }
+                .also { logger.debug("Deleting...") }
+                .map { deleteDataIfItIsPossible(logger, it.data) }
+                .also { logger.debug("Finished deleting") }
         }
     }
 
     private fun DataDescriptor.filterNotMemoryData(): DataDescriptor =
-            descriptors.filter { it.data !is MemoryData }
-                    .toDataDescriptor()
+        descriptors.filter { it.data !is MemoryData }
+            .toDataDescriptor()
 }
 

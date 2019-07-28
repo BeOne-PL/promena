@@ -9,5 +9,5 @@ class MemoryOutgoingExternalCommunicationConverterContext {
 
     @Bean
     fun memoryOutgoingExternalCommunicationConverter() =
-            MemoryOutgoingExternalCommunicationConverter()
+        MemoryOutgoingExternalCommunicationConverter()
 }

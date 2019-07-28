@@ -14,11 +14,16 @@ class MemoryIncomingExternalCommunicationConverter : IncomingExternalCommunicati
     }
 
     override fun convert(dataDescriptor: DataDescriptor, externalCommunicationParameters: CommunicationParameters): DataDescriptor {
-        if (dataDescriptor.descriptors.filterNotMemoryData { it.data }.isNotEmpty()) {
+        if (isAtLeastOneNotMemoryData(dataDescriptor)) {
             logger.warn("One of data using in the communication isn't type of <MemoryData>. You should use the same communication implementation (internal and external) for performance reasons")
         }
 
         return convertIfItIsNecessary(logger, dataDescriptor)
     }
+
+    private fun isAtLeastOneNotMemoryData(dataDescriptor: DataDescriptor): Boolean =
+        dataDescriptor.descriptors
+            .filterNotMemoryData { it.data }
+            .isNotEmpty()
 
 }

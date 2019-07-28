@@ -11,13 +11,17 @@ import pl.beone.promena.core.contract.communication.external.manager.ExternalCom
 class MemoryExternalCommunicationContext {
 
     @Bean
-    fun memoryExternalCommunication(environment: Environment,
-                                    memoryIncomingExternalCommunicationConverter: MemoryIncomingExternalCommunicationConverter,
-                                    memoryOutgoingExternalCommunicationConverter: MemoryOutgoingExternalCommunicationConverter) =
-            ExternalCommunication(environment.getCommunicationId(),
-                                  memoryIncomingExternalCommunicationConverter,
-                                  memoryOutgoingExternalCommunicationConverter)
+    fun memoryExternalCommunication(
+        environment: Environment,
+        memoryIncomingExternalCommunicationConverter: MemoryIncomingExternalCommunicationConverter,
+        memoryOutgoingExternalCommunicationConverter: MemoryOutgoingExternalCommunicationConverter
+    ) =
+        ExternalCommunication(
+            environment.getCommunicationId(),
+            memoryIncomingExternalCommunicationConverter,
+            memoryOutgoingExternalCommunicationConverter
+        )
 
     private fun Environment.getCommunicationId(): String =
-            getRequiredProperty("communication.external.memory.id")
+        getRequiredProperty("communication.external.memory.id")
 }

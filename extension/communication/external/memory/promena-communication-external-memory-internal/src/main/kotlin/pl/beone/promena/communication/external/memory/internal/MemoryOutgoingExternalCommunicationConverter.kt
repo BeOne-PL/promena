@@ -12,8 +12,10 @@ class MemoryOutgoingExternalCommunicationConverter : OutgoingExternalCommunicati
         private val logger = LoggerFactory.getLogger(MemoryOutgoingExternalCommunicationConverter::class.java)
     }
 
-    override fun convert(transformedDataDescriptor: TransformedDataDescriptor,
-                         externalCommunicationParameters: CommunicationParameters): TransformedDataDescriptor =
-            convertIfItIsNecessary(logger, transformedDataDescriptor)
+    override fun convert(
+        transformedDataDescriptor: TransformedDataDescriptor,
+        externalCommunicationParameters: CommunicationParameters
+    ): TransformedDataDescriptor =
+        convertIfItIsNecessary(logger, transformedDataDescriptor)
 }
 

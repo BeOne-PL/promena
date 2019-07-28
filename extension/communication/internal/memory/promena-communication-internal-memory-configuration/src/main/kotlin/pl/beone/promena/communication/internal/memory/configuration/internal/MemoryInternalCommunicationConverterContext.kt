@@ -9,5 +9,5 @@ class MemoryInternalCommunicationConverterContext {
 
     @Bean
     fun memoryInternalCommunicationConverter() =
-            MemoryInternalCommunicationConverter()
+        MemoryInternalCommunicationConverter()
 }

@@ -9,9 +9,11 @@ import pl.beone.promena.transformer.internal.communication.communicationParamete
 class InternalCommunicationParametersContext {
 
     @Bean
-    fun internalCommunicationParameters(environment: Environment) =
-            communicationParameters(environment.getCommunicationId())
+    fun internalCommunicationParameters(
+        environment: Environment
+    ) =
+        communicationParameters(environment.getCommunicationId())
 
     private fun Environment.getCommunicationId(): String =
-            getRequiredProperty("communication.internal.memory.id")
+        getRequiredProperty("communication.internal.memory.id")
 }

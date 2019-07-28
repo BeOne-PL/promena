@@ -7,29 +7,31 @@ import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 
 fun convertIfItIsNecessary(logger: Logger, dataDescriptor: DataDescriptor): DataDescriptor =
-        convertIfItIsNecessary(logger, dataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
-            singleDataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
-        }.toDataDescriptor()
+    convertIfItIsNecessary(logger, dataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
+        singleDataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
+    }.toDataDescriptor()
 
 fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
-        convertIfItIsNecessary(logger, transformedDataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
-            singleTransformedDataDescriptor(newData, oldDescriptor.metadata)
-        }.toTransformedDataDescriptor()
+    convertIfItIsNecessary(logger, transformedDataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
+        singleTransformedDataDescriptor(newData, oldDescriptor.metadata)
+    }.toTransformedDataDescriptor()
 
-private fun <T> convertIfItIsNecessary(logger: Logger,
-                                       descriptors: List<T>,
-                                       getData: (descriptor: T) -> Data,
-                                       factory: (newData: Data, oldDescriptor: T) -> T): List<T> {
+private fun <T> convertIfItIsNecessary(
+    logger: Logger,
+    descriptors: List<T>,
+    getData: (descriptor: T) -> Data,
+    factory: (newData: Data, oldDescriptor: T) -> T
+): List<T> {
     val memoryDescriptors = descriptors.filterMemoryData(getData)
-
     val notMemoryDescriptors = descriptors.filterNotMemoryData(getData)
+
     val convertedNotMemoryDescriptors = if (notMemoryDescriptors.isNotEmpty()) {
         notMemoryDescriptors
-                .also { logger.debug("There are <{}> other than <MemoryData> data instances", it.size) }
-                .also { logger.debug("Converting...") }
-                .map { convert(logger, getData(it)) to it }
-                .map { (newData, oldDescriptor) -> factory(newData, oldDescriptor) }
-                .also { logger.debug("Finished converting") }
+            .also { logger.debug("There are <{}> other than <MemoryData> data instances", it.size) }
+            .also { logger.debug("Converting...") }
+            .map { convert(logger, getData(it)) to it }
+            .map { (newData, oldDescriptor) -> factory(newData, oldDescriptor) }
+            .also { logger.debug("Finished converting") }
     } else {
         emptyList()
     }
@@ -38,16 +40,14 @@ private fun <T> convertIfItIsNecessary(logger: Logger,
 }
 
 fun <T> List<T>.filterNotMemoryData(getData: (descriptor: T) -> Data): List<T> =
-        filter { getData(it) !is MemoryData }
+    filter { getData(it) !is MemoryData }
 
 private fun <T> List<T>.filterMemoryData(getData: (descriptor: T) -> Data): List<T> =
-        filter { getData(it) is MemoryData }
+    filter { getData(it) is MemoryData }
 
-private fun convert(logger: Logger, data: Data): MemoryData {
-    val newMemoryData = createMemoryData(logger, data)
-    deleteDataIfItIsPossible(logger, data)
-    return newMemoryData
-}
+private fun convert(logger: Logger, data: Data): MemoryData =
+    createMemoryData(logger, data)
+        .also { deleteDataIfItIsPossible(logger, data) }
 
 private fun createMemoryData(logger: Logger, data: Data): MemoryData {
     val simplifiedString = data.toSimplifiedString()
@@ -77,11 +77,11 @@ internal fun deleteDataIfItIsPossible(logger: Logger, data: Data) {
 }
 
 private fun Data.toSimplifiedString(): String =
-        try {
-            "${this.javaClass.simpleName}(location=${getLocation()})"
-        } catch (e: Exception) {
-            "${this.javaClass.simpleName}(location=<isn't available>)"
-        }
+    try {
+        "${this.javaClass.simpleName}(location=${getLocation()})"
+    } catch (e: Exception) {
+        "${this.javaClass.simpleName}(location=<isn't available>)"
+    }
 
 private fun Data.toMemoryData(): MemoryData =
-        MemoryData.of(this.getBytes())
+    MemoryData.of(this.getBytes())
