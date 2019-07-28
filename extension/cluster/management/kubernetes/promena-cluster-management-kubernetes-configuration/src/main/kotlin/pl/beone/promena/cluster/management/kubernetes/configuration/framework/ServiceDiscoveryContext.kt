@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Configuration
 class ServiceDiscoveryContext {
 
     @Bean
-    fun serviceDiscovery(actorSystem: ActorSystem): Discovery =
-            Discovery.get(actorSystem).apply {
-                loadServiceDiscovery("kubernetes-api")
-            }
+    fun serviceDiscovery(
+        actorSystem: ActorSystem
+    ): Discovery =
+        Discovery.get(actorSystem).apply {
+            loadServiceDiscovery("kubernetes-api")
+        }
 
 }

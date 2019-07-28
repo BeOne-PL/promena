@@ -16,8 +16,10 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
     }
 
     @Bean
-    fun adaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(environment: Environment,
-                                                                    actorSystem: ActorSystem): AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator {
+    fun adaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(
+        environment: Environment,
+        actorSystem: ActorSystem
+    ): AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator {
         val metricsSelector = environment.getSelectorInstance()
 
         logger.info("Adaptive load balancing metrics selector: {}", metricsSelector::class.qualifiedName)
@@ -33,14 +35,16 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
 
             try {
                 Class.forName(className)
-                        .methods
-                        .firstOrNull { it.name == methodName }!!.let { it.invoke(null) as MetricsSelector }
+                    .methods
+                    .firstOrNull { it.name == methodName }!!.let { it.invoke(null) as MetricsSelector }
             } catch (e: Exception) {
                 throw Exception("Couldn't create MetricsSelector using <$property>. It must be static method without arguments!", e)
             }
         } else {
             try {
-                Class.forName(property).getDeclaredConstructor().newInstance() as MetricsSelector
+                Class.forName(property)
+                    .getDeclaredConstructor()
+                    .newInstance() as MetricsSelector
             } catch (e: Exception) {
                 throw Exception("Couldn't create MetricsSelector using <$property>. It must be class with constructor without arguments!", e)
             }

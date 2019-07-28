@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Configuration
 class ClusterBootstrapContext {
 
     @Bean
-    fun clusterBootstrap(actorSystem: ExtendedActorSystem) =
-            ClusterBootstrap(actorSystem).apply {
-                start()
-            }
+    fun clusterBootstrap(
+        actorSystem: ExtendedActorSystem
+    ) =
+        ClusterBootstrap(actorSystem).apply {
+            start()
+        }
 
 }

@@ -9,10 +9,12 @@ import org.springframework.context.annotation.Configuration
 class AkkaManagementContext {
 
     @Bean
-    fun akkaManagement(actorSystem: ActorSystem): AkkaManagement =
-            AkkaManagement.get(actorSystem).apply {
-                start()
-            }
+    fun akkaManagement(
+        actorSystem: ActorSystem
+    ): AkkaManagement =
+        AkkaManagement.get(actorSystem).apply {
+            start()
+        }
 
 
 }

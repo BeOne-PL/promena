@@ -10,15 +10,19 @@ import akka.cluster.routing.ClusterRouterGroupSettings
 import akka.routing.SmallestMailboxPool
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 
-class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(private val actorSystem: ActorSystem,
-                                                                  private val metricsSelector: MetricsSelector) : ActorCreator {
+class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(
+    private val actorSystem: ActorSystem,
+    private val metricsSelector: MetricsSelector
+) : ActorCreator {
 
     override fun create(name: String, props: Props, actors: Int): ActorRef =
         actorSystem.actorOf(
-                ClusterRouterGroup(AdaptiveLoadBalancingGroup(metricsSelector, emptySet()),
-                                   ClusterRouterGroupSettings(Int.MAX_VALUE, listOf("/user/$name"), true, emptySet()))
-                        .props(),
-                "$name-router"
+            ClusterRouterGroup(
+                AdaptiveLoadBalancingGroup(metricsSelector, emptySet()),
+                ClusterRouterGroupSettings(Int.MAX_VALUE, listOf("/user/$name"), true, emptySet())
+            )
+                .props(),
+            "$name-router"
         )
 
     // TODO it should be use
