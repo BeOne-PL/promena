@@ -4,6 +4,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import java.io.File
+import java.io.IOException
 
 class ConfigurationTest {
 
@@ -43,13 +44,15 @@ class ConfigurationTest {
     }
 
     private fun mockDockerTestProperties(toRun: () -> Unit) {
-        val file = File(Configuration::class.java.classLoader.getResource(".").path + "docker-test.properties")
-                .apply {
-                    writeText("""
+        val file = File(getRootResource() + "docker-test.properties")
+            .apply {
+                writeText(
+                    """
                         docker.test.image.custom.name=docker-test-runner:changed-test
                         additional.property=no matter
-                    """.trimIndent())
-                }
+                    """.trimIndent()
+                )
+            }
 
         try {
             toRun()
@@ -57,4 +60,7 @@ class ConfigurationTest {
             file.delete()
         }
     }
+
+    private fun getRootResource() =
+        Configuration::class.java.classLoader?.getResource(".")?.path ?: throw IOException("Couldn't get resource root path (.)")
 }

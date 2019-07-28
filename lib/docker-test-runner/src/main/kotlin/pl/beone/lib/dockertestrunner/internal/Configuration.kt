@@ -12,7 +12,7 @@ class Configuration {
 
     private fun Properties.load(resourcePath: String) {
         Configuration::class.java.getResourceAsStream(resourcePath)
-                ?.let { load(it) }
+            ?.let { load(it) }
     }
 
     fun getProperty(key: String): String {

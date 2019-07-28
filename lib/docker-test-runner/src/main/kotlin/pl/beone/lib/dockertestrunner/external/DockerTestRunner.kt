@@ -9,34 +9,36 @@ import org.junit.runners.model.FrameworkMethod
 import pl.beone.lib.dockertestrunner.internal.Configuration
 import java.io.File
 
-class DockerTestRunner(private val testClass: Class<*>) : BlockJUnit4ClassRunner(testClass) {
+class DockerTestRunner(
+    private val testClass: Class<*>
+) : BlockJUnit4ClassRunner(testClass) {
 
     private val configuration = Configuration()
 
     private val testContainerCoordinator = TestContainerCoordinator(
-            configuration.getProperty("docker.test.image.name"),
-            configuration.getProperty("docker.test.image.custom.enabled", Boolean::class.java),
-            configuration.getProperty("docker.test.image.custom.name"),
-            configuration.getProperty("docker.test.image.custom.dockerfile.path"),
-            configuration.getProperty("docker.test.image.custom.dockerfile-fragment.path"),
-            configuration.getProperty("docker.test.image.custom.deleteOnExit", Boolean::class.java),
-            configuration.getProperty("docker.test.project.path"),
-            configuration.getProperty("docker.test.project.container.path"),
-            configuration.getProperty("docker.test.m2.mount.enabled", Boolean::class.java),
-            configuration.getProperty("docker.test.m2.mount.path"),
-            configuration.getProperty("docker.test.m2.container.mount.path"),
-            configuration.getProperty("docker.test.debugger.enabled", Boolean::class.java),
-            configuration.getProperty("docker.test.debugger.port", Int::class.java)
+        configuration.getProperty("docker.test.image.name"),
+        configuration.getProperty("docker.test.image.custom.enabled", Boolean::class.java),
+        configuration.getProperty("docker.test.image.custom.name"),
+        configuration.getProperty("docker.test.image.custom.dockerfile.path"),
+        configuration.getProperty("docker.test.image.custom.dockerfile-fragment.path"),
+        configuration.getProperty("docker.test.image.custom.deleteOnExit", Boolean::class.java),
+        configuration.getProperty("docker.test.project.path"),
+        configuration.getProperty("docker.test.project.container.path"),
+        configuration.getProperty("docker.test.m2.mount.enabled", Boolean::class.java),
+        configuration.getProperty("docker.test.m2.mount.path"),
+        configuration.getProperty("docker.test.m2.container.mount.path"),
+        configuration.getProperty("docker.test.debugger.enabled", Boolean::class.java),
+        configuration.getProperty("docker.test.debugger.port", Int::class.java)
     )
 
 
     private val mavenOnTestContainerRunner = MavenOnTestContainerRunner(
-            testContainerCoordinator,
-            configuration.getProperty("docker.test.maven.container.test.command"),
-            configuration.getProperty("docker.test.maven.container.test.run-after"),
-            configuration.getProperty("docker.test.project.container.path"),
-            configuration.getProperty("docker.test.debugger.enabled", Boolean::class.java),
-            configuration.getProperty("docker.test.debugger.port", Int::class.java)
+        testContainerCoordinator,
+        configuration.getProperty("docker.test.maven.container.test.command"),
+        configuration.getProperty("docker.test.maven.container.test.run-after"),
+        configuration.getProperty("docker.test.project.container.path"),
+        configuration.getProperty("docker.test.debugger.enabled", Boolean::class.java),
+        configuration.getProperty("docker.test.debugger.port", Int::class.java)
     )
 
     override fun run(notifier: RunNotifier) {
@@ -82,16 +84,17 @@ class DockerTestRunner(private val testClass: Class<*>) : BlockJUnit4ClassRunner
     }
 
     private fun FrameworkMethod.isSpecialKotlinName(): Boolean =
-            this.name.contains(" ")
+        this.name.contains(" ")
 
     private fun FrameworkMethod.hasIgnoreAnnotation(): Boolean =
-            this.getAnnotation(Ignore::class.java) != null
+        this.getAnnotation(Ignore::class.java) != null
 
     private fun RunNotifier.fireTestIgnored(method: FrameworkMethod) {
         this.fireTestIgnored(Description.createTestDescription(testClass, method.name))
     }
 
-    private fun onDocker(): Boolean = File("/.dockerenv").exists()
+    private fun onDocker(): Boolean =
+        File("/.dockerenv").exists()
 
     private fun runOnHost(toRun: () -> Unit) {
         if (!onDocker()) {

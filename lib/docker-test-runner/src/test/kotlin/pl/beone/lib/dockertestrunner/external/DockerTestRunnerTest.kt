@@ -15,8 +15,8 @@ class DockerTestRunnerTest {
 
     @Test
     fun checkIfDockerFragmentWasUsedToBuildImage() {
-        String(readFromFileUsingCat("/test.txt")).trim()
-                .let { it shouldBe "test" }
+        String(readTestFileUsingCat()).trim()
+            .let { it shouldBe "test" }
     }
 
     @Test
@@ -30,6 +30,6 @@ class DockerTestRunnerTest {
         true shouldBe false
     }
 
-    private fun readFromFileUsingCat(path: String): ByteArray =
-            Runtime.getRuntime().exec("cat $path").inputStream.readAllBytes()
+    private fun readTestFileUsingCat(): ByteArray =
+        Runtime.getRuntime().exec("cat /test.txt").inputStream.readAllBytes()
 }

@@ -9,19 +9,21 @@ import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy
 import org.testcontainers.images.builder.ImageFromDockerfile
 import java.io.File
 
-class TestContainerCoordinator(private val imageName: String,
-                               private val imageCustomEnabled: Boolean,
-                               private val imageCustomName: String,
-                               private val imageCustomDockerfilePath: String,
-                               private val imageCustomDockerfileFragmentPath: String,
-                               private val imageCustomDeleteOnExit: Boolean,
-                               private val projectPath: String,
-                               private val containerProjectPath: String,
-                               private val m2MountEnabled: Boolean,
-                               private val m2MountPath: String,
-                               private val containerM2MountPath: String,
-                               private val debuggerEnabled: Boolean,
-                               private val debuggerPort: Int) {
+class TestContainerCoordinator(
+    private val imageName: String,
+    private val imageCustomEnabled: Boolean,
+    private val imageCustomName: String,
+    private val imageCustomDockerfilePath: String,
+    private val imageCustomDockerfileFragmentPath: String,
+    private val imageCustomDeleteOnExit: Boolean,
+    private val projectPath: String,
+    private val containerProjectPath: String,
+    private val m2MountEnabled: Boolean,
+    private val m2MountPath: String,
+    private val containerM2MountPath: String,
+    private val debuggerEnabled: Boolean,
+    private val debuggerPort: Int
+) {
 
     private lateinit var container: GenericContainer<*>
 
@@ -37,8 +39,12 @@ class TestContainerCoordinator(private val imageName: String,
                 val debuggerPort = debuggerPort
                 withExposedPorts(debuggerPort)
                 withCreateContainerCmdModifier {
-                    it.withPortBindings(PortBinding(Ports.Binding.bindPort(debuggerPort),
-                                                    ExposedPort(debuggerPort)))
+                    it.withPortBindings(
+                        PortBinding(
+                            Ports.Binding.bindPort(debuggerPort),
+                            ExposedPort(debuggerPort)
+                        )
+                    )
                 }
             }
 
@@ -49,13 +55,14 @@ class TestContainerCoordinator(private val imageName: String,
     }
 
     private fun createContainer(): GenericContainer<Nothing> =
-            if (imageCustomEnabled) {
-                GenericContainer(
-                        ImageFromDockerfile(imageCustomName, imageCustomDeleteOnExit)
-                                .withFileFromString("Dockerfile", createDockerfileWithReplacedTransformerPlaceholder()))
-            } else {
-                GenericContainer(imageName)
-            }
+        if (imageCustomEnabled) {
+            GenericContainer(
+                ImageFromDockerfile(imageCustomName, imageCustomDeleteOnExit)
+                    .withFileFromString("Dockerfile", createDockerfileWithReplacedTransformerPlaceholder())
+            )
+        } else {
+            GenericContainer(imageName)
+        }
 
     fun start() {
         verifyIfContainerWasInitialized()
