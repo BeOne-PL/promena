@@ -47,9 +47,9 @@ class GroupedByNameTransformersCreatorTest {
         GroupedByNameTransformersCreator(transformerConfig, internalCommunicationConverter, actorCreator)
             .create(listOf(transformer, transformer2, transformer3)) shouldBe
                 listOf(
-                    TransformerActorDescriptor("transformer".toTransformerId(), actorRef),
-                    TransformerActorDescriptor(("transformer" to "sub").toTransformerId(), actorRef),
-                    TransformerActorDescriptor("transformer2".toTransformerId(), actorRef2)
+                    TransformerActorDescriptor("transformer".toTransformerId(), actorRef, 2),
+                    TransformerActorDescriptor(("transformer" to "sub").toTransformerId(), actorRef, 2),
+                    TransformerActorDescriptor("transformer2".toTransformerId(), actorRef2, 3)
                 )
     }
 

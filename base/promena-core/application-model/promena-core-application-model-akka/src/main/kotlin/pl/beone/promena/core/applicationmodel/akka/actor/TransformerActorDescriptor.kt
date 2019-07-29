@@ -5,5 +5,6 @@ import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 data class TransformerActorDescriptor(
     val transformerId: TransformerId,
-    val actorRef: ActorRef
+    val actorRef: ActorRef,
+    val actors: Int
 )

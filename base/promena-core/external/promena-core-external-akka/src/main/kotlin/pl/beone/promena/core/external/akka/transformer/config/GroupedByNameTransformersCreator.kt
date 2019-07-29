@@ -27,16 +27,18 @@ class GroupedByNameTransformersCreator(
 
         return transformers.groupBy { transformerConfig.getTransformerId(it).name }
             .flatMap { (transformerId, transformers) ->
+                val actors = transformers.getMaxActors()
+
                 val transformerDescriptors = transformers
                     .map(::createTransformerDescriptor)
 
                 val transformerActor = transformerDescriptors
                     .sortedBy { transformerDescriptor -> transformerDescriptor.transformer.getPriority() }
-                    .let { transformerDescriptor -> createTransformerActor(transformerId, transformerDescriptor, transformers.getMaxActors()) }
+                    .let { transformerDescriptor -> createTransformerActor(transformerId, transformerDescriptor, actors) }
 
                 logSuccessfulActorCreation(transformerId, transformers)
 
-                transformerDescriptors.map { TransformerActorDescriptor(it.transformerId, transformerActor) }
+                transformerDescriptors.map { TransformerActorDescriptor(it.transformerId, transformerActor, actors) }
             }
     }
 

@@ -298,11 +298,11 @@ class AkkaTransformationServiceTest {
 
         val actorService = GroupedByNameActorService(
             listOf(
-                TransformerActorDescriptor(textAppenderTransformerId, textAppenderTransformerActorRef),
-                TransformerActorDescriptor(javaTextAppenderTransformerId, textAppenderTransformerActorRef),
-                TransformerActorDescriptor(uselessTextAppenderTransformerId, textAppenderTransformerActorRef),
-                TransformerActorDescriptor(fromTextToXmlAppenderTransformerId, fromTextToXmlAppenderTransformerActorRef),
-                TransformerActorDescriptor(timeoutTransformerId, timeoutTransformerActorRef)
+                TransformerActorDescriptor(textAppenderTransformerId, textAppenderTransformerActorRef, 1),
+                TransformerActorDescriptor(javaTextAppenderTransformerId, textAppenderTransformerActorRef, 1),
+                TransformerActorDescriptor(uselessTextAppenderTransformerId, textAppenderTransformerActorRef, 1),
+                TransformerActorDescriptor(fromTextToXmlAppenderTransformerId, fromTextToXmlAppenderTransformerActorRef, 1),
+                TransformerActorDescriptor(timeoutTransformerId, timeoutTransformerActorRef, 1)
             ),
             mockk()
         )

@@ -15,7 +15,7 @@ class GroupedByNameActorServiceTest {
     @Test
     fun getTransformerActor() {
         val veryEmptyTransformerId = ("empty" to "very").toTransformerId()
-        val veryEmptyTransformerActorDescriptor = TransformerActorDescriptor(veryEmptyTransformerId, mockk())
+        val veryEmptyTransformerActorDescriptor = TransformerActorDescriptor(veryEmptyTransformerId, mockk(), 1)
 
         val actorService = GroupedByNameActorService(listOf(veryEmptyTransformerActorDescriptor), mockk())
 
