@@ -19,21 +19,20 @@ import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.io.Serializable
 
-class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Boolean,
-                                                      private val nodeService: NodeService,
-                                                      private val contentService: ContentService,
-                                                      private val namespaceService: NamespaceService,
-                                                      private val transactionService: TransactionService,
-                                                      private val alfrescoDataConverter: AlfrescoDataConverter)
-    : AlfrescoTransformedDataDescriptorSaver {
+class RenditionAlfrescoTransformedDataDescriptorSaver(
+    private val saveIfZero: Boolean,
+    private val nodeService: NodeService,
+    private val contentService: ContentService,
+    private val namespaceService: NamespaceService,
+    private val transactionService: TransactionService,
+    private val alfrescoDataConverter: AlfrescoDataConverter
+) : AlfrescoTransformedDataDescriptorSaver {
 
     companion object {
         private val logger = LoggerFactory.getLogger(RenditionAlfrescoTransformedDataDescriptorSaver::class.java)
     }
 
-    override fun save(transformation: Transformation,
-                      nodeRefs: List<NodeRef>,
-                      transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
+    override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
         transactionService.retryingTransactionHelper.doInTransaction {
             val sourceNodeRef = nodeRefs.first()
 
@@ -55,15 +54,17 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
             renditionsNodeRefs
         }
 
-    private fun handleMany(sourceNodeRef: NodeRef,
-                           transformation: Transformation,
-                           transformedDataDescriptors: List<TransformedDataDescriptor.Single>): List<NodeRef> {
+    private fun handleMany(
+        sourceNodeRef: NodeRef,
+        transformation: Transformation,
+        transformedDataDescriptors: List<TransformedDataDescriptor.Single>
+    ): List<NodeRef> {
         val name = determineName(transformation)
         return transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
             val properties =
                 determinePromenaProperties(name, transformation, index, transformedDataDescriptors.size) +
-                createContentProperty() +
-                transformedDataDescriptor.metadata.getAlfrescoProperties()
+                        createContentProperty() +
+                        transformedDataDescriptor.metadata.getAlfrescoProperties()
 
             createRenditionNode(sourceNodeRef, "$name - ${index + 1}", properties).apply {
                 saveContent(determineDestinationMediaType(transformation), transformedDataDescriptor.data)
@@ -71,13 +72,15 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
         }
     }
 
-    private fun handleOne(sourceNodeRef: NodeRef,
-                          transformation: Transformation,
-                          singleTransformedDataDescriptor: TransformedDataDescriptor.Single): List<NodeRef> {
+    private fun handleOne(
+        sourceNodeRef: NodeRef,
+        transformation: Transformation,
+        singleTransformedDataDescriptor: TransformedDataDescriptor.Single
+    ): List<NodeRef> {
         val name = determineName(transformation)
         val properties = determinePromenaProperties(name, transformation, 0, 1) +
-                         createContentProperty() +
-                         singleTransformedDataDescriptor.metadata.getAlfrescoProperties()
+                createContentProperty() +
+                singleTransformedDataDescriptor.metadata.getAlfrescoProperties()
 
         return listOf(createRenditionNode(sourceNodeRef, name, properties).apply {
             saveContent(determineDestinationMediaType(transformation), singleTransformedDataDescriptor.data)
@@ -106,17 +109,20 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
     private fun determineDestinationMediaType(transformation: Transformation): MediaType =
         transformation.transformers.last().targetMediaType
 
-    private fun determinePromenaProperties(name: String,
-                                           transformation: Transformation,
-                                           transformationIndex: Int? = null,
-                                           transformationSize: Int? = null): Map<QName, Serializable?> =
-        mapOf<QName, Serializable?>(ContentModel.PROP_NAME to name,
-                                    ContentModel.PROP_THUMBNAIL_NAME to name,
-                                    ContentModel.PROP_IS_INDEXED to false,
-                                    PromenaTransformationContentModel.PROP_TRANSFORMATION to transformation.toListDescription(),
-                                    PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to transformationIndex,
-                                    PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to transformationSize)
-                .filterNotNullValues()
+    private fun determinePromenaProperties(
+        name: String,
+        transformation: Transformation,
+        transformationIndex: Int? = null,
+        transformationSize: Int? = null
+    ): Map<QName, Serializable?> =
+        mapOf<QName, Serializable?>(
+            ContentModel.PROP_NAME to name,
+            ContentModel.PROP_THUMBNAIL_NAME to name,
+            ContentModel.PROP_IS_INDEXED to false,
+            PromenaTransformationContentModel.PROP_TRANSFORMATION to transformation.toListDescription(),
+            PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to transformationIndex,
+            PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to transformationSize
+        ).filterNotNullValues()
 
     private fun Transformation.toListDescription(): ArrayList<String> =
         ArrayList(transformers.map { it.toString() })
@@ -126,19 +132,19 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(private val saveIfZero: Bo
 
     private fun Metadata.getAlfrescoProperties(): Map<QName, Serializable?> =
         getAll()
-                .filter { it.key.startsWith("alf_") }
-                .map { it.key.removePrefix("alf_") to it.value }
-                .map { QName.createQName(it.first, namespaceService) to it.second as Serializable? }
-                .toMap()
+            .filter { it.key.startsWith("alf_") }
+            .map { it.key.removePrefix("alf_") to it.value }
+            .map { QName.createQName(it.first, namespaceService) to it.second as Serializable? }
+            .toMap()
 
     // TODO verify cm:created and cm:modified because now it's "unknown"
     private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =
         nodeService.createNode(
-                sourceNodeRef,
-                RenditionModel.ASSOC_RENDITION,
-                QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name),
-                ContentModel.TYPE_THUMBNAIL,
-                properties
+            sourceNodeRef,
+            RenditionModel.ASSOC_RENDITION,
+            QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name),
+            ContentModel.TYPE_THUMBNAIL,
+            properties
         ).childRef.apply {
             nodeService.addAspect(this, RenditionModel.ASPECT_RENDITION2, null)
             nodeService.addAspect(this, RenditionModel.ASPECT_HIDDEN_RENDITION, null)

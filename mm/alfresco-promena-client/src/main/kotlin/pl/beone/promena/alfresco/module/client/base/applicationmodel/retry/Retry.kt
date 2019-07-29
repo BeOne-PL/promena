@@ -15,8 +15,10 @@ sealed class Retry {
             UnsupportedOperationException("You can't get this value for <Retry.No> policy")
     }
 
-    data class Custom internal constructor(override val maxAttempts: Long,
-                                           override val nextAttemptDelay: Duration) : Retry()
+    data class Custom internal constructor(
+        override val maxAttempts: Long,
+        override val nextAttemptDelay: Duration
+    ) : Retry()
 
     abstract val maxAttempts: Long
     abstract val nextAttemptDelay: Duration

@@ -20,18 +20,22 @@ class HttpClientAlfrescoPromenaServiceContext {
     }
 
     @Bean
-    fun httpClientAlfrescoPromenaService(externalCommunication: ExternalCommunication,
-                                         retry: Retry,
-                                         alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-                                         alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
-                                         alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
-                                         kryoSerializationService: KryoSerializationService,
-                                         httpClient: HttpClient) =
-        HttpClientAlfrescoPromenaService(externalCommunication,
-                                         retry,
-                                         alfrescoNodesChecksumGenerator,
-                                         alfrescoDataDescriptorGetter,
-                                         alfrescoTransformedDataDescriptorSaver,
-                                         kryoSerializationService,
-                                         httpClient)
+    fun httpClientAlfrescoPromenaService(
+        externalCommunication: ExternalCommunication,
+        retry: Retry,
+        alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
+        alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
+        alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
+        kryoSerializationService: KryoSerializationService,
+        httpClient: HttpClient
+    ) =
+        HttpClientAlfrescoPromenaService(
+            externalCommunication,
+            retry,
+            alfrescoNodesChecksumGenerator,
+            alfrescoDataDescriptorGetter,
+            alfrescoTransformedDataDescriptorSaver,
+            kryoSerializationService,
+            httpClient
+        )
 }

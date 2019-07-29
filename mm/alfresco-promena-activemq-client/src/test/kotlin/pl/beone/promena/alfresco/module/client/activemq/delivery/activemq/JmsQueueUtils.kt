@@ -6,6 +6,7 @@ import java.time.Duration
 class JmsQueueUtils(
     private val jmsTemplate: JmsTemplate
 ) {
+
     fun dequeueQueue(queue: String, timeout: Duration = Duration.ofMillis(300)) {
         val receiveTimeout = jmsTemplate.receiveTimeout
         jmsTemplate.receiveTimeout = timeout.toMillis()

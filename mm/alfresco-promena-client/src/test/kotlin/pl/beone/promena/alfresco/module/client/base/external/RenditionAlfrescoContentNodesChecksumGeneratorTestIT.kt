@@ -20,7 +20,7 @@ class RenditionAlfrescoContentNodesChecksumGeneratorTestIT : AbstractUtilsAlfres
         }
 
         RenditionAlfrescoContentNodesChecksumGenerator(serviceRegistry.nodeService)
-                .generateChecksum(nodeRefs) shouldHaveMinLength 2
+            .generateChecksum(nodeRefs) shouldHaveMinLength 2
     }
 
     @Test

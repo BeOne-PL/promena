@@ -14,9 +14,11 @@ import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import java.nio.charset.Charset
 
-class ContentPropertyAlfrescoDataDescriptorGetter(private val nodeService: NodeService,
-                                                  private val contentService: ContentService,
-                                                  private val alfrescoDataConverter: AlfrescoDataConverter) : AlfrescoDataDescriptorGetter {
+class ContentPropertyAlfrescoDataDescriptorGetter(
+    private val nodeService: NodeService,
+    private val contentService: ContentService,
+    private val alfrescoDataConverter: AlfrescoDataConverter
+) : AlfrescoDataDescriptorGetter {
 
     override fun get(nodeRefs: List<NodeRef>): DataDescriptor {
         nodeRefs.forEach { it.checkIfExists() }

@@ -32,16 +32,16 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
         }
 
         ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, alfrescoDataConverter)
-                .get(listOf(node)).let {
-                    it shouldBe singleDataDescriptor(data, mediaType, emptyMetadata())
-                }
+            .get(listOf(node)).let {
+                it shouldBe singleDataDescriptor(data, mediaType, emptyMetadata())
+            }
     }
 
     @Test
     fun get_shouldThrowNodeDoesNotExist() {
         shouldThrow<NodeDoesNotExist> {
             ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, mockk())
-                    .get(listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}")))
+                .get(listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}")))
         }
     }
 }

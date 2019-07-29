@@ -14,8 +14,10 @@ import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import java.net.URI
 
-class MemoryOrFileAlfrescoDataConverter(private val externalCommunicationId: String,
-                                        private val externalCommunicationLocation: URI? = null) : AlfrescoDataConverter {
+class MemoryOrFileAlfrescoDataConverter(
+    private val externalCommunicationId: String,
+    private val externalCommunicationLocation: URI? = null
+) : AlfrescoDataConverter {
 
     companion object {
         private val logger = LoggerFactory.getLogger(MemoryOrFileAlfrescoDataConverter::class.java)
@@ -26,8 +28,10 @@ class MemoryOrFileAlfrescoDataConverter(private val externalCommunicationId: Str
             if (contentReader is FileContentReader) {
                 FileData.of(contentReader.contentInputStream, externalCommunicationLocation!!)
             } else {
-                logger.warn("Content reader type isn't FileContentReader (<{}>). Implementation <MemoryData> will be use as back pressure",
-                            contentReader::class.java.simpleName)
+                logger.warn(
+                    "Content reader type isn't FileContentReader (<{}>). Implementation <MemoryData> will be use as back pressure",
+                    contentReader::class.java.simpleName
+                )
                 contentReader.toMemoryData()
             }
         } else if (externalCommunicationId == Memory) {

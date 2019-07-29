@@ -47,12 +47,7 @@ class HttpClientAlfrescoPromenaService(
         private val logger = LoggerFactory.getLogger(HttpClientAlfrescoPromenaService::class.java)
     }
 
-    override fun transform(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        waitMax: Duration?,
-        retry: Retry?
-    ): List<NodeRef> {
+    override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
         return try {
@@ -71,11 +66,7 @@ class HttpClientAlfrescoPromenaService(
             block()!!
         }
 
-    override fun transformAsync(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry?
-    ): Mono<List<NodeRef>> {
+    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry?): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
         return transformReactive(transformation, nodeRefs, determineRetry(retry)).apply {
@@ -86,11 +77,7 @@ class HttpClientAlfrescoPromenaService(
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
 
-    private fun transformReactive(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry
-    ): Mono<List<NodeRef>> {
+    private fun transformReactive(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> {
         val startTimestamp = currentTimeMillis()
 
         val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
@@ -161,12 +148,7 @@ class HttpClientAlfrescoPromenaService(
         }
     }
 
-    private fun handleError(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        nodesChecksum: String,
-        exception: Throwable
-    ) {
+    private fun handleError(transformation: Transformation, nodeRefs: List<NodeRef>, nodesChecksum: String, exception: Throwable) {
         if (exception is NodesInconsistencyException) {
             logger.skippedSavingResult(transformation, nodeRefs, exception.oldNodesChecksum, exception.currentNodesChecksum)
 
@@ -187,11 +169,7 @@ class HttpClientAlfrescoPromenaService(
         }
     }
 
-    private fun Mono<List<NodeRef>>.retryOnError(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry
-    ): Mono<List<NodeRef>> =
+    private fun Mono<List<NodeRef>>.retryOnError(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> =
         if (retry != Retry.No) {
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
                           .fixedBackoff(retry.nextAttemptDelay)

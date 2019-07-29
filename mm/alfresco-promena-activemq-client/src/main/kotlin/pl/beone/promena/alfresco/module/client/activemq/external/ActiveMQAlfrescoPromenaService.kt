@@ -29,12 +29,7 @@ class ActiveMQAlfrescoPromenaService(
         private val logger = LoggerFactory.getLogger(ActiveMQAlfrescoPromenaService::class.java)
     }
 
-    override fun transform(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        waitMax: Duration?,
-        retry: Retry?
-    ): List<NodeRef> {
+    override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
         return try {
@@ -51,35 +46,19 @@ class ActiveMQAlfrescoPromenaService(
             block()!!
         }
 
-    override fun transformAsync(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry?
-    ): Mono<List<NodeRef>> =
+    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry?): Mono<List<NodeRef>> =
         transformAsync(generateId(), transformation, nodeRefs, determineRetry(retry), 0)
 
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
 
-    internal fun transformAsync(
-        id: String,
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry,
-        attempt: Long
-    ): Mono<List<NodeRef>> {
+    internal fun transformAsync(id: String, transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry, attempt: Long): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
         return transform(id, transformation, nodeRefs, retry, attempt)
     }
 
-    private fun transform(
-        id: String,
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry,
-        attempt: Long
-    ): Mono<List<NodeRef>> {
+    private fun transform(id: String, transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry, attempt: Long): Mono<List<NodeRef>> {
         val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeRefs)
 
         val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)

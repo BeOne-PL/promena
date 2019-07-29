@@ -94,9 +94,7 @@ class TransformerResponseErrorConsumer(
         if (retry.lastAttempt(attempt)) {
             subscribe(
                 {},
-                {
-                    reactiveTransformationManager.completeErrorTransformation(id, exception)
-                }
+                { reactiveTransformationManager.completeErrorTransformation(id, exception) }
             )
         } else {
             subscribe()

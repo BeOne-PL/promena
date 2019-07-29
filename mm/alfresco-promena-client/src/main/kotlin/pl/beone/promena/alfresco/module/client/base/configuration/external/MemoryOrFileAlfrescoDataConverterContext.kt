@@ -9,6 +9,8 @@ import pl.beone.promena.alfresco.module.client.base.external.MemoryOrFileAlfresc
 class MemoryOrFileAlfrescoDataConverterContext {
 
     @Bean
-    fun memoryOrFileAlfrescoDataConverter(externalCommunication: ExternalCommunication): MemoryOrFileAlfrescoDataConverter =
-            MemoryOrFileAlfrescoDataConverter(externalCommunication.id, externalCommunication.location)
+    fun memoryOrFileAlfrescoDataConverter(
+        externalCommunication: ExternalCommunication
+    ): MemoryOrFileAlfrescoDataConverter =
+        MemoryOrFileAlfrescoDataConverter(externalCommunication.id, externalCommunication.location)
 }

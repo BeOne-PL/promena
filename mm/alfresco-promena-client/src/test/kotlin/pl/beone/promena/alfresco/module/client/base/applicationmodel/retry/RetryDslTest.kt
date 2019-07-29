@@ -2,8 +2,6 @@ package pl.beone.promena.alfresco.module.client.base.applicationmodel.retry
 
 import io.kotlintest.shouldBe
 import org.junit.Test
-
-import org.junit.Assert.*
 import java.time.Duration
 
 class RetryDslTest {

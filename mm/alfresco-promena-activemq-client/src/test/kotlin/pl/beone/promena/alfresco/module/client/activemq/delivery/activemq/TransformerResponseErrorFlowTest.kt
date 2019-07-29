@@ -139,10 +139,7 @@ class TransformerResponseErrorFlowTest {
     }
 
     private fun sendResponseErrorMessage(correlationId: String, attempt: Long, retry: Retry) {
-        jmsTemplate.convertAndSend(
-            ActiveMQQueue(queueResponseError),
-            exception
-        ) { message ->
+        jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })

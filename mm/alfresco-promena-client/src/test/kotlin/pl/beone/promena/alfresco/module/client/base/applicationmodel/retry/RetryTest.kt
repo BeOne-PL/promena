@@ -12,11 +12,13 @@ class RetryTest {
         val noRetry = noRetry()
         val exceptionMessage = "You can't get this value for <Retry.No> policy"
 
-        shouldThrow<UnsupportedOperationException> { noRetry.maxAttempts }
-                .message shouldBe exceptionMessage
+        shouldThrow<UnsupportedOperationException> {
+            noRetry.maxAttempts
+        }.message shouldBe exceptionMessage
 
-        shouldThrow<UnsupportedOperationException> { noRetry.nextAttemptDelay }
-                .message shouldBe exceptionMessage
+        shouldThrow<UnsupportedOperationException> {
+            noRetry.nextAttemptDelay
+        }.message shouldBe exceptionMessage
     }
 
     @Test

@@ -11,7 +11,9 @@ import java.util.*
 class HttpClientContext {
 
     @Bean
-    fun httpClient(@Qualifier("global-properties") properties: Properties) =
-            HttpClient.create()
-                    .baseUrl(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.http.base-url"))
+    fun httpClient(
+        @Qualifier("global-properties") properties: Properties
+    ) =
+        HttpClient.create()
+            .baseUrl(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.http.base-url"))
 }

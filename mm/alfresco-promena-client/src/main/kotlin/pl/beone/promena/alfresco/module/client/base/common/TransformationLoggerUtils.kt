@@ -1,16 +1,11 @@
 package pl.beone.promena.alfresco.module.client.base.common
 
 import org.alfresco.service.cmr.repository.NodeRef
-import org.joda.time.format.PeriodFormat
 import org.slf4j.Logger
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.time.Duration
 
-fun Logger.startSync(
-    transformation: Transformation,
-    nodeRefs: List<NodeRef>,
-    waitMax: Duration?
-) {
+fun Logger.startSync(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?) {
     info(
         "Transforming <{}> nodes <{}>. Waiting <{}> for response...",
         transformation,
@@ -19,10 +14,7 @@ fun Logger.startSync(
     )
 }
 
-fun Logger.startAsync(
-    transformation: Transformation,
-    nodeRefs: List<NodeRef>
-) {
+fun Logger.startAsync(transformation: Transformation, nodeRefs: List<NodeRef>) {
     info(
         "Transforming <{}> nodes <{}>...",
         transformation,
@@ -46,12 +38,7 @@ fun Logger.transformedSuccessfully(
     )
 }
 
-fun Logger.skippedSavingResult(
-    transformation: Transformation,
-    nodeRefs: List<NodeRef>,
-    oldNodesChecksum: String,
-    currentNodesChecksum: String
-) {
+fun Logger.skippedSavingResult(transformation: Transformation, nodeRefs: List<NodeRef>, oldNodesChecksum: String, currentNodesChecksum: String) {
     warn(
         "Skipped saving result <{}> nodes <{}> because nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
         transformation,
@@ -78,11 +65,7 @@ fun Logger.couldNotTransformButChecksumsAreDifferent(
     )
 }
 
-fun Logger.couldNotTransform(
-    transformation: Transformation,
-    nodeRefs: List<NodeRef>,
-    exception: Throwable
-) {
+fun Logger.couldNotTransform(transformation: Transformation, nodeRefs: List<NodeRef>, exception: Throwable) {
     error(
         "Couldn't transform <{}> nodes <{}>",
         transformation,
@@ -91,13 +74,7 @@ fun Logger.couldNotTransform(
     )
 }
 
-fun Logger.logOnRetry(
-    transformation: Transformation,
-    nodeRefs: List<NodeRef>,
-    attempt: Long,
-    maxAttempts: Long,
-    nextAttemptDelay: Duration
-) {
+fun Logger.logOnRetry(transformation: Transformation, nodeRefs: List<NodeRef>, attempt: Long, maxAttempts: Long, nextAttemptDelay: Duration) {
     warn(
         "Attempt ({}/{}). Transformation <{}> nodes <{}> will be run after <{}>",
         attempt,

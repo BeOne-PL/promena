@@ -23,7 +23,9 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
 
         MemoryOrFileAlfrescoDataConverter(Memory).createData(node.getContentReader()).let {
             it.getBytes() shouldBe "test".toByteArray()
-            shouldThrow<UnsupportedOperationException> { it.getLocation() }
+            shouldThrow<UnsupportedOperationException> {
+                it.getLocation()
+            }
         }
     }
 
@@ -37,10 +39,10 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
             }
 
             MemoryOrFileAlfrescoDataConverter(File, tmpDir.toURI())
-                    .createData(node.getContentReader()).let {
-                        it.getBytes() shouldBe "test".toByteArray()
-                        it.getLocation().toString() shouldContain tmpDir.toString()
-                    }
+                .createData(node.getContentReader()).let {
+                    it.getBytes() shouldBe "test".toByteArray()
+                    it.getLocation().toString() shouldContain tmpDir.toString()
+                }
         } finally {
             tmpDir.delete()
         }
@@ -53,9 +55,10 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
         val data = "test".toMemoryData()
 
         MemoryOrFileAlfrescoDataConverter(Memory, null)
-                .saveDataInContentWriter(data, node.getContentWriter())
+            .saveDataInContentWriter(data, node.getContentWriter())
 
-        node.readContent() shouldBe "test".toByteArray()
+        node.readContent() shouldBe
+                "test".toByteArray()
     }
 
     @Test
@@ -65,9 +68,10 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
         val data = FileData.of("test".byteInputStream(), createTempDir())
 
         MemoryOrFileAlfrescoDataConverter(Memory, null)
-                .saveDataInContentWriter(data, node.getContentWriter())
+            .saveDataInContentWriter(data, node.getContentWriter())
 
-        node.readContent() shouldBe "test".toByteArray()
         java.io.File(data.getLocation()).exists() shouldBe false
+        node.readContent() shouldBe
+                "test".toByteArray()
     }
 }

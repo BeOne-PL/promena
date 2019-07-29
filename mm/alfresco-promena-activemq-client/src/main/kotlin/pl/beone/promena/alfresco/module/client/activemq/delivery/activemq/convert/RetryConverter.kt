@@ -7,11 +7,7 @@ import java.time.Duration
 
 class RetryConverter {
 
-    fun convert(
-        enabled: Boolean,
-        maxAttempts: Long,
-        nextAttemptDelay: String
-    ): Retry =
+    fun convert(enabled: Boolean, maxAttempts: Long, nextAttemptDelay: String): Retry =
         if (enabled) {
             customRetry(maxAttempts, Duration.parse(nextAttemptDelay))
         } else {

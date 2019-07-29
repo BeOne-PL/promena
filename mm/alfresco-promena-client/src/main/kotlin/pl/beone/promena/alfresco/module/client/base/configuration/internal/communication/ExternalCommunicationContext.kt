@@ -19,7 +19,9 @@ class ExternalCommunicationContext {
     }
 
     @Bean
-    fun externalCommunication(@Qualifier("global-properties") properties: Properties): ExternalCommunication {
+    fun externalCommunication(
+        @Qualifier("global-properties") properties: Properties
+    ): ExternalCommunication {
         val externalCommunicationId = properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.id")
 
         logger.info("Promena external communication: {}", externalCommunicationId)

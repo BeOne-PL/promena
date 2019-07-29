@@ -87,10 +87,7 @@ class TransformerResponseErrorAttemptsExceededFlowTest {
     }
 
     private fun sendResponseErrorMessage() {
-        jmsTemplate.convertAndSend(
-            ActiveMQQueue(queueResponseError),
-            exception
-        ) { message ->
+        jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) { message ->
             message.apply {
                 jmsCorrelationID =
                     id

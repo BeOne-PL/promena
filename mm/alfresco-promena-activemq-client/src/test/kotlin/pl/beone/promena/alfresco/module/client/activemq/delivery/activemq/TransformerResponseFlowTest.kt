@@ -114,10 +114,7 @@ class TransformerResponseFlowTest {
     }
 
     private fun sendResponseMessage(correlationId: String) {
-        jmsTemplate.convertAndSend(
-            ActiveMQQueue(queueResponse),
-            performedTransformationDescriptor
-        ) { message ->
+        jmsTemplate.convertAndSend(ActiveMQQueue(queueResponse), performedTransformationDescriptor) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
                 setLongProperty(PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP, System.currentTimeMillis())

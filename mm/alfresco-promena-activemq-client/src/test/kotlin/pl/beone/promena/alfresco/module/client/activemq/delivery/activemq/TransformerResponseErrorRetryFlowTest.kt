@@ -110,10 +110,7 @@ class TransformerResponseErrorRetryFlowTest {
     }
 
     private fun sendResponseErrorMessage(attempt: Int) {
-        jmsTemplate.convertAndSend(
-            ActiveMQQueue(queueResponseError),
-            exception
-        ) { message ->
+        jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) { message ->
             message.apply {
                 jmsCorrelationID = id
                 setLongProperty(PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP, System.currentTimeMillis())

@@ -16,16 +16,20 @@ import java.util.*
 class RenditionAlfrescoTransformedDataDescriptorSaverContext {
 
     @Bean
-    fun renditionAlfrescoTransformedDataDescriptorSaver(@Qualifier("global-properties") properties: Properties,
-                                                        nodeService: NodeService,
-                                                        contentService: ContentService,
-                                                        namespaceService: NamespaceService,
-                                                        transactionService: TransactionService,
-                                                        alfrescoDataConverter: AlfrescoDataConverter) =
-            RenditionAlfrescoTransformedDataDescriptorSaver(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.save-if-zero").toBoolean(),
-                                                            nodeService,
-                                                            contentService,
-                                                            namespaceService,
-                                                            transactionService,
-                                                            alfrescoDataConverter)
+    fun renditionAlfrescoTransformedDataDescriptorSaver(
+        @Qualifier("global-properties") properties: Properties,
+        nodeService: NodeService,
+        contentService: ContentService,
+        namespaceService: NamespaceService,
+        transactionService: TransactionService,
+        alfrescoDataConverter: AlfrescoDataConverter
+    ) =
+        RenditionAlfrescoTransformedDataDescriptorSaver(
+            properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.save-if-zero").toBoolean(),
+            nodeService,
+            contentService,
+            namespaceService,
+            transactionService,
+            alfrescoDataConverter
+        )
 }

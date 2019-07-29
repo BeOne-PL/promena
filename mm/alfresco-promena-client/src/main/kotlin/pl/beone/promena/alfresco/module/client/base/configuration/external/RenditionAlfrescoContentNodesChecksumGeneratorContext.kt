@@ -9,6 +9,8 @@ import pl.beone.promena.alfresco.module.client.base.external.RenditionAlfrescoCo
 class RenditionAlfrescoContentNodesChecksumGeneratorContext {
 
     @Bean
-    fun renditionAlfrescoContentNodesChecksumGenerator(nodeService: NodeService) =
-            RenditionAlfrescoContentNodesChecksumGenerator(nodeService)
+    fun renditionAlfrescoContentNodesChecksumGenerator(
+        nodeService: NodeService
+    ) =
+        RenditionAlfrescoContentNodesChecksumGenerator(nodeService)
 }

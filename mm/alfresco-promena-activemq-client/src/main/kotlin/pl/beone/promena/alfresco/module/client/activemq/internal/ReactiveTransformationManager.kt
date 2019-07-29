@@ -21,17 +21,17 @@ class ReactiveTransformationManager {
             mono
         } else {
             val completableFuture = CompletableFuture<List<NodeRef>>()
-                    .apply { completableFutureMap[id] = this }
+                .apply { completableFutureMap[id] = this }
 
             Mono.fromFuture(completableFuture)
-                    .doOnCancel { }
-                    .apply {
-                        monoMap[id] = this
-                        subscribe({}, {}, {
-                            monoMap.remove(id)
-                            completableFutureMap.remove(id)
-                        })
-                    }
+                .doOnCancel { }
+                .apply {
+                    monoMap[id] = this
+                    subscribe({}, {}, {
+                        monoMap.remove(id)
+                        completableFutureMap.remove(id)
+                    })
+                }
         }
     }
 

@@ -11,10 +11,14 @@ import pl.beone.promena.alfresco.module.client.base.external.ContentPropertyAlfr
 class ContentPropertyAlfrescoDataDescriptorGetterContext {
 
     @Bean
-    fun contentPropertyAlfrescoDataDescriptorGetter(nodeService: NodeService,
-                                                    contentService: ContentService,
-                                                    alfrescoDataConverter: AlfrescoDataConverter) =
-            ContentPropertyAlfrescoDataDescriptorGetter(nodeService,
-                                                        contentService,
-                                                        alfrescoDataConverter)
+    fun contentPropertyAlfrescoDataDescriptorGetter(
+        nodeService: NodeService,
+        contentService: ContentService,
+        alfrescoDataConverter: AlfrescoDataConverter
+    ) =
+        ContentPropertyAlfrescoDataDescriptorGetter(
+            nodeService,
+            contentService,
+            alfrescoDataConverter
+        )
 }

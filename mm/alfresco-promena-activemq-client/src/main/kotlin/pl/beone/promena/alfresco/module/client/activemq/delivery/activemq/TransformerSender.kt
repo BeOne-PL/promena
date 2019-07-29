@@ -36,9 +36,7 @@ class TransformerSender(
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setObjectProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, externalCommunication.id)
-                externalCommunication.location?.let {
-                    setObjectProperty(PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_LOCATION, it.toString())
-                }
+                externalCommunication.location?.let { setObjectProperty(PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_LOCATION, it.toString()) }
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
