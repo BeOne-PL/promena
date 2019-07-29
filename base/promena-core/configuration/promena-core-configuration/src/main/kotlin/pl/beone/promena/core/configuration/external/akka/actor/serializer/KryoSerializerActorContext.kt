@@ -1,6 +1,5 @@
-package pl.beone.promena.core.configuration.external.akka.actor
+package pl.beone.promena.core.configuration.external.akka.actor.serializer
 
-import akka.actor.ActorSystem
 import akka.actor.Props
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -13,19 +12,19 @@ import pl.beone.promena.core.external.akka.actor.serializer.KryoSerializerActor
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 
 @Configuration
-class KryoSerializerActorContext(
-    private val actorCreator: ActorCreator
-) {
+class KryoSerializerActorContext {
 
     companion object {
         private val logger = LoggerFactory.getLogger(ActorCreator::class.java)
+
+        private val basedOnTransformersNumberOfSerializerActorsDeterminer = BasedOnTransformersNumberOfSerializerActorsDeterminer()
     }
 
     @Bean
     @ConditionalOnBean(name = ["serializerActor"])
     fun serializerActor(
         environment: Environment,
-        actorSystem: ActorSystem,
+        actorCreator: ActorCreator,
         transformerActorDescriptors: List<TransformerActorDescriptor>
     ) =
         actorCreator.create(
@@ -33,16 +32,8 @@ class KryoSerializerActorContext(
             Props.create(KryoSerializerActor::class.java) {
                 KryoSerializerActor(KryoSerializationService(environment.getRequiredProperty("core.serializer.kryo.buffer-size", Int::class.java)))
             },
-            environment.getProperty("core.serializer.actors", Int::class.java) ?: calculateNumberOfActors(transformerActorDescriptors)
+            environment.getProperty("core.serializer.actors", Int::class.java) ?:
+                    basedOnTransformersNumberOfSerializerActorsDeterminer.determine(transformerActorDescriptors)
+                        .also { logger.info("Property <core.serializer.actors> wasn't set. Created actors (the sum of the transformer actors): {}", it) }
         )
-
-    private fun calculateNumberOfActors(transformerActorDescriptors: List<TransformerActorDescriptor>): Int {
-        val actors = transformerActorDescriptors
-            .groupBy { it.transformerId.name }
-            .map { transformersGroupedByName -> transformersGroupedByName.value.size }
-            .sum()
-        logger.info("Property <core.serializer.actors> wasn't set. Created actors (the sum of the transformer actors): {}", actors)
-        return actors
-    }
-
 }
