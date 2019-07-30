@@ -1,5 +1,6 @@
 package pl.beone.promena.connector.http.delivery.http
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -18,6 +19,8 @@ class TransformerHandler(
 ) {
 
     companion object {
+        private val logger = LoggerFactory.getLogger(TransformerHandler::class.java)
+
         private val communicationParametersConverter = CommunicationParametersConverter()
     }
 
@@ -32,20 +35,22 @@ class TransformerHandler(
             }
             .map(serializationService::serialize)
             .flatMap(::createResponse)
-            // CommunicationParametersConverter -> no <id> communication parameter
-            .onErrorMap(NoSuchElementException::class.java) { ResponseStatusException(HttpStatus.BAD_REQUEST, it.message!!) }
-            .onErrorResume({ it !is ResponseStatusException }, ::createExceptionResponse)
+            .onErrorMap(CommunicationParametersConverterException::class.java, ::createCommunicationParametersBadRequestException)
+            .onErrorResume({ it !is ResponseStatusException }, ::createInternalServerErrorResponse)
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
-        serializationService.deserialize(
-            byteArray,
-            getClazz()
-        )
+        serializationService.deserialize(byteArray, getClazz())
 
     private fun createResponse(bytes: ByteArray): Mono<ServerResponse> =
         ServerResponse.ok().body(Mono.just(bytes), ByteArray::class.java)
 
-    private fun createExceptionResponse(exception: Throwable): Mono<ServerResponse> =
+    private fun createCommunicationParametersBadRequestException(exception: CommunicationParametersConverterException): ResponseStatusException {
+        logger.error("Couldn't determine communication parameters", exception)
+
+        return ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't determine communication parameters. " + exception.message!!)
+    }
+
+    private fun createInternalServerErrorResponse(exception: Throwable): Mono<ServerResponse> =
         ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .header(PromenaHttpHeaders.SERIALIZATION_CLASS, exception.javaClass.name)
             .body(Mono.just(exception).map(serializationService::serialize), ByteArray::class.java)

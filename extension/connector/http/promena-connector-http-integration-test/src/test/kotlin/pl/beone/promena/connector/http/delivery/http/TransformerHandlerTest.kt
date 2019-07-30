@@ -136,7 +136,7 @@ class TransformerHandlerTest {
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
             .expectStatus().isBadRequest
-            .expectBody<String>().returnResult().responseBody shouldContain "Query string must contain at least <id> communication parameter"
+            .expectBody<String>().returnResult().responseBody shouldContain "Couldn't determine communication parameters. Query string must contain at least <id>"
     }
 
     @Test
