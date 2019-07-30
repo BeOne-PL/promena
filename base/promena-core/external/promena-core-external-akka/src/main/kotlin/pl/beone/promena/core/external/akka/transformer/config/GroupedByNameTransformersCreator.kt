@@ -10,6 +10,7 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
 import pl.beone.promena.core.external.akka.actor.transformer.GroupedByNameTransformerActor
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
+import pl.beone.promena.core.external.akka.applicationmodel.exception.DuplicatedTransformerIdException
 import pl.beone.promena.transformer.contract.Transformer
 
 class GroupedByNameTransformersCreator(
@@ -23,7 +24,9 @@ class GroupedByNameTransformersCreator(
     }
 
     override fun create(transformers: List<Transformer>): List<TransformerActorDescriptor> {
-        logger.info("Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.simpleName}")
+        logger.info("Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.java.canonicalName}")
+
+        validateTransformers(transformers)
 
         return transformers.groupBy { transformerConfig.getTransformerId(it).name }
             .flatMap { (transformerId, transformers) ->
@@ -42,6 +45,21 @@ class GroupedByNameTransformersCreator(
             }
     }
 
+    private fun validateTransformers(transformers: List<Transformer>) {
+        val notUniqueTransforms = transformers.groupBy { transformerConfig.getTransformerId(it) }
+            .filter { (_, transformers) -> transformers.size >= 2 }
+            .toList()
+
+        if (notUniqueTransforms.isNotEmpty()) {
+            throw DuplicatedTransformerIdException(
+                "Detected <${notUniqueTransforms.size}> transformers with duplicated id:\n" +
+                        notUniqueTransforms.joinToString("\n") { (transformerId, transformers) ->
+                            "> $transformerId: <${transformers.joinToString(", ") { it::class.java.canonicalName }}>"
+                        }
+            )
+        }
+    }
+
     private fun List<Transformer>.getMaxActors(): Int =
         map { transformerConfig.getActors(it) }
             .max()!!
@@ -52,11 +70,7 @@ class GroupedByNameTransformersCreator(
     private fun Transformer.getPriority(): Int =
         transformerConfig.getPriority(this)
 
-    private fun createTransformerActor(
-        transformerId: String,
-        transformerDescriptors: List<TransformerDescriptor>,
-        maxActors: Int
-    ): ActorRef =
+    private fun createTransformerActor(transformerId: String, transformerDescriptors: List<TransformerDescriptor>, maxActors: Int): ActorRef =
         actorCreator.create(
             transformerId,
             Props.create(GroupedByNameTransformerActor::class.java) {
@@ -68,7 +82,7 @@ class GroupedByNameTransformersCreator(
     private fun logSuccessfulActorCreation(transformerId: String, transformers: List<Transformer>) {
         logger.info(
             "> Registered <$transformerId> with <${transformers.size}> transformer(s) " +
-                    "${transformers.map { "${it::class.simpleName}, ${it.getPriority()} priority" }} and <${transformers.getMaxActors()}> actor(s) "
+                    "${transformers.map { "${it::class.java.canonicalName}, ${it.getPriority()} priority" }} and <${transformers.getMaxActors()}> actor(s) "
         )
     }
 
