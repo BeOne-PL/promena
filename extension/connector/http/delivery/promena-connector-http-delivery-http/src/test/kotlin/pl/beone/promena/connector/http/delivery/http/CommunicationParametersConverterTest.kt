@@ -5,6 +5,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import org.springframework.util.LinkedMultiValueMap
+import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 
 class CommunicationParametersConverterTest {
 
@@ -47,9 +48,9 @@ class CommunicationParametersConverterTest {
     }
 
     @Test
-    fun `convert _ no id _ should throw NoSuchElementException`() {
-        shouldThrow<NoSuchElementException> {
+    fun `convert _ no id _ should throw CommunicationParametersValidationException`() {
+        shouldThrow<CommunicationParametersValidationException> {
             communicationParametersConverter.convert(LinkedMultiValueMap(emptyMap()))
-        }.message shouldBe "Query string must contain at least <id> communication parameter"
+        }.message shouldBe "Query string must contain <id>"
     }
 }

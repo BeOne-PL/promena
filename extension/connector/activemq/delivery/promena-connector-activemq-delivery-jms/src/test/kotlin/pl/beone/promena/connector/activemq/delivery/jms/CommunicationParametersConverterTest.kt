@@ -5,6 +5,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.Test
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 
 class CommunicationParametersConverterTest {
@@ -31,9 +32,9 @@ class CommunicationParametersConverterTest {
     }
 
     @Test
-    fun `convert _ no id _ should throw NoSuchElementException`() {
-        shouldThrow<NoSuchElementException> {
+    fun `convert _ no id _ should throw CommunicationParametersValidationException`() {
+        shouldThrow<CommunicationParametersValidationException> {
             communicationParametersConverter.convert(emptyMap())
-        }.message shouldBe "Headers must contain at least <promena_communication_parameter_id> communication parameter"
+        }.message shouldBe "Headers must contain <promena_communication_parameter_id>"
     }
 }

@@ -3,14 +3,9 @@ package pl.beone.promena.connector.activemq.delivery.jms
 import io.kotlintest.matchers.beInstanceOf
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.matchers.maps.shouldContainKey
-import io.kotlintest.matchers.numerics.shouldBeGreaterThan
-import io.kotlintest.matchers.numerics.shouldBeGreaterThanOrEqual
-import io.kotlintest.matchers.numerics.shouldBeInRange
-import io.kotlintest.matchers.numerics.shouldBeLessThan
 import io.kotlintest.should
 import io.kotlintest.shouldBe
 import io.mockk.clearMocks
-import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.Before
@@ -26,11 +21,12 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
+import pl.beone.promena.connector.activemq.delivery.jms.message.converter.KryoMessageConverter
 import pl.beone.promena.connector.activemq.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.activemq.integrationtest.test.TransformationResponseConsumer
-import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
+import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
@@ -45,12 +41,11 @@ import java.util.*
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IntegrationTestApplication::class])
 @TestPropertySource("classpath:module-connector-activemq-test.properties")
-class TransformerExceptionFlowTest {
+class TransformationCommunicationParametersValidationExceptionFlowTest {
 
     companion object {
         private val transformerIds = listOf(TestTransformerMockContext.TRANSFORMER_ID)
         private val correlationId = UUID.randomUUID().toString()
-        private val expectedException = TransformationException(singleTransformation("test", TEXT_PLAIN, emptyParameters()), "Time expired")
     }
 
     @Autowired
@@ -81,11 +76,6 @@ class TransformerExceptionFlowTest {
 
     @Test
     fun `send data to transformation request queue _ should handle exception to response error queue`() {
-        every { transformationUseCase.transform(any(), any(), any()) } answers {
-            Thread.sleep(300)
-            throw expectedException
-        }
-
         val startTimestamp = getTimestamp()
         sendRequestMessage()
         val (headers, exception) = try {
@@ -98,37 +88,24 @@ class TransformerExceptionFlowTest {
         headers.let {
             it shouldContainAll mapOf(
                 CORRELATION_ID to correlationId,
-                PromenaJmsHeaders.TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds),
-                "send_back_nodeRefs" to listOf(
-                    "workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
-                    "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"
-                )
+                KryoMessageConverter.PROPERTY_SERIALIZATION_CLASS to
+                        "pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException",
+                PromenaJmsHeaders.TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds)
             )
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
             it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
         }
 
-        val transformationStartTimestamp = headers[PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP] as Long
-        val transformationEndTimestamp = headers[PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP] as Long
-
-        transformationStartTimestamp.let {
-            it.shouldBeInRange(startTimestamp..endTimestamp)
-            it shouldBeLessThan transformationEndTimestamp
-        }
-
-        transformationEndTimestamp.let {
-            it.shouldBeInRange(startTimestamp..endTimestamp)
-            it shouldBeGreaterThan transformationStartTimestamp
-        }
-
-        (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
+        validateTimestamps(
+            headers[PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP] as Long,
+            headers[PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP] as Long,
+            startTimestamp,
+            endTimestamp
+        )
 
         exception.let {
-            it should beInstanceOf(expectedException::class)
-            (it as TransformationException).transformation shouldBe expectedException.transformation
-            it.message shouldBe expectedException.message
-            it.localizedMessage shouldBe expectedException.localizedMessage
-            it.cause shouldBe expectedException.cause
+            it should beInstanceOf(CommunicationParametersValidationException::class)
+            it.message shouldBe "Headers must contain <promena_communication_parameter_id>"
         }
     }
 
@@ -143,13 +120,6 @@ class TransformerExceptionFlowTest {
             message.apply {
                 jmsCorrelationID = correlationId
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
-
-                setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
-
-                setObjectProperty(
-                    "send_back_nodeRefs",
-                    listOf("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f", "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")
-                )
             }
         }
     }

@@ -10,7 +10,7 @@ import javax.jms.Session
 class KryoMessageConverter(private val kryoSerializationService: KryoSerializationService) : MessageConverter {
 
     companion object {
-        private const val PROPERTY_SERIALIZATION_CLASS = "serialization_class"
+        const val PROPERTY_SERIALIZATION_CLASS = "serialization_class"
     }
 
     override fun toMessage(obj: Any, session: Session): Message =

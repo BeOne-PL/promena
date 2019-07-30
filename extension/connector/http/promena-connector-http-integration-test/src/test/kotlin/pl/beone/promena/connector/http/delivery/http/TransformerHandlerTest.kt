@@ -1,6 +1,5 @@
 package pl.beone.promena.connector.http.delivery.http
 
-import io.kotlintest.matchers.string.shouldContain
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
@@ -135,8 +134,12 @@ class TransformerHandlerTest {
         webTestClient.post().uri("/transform")
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
-            .expectStatus().isBadRequest
-            .expectBody<String>().returnResult().responseBody shouldContain "Couldn't determine communication parameters. Query string must contain at least <id>"
+            .expectHeader()
+            .valueEquals(
+                PromenaHttpHeaders.SERIALIZATION_CLASS,
+                "pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException"
+            )
+            .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Test

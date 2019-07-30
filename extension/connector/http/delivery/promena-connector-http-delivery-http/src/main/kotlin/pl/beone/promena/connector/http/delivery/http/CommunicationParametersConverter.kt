@@ -1,12 +1,9 @@
 package pl.beone.promena.connector.http.delivery.http
 
 import org.springframework.util.MultiValueMap
+import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.internal.communication.communicationParameters
-
-internal class CommunicationParametersConverterException(
-    message: String
-) : RuntimeException(message)
 
 internal class CommunicationParametersConverter {
 
@@ -20,7 +17,7 @@ internal class CommunicationParametersConverter {
 
     private fun MultiValueMap<String, String>.getCommunicationId(): String =
         get(CommunicationParameters.ID)?.first()
-            ?: throw CommunicationParametersConverterException("Query string must contain at least <id>")
+            ?: throw CommunicationParametersValidationException("Query string must contain <${CommunicationParameters.ID}>")
 
     private fun convert(values: List<Any>): Any =
         unWrapIfArrayContainsOnlyOneElement(

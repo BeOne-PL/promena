@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.server.ResponseStatusException
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
+import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
@@ -35,7 +36,7 @@ class TransformerHandler(
             }
             .map(serializationService::serialize)
             .flatMap(::createResponse)
-            .onErrorMap(CommunicationParametersConverterException::class.java, ::createCommunicationParametersBadRequestException)
+            .doOnError(CommunicationParametersValidationException::class.java) { logger.error("Couldn't determine communication parameters", it) }
             .onErrorResume({ it !is ResponseStatusException }, ::createInternalServerErrorResponse)
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
@@ -43,12 +44,6 @@ class TransformerHandler(
 
     private fun createResponse(bytes: ByteArray): Mono<ServerResponse> =
         ServerResponse.ok().body(Mono.just(bytes), ByteArray::class.java)
-
-    private fun createCommunicationParametersBadRequestException(exception: CommunicationParametersConverterException): ResponseStatusException {
-        logger.error("Couldn't determine communication parameters", exception)
-
-        return ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't determine communication parameters. " + exception.message!!)
-    }
 
     private fun createInternalServerErrorResponse(exception: Throwable): Mono<ServerResponse> =
         ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
