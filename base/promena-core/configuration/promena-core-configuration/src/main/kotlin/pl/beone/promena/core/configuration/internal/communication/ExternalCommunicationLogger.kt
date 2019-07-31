@@ -21,8 +21,8 @@ class ExternalCommunicationLogger(
             logger.info(
                 "> Registered <{}> <{}, {}>",
                 id,
-                incomingExternalCommunicationConverter.javaClass.simpleName,
-                outgoingExternalCommunicationConverter.javaClass.simpleName
+                incomingExternalCommunicationConverter.javaClass.canonicalName,
+                outgoingExternalCommunicationConverter.javaClass.canonicalName
             )
         }
     }
