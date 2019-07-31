@@ -36,7 +36,7 @@ import java.util.*
 import kotlin.concurrent.thread
 
 @RunWith(SpringRunner::class)
-@TestPropertySource(locations = ["classpath:alfresco-global-retry-test.properties"])
+@TestPropertySource(locations = ["classpath:alfresco-global-test.properties"])
 @ContextHierarchy(
     ContextConfiguration(classes = [ActiveMQContainerContext::class, GlobalPropertiesContext::class]),
     ContextConfiguration(classes = [SetupContext::class])
