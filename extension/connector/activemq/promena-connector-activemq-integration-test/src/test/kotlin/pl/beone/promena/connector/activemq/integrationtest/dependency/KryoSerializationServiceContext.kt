@@ -8,6 +8,6 @@ import pl.beone.promena.core.internal.serialization.KryoSerializationService
 class KryoSerializationServiceContext {
 
     @Bean
-    fun kryoSerializationService() =
+    fun akkaKryoSerializationService() =
         KryoSerializationService()
 }
