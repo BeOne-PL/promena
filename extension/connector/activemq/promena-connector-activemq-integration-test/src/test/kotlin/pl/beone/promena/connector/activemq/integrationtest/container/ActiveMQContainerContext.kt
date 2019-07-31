@@ -10,7 +10,7 @@ class ActiveMQContainerContext {
     @Bean
     fun activeMQContainer(): FixedHostPortGenericContainer<Nothing> =
         FixedHostPortGenericContainer<Nothing>("rmohr/activemq:5.15.6-alpine").apply {
-            withFixedExposedPort(61616, 61616)
+            withFixedExposedPort(38204, 61616)
             start()
         }
 }
