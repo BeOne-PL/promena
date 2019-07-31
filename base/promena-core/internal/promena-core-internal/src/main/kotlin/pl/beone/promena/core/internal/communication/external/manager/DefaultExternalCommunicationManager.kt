@@ -24,16 +24,6 @@ class DefaultExternalCommunicationManager(
         if (backPressureCommunicationEnabled) {
             backPressureCommunication = getBackPressureCommunication(externalCommunications, backPressureId)
         }
-
-        logger.info("Found <{}> external communication(s)", externalCommunications.size)
-        externalCommunications.forEach { (id, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) ->
-            logger.info(
-                "> Registered <{}> <{}, {}>",
-                id,
-                incomingExternalCommunicationConverter.javaClass.simpleName,
-                outgoingExternalCommunicationConverter.javaClass.simpleName
-            )
-        }
     }
 
     override fun getCommunication(id: String): ExternalCommunication =
