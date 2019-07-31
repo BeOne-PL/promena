@@ -7,8 +7,6 @@ import akka.stream.AbruptStageTerminationException
 import akka.stream.ActorMaterializer
 import akka.stream.BufferOverflowException
 import akka.testkit.javadsl.TestKit
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import com.typesafe.config.ConfigFactory
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.string.shouldContain
@@ -19,7 +17,6 @@ import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.slf4j.LoggerFactory
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.external.akka.actor.GroupedByNameActorService
@@ -69,8 +66,6 @@ class AkkaTransformationServiceTest {
     @Before
     fun setUp() {
         actorSystem = ActorSystem.create("Promena", ConfigFactory.load("resource-test.conf"))
-
-        (LoggerFactory.getLogger("pl.beone.promena.core.external.akka.transformer.AkkaTransformerService") as Logger).level = Level.DEBUG
     }
 
     @After

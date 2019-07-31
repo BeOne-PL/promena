@@ -1,14 +1,10 @@
 package pl.beone.promena.core.usecase.transformation
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Before
 import org.junit.Test
-import org.slf4j.LoggerFactory
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
@@ -41,12 +37,6 @@ class DefaultTransformationUseCaseTest {
         private val transformation = singleTransformation("test", targetMediaType, parameters)
         private val transformedDataDescriptor = emptyTransformedDataDescriptor()
     }
-
-    @Before
-    fun setUp() {
-        (LoggerFactory.getLogger("pl.beone.promena.core.usecase.transformation.DefaultTransformationUseCase") as Logger).level = Level.DEBUG
-    }
-
 
     @Test
     fun transform() {

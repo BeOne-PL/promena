@@ -4,8 +4,6 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
@@ -13,7 +11,6 @@ import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.slf4j.LoggerFactory
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
@@ -57,8 +54,6 @@ class AkkaKryoSerializationServiceTest {
         }
 
         akkaKryoSerializationService = AkkaKryoSerializationService(actorMaterializer, actorService)
-
-        (LoggerFactory.getLogger("pl.beone.promena.core.external.akka.transformer.AkkaTransformerService") as Logger).level = Level.DEBUG
     }
 
     @After
