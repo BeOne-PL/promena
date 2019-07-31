@@ -38,7 +38,7 @@ import java.time.Duration
 import java.util.*
 
 @RunWith(SpringRunner::class)
-@TestPropertySource(locations = ["classpath:alfresco-global-sender-test.properties"])
+@TestPropertySource(locations = ["classpath:alfresco-global-test.properties"])
 @ContextHierarchy(
     ContextConfiguration(classes = [ActiveMQContainerContext::class, GlobalPropertiesContext::class]),
     ContextConfiguration(classes = [SetupContext::class])
