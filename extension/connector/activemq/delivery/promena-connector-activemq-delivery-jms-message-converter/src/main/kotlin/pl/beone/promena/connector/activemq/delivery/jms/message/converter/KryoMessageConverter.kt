@@ -2,12 +2,12 @@ package pl.beone.promena.connector.activemq.delivery.jms.message.converter
 
 import org.springframework.jms.support.converter.MessageConverter
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
-import pl.beone.promena.core.internal.serialization.KryoSerializationService
+import pl.beone.promena.core.contract.serialization.SerializationService
 import javax.jms.BytesMessage
 import javax.jms.Message
 import javax.jms.Session
 
-class KryoMessageConverter(private val kryoSerializationService: KryoSerializationService) : MessageConverter {
+class KryoMessageConverter(private val serializationService: SerializationService) : MessageConverter {
 
     companion object {
         const val PROPERTY_SERIALIZATION_CLASS = "serialization_class"
@@ -15,7 +15,7 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
 
     override fun toMessage(obj: Any, session: Session): Message =
         session.createBytesMessage().apply {
-            writeBytes(kryoSerializationService.serialize(obj))
+            writeBytes(serializationService.serialize(obj))
             setStringProperty(PROPERTY_SERIALIZATION_CLASS, obj.javaClass.name)
         }
 
@@ -27,7 +27,7 @@ class KryoMessageConverter(private val kryoSerializationService: KryoSerializati
         val clazz = message.getClassFromProperties()
 
         return try {
-            kryoSerializationService.deserialize(message.getBytes(), clazz)
+            serializationService.deserialize(message.getBytes(), clazz)
         } catch (e: ClassNotFoundException) {
             throwWrappedExceptionIfErrorOccurredForExceptionClass(clazz, e)
         }
