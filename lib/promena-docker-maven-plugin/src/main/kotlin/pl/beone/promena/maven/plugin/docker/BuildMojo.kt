@@ -9,8 +9,13 @@ import org.apache.maven.plugin.descriptor.PluginDescriptor
 import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
+import java.net.URI
 import java.net.URL
 import java.net.URLClassLoader
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.streams.toList
 
 @Mojo(name = "build")
 class BuildMojo : AbstractMojo() {
@@ -27,6 +32,9 @@ class BuildMojo : AbstractMojo() {
     @Parameter(property = "dockerfile", defaultValue = "Dockerfile", required = true)
     private lateinit var dockerfile: String
 
+    @Parameter(property = "dockerResourcePath", defaultValue = "docker", required = true)
+    private lateinit var dockerResourcePath: String
+
     @Parameter(property = "dockerfileFragment", defaultValue = "Dockerfile-fragment", required = true)
     private lateinit var dockerfileFragment: String
 
@@ -40,30 +48,125 @@ class BuildMojo : AbstractMojo() {
     private lateinit var version: String
 
     override fun execute() {
-        val dockerClient = createDockerClient()
+        val transformerArtifactDescriptor = getTransformerArtifactDescriptors()
 
-        val transformerDockerfileFragments = getTransformerDockerfileFragments()
-
-        log.info("Building docker image: ${getImageFullName()}...")
         if (log.isDebugEnabled) {
             log.debug(" Jar: ${File(outputDirectory, appJar).path}")
             log.debug(" Dockerfile: ${File(context, dockerfile).path}")
-            log.debug(" Replacing <\${DOCKERFILE-FRAGMENT}> in Dockerfile using <$dockerfileFragment> files from transformers")
+            log.debug(" Replacing <\${DOCKERFILE-FRAGMENT}> in Dockerfile using <$dockerfileFragment> files from transformer artificials")
         }
 
-        onProcessedDockerfile(transformerDockerfileFragments) { dockerfile ->
-            dockerClient.buildImageCmd(dockerfile)
-                .withTags(setOf(getImageFullName()))
-                .exec(LoggerBuildImageResultCallback(log))
-                .awaitImageId()
-        }
+        val tmpDirectory = createTempDir().apply { deleteOnExit() }
+        log.info("Docker context directory: ${tmpDirectory.path}")
 
-        log.info("\n")
+        log.info("Copying application jar and Docker files...")
+        tmpDirectory
+            .also(::copyDockerDirectory)
+            .also(::copyApplicationJar)
+            .also { copyArtificialPaths(transformerArtifactDescriptor, it) }
+        log.info("Finished copying application jar and Docker files")
+
+        log.info("Processing Dockerfile...")
+        val processedDockerfileFile = concatDockerfileFragments(transformerArtifactDescriptor)
+            .let(::replacePlaceholdersInDockerfile)
+            .let { processedDockerfile -> saveDockerfile(tmpDirectory, processedDockerfile) }
+        log.info("Finished processing Dockerfile")
+
+        log.info("Building docker image: ${getImageFullName()}...")
+        buildImage(processedDockerfileFile)
         log.info("Finished building docker image: ${getImageFullName()}")
+    }
+
+    private fun getTransformerArtifactDescriptors(): List<ArtifactDescriptor> =
+        pluginDescriptor.artifacts
+            .filter { containsDockerfileFragment(it) }
+            .map { ArtifactDescriptor(generateDescription(it), readDockerfileFragment(it), getDockerPaths(it)) }
+            .also {
+                log.info("Found $dockerfileFragment in <${it.size}> transformers:")
+                it.forEach { (artifactDescription, _, _) -> log.info("> $artifactDescription") }
+            }
+
+    private fun containsDockerfileFragment(artifact: Artifact): Boolean =
+        getDockerfileFragmentUri(artifact) != null
+
+    private fun generateDescription(artifact: Artifact): String =
+        "${artifact.groupId}:${artifact.artifactId}:${artifact.version}"
+
+    private fun readDockerfileFragment(artifact: Artifact): String =
+        getDockerfileFragmentUri(artifact)!!.readText()
+
+    private fun getDockerPaths(artifact: Artifact): List<Path> {
+        val uri = URI("jar:" + artifact.file.toURI())
+        val dockerResourceAbsolutePath = FileSystems.newFileSystem(uri, emptyMap<String, Any>())
+            .getPath(dockerResourcePath)
+        return Files.walk(dockerResourceAbsolutePath).toList()
     }
 
     private fun getImageFullName(): String =
         "$name:$version"
+
+    private fun getDockerfileFragmentUri(artifact: Artifact): URL? =
+        URLClassLoader(arrayOf(artifact.file.toURI().toURL()))
+            .getResource("$dockerResourcePath/$dockerfileFragment")
+
+    private fun copyDockerDirectory(tmpDirectory: File) {
+        context.copyRecursively(tmpDirectory)
+    }
+
+    private fun copyApplicationJar(destinationDirectory: File) {
+        val applicationJarFile = File(outputDirectory, appJar)
+        val destinationApplicationJarFile = File(destinationDirectory, appJar)
+
+        log.debug("Copying application jar from <$applicationJarFile> to <$destinationApplicationJarFile>...")
+        applicationJarFile.copyTo(destinationApplicationJarFile)
+        log.debug("Finished copying application jar from <$applicationJarFile> to <$destinationApplicationJarFile>")
+    }
+
+    private fun copyArtificialPaths(artifactDescriptors: List<ArtifactDescriptor>, destinationDirectory: File) {
+        artifactDescriptors.flatMap { it.paths }
+            .forEach {
+                val artificialAbsolutePath = it.fileSystem.toString() + it
+                val artificialRelativePath = it.toRealPath().toString().removePrefix("/$dockerResourcePath/")
+
+                val destinationFile = File(destinationDirectory, artificialRelativePath)
+                val destinationPath = destinationFile.path
+
+                if (Files.isDirectory(it)) {
+                    log.debug("Creating directory: $destinationPath...")
+                    destinationFile.mkdir()
+                    log.debug("Finished creating directory: $destinationPath")
+                } else {
+                    if(artificialRelativePath != dockerfileFragment) {
+                        log.debug("Copying file from <$artificialAbsolutePath> to <$destinationPath>...")
+                        Files.newInputStream(it).copyTo(destinationFile.outputStream())
+                        log.debug("Finished copying file from <$artificialAbsolutePath> to <$destinationPath>")
+                    } else {
+                        log.debug("Skipped $artificialAbsolutePath file")
+                    }
+                }
+            }
+    }
+
+    private fun concatDockerfileFragments(artifactDescriptors: List<ArtifactDescriptor>): String =
+        artifactDescriptors.joinToString("\n\n")
+        { (description, dockerfileFragment, _) -> "# $description\n$dockerfileFragment" }
+
+    private fun replacePlaceholdersInDockerfile(dockerfileFragments: String): String {
+        return File(context, dockerfile)
+            .readText()
+            .replace("\${DOCKERFILE-FRAGMENT}", dockerfileFragments)
+            .replace("\${APP_JAR}", appJar)
+            .also { processedDockerfile ->
+                if (log.isDebugEnabled) {
+                    log.debug("Dockerfile:\n$processedDockerfile")
+                }
+            }
+    }
+
+    private fun saveDockerfile(destinationDirectory: File, readyDockerfile: String): File =
+        File(destinationDirectory, "Dockerfile").apply {
+            writeText(readyDockerfile)
+        }
 
     private fun createDockerClient(): DockerClient =
         DockerClientBuilder
@@ -72,59 +175,10 @@ class BuildMojo : AbstractMojo() {
             )
             .build()
 
-    private fun getTransformerDockerfileFragments(): List<String> =
-        pluginDescriptor.artifacts.map { it.getDescription() to it.getResourceUrl(dockerfileFragment) }
-            .filter { (_, resourceUrl) -> resourceUrl != null }
-            .also {
-                log.info("Found $dockerfileFragment in <${it.size}> transformers:")
-                it.forEach { (artifactDescription, _) -> log.info("> $artifactDescription") }
-            }
-            .map { (artifactDescription, resourceUrl) -> "# $artifactDescription" + "\n" + resourceUrl!!.readText() }
-
-    private fun Artifact.getDescription(): String =
-        this.groupId + ":" + this.artifactId + ":" + this.version
-
-    private fun Artifact.getResourceUrl(resourcePath: String): URL? =
-        URLClassLoader(arrayOf(file.toURI().toURL()))
-            .getResource(resourcePath)
-
-    private fun onProcessedDockerfile(transformerDockerfileFragments: List<String>, toRun: (dockerfile: File) -> Unit) {
-        val transformerDockerfile = transformerDockerfileFragments.joinToString("\n\n")
-        val processedAppJarFile = copyJar()
-        val processedDockerfileFile = processDockerfile(transformerDockerfile)
-
-        try {
-            toRun(processedDockerfileFile)
-        } finally {
-            processedDockerfileFile.delete()
-            processedAppJarFile.delete()
-        }
-    }
-
-    private fun copyJar(): File {
-        val appJarFile = File(outputDirectory, appJar)
-        val processedAppJarFile = File(context, appJar)
-
-        log.debug("Copying jar from <$appJarFile> to <$processedAppJarFile>...")
-        appJarFile.copyTo(processedAppJarFile, true)
-        log.debug("Finished copying jar from <$appJarFile> to <$processedAppJarFile>")
-
-        return processedAppJarFile
-    }
-
-    private fun processDockerfile(transformerDockerfile: String): File {
-        val dockerfileFile = File(context, dockerfile)
-        val processedDockerfileFile = File(context, "Dockerfile-processed")
-
-        val processedDockerfileContent =
-            dockerfileFile
-                .readText()
-                .replace("\${DOCKERFILE-FRAGMENT}", transformerDockerfile)
-                .replace("\${APP_JAR}", appJar)
-        log.debug("Generated Dockerfile:" + "\n" + processedDockerfileContent)
-
-        return processedDockerfileFile.apply {
-            writeText(processedDockerfileContent)
-        }
+    private fun buildImage(processedDockerfileFile: File) {
+        createDockerClient().buildImageCmd(processedDockerfileFile)
+            .withTags(setOf(getImageFullName()))
+            .exec(LoggerBuildImageResultCallback(log))
+            .awaitImageId()
     }
 }
