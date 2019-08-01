@@ -56,25 +56,29 @@ class BuildMojo : AbstractMojo() {
             log.debug(" Replacing <\${DOCKERFILE-FRAGMENT}> in Dockerfile using <$dockerfileFragment> files from transformer artificials")
         }
 
-        val tmpDirectory = createTempDir().apply { deleteOnExit() }
-        log.info("Docker context directory: ${tmpDirectory.path}")
+        val tmpDirectory = createTempDir()
+        try {
+            log.info("Docker context directory: ${tmpDirectory.path}")
 
-        log.info("Copying application jar and Docker files...")
-        tmpDirectory
-            .also(::copyDockerDirectory)
-            .also(::copyApplicationJar)
-            .also { copyArtificialPaths(transformerArtifactDescriptor, it) }
-        log.info("Finished copying application jar and Docker files")
+            log.info("Copying application jar and Docker files...")
+            tmpDirectory
+                .also(::copyDockerDirectory)
+                .also(::copyApplicationJar)
+                .also { copyArtificialPaths(transformerArtifactDescriptor, it) }
+            log.info("Finished copying application jar and Docker files")
 
-        log.info("Processing Dockerfile...")
-        val processedDockerfileFile = concatDockerfileFragments(transformerArtifactDescriptor)
-            .let(::replacePlaceholdersInDockerfile)
-            .let { processedDockerfile -> saveDockerfile(tmpDirectory, processedDockerfile) }
-        log.info("Finished processing Dockerfile")
+            log.info("Processing Dockerfile...")
+            val processedDockerfileFile = concatDockerfileFragments(transformerArtifactDescriptor)
+                .let(::replacePlaceholdersInDockerfile)
+                .let { processedDockerfile -> saveDockerfile(tmpDirectory, processedDockerfile) }
+            log.info("Finished processing Dockerfile")
 
-        log.info("Building docker image: ${getImageFullName()}...")
-        buildImage(processedDockerfileFile)
-        log.info("Finished building docker image: ${getImageFullName()}")
+            log.info("Building docker image: ${getImageFullName()}...")
+            buildImage(processedDockerfileFile)
+            log.info("Finished building docker image: ${getImageFullName()}")
+        } finally {
+            tmpDirectory.delete()
+        }
     }
 
     private fun getTransformerArtifactDescriptors(): List<ArtifactDescriptor> =
