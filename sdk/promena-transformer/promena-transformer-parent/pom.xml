@@ -6,7 +6,7 @@
 
     <groupId>pl.beone.promena.sdk.maven.parent</groupId>
     <artifactId>promena-transformer-parent</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>[SDK][POM] Promena transformer</name>
@@ -42,7 +42,7 @@
         <kotlin.version>1.3.40</kotlin.version>
         <java.version>11</java.version>
 
-        <promena-transformer.version>0.9.0</promena-transformer.version>
+        <promena-transformer.version>0.9.0-SNAPSHOT</promena-transformer.version>
 
         <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
 
