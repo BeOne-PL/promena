@@ -1,9 +1,9 @@
 package pl.beone.lib.dockertestrunner.external
 
 import org.junit.runners.model.FrameworkMethod
+import org.slf4j.LoggerFactory
 import org.testcontainers.containers.Container
 import pl.beone.lib.dockertestrunner.applicationmodel.DockerTestException
-
 
 class MavenOnTestContainerRunner(
     private val testContainerCoordinator: TestContainerCoordinator,
@@ -13,6 +13,10 @@ class MavenOnTestContainerRunner(
     private val debuggerEnabled: Boolean,
     private val debuggerPort: Int
 ) {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(MavenOnTestContainerRunner::class.java)
+    }
 
     fun runTest(testClass: Class<*>, method: FrameworkMethod) {
         val mavenTestClassifier = createMavenTestClassifier(testClass, method)
@@ -26,7 +30,7 @@ class MavenOnTestContainerRunner(
                 if (result.exitCode != 0) {
                     throw DockerTestException(mavenLog)
                 } else {
-                    println(mavenLog)
+                    logger.error(mavenLog)
                 }
             } else {
                 throw DockerTestException(result.stderr)

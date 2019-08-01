@@ -8,13 +8,16 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy
 import org.testcontainers.images.builder.ImageFromDockerfile
 import java.io.File
+import kotlin.concurrent.thread
 
 class TestContainerCoordinator(
     private val imageName: String,
     private val imageCustomEnabled: Boolean,
     private val imageCustomName: String,
-    private val imageCustomDockerfilePath: String,
-    private val imageCustomDockerfileFragmentPath: String,
+    private val imageCustomDockerDirectoryPath: String,
+    private val imageCustomDockerDockerfileName: String,
+    private val imageCustomDockerModuleDirectoryPath: String,
+    private val imageCustomDockerModuleDockerfileFragmentName: String,
     private val imageCustomDeleteOnExit: Boolean,
     private val projectPath: String,
     private val containerProjectPath: String,
@@ -56,13 +59,41 @@ class TestContainerCoordinator(
 
     private fun createContainer(): GenericContainer<Nothing> =
         if (imageCustomEnabled) {
-            GenericContainer(
+            val tmpDirectory = createTempDirAndSetDeletionOnShutdown()
+
+            copyDockerDirectories(tmpDirectory)
+            replacePlaceholderInDockerfileByDockerfileFragment(tmpDirectory)
+
+            GenericContainer<Nothing>(
                 ImageFromDockerfile(imageCustomName, imageCustomDeleteOnExit)
-                    .withFileFromString("Dockerfile", createDockerfileWithReplacedTransformerPlaceholder())
+                    .withFileFromPath(".", tmpDirectory.toPath())
             )
         } else {
             GenericContainer(imageName)
         }
+
+    private fun createTempDirAndSetDeletionOnShutdown(): File =
+        createTempDir().apply {
+            Runtime.getRuntime().addShutdownHook(thread(start = false) {
+                deleteRecursively()
+            })
+        }
+
+    private fun replacePlaceholderInDockerfileByDockerfileFragment(tmpDirectory: File) {
+        val dockerfileFragment = File(tmpDirectory, imageCustomDockerModuleDockerfileFragmentName).readText()
+
+        val dockerfileFile = File(tmpDirectory, imageCustomDockerDockerfileName)
+        val dockerfile = dockerfileFile.readText()
+
+        dockerfileFile.writeText(
+            dockerfile.replace("\${DOCKERFILE-FRAGMENT}", dockerfileFragment)
+        )
+    }
+
+    private fun copyDockerDirectories(tmpDirectory: File) {
+        File(imageCustomDockerDirectoryPath).copyRecursively(tmpDirectory)
+        File(imageCustomDockerModuleDirectoryPath).copyRecursively(tmpDirectory)
+    }
 
     fun start() {
         verifyIfContainerWasInitialized()
@@ -90,13 +121,6 @@ class TestContainerCoordinator(
         if (!::container.isInitialized) {
             throw RuntimeException("Container isn't initialized. Did you call init() method?")
         }
-    }
-
-    private fun createDockerfileWithReplacedTransformerPlaceholder(): String {
-        val dockerfileContent = File(imageCustomDockerfilePath).readText()
-        val dockerfileTransformerContent = File(imageCustomDockerfileFragmentPath).readText()
-
-        return dockerfileContent.replace("\${DOCKERFILE-FRAGMENT}", dockerfileTransformerContent)
     }
 
     // at startup, Maven isn't run so you can't wait to start listening on given port
