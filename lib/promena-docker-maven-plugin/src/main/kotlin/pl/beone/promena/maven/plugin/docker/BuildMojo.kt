@@ -77,7 +77,7 @@ class BuildMojo : AbstractMojo() {
             buildImage(processedDockerfileFile)
             log.info("Finished building docker image: ${getImageFullName()}")
         } finally {
-            tmpDirectory.delete()
+            tmpDirectory.deleteRecursively()
         }
     }
 
@@ -140,7 +140,7 @@ class BuildMojo : AbstractMojo() {
                     destinationFile.mkdir()
                     log.debug("Finished creating directory: $destinationPath")
                 } else {
-                    if(artificialRelativePath != dockerfileFragment) {
+                    if(isNotDockerFileFragment(artificialRelativePath)) {
                         log.debug("Copying file from <$artificialAbsolutePath> to <$destinationPath>...")
                         Files.newInputStream(it).copyTo(destinationFile.outputStream())
                         log.debug("Finished copying file from <$artificialAbsolutePath> to <$destinationPath>")
@@ -150,6 +150,9 @@ class BuildMojo : AbstractMojo() {
                 }
             }
     }
+
+    private fun isNotDockerFileFragment(artificialRelativePath: String): Boolean =
+        artificialRelativePath != dockerfileFragment
 
     private fun concatDockerfileFragments(artifactDescriptors: List<ArtifactDescriptor>): String =
         artifactDescriptors.joinToString("\n\n")
