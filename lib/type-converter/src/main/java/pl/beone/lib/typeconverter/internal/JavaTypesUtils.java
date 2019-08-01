@@ -8,6 +8,10 @@ public class JavaTypesUtils {
         return clazz.equals(String.class);
     }
 
+    public static Boolean isCharacter(Class<?> clazz) {
+        return clazz.equals(Character.class);
+    }
+
     public static Boolean isBoolean(Class<?> clazz) {
         return clazz.equals(Boolean.class);
     }

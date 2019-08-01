@@ -24,6 +24,7 @@ public class MapParametersJavaTest {
             .add("float", 4.1f)
             .add("boolean", true)
             .add("string", "value")
+            .add("char", '$')
 
             .add("stringInt", "3")
             .add("stringLong", "10")
@@ -75,6 +76,7 @@ public class MapParametersJavaTest {
         assertThat(parameters.get("float")).isEqualTo(4.1f);
         assertThat(parameters.get("boolean")).isEqualTo(true);
         assertThat(parameters.get("string")).isEqualTo("value");
+        assertThat(parameters.get("char")).isEqualTo('$');
 
         assertThatThrownBy(() -> parameters.get("absent"))
                 .isExactlyInstanceOf(NoSuchElementException.class)
@@ -89,6 +91,7 @@ public class MapParametersJavaTest {
         assertThat(parameters.get("float", Float.class)).isEqualTo(4.1f);
         assertThat(parameters.get("boolean", Boolean.class)).isEqualTo(true);
         assertThat(parameters.get("string", String.class)).isEqualTo("value");
+        assertThat(parameters.get("char", Character.class)).isEqualTo('$');
 
         assertThat(parameters.get("stringInt", Integer.class)).isEqualTo(3);
         assertThat(parameters.get("stringLong", Long.class)).isEqualTo(10L);
@@ -170,7 +173,7 @@ public class MapParametersJavaTest {
     @Test
     public void getAll() {
         assertThat(parameters.getAll())
-                .hasSize(17)
+                .hasSize(18)
                 .containsEntry("int", 3)
                 .containsEntry("int", 3)
                 .containsEntry("boolean", true)

@@ -18,6 +18,7 @@ class MapParametersTest {
                 ("float" to 4.1f) +
                 ("boolean" to true) +
                 ("string" to "value") +
+                ("char" to '$') +
 
                 ("stringInt" to "3") +
                 ("stringLong" to "10") +
@@ -62,6 +63,7 @@ class MapParametersTest {
         parameters.get("float") shouldBe 4.1f
         parameters.get("boolean") shouldBe true
         parameters.get("string") shouldBe "value"
+        parameters.get("char") shouldBe '$'
 
         shouldThrow<NoSuchElementException> {
             parameters.get("absent")
@@ -76,6 +78,7 @@ class MapParametersTest {
         parameters.get("float", Float::class.java) shouldBe 4.1f
         parameters.get("boolean", Boolean::class.java) shouldBe true
         parameters.get("string", String::class.java) shouldBe "value"
+        parameters.get("char", Char::class.java) shouldBe '$'
 
         parameters.get("stringInt", Int::class.java) shouldBe 3
         parameters.get("stringLong", Long::class.java) shouldBe 10L
@@ -163,7 +166,7 @@ class MapParametersTest {
 
     @Test
     fun getAll() {
-        parameters.getAll().size shouldBe 17
+        parameters.getAll().size shouldBe 18
         parameters.getAll() shouldContainAll
                 mapOf(
                     "int" to 3,

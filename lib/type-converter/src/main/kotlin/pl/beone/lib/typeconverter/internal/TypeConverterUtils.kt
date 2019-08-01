@@ -20,6 +20,7 @@ private fun <T> Any.convert(clazz: Class<T>): T {
             clazz == Boolean::class || clazz == Boolean::class.java || isBoolean(clazz) -> toBoolean(this) as T
 
             clazz == String::class || clazz == String::class.java || isString(clazz)    -> this.toString() as T
+            clazz == Char::class || clazz == Char::class.java || isCharacter(clazz)     -> this as T
 
             clazz == Long::class || clazz == Long::class.java || isLong(clazz)          -> this.toString().toLong() as T
             clazz == Int::class || clazz == Int::class.java || isInteger(clazz)         -> this.toString().toInt() as T
