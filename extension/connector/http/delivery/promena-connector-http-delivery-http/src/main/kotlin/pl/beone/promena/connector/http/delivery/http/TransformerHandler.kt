@@ -1,6 +1,6 @@
 package pl.beone.promena.connector.http.delivery.http
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -20,7 +20,7 @@ class TransformerHandler(
 ) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(TransformerHandler::class.java)
+        private val logger = KotlinLogging.logger {}
 
         private val communicationParametersConverter = CommunicationParametersConverter()
     }
@@ -36,7 +36,7 @@ class TransformerHandler(
             }
             .map(serializationService::serialize)
             .flatMap(::createResponse)
-            .doOnError(CommunicationParametersValidationException::class.java) { logger.error("Couldn't determine communication parameters", it) }
+            .doOnError(CommunicationParametersValidationException::class.java) { logger.error(it) { "Couldn't determine communication parameters" } }
             .onErrorResume({ it !is ResponseStatusException }, ::createInternalServerErrorResponse)
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
