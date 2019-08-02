@@ -7,7 +7,6 @@ import org.springframework.core.env.Environment
 import javax.annotation.PostConstruct
 
 @Configuration
-@DependsOn("transformationConsumer")
 class HttpConnectorModuleLogger(
     private val environment: Environment
 ) {

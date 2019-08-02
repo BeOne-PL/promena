@@ -44,7 +44,7 @@ class TransformerHandlerTest {
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
-    @MockBean
+    @MockBean(name = "akkaKryoSerializationService")
     private lateinit var serializationService: SerializationService
 
     @MockBean
