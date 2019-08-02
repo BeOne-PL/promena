@@ -14,16 +14,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>promena-transformer-contract</artifactId>
+            <version>${promena-transformer.version}</version>
+        </dependency>
+        <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-application-model</artifactId>
+            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-application-model-akka</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>promena-transformer-contract</artifactId>
+            <version>${promena-core.version}</version>
         </dependency>
     </dependencies>
 </project>

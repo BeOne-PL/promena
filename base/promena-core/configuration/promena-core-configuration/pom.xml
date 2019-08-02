@@ -16,22 +16,27 @@
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-internal</artifactId>
+            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-internal-serialization</artifactId>
+            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-external-akka</artifactId>
+            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-external-spring</artifactId>
+            <version>${promena-core.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
             <artifactId>promena-core-use-case</artifactId>
+            <version>${promena-core.version}</version>
         </dependency>
 
         <dependency>
