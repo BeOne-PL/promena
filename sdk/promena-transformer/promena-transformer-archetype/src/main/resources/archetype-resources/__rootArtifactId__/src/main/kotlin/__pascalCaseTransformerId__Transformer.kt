@@ -10,7 +10,7 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.toTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
-import pl.beone.promena.transformer.textsurrounder.applicationmodel.${pascalCaseTransformerId}Constants
+import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
 
 class ${pascalCaseTransformerId}Transformer(private val internalCommunicationParameters: CommunicationParameters) : Transformer {
 
@@ -25,7 +25,7 @@ class ${pascalCaseTransformerId}Transformer(private val internalCommunicationPar
         }
 
         try {
-            parameters.get(SubNameTextSurrounderConstants.Parameters.EXAMPLE)
+            parameters.get(${pascalCaseTransformerId}Constants.Parameters.EXAMPLE)
         } catch (e: NoSuchElementException) {
             throw TransformerCouldNotTransformException("Mandatory parameters: ${${pascalCaseTransformerId}Constants.Parameters.EXAMPLE}")
         }

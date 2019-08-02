@@ -14,8 +14,8 @@ import pl.beone.promena.transformer.internal.communication.communicationParamete
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
-import pl.beone.promena.transformer.textsurrounder.applicationmodel.${pascalCaseTransformerId}Constants
-import pl.beone.promena.transformer.textsurrounder.applicationmodel.${camelCaseTransformerId}Parameters
+import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
+import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 
 @RunWith(DockerTestRunner::class)
 class ${pascalCaseTransformerId}TransformerTest {
