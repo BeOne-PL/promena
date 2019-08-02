@@ -1,23 +1,23 @@
 package pl.beone.promena.communication.internal.memory.internal
 
-import org.slf4j.Logger
+import mu.KLogger
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.contract.data.*
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 
-fun convertIfItIsNecessary(logger: Logger, dataDescriptor: DataDescriptor): DataDescriptor =
+fun convertIfItIsNecessary(logger: KLogger, dataDescriptor: DataDescriptor): DataDescriptor =
     convertIfItIsNecessary(logger, dataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
         singleDataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata)
     }.toDataDescriptor()
 
-fun convertIfItIsNecessary(logger: Logger, transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
+fun convertIfItIsNecessary(logger: KLogger, transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
     convertIfItIsNecessary(logger, transformedDataDescriptor.descriptors, { it.data }) { newData, oldDescriptor ->
         singleTransformedDataDescriptor(newData, oldDescriptor.metadata)
     }.toTransformedDataDescriptor()
 
 private fun <T> convertIfItIsNecessary(
-    logger: Logger,
+    logger: KLogger,
     descriptors: List<T>,
     getData: (descriptor: T) -> Data,
     factory: (newData: Data, oldDescriptor: T) -> T
@@ -27,11 +27,11 @@ private fun <T> convertIfItIsNecessary(
 
     val convertedNotMemoryDescriptors = if (notMemoryDescriptors.isNotEmpty()) {
         notMemoryDescriptors
-            .also { logger.debug("There are <{}> other than <MemoryData> data instances", it.size) }
-            .also { logger.debug("Converting...") }
+            .also { logger.debug { "There are <${it.size}> other than <MemoryData> data instances" } }
+            .also { logger.debug { "Converting..." } }
             .map { convert(logger, getData(it)) to it }
             .map { (newData, oldDescriptor) -> factory(newData, oldDescriptor) }
-            .also { logger.debug("Finished converting") }
+            .also { logger.debug { "Finished converting" } }
     } else {
         emptyList()
     }
@@ -45,35 +45,35 @@ fun <T> List<T>.filterNotMemoryData(getData: (descriptor: T) -> Data): List<T> =
 private fun <T> List<T>.filterMemoryData(getData: (descriptor: T) -> Data): List<T> =
     filter { getData(it) is MemoryData }
 
-private fun convert(logger: Logger, data: Data): MemoryData =
+private fun convert(logger: KLogger, data: Data): MemoryData =
     createMemoryData(logger, data)
         .also { deleteDataIfItIsPossible(logger, data) }
 
-private fun createMemoryData(logger: Logger, data: Data): MemoryData {
+private fun createMemoryData(logger: KLogger, data: Data): MemoryData {
     val simplifiedString = data.toSimplifiedString()
 
-    logger.debug("Creating <MemoryData> from <{}>...", simplifiedString)
+    logger.debug { "Creating <MemoryData> from <$simplifiedString>..." }
     val memoryData = data.toMemoryData()
-    logger.debug("Finished creating <MemoryData> from <{}>", simplifiedString)
+    logger.debug { "Finished creating <MemoryData> from <$simplifiedString>" }
 
     return memoryData
 }
 
-internal fun deleteDataIfItIsPossible(logger: Logger, data: Data) {
+internal fun deleteDataIfItIsPossible(logger: KLogger, data: Data) {
     val simplifiedString = data.toSimplifiedString()
 
-    logger.debug("Deleting <{}> resource...", simplifiedString)
+    logger.debug { "Deleting <$simplifiedString> resource..." }
     try {
         data.delete()
     } catch (e: Exception) {
         when (e) {
             is UnsupportedOperationException,
-            is DataDeleteException -> logger.debug("Couldn't delete <{}> resource", simplifiedString, e)
+            is DataDeleteException -> logger.debug(e) { "Couldn't delete <$simplifiedString> resource" }
 
             else                   -> throw e
         }
     }
-    logger.debug("Finished deleting <{}> resource", simplifiedString)
+    logger.debug { "Finished deleting <$simplifiedString> resource" }
 }
 
 private fun Data.toSimplifiedString(): String =
