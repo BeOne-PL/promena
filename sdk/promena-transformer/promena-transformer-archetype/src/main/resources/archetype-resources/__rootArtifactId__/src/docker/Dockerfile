@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-centos:11.0.3
+FROM azul/zulu-openjdk-centos:11.0.4
 
 ENV MAVEN_VERSION 3.6.1
 

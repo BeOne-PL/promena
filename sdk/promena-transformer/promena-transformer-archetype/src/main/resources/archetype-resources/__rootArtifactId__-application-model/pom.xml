@@ -15,10 +15,6 @@
     <artifactId>${artifactId}</artifactId>
     <version>${version}</version>
 
-    <properties>
-        <${rootArtifactId}.version>${version}</${rootArtifactId}.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -30,14 +26,24 @@
         </dependency>
 
         <dependency>
-            <groupId>${groupId}</groupId>
-            <artifactId>${rootArtifactId}</artifactId>
-            <version>${${rootArtifactId}.version}</version>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>promena-transformer-internal</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.kotlintest</groupId>
+            <artifactId>kotlintest-runner-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -7,13 +7,17 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-transformer-parent</artifactId>
-        <version>0.9.0</version>
+        <version>0.9.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>${groupId}</groupId>
     <artifactId>${artifactId}</artifactId>
     <version>${version}</version>
+
+    <properties>
+        <${rootArtifactId}.version>${version}</${rootArtifactId}.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -26,8 +30,9 @@
         </dependency>
 
         <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>promena-transformer-internal</artifactId>
+            <groupId>${groupId}</groupId>
+            <artifactId>${rootArtifactId}-application-model</artifactId>
+            <version>${${rootArtifactId}.version}</version>
         </dependency>
 
         <dependency>
