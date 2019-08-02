@@ -47,6 +47,7 @@
         <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
 
         <slf4j.version>1.7.26</slf4j.version>
+        <kotlin-logging.version>1.7.2</kotlin-logging.version>
 
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
@@ -98,6 +99,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.microutils</groupId>
+                <artifactId>kotlin-logging</artifactId>
+                <version>${kotlin-logging.version}</version>
             </dependency>
 
             <dependency>

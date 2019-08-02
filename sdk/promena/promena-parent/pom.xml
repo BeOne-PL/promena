@@ -50,6 +50,7 @@
 
         <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
 
+        <kotlin-logging.version>1.7.2</kotlin-logging.version>
         <kryo.version>4.0.2</kryo.version>
         <akka.version>2.5.21</akka.version>
         <akka-kryo-serialization.version>0.5.2</akka-kryo-serialization.version>
@@ -61,6 +62,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.microutils</groupId>
+                <artifactId>kotlin-logging</artifactId>
+                <version>${kotlin-logging.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-actor_2.12</artifactId>
