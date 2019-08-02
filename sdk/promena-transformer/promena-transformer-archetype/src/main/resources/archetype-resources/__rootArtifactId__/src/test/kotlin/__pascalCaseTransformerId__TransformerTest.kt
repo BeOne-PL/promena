@@ -1,5 +1,7 @@
 package ${package}
 
+import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
+import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
@@ -14,8 +16,6 @@ import pl.beone.promena.transformer.internal.communication.communicationParamete
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
-import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
-import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 
 @RunWith(DockerTestRunner::class)
 class ${pascalCaseTransformerId}TransformerTest {

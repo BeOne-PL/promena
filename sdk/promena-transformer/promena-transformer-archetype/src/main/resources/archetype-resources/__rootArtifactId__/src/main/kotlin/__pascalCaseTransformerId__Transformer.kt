@@ -1,5 +1,6 @@
 package ${package}
 
+import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
@@ -10,7 +11,6 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.toTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
-import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
 
 class ${pascalCaseTransformerId}Transformer(private val internalCommunicationParameters: CommunicationParameters) : Transformer {
 
