@@ -1,5 +1,6 @@
 package pl.beone.promena.core.internal.communication.external.manager
 
+import mu.KotlinLogging
 import org.slf4j.LoggerFactory
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
@@ -10,11 +11,6 @@ class DefaultExternalCommunicationManager(
     private val backPressureCommunicationEnabled: Boolean,
     backPressureId: String
 ) : ExternalCommunicationManager {
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(DefaultExternalCommunicationManager::class.java)
-    }
-
 
     private val communicationMap: Map<String, ExternalCommunication>
     private lateinit var backPressureCommunication: ExternalCommunication

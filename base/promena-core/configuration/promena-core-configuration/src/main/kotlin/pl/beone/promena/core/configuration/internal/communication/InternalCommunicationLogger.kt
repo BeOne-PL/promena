@@ -1,6 +1,6 @@
 package pl.beone.promena.core.configuration.internal.communication
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
@@ -14,16 +14,13 @@ class InternalCommunicationLogger(
 ) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(InternalCommunicationLogger::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     @PostConstruct
     private fun log() {
-        logger.info(
-            "Internal communication: <{}> <{}> <{}>",
-            communicationParameters.getId(),
-            internalCommunicationConverter::class.qualifiedName,
-            communicationParameters
-        )
+        logger.info {
+            "Internal communication: <${communicationParameters.getId()}> <${internalCommunicationConverter::class.qualifiedName}> <${internalCommunicationConverter::class.qualifiedName}>"
+        }
     }
 }

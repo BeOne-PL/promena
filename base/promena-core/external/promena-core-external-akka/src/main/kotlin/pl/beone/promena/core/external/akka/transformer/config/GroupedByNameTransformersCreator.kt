@@ -2,7 +2,7 @@ package pl.beone.promena.core.external.akka.transformer.config
 
 import akka.actor.ActorRef
 import akka.actor.Props
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
@@ -20,11 +20,11 @@ class GroupedByNameTransformersCreator(
 ) : TransformersCreator {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(GroupedByNameTransformersCreator::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun create(transformers: List<Transformer>): List<TransformerActorDescriptor> {
-        logger.info("Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.java.canonicalName}")
+        logger.info { "Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.java.canonicalName}" }
 
         validateTransformers(transformers)
 
@@ -80,10 +80,10 @@ class GroupedByNameTransformersCreator(
         )
 
     private fun logSuccessfulActorCreation(transformerName: String, transformers: List<Transformer>) {
-        logger.info(
+        logger.info {
             "> Registered <$transformerName> with <${transformers.size}> transformer(s) " +
                     "${transformers.map { "${it::class.java.canonicalName} (${it.getSubName()}), ${it.getPriority()} priority" }} and <${transformers.getMaxActors()}> actor(s) "
-        )
+        }
     }
 
     private fun Transformer.getSubName(): String =

@@ -1,6 +1,6 @@
 package pl.beone.promena.core.configuration.internal.communication
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import javax.annotation.PostConstruct
@@ -11,19 +11,16 @@ class ExternalCommunicationLogger(
 ) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(ExternalCommunicationLogger::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     @PostConstruct
     private fun log() {
-        logger.info("Found <{}> external communication(s)", externalCommunications.size)
+        logger.info { "Found <${externalCommunications.size}> external communication(s)" }
         externalCommunications.forEach { (id, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) ->
-            logger.info(
-                "> Registered <{}> <{}, {}>",
-                id,
-                incomingExternalCommunicationConverter.javaClass.canonicalName,
-                outgoingExternalCommunicationConverter.javaClass.canonicalName
-            )
+            logger.info {
+                "> Registered <$id> <${incomingExternalCommunicationConverter.javaClass.canonicalName}, ${outgoingExternalCommunicationConverter.javaClass.canonicalName}>"
+            }
         }
     }
 }

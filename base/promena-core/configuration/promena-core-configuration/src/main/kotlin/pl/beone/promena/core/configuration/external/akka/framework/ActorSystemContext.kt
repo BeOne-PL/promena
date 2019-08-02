@@ -2,7 +2,7 @@ package pl.beone.promena.core.configuration.external.akka.framework
 
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,7 +14,7 @@ import org.springframework.core.env.StandardEnvironment
 class ActorSystemContext {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(ActorSystemContext::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     @Bean
@@ -33,10 +33,10 @@ class ActorSystemContext {
             .map { key -> key to environment.getRequiredProperty(key) }
 
     private fun setAkkaProperties(akkaProperties: List<Pair<String, String>>) {
-        logger.info("Found <{}> AKKA property(ies)", akkaProperties.size)
+        logger.info { "Found <${akkaProperties.size}> AKKA property(ies)" }
         akkaProperties.forEach { (key, value) ->
             System.setProperty(key, value)
-            logger.debug("> Set <{}={}>", key, value)
+            logger.debug { "> Set <$key=$value>" }
         }
     }
 }

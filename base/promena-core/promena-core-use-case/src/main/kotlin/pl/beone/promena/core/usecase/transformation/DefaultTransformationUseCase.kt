@@ -1,6 +1,6 @@
 package pl.beone.promena.core.usecase.transformation
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.contract.transformation.TransformationService
@@ -16,7 +16,7 @@ class DefaultTransformationUseCase(
 ) : TransformationUseCase {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(DefaultTransformationUseCase::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun transform(
@@ -35,12 +35,10 @@ class DefaultTransformationUseCase(
                     outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters)
                 }
         } catch (e: Exception) {
-            logger.error(
-                "Couldn't perform the transformation {} <{}>",
-                generateTransformationExceptionDescription(transformation, dataDescriptor),
-                externalCommunicationParameters,
-                e
-            )
+            logger.error(e) {
+                "Couldn't perform the transformation ${generateTransformationExceptionDescription(transformation, dataDescriptor)} " +
+                        "<$externalCommunicationParameters>"
+            }
 
             // unwrap expected exception to not show user unnecessary information
             if (e is TransformationException) {

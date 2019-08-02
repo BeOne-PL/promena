@@ -1,6 +1,6 @@
 package pl.beone.promena.core.external.spring.transformer.config
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.core.env.Environment
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
@@ -10,7 +10,7 @@ import pl.beone.promena.transformer.contract.transformer.transformerId
 class PropertiesTransformerConfig(private val environment: Environment) : TransformerConfig {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(PropertiesTransformerConfig::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun getTransformerId(transformer: Transformer): TransformerId =
@@ -34,7 +34,7 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
             if (default == null) {
                 throw IllegalStateException("There is no <$key> property")
             } else {
-                logger.warn("There is no <$key> property. Set $keyElement to <$default>")
+                logger.warn { "There is no <$key> property. Set $keyElement to <$default>" }
                 default
             }
         }

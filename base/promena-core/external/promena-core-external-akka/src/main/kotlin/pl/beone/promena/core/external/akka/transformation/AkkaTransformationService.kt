@@ -9,7 +9,7 @@ import akka.stream.javadsl.Flow
 import akka.stream.javadsl.Sink
 import akka.stream.javadsl.Source
 import akka.util.Timeout
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
@@ -43,7 +43,7 @@ class AkkaTransformationService(
 ) : TransformationService {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(AkkaTransformationService::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun transform(transformation: Transformation, dataDescriptor: DataDescriptor): TransformedDataDescriptor {
@@ -72,20 +72,14 @@ class AkkaTransformationService(
     }
 
     private fun logBeforeTransformation(transformation: Transformation, dataDescriptor: DataDescriptor) {
-        if (logger.isDebugEnabled) {
-            logger.debug(
-                "Transforming <{}> <{} source(s)>: [{}]...",
-                transformation,
-                dataDescriptor.descriptors.size,
-                dataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" }
-            )
-        } else {
-            logger.info(
-                "Transforming <{}> <{} source(s)>: [{}]...",
-                transformation,
-                dataDescriptor.descriptors.size,
-                dataDescriptor.descriptors.joinToString(", ") { "<${it.mediaType}>" }
-            )
+        logger.debug {
+            "Transforming <$transformation> <${dataDescriptor.descriptors.size} source(s)>: " +
+                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" }}]..."
+        }
+
+        logger.info {
+            "Transforming <$transformation> <${dataDescriptor.descriptors.size} source(s)>: " +
+                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.mediaType}>" }}]..."
         }
     }
 
@@ -140,34 +134,26 @@ class AkkaTransformationService(
         measuredTimeMs: Long,
         transformedDataDescriptor: TransformedDataDescriptor
     ) {
-        if (logger.isDebugEnabled) {
-            logger.debug(
-                "Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
-                transformation,
-                transformedDataDescriptor.descriptors.size,
-                measuredTimeMs.toSeconds(),
-                transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" }
-            )
-        } else {
-            logger.info(
-                "Finished transforming <{}> <{} result(s)> in <{} s>: [{}]",
-                transformation,
-                transformedDataDescriptor.descriptors.size,
-                measuredTimeMs.toSeconds(),
-                transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.metadata}>" }
-            )
+        logger.debug {
+            "Finished transforming <$transformation> <${transformedDataDescriptor.descriptors.size} result(s)> in <${measuredTimeMs.toSeconds()} s>: " +
+                    "[${transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" }}]"
+        }
+
+        logger.info {
+            "Finished transforming <$transformation> <${transformedDataDescriptor.descriptors.size} result(s)> in <${measuredTimeMs.toSeconds()} s>: " +
+                    "[${transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.metadata}>" }}]"
         }
     }
 
     private fun convertException(transformation: Transformation, exception: Exception): Exception =
         when (exception) {
-            is TransformerException ->
+            is TransformerException            ->
                 TransformationException(transformation, "Couldn't perform the transformation | ${exception.message}", exception)
-            is AskTimeoutException ->
+            is AskTimeoutException             ->
                 TransformationException(transformation, "Couldn't perform the transformation because the timeout has been reached", exception)
             is AbruptStageTerminationException ->
                 TransformationTerminationException(transformation, "Could not perform the transformation because it was abruptly terminated", exception)
-            else ->
+            else                               ->
                 exception
         }
 }

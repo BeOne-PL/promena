@@ -1,7 +1,7 @@
 package pl.beone.promena.core.configuration.external.akka.actor.serializer
 
 import akka.actor.Props
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +15,7 @@ import pl.beone.promena.core.internal.serialization.KryoSerializationService
 class KryoSerializerActorContext {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(ActorCreator::class.java)
+        private val logger = KotlinLogging.logger {}
 
         private val basedOnTransformersNumberOfSerializerActorsDeterminer = BasedOnTransformersNumberOfSerializerActorsDeterminer()
     }
@@ -33,8 +33,8 @@ class KryoSerializerActorContext {
             Props.create(KryoSerializerActor::class.java) {
                 KryoSerializerActor(kryoSerializationService)
             },
-            environment.getProperty("core.serializer.actors", Int::class.java) ?:
-                    basedOnTransformersNumberOfSerializerActorsDeterminer.determine(transformerActorDescriptors)
-                        .also { logger.info("Property <core.serializer.actors> isn't set. Created actors (the sum of the transformer actors): {}", it) }
+            (environment.getProperty("core.serializer.actors", Int::class.java)
+                ?: basedOnTransformersNumberOfSerializerActorsDeterminer.determine(transformerActorDescriptors))
+                .also { logger.info { "Property <core.serializer.actors> isn't set. Created actors (the sum of the transformer actors): $it" } }
         )
 }
