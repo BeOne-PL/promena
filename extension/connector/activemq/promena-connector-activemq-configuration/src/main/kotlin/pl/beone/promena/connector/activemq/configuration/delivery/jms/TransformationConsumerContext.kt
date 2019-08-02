@@ -1,7 +1,7 @@
 package pl.beone.promena.connector.activemq.configuration.delivery.jms
 
+import mu.KotlinLogging
 import org.apache.activemq.command.ActiveMQQueue
-import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.MapPropertySource
@@ -18,7 +18,7 @@ import pl.beone.promena.transformer.contract.Transformer
 class TransformationConsumerContext {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(TransformationConsumerContext::class.java)
+        private val logger = KotlinLogging.logger {}
 
         private val transformationHashCodeMessageSelectorDeterminer = TransformationHashCodeMessageSelectorDeterminer()
     }
@@ -35,7 +35,7 @@ class TransformationConsumerContext {
         val messageSelector =
             transformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
 
-        logger.info("Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE}>: {}", messageSelector)
+        logger.info { "Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE}>: $messageSelector" }
 
         environment.propertySources.addLast(
             MapPropertySource(

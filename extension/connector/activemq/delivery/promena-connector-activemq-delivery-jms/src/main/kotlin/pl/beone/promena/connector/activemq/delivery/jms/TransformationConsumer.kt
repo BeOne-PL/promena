@@ -1,7 +1,7 @@
 package pl.beone.promena.connector.activemq.delivery.jms
 
+import mu.KotlinLogging
 import org.apache.activemq.command.ActiveMQQueue
-import org.slf4j.LoggerFactory
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.support.JmsHeaders
@@ -22,7 +22,7 @@ class TransformationConsumer(
 ) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(TransformationConsumer::class.java)
+        private val logger = KotlinLogging.logger {}
 
         private val communicationParametersConverter = CommunicationParametersConverter()
         private val headersToSentBackDeterminer = HeadersToSentBackDeterminer()
@@ -51,7 +51,7 @@ class TransformationConsumer(
             )
         } catch (e: Exception) {
             if (e is CommunicationParametersValidationException) {
-                logger.error("Couldn't determine communication parameters", e)
+                logger.error(e) { "Couldn't determine communication parameters" }
             }
 
             errorResponseQueue to e
