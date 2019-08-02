@@ -2,7 +2,7 @@ package pl.beone.promena.actorcreator.adaptiveloadbalancing.configuration.actor.
 
 import akka.actor.ActorSystem
 import akka.cluster.metrics.MetricsSelector
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
@@ -12,7 +12,7 @@ import pl.beone.promena.actorcreator.adaptiveloadbalancing.configuration.externa
 class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     @Bean
@@ -22,7 +22,7 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
     ): AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator {
         val metricsSelector = environment.getSelectorInstance()
 
-        logger.info("Adaptive load balancing metrics selector: {}", metricsSelector::class.qualifiedName)
+        logger.info { "Adaptive load balancing metrics selector: ${metricsSelector::class.qualifiedName}" }
 
         return AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(actorSystem, metricsSelector)
     }
