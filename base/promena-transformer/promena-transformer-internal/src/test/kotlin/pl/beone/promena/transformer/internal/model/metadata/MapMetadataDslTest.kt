@@ -18,8 +18,27 @@ class MapMetadataDslTest {
     }
 
     @Test
-    fun plus() {
-        (emptyMetadata() + ("key" to "value") + ("key2" to "value2")).getAll() shouldBe
+    fun `plus _ pair`() {
+        (emptyMetadata() +
+                ("key" to "value") +
+                ("key2" to "value2"))
+            .getAll() shouldBe
+                mapOf("key" to "value", "key2" to "value2")
+    }
+
+    @Test
+    fun addIfNotNull() {
+        (emptyMetadata() addIfNotNull ("key" to null)).getAll() shouldBe
+                emptyMap()
+
+        (emptyMetadata() addIfNotNull ("key" to "value")).getAll() shouldBe
+                mapOf("key" to "value")
+    }
+
+    @Test
+    fun `plus _ metadata`() {
+        (metadata(mapOf("key" to "value")) +
+                metadata(mapOf("key2" to "value2"))).getAll() shouldBe
                 mapOf("key" to "value", "key2" to "value2")
     }
 }

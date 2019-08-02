@@ -20,8 +20,28 @@ class MapParametersDslTest {
     }
 
     @Test
-    fun `plus and addTimeout`() {
-        (emptyParameters() + ("key" to "value") + ("key2" to "value2") addTimeout Duration.ofMillis(100)).getAll() shouldBe
+    fun `plus and addTimeout _ pair`() {
+        (emptyParameters() +
+                ("key" to "value") +
+                ("key2" to "value2") addTimeout
+                Duration.ofMillis(100))
+            .getAll() shouldBe
                 mapOf("key" to "value", "key2" to "value2", Parameters.TIMEOUT to Duration.ofMillis(100))
+    }
+
+    @Test
+    fun addIfNotNull() {
+        (emptyParameters() addIfNotNull ("key" to null)).getAll() shouldBe
+                emptyMap()
+
+        (emptyParameters() addIfNotNull ("key" to "value")).getAll() shouldBe
+                mapOf("key" to "value")
+    }
+
+    @Test
+    fun `plus _ parameters`() {
+        (parameters(mapOf("key" to "value")) +
+                parameters(mapOf("key2" to "value2"))).getAll() shouldBe
+                mapOf("key" to "value", "key2" to "value2")
     }
 }
