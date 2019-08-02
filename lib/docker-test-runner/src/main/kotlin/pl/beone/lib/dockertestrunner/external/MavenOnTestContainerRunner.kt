@@ -1,7 +1,7 @@
 package pl.beone.lib.dockertestrunner.external
 
+import mu.KotlinLogging
 import org.junit.runners.model.FrameworkMethod
-import org.slf4j.LoggerFactory
 import org.testcontainers.containers.Container
 import pl.beone.lib.dockertestrunner.applicationmodel.DockerTestException
 
@@ -15,7 +15,7 @@ class MavenOnTestContainerRunner(
 ) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(MavenOnTestContainerRunner::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     fun runTest(testClass: Class<*>, method: FrameworkMethod) {
@@ -30,7 +30,7 @@ class MavenOnTestContainerRunner(
                 if (result.exitCode != 0) {
                     throw DockerTestException(mavenLog)
                 } else {
-                    logger.error(mavenLog)
+                    logger.error { mavenLog }
                 }
             } else {
                 throw DockerTestException(result.stderr)

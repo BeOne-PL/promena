@@ -42,7 +42,9 @@
         <java.version>11</java.version>
 
         <type-converter.version>0.9.0</type-converter.version>
+
         <testcontainers.version>1.11.2</testcontainers.version>
+        <kotlin-logging.version>1.7.2</kotlin-logging.version>
 
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
@@ -69,6 +71,12 @@
             <groupId>pl.beone.lib</groupId>
             <artifactId>type-converter</artifactId>
             <version>${type-converter.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging</artifactId>
+            <version>${kotlin-logging.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
