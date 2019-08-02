@@ -35,7 +35,7 @@ under the License.
         <requiredProperty key="transformerNameDirect">
             <defaultValue>${transformerName}</defaultValue>
         </requiredProperty>
-        <requiredProperty key="pascalCasetransformerName">
+        <requiredProperty key="pascalCaseTransformerName">
             <defaultValue>
                 ${transformerNameDirect.replaceAll("^a|-a", "A").replaceAll("^b|-b", "B").replaceAll("^c|-c", "C").replaceAll("^d|-d", "D").replaceAll("^e|-e", "E").replaceAll("^f|-f", "F").replaceAll("^g|-g", "G").replaceAll("^h|-h", "H").replaceAll("^i|-i", "I").replaceAll("^j|-j", "J").replaceAll("^k|-k", "K").replaceAll("^l|-l", "L").replaceAll("^m|-m", "M").replaceAll("^n|-n", "N").replaceAll("^o|-o", "O").replaceAll("^p|-p", "P").replaceAll("^q|-q", "Q").replaceAll("^r|-r", "R").replaceAll("^s|-s", "S").replaceAll("^t|-t", "T").replaceAll("^u|-u", "U").replaceAll("^v|-v", "V").replaceAll("^w|-w", "W").replaceAll("^x|-x", "X").replaceAll("^y|-y", "Y").replaceAll("^z|-z", "Z")}
             </defaultValue>
@@ -44,14 +44,14 @@ under the License.
         <requiredProperty key="transformerSubNameDirect">
             <defaultValue>${transformerSubName}</defaultValue>
         </requiredProperty>
-        <requiredProperty key="pascalCasetransformerSubName">
+        <requiredProperty key="pascalCaseTransformerSubName">
             <defaultValue>
                 ${transformerSubNameDirect.replaceAll("^a|-a", "A").replaceAll("^b|-b", "B").replaceAll("^c|-c", "C").replaceAll("^d|-d", "D").replaceAll("^e|-e", "E").replaceAll("^f|-f", "F").replaceAll("^g|-g", "G").replaceAll("^h|-h", "H").replaceAll("^i|-i", "I").replaceAll("^j|-j", "J").replaceAll("^k|-k", "K").replaceAll("^l|-l", "L").replaceAll("^m|-m", "M").replaceAll("^n|-n", "N").replaceAll("^o|-o", "O").replaceAll("^p|-p", "P").replaceAll("^q|-q", "Q").replaceAll("^r|-r", "R").replaceAll("^s|-s", "S").replaceAll("^t|-t", "T").replaceAll("^u|-u", "U").replaceAll("^v|-v", "V").replaceAll("^w|-w", "W").replaceAll("^x|-x", "X").replaceAll("^y|-y", "Y").replaceAll("^z|-z", "Z")}
             </defaultValue>
         </requiredProperty>
 
         <requiredProperty key="pascalCaseTransformerId">
-            <defaultValue>${pascalCasetransformerSubName}${pascalCasetransformerName}</defaultValue>
+            <defaultValue>${pascalCaseTransformerSubName}${pascalCaseTransformerName}</defaultValue>
         </requiredProperty>
         <requiredProperty key="camelCaseTransformerId">
             <defaultValue>${pascalCaseTransformerId.substring(0,1).toLowerCase()}${pascalCaseTransformerId.substring(1)}</defaultValue>
@@ -59,6 +59,59 @@ under the License.
     </requiredProperties>
 
     <modules>
+        <module id="${rootArtifactId}-application-model"
+                dir="__rootArtifactId__-application-model"
+                name="${rootArtifactId}-application-model">
+            <fileSets>
+                <fileSet filtered="true" packaged="true">
+                    <directory>src/main/kotlin</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/main/java</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/main/resources</directory>
+                </fileSet>
+                <fileSet filtered="true" packaged="true">
+                    <directory>src/test/kotlin</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/test/java</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/test/resources</directory>
+                </fileSet>
+            </fileSets>
+        </module>
+
+        <module id="${rootArtifactId}"
+                dir="__rootArtifactId__"
+                name="${rootArtifactId}">
+            <fileSets>
+                <fileSet filtered="true" packaged="true">
+                    <directory>src/main/kotlin</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/main/java</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/main/resources</directory>
+                </fileSet>
+                <fileSet filtered="true" packaged="true">
+                    <directory>src/test/kotlin</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/test/java</directory>
+                </fileSet>
+                <fileSet filtered="true">
+                    <directory>src/test/resources</directory>
+                </fileSet>
+                <fileSet>
+                    <directory>src/docker</directory>
+                </fileSet>
+            </fileSets>
+        </module>
+
         <module id="${rootArtifactId}-configuration"
                 dir="__rootArtifactId__-configuration"
                 name="${rootArtifactId}-configuration">
@@ -77,41 +130,6 @@ under the License.
                 </fileSet>
                 <fileSet filtered="true">
                     <directory>src/main/resources</directory>
-                </fileSet>
-            </fileSets>
-        </module>
-
-        <module id="${rootArtifactId}-application-model"
-                dir="__rootArtifactId__-application-model"
-                name="${rootArtifactId}-application-model">
-            <fileSets>
-                <fileSet filtered="true" packaged="true">
-                    <directory>src/main/kotlin</directory>
-                </fileSet>
-                <fileSet filtered="true" packaged="true">
-                    <directory>src/test/kotlin</directory>
-                </fileSet>
-            </fileSets>
-        </module>
-
-        <module id="${rootArtifactId}"
-                dir="__rootArtifactId__"
-                name="${rootArtifactId}">
-            <fileSets>
-                <fileSet filtered="true" packaged="true">
-                    <directory>src/main/kotlin</directory>
-                </fileSet>
-                <fileSet filtered="true" packaged="true">
-                    <directory>src/test/kotlin</directory>
-                </fileSet>
-                <fileSet filtered="true">
-                    <directory>src/main/resources</directory>
-                </fileSet>
-                <fileSet>
-                    <directory>src/test/resources</directory>
-                </fileSet>
-                <fileSet>
-                    <directory>src/docker</directory>
                 </fileSet>
             </fileSets>
         </module>

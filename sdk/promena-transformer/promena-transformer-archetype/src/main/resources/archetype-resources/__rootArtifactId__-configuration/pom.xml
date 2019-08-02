@@ -16,7 +16,7 @@
     <version>${version}</version>
 
     <properties>
-        <${transformerId}.version>${version}</${transformerId}.version>
+        <${rootArtifactId}.version>${version}</${rootArtifactId}.version>
     </properties>
 
     <dependencies>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>${groupId}</groupId>
             <artifactId>${rootArtifactId}</artifactId>
-            <version>${${transformerId}.version}</version>
+            <version>${${rootArtifactId}.version}</version>
         </dependency>
 
         <dependency>
