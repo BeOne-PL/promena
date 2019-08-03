@@ -8,7 +8,7 @@ import java.util.*
 import javax.annotation.PostConstruct
 
 @Configuration
-@DependsOn("httpClient", "httpClientAlfrescoPromenaService")
+@DependsOn("httpClientAlfrescoPromenaService")
 class HttpConnectorModuleLogger(
     @Qualifier("global-properties") private val properties: Properties
 ) {
@@ -19,6 +19,6 @@ class HttpConnectorModuleLogger(
 
     @PostConstruct
     private fun log() {
-        logger.info { "Registered <http> connector: <base-url: ${properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.http.base-url")}>" }
+        logger.info { "Registered <http> connector: [<base-url: ${properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.http.base-url")}>]" }
     }
 }
