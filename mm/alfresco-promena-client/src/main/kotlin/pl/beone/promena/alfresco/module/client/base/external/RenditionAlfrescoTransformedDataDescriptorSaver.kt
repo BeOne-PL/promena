@@ -1,5 +1,6 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
+import mu.KotlinLogging
 import org.alfresco.model.ContentModel
 import org.alfresco.model.RenditionModel
 import org.alfresco.service.cmr.repository.ContentService
@@ -8,7 +9,6 @@ import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.transaction.TransactionService
-import org.slf4j.LoggerFactory
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
@@ -29,7 +29,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(
 ) : AlfrescoTransformedDataDescriptorSaver {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(RenditionAlfrescoTransformedDataDescriptorSaver::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
@@ -49,7 +49,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaver(
                     }
             }
 
-            logger.debug("Created <{}> rendition nodes <{}> as a child of <{}>", transformation, renditionsNodeRefs, sourceNodeRef)
+            logger.debug { "Created <$transformation> rendition nodes <$renditionsNodeRefs> as a child of <$sourceNodeRef>" }
 
             renditionsNodeRefs
         }

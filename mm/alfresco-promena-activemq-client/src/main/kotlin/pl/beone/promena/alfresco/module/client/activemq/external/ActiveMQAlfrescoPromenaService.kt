@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.client.activemq.external
 
+import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.NodeRef
-import org.slf4j.LoggerFactory
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
@@ -26,7 +26,7 @@ class ActiveMQAlfrescoPromenaService(
 ) : AlfrescoPromenaService {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(ActiveMQAlfrescoPromenaService::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {

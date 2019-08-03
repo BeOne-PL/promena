@@ -3,8 +3,8 @@ package pl.beone.promena.alfresco.module.client.http.external
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpHeaders
 import io.netty.handler.codec.http.HttpResponseStatus
+import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.NodeRef
-import org.slf4j.LoggerFactory
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.NodesInconsistencyException
@@ -44,7 +44,7 @@ class HttpClientAlfrescoPromenaService(
 ) : AlfrescoPromenaService {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(HttpClientAlfrescoPromenaService::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {

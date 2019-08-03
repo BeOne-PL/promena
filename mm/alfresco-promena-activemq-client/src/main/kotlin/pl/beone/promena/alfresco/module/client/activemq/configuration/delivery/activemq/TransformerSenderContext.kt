@@ -1,7 +1,6 @@
 package pl.beone.promena.alfresco.module.client.activemq.configuration.delivery.activemq
 
 import org.apache.activemq.command.ActiveMQQueue
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,10 +13,6 @@ import java.util.*
 
 @Configuration
 class TransformerSenderContext {
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(TransformerSenderContext::class.java)
-    }
 
     @Bean
     fun transformerSender(

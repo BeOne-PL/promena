@@ -1,9 +1,9 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
+import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.ContentReader
 import org.alfresco.service.cmr.repository.ContentWriter
 import org.alfresco.service.cmr.repository.FileContentReader
-import org.slf4j.LoggerFactory
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.File
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.Memory
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
@@ -20,7 +20,7 @@ class MemoryOrFileAlfrescoDataConverter(
 ) : AlfrescoDataConverter {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(MemoryOrFileAlfrescoDataConverter::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     override fun createData(contentReader: ContentReader): Data =
@@ -28,10 +28,7 @@ class MemoryOrFileAlfrescoDataConverter(
             if (contentReader is FileContentReader) {
                 FileData.of(contentReader.contentInputStream, externalCommunicationLocation!!)
             } else {
-                logger.warn(
-                    "Content reader type isn't FileContentReader (<{}>). Implementation <MemoryData> will be use as back pressure",
-                    contentReader::class.java.simpleName
-                )
+                logger.warn { "Content reader type isn't FileContentReader (<${contentReader::class.java.simpleName}>). Implementation <MemoryData> will be use as back pressure" }
                 contentReader.toMemoryData()
             }
         } else if (externalCommunicationId == Memory) {
@@ -51,17 +48,17 @@ class MemoryOrFileAlfrescoDataConverter(
 
     // Trying to delete resource because it is possible that Promena returns different implementation than MemoryData or FileData
     private fun deleteDataResource(data: Data) {
-        logger.debug("Deleting <{}> resource...", data.toSimplifiedString())
+        logger.debug { "Deleting <${data.toSimplifiedString()}> resource..." }
         try {
             data.delete()
         } catch (e: Exception) {
             when (e) {
                 is UnsupportedOperationException,
-                is DataDeleteException -> logger.debug("Couldn't delete <{}> resource", data.toSimplifiedString(), e)
+                is DataDeleteException -> logger.debug(e) { "Couldn't delete <${data.toSimplifiedString()}> resource" }
                 else                   -> throw e
             }
         }
-        logger.debug("Finished deleting <{}> resource", data.toSimplifiedString())
+        logger.debug { "Finished deleting <${data.toSimplifiedString()}> resource" }
     }
 
     private fun Data.toSimplifiedString(): String =

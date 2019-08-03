@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.client.activemq.internal
 
+import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.NodeRef
-import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap
 class ReactiveTransformationManager {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(ReactiveTransformationManager::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     private val monoMap = ConcurrentHashMap<String, Mono<List<NodeRef>>>()
@@ -49,7 +49,7 @@ class ReactiveTransformationManager {
         if (completableFuture != null) {
             toRun(completableFuture)
         } else {
-            logger.warn("Couldn't find transformation <$id>. User won't be informed about the end of this transformation")
+            logger.warn { "Couldn't find transformation <$id>. User won't be informed about the end of this transformation" }
         }
     }
 }

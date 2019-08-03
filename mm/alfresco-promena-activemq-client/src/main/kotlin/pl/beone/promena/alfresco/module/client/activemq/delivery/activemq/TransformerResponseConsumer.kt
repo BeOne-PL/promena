@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.client.activemq.delivery.activemq
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.support.JmsHeaders
 import org.springframework.messaging.handler.annotation.Header
@@ -23,7 +23,7 @@ class TransformerResponseConsumer(
 ) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(TransformerResponseConsumer::class.java)
+        private val logger = KotlinLogging.logger {}
 
         private val nodeRefsConverter = NodeRefsConverter()
     }

@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.client.base.configuration.internal.communication
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +15,7 @@ import java.util.*
 class ExternalCommunicationContext {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(ExternalCommunicationContext::class.java)
+        private val logger = KotlinLogging.logger {}
     }
 
     @Bean
@@ -24,7 +24,7 @@ class ExternalCommunicationContext {
     ): ExternalCommunication {
         val externalCommunicationId = properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.id")
 
-        logger.info("Promena external communication: {}", externalCommunicationId)
+        logger.info { "Promena external communication: $externalCommunicationId" }
 
         return when (externalCommunicationId) {
             Memory -> ExternalCommunication(externalCommunicationId, null)
