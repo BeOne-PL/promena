@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-centos:11.0.3
+FROM azul/zulu-openjdk-centos:11.0.4
 
 RUN yum update -y && \
     yum clean all && rm -rf /tmp/* /var/tmp/* /var/cache/yum/*
