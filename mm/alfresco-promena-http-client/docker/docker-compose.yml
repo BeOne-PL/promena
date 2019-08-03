@@ -50,9 +50,6 @@ services:
       - alfresco-promena-http-client-ass-volume:/opt/alfresco-search-services/data
       - alfresco-promena-http-client-ass-volume-solrhome:/opt/alfresco-search-services/solrhome
 
-  promena:
-    image: promena-executable:3.0.0-alpha
-
 volumes:
   alfresco-promena-http-client-acs-volume:
     external: true
