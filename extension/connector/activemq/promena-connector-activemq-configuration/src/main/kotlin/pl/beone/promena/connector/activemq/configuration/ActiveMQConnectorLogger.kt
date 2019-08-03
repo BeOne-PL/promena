@@ -23,13 +23,11 @@ class ActiveMQConnectorLogger(
     @PostConstruct
     private fun log() {
         logger.info {
-            "Registered <activemq> connector: <broker-url: ${activeMQProperties.brokerUrl}>, " +
-                    "<queue.request: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.request")}>, " +
-                    "<queue.response: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")}>, " +
-                    "<queue.response.error: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")}>, " +
-                    "<pool.max-connections: ${activeMQProperties.pool.maxConnections}>, " +
-                    "<listener.concurrency: ${jmsProperties.listener.concurrency}>, " +
-                    "<listener.max-concurrency: ${jmsProperties.listener.maxConcurrency}>"
+            "Registered <activemq> connector: [<broker-url: ${activeMQProperties.brokerUrl}>, " +
+                    "listener: <concurrency: ${jmsProperties.listener.concurrency}, max-concurrency: ${jmsProperties.listener.maxConcurrency}>, " +
+                    "queue: <request: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.request")}, " +
+                    "response: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")}, " +
+                    "response.error: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")}>]"
         }
     }
 }
