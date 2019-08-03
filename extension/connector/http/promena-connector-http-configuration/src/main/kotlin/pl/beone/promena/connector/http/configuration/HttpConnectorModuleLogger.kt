@@ -16,6 +16,6 @@ class HttpConnectorModuleLogger(
 
     @PostConstruct
     private fun log() {
-        logger.info { "Registered <http> connector: <port: ${environment.getRequiredProperty("server.port")}>" }
+        logger.info { "Registered <http> connector: [<port: ${environment.getRequiredProperty("server.port")}>]" }
     }
 }
