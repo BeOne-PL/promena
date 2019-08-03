@@ -20,7 +20,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import pl.beone.promena.alfresco.module.client.activemq.configuration.autoconfigure.jms.JmsProperties;
 
 import javax.jms.ConnectionFactory;
@@ -56,13 +55,8 @@ class ActiveMQConnectionFactoryConfiguration {
     }
 
     @Bean
-    public CachingConnectionFactory cachingJmsConnectionFactory() {
-        JmsProperties.Cache cacheProperties = this.jmsProperties.getCache();
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(createConnectionFactory());
-        connectionFactory.setCacheConsumers(cacheProperties.isConsumers());
-        connectionFactory.setCacheProducers(cacheProperties.isProducers());
-        connectionFactory.setSessionCacheSize(cacheProperties.getSessionCacheSize());
-        return connectionFactory;
+    public ActiveMQConnectionFactory jmsConnectionFactory() {
+        return createConnectionFactory();
     }
 
     private ActiveMQConnectionFactory createConnectionFactory() {

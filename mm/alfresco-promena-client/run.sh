@@ -40,11 +40,11 @@ tail_all() {
 }
 
 prepare_test() {
-    $MVN_EXEC verify -DskipTests=true
+    $MVN_EXEC -DskipTests=true verify
 }
 
 test() {
-    $MVN_EXEC verify
+    $MVN_EXEC -DskipTests=true verify
 }
 
 case "$1" in

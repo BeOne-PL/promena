@@ -27,7 +27,6 @@ import java.time.Duration;
  */
 public class JmsProperties {
 
-    private final Cache cache = new Cache();
     private final Listener listener = new Listener();
     private final Template template = new Template();
 
@@ -42,10 +41,6 @@ public class JmsProperties {
 
     public void setPubSubDomain(boolean pubSubDomain) {
         this.pubSubDomain = pubSubDomain;
-    }
-
-    public Cache getCache() {
-        return this.cache;
     }
 
     public Listener getListener() {
@@ -201,49 +196,6 @@ public class JmsProperties {
 
         public int getMode() {
             return this.mode;
-        }
-
-    }
-
-    public static class Cache {
-
-        /**
-         * Whether to cache message consumers.
-         */
-        private boolean consumers = false;
-
-        /**
-         * Whether to cache message producers.
-         */
-        private boolean producers = true;
-
-        /**
-         * Size of the session cache (per JMS Session type).
-         */
-        private int sessionCacheSize = 1;
-
-        public boolean isConsumers() {
-            return this.consumers;
-        }
-
-        public void setConsumers(boolean consumers) {
-            this.consumers = consumers;
-        }
-
-        public boolean isProducers() {
-            return this.producers;
-        }
-
-        public void setProducers(boolean producers) {
-            this.producers = producers;
-        }
-
-        public int getSessionCacheSize() {
-            return this.sessionCacheSize;
-        }
-
-        public void setSessionCacheSize(int sessionCacheSize) {
-            this.sessionCacheSize = sessionCacheSize;
         }
 
     }

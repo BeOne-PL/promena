@@ -79,7 +79,7 @@ EXIT /B 0
     )
 EXIT /B 0
 :build
-	call %MVN_EXEC% clean package
+	call %MVN_EXEC% -DskipTests=true clean package
 EXIT /B 0
 :tail
     docker-compose -f "%COMPOSE_FILE_PATH%" logs -f
@@ -88,10 +88,10 @@ EXIT /B 0
     docker-compose -f "%COMPOSE_FILE_PATH%" logs --tail="all"
 EXIT /B 0
 :prepare_test
-    call %MVN_EXEC% verify -DskipTests=true
+    call %MVN_EXEC% -DskipTests=true verify
 EXIT /B 0
 :test
-    call %MVN_EXEC% verify
+    call %MVN_EXEC% -DskipTests=true verify
 EXIT /B 0
 :purge
     docker volume rm -f alfresco-promena-http-client-acs-volume

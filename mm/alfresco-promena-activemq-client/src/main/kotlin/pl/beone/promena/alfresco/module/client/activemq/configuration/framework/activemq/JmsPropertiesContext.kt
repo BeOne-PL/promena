@@ -14,27 +14,17 @@ class JmsPropertiesContext {
     @Bean
     fun jmsProperties(@Qualifier("global-properties") properties: Properties) =
         JmsProperties().apply {
-            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.cache.consumers")
-                ?.toBoolean()?.let { cache.isConsumers = it }
-            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.cache.producers")
-                ?.toBoolean()?.let { cache.isProducers = it }
-            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.cache.session-cache-size")
-                ?.toInt()?.let { cache.sessionCacheSize = it }
-
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.pub-sub-domain")
                 ?.toBoolean()?.let { isPubSubDomain = it }
 
-            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.listener.acknowledge-mode")
-                ?.let { listener.acknowledgeMode = JmsProperties.AcknowledgeMode.valueOf(it) }
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.listener.auto-startup")
                 ?.toBoolean()?.let { listener.isAutoStartup = it }
+            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.listener.acknowledge-mode")
+                ?.let { listener.acknowledgeMode = JmsProperties.AcknowledgeMode.valueOf(it) }
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.listener.concurrency")
                 ?.toInt()?.let { listener.concurrency = it }
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.listener.max-concurrency")
                 ?.toInt()?.let { listener.maxConcurrency = it }
-
-            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.template.default-destination")
-                ?.let { template.defaultDestination = it }
 
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.template.default-destination")
                 ?.let { template.defaultDestination = it }
@@ -44,11 +34,11 @@ class JmsPropertiesContext {
                 ?.let { template.deliveryMode = JmsProperties.DeliveryMode.valueOf(it) }
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.template.priority")
                 ?.toInt()?.let { template.priority = it }
-            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.template.qos-enabled")
-                ?.toBoolean()?.let { template.qosEnabled = it }
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.template.receive-timeout")
                 ?.let { template.receiveTimeout = it.toDuration() }
             properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.template.time-to-live")
                 ?.let { template.timeToLive = it.toDuration() }
+            properties.getPropertyWithResolvedPlaceholders("promena.client.activemq.spring.jms.template.qos-enabled")
+                ?.toBoolean()?.let { template.qosEnabled = it }
         }
 }
