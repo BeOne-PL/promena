@@ -54,8 +54,6 @@
         <maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
 
-        <junit.version>4.12</junit.version>
-
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
@@ -117,12 +115,6 @@
             <version>${docker-java.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
