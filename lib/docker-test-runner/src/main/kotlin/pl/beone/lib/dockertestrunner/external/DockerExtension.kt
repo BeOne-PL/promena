@@ -1,17 +1,12 @@
 package pl.beone.lib.dockertestrunner.external
 
-import org.junit.Ignore
-import org.junit.runner.Description
-import org.junit.runner.notification.Failure
-import org.junit.runner.notification.RunNotifier
-import org.junit.runners.BlockJUnit4ClassRunner
-import org.junit.runners.model.FrameworkMethod
+import org.junit.jupiter.api.extension.*
 import pl.beone.lib.dockertestrunner.internal.Configuration
 import java.io.File
+import java.lang.reflect.Constructor
+import java.lang.reflect.Method
 
-class DockerTestRunner(
-    private val testClass: Class<*>
-) : BlockJUnit4ClassRunner(testClass) {
+class DockerExtension : BeforeAllCallback, AfterAllCallback, InvocationInterceptor {
 
     private val configuration = Configuration()
 
@@ -43,56 +38,34 @@ class DockerTestRunner(
         configuration.getProperty("docker.test.debugger.port", Int::class.java)
     )
 
-    override fun run(notifier: RunNotifier) {
-
-        try {
-            runOnHost {
-                testContainerCoordinator.apply {
-                    init()
-                    start()
-                }
-            }
-
-            super.run(notifier)
-        } finally {
-            runOnHost {
-                testContainerCoordinator.stop()
+    override fun beforeAll(context: ExtensionContext) {
+        runOnHost {
+            testContainerCoordinator.apply {
+                init()
+                start()
             }
         }
     }
 
-    override fun runChild(method: FrameworkMethod, notifier: RunNotifier) {
-        if (method.isSpecialKotlinName() || method.hasIgnoreAnnotation()) {
-            notifier.fireTestIgnored(method)
-        } else {
-            runOnDocker {
-                super.runChild(method, notifier)
-            }
-
-            runOnHost {
-                val description = describeChild(method)
-
-                try {
-                    notifier.fireTestStarted(description)
-
-                    mavenOnTestContainerRunner.runTest(testClass, method)
-                } catch (e: Throwable) {
-                    notifier.fireTestFailure(Failure(description, e))
-                } finally {
-                    notifier.fireTestFinished(description)
-                }
-            }
+    override fun afterAll(context: ExtensionContext) {
+        runOnHost {
+            testContainerCoordinator.stop()
         }
     }
 
-    private fun FrameworkMethod.isSpecialKotlinName(): Boolean =
-        this.name.contains(" ")
+    override fun interceptTestMethod(
+        invocation: InvocationInterceptor.Invocation<Void>,
+        invocationContext: ReflectiveInvocationContext<Method>,
+        extensionContext: ExtensionContext
+    ) {
+        runOnHost {
+            mavenOnTestContainerRunner.runTest(invocationContext.executable)
+            invocation.proceed() // TODO mark as executed (ValidatingInvocation)
+        }
 
-    private fun FrameworkMethod.hasIgnoreAnnotation(): Boolean =
-        this.getAnnotation(Ignore::class.java) != null
-
-    private fun RunNotifier.fireTestIgnored(method: FrameworkMethod) {
-        this.fireTestIgnored(Description.createTestDescription(testClass, method.name))
+        runOnDocker {
+            super.interceptTestMethod(invocation, invocationContext, extensionContext)
+        }
     }
 
     private fun onDocker(): Boolean =

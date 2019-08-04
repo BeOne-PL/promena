@@ -2,8 +2,10 @@ package pl.beone.lib.dockertestrunner.external
 
 import mu.KotlinLogging
 import org.junit.runners.model.FrameworkMethod
+import org.opentest4j.AssertionFailedError
 import org.testcontainers.containers.Container
 import pl.beone.lib.dockertestrunner.applicationmodel.DockerTestException
+import java.lang.reflect.Method
 
 class MavenOnTestContainerRunner(
     private val testContainerCoordinator: TestContainerCoordinator,
@@ -18,8 +20,8 @@ class MavenOnTestContainerRunner(
         private val logger = KotlinLogging.logger {}
     }
 
-    fun runTest(testClass: Class<*>, method: FrameworkMethod) {
-        val mavenTestClassifier = createMavenTestClassifier(testClass, method)
+    fun runTest(method: Method) {
+        val mavenTestClassifier = createMavenTestClassifier(method)
         val logFilePath = createLogFilePath(mavenTestClassifier)
 
         try {
@@ -30,7 +32,7 @@ class MavenOnTestContainerRunner(
                 if (result.exitCode != 0) {
                     throw DockerTestException(mavenLog)
                 } else {
-                    logger.error { mavenLog }
+                    logger.info { mavenLog }
                 }
             } else {
                 throw DockerTestException(result.stderr)
@@ -40,8 +42,8 @@ class MavenOnTestContainerRunner(
         }
     }
 
-    private fun createMavenTestClassifier(testClass: Class<*>, method: FrameworkMethod): String =
-        "${testClass.name}#${method.name}"
+    private fun createMavenTestClassifier(method: Method): String =
+        "${method.declaringClass.name}#${method.name}"
 
     private fun createLogFilePath(mavenTestClassifier: String): String =
         "/tmp/$mavenTestClassifier.out"
