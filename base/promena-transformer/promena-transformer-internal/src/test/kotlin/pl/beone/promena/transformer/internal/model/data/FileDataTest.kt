@@ -28,10 +28,8 @@ class FileDataTest {
 
     @Test
     fun `of _ file`() {
-        val string = "test"
-
-        FileData.of(string.createTmpFile()).getBytes() shouldBe
-                string.toByteArray()
+        FileData.of(fileString.createTmpFile()).getBytes() shouldBe
+                fileBytes
     }
 
     @Test
@@ -39,16 +37,16 @@ class FileDataTest {
         val directory = createTempDir()
 
         FileData.of(fileString.createTmpFile(directory).inputStream(), directory.toURI()).getBytes() shouldBe
-                fileString.toByteArray()
+                fileBytes
 
         FileData.of(fileString.byteInputStream(), directory.toURI()).getBytes() shouldBe
-                fileString.toByteArray()
+                fileBytes
     }
 
     @Test
     fun `of _ input stream and directory file`() {
         FileData.of(fileString.byteInputStream(), createTempDir()).getBytes() shouldBe
-                fileString.toByteArray()
+                fileBytes
     }
 
     @Test
@@ -112,7 +110,7 @@ class FileDataTest {
 
     @Test
     fun delete() {
-        val file = createTempFile().apply { writeText("test") }
+        val file = createTempFile().apply { writeText(fileString) }
 
         FileData.of(file.toURI()).delete()
 
@@ -122,7 +120,7 @@ class FileDataTest {
 
     @Test
     fun `delete _ should throw DataDeleteException`() {
-        val notExistFile = createTempDir().resolve(File("test")).toURI()
+        val notExistFile = createTempDir().resolve(File(fileString)).toURI()
 
         shouldThrow<DataDeleteException> {
             FileData.of(notExistFile).delete()
@@ -135,10 +133,4 @@ class FileDataTest {
             FileData.of(notReachableFileUri).isAccessible()
         }.message shouldBe "File <file:/doesNotExist> doesn't exist"
     }
-
 }
-
-private fun String.createTmpFile(directory: File = createTempDir()): File =
-    createTempFile(directory = directory).apply {
-        writeText(this@createTmpFile)
-    }

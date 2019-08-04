@@ -6,6 +6,18 @@ import java.io.File
 import java.io.InputStream
 import java.net.URI
 
+fun fileData(uri: URI): FileData =
+    FileData.of(uri)
+
+fun fileData(file: File): FileData =
+    FileData.of(file)
+
+fun fileData(inputStream: InputStream, directoryUri: URI): FileData =
+    FileData.of(inputStream, directoryUri)
+
+fun fileData(inputStream: InputStream, directoryFile: File): FileData =
+    FileData.of(inputStream, directoryFile)
+
 fun URI.toFileData(): FileData =
     FileData.of(this)
 

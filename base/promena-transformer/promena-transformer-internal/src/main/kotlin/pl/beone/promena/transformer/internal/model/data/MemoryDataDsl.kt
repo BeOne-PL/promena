@@ -4,6 +4,12 @@ package pl.beone.promena.transformer.internal.model.data
 
 import java.io.InputStream
 
+fun memoryData(byteArray: ByteArray): MemoryData =
+    MemoryData.of(byteArray)
+
+fun memoryData(inputStream: InputStream): MemoryData =
+    MemoryData.of(inputStream)
+
 fun ByteArray.toMemoryData(): MemoryData =
     MemoryData.of(this)
 

@@ -11,6 +11,18 @@ class MemoryDataDslTest {
     }
 
     @Test
+    fun `memoryData _ byteArray`() {
+        memoryData(bytes).getBytes() shouldBe
+                bytes
+    }
+
+    @Test
+    fun `memoryData _ inputStream`() {
+        memoryData(bytes.inputStream()).getBytes() shouldBe
+                bytes
+    }
+
+    @Test
     fun `toMemoryData _ byteArray`() {
         bytes.toMemoryData().getBytes() shouldBe
                 bytes
