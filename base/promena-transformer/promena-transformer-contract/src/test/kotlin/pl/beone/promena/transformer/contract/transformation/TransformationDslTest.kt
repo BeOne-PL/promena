@@ -3,7 +3,7 @@ package pl.beone.promena.transformer.contract.transformation
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML
 import pl.beone.promena.transformer.contract.model.Parameters

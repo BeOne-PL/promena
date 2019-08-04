@@ -6,7 +6,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig

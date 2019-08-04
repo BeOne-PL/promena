@@ -4,7 +4,8 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
 import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -61,7 +62,7 @@ class TransformerHandlerTest {
         private val responseBody = "response body".toByteArray()
     }
 
-    @Before
+    @BeforeEach
     fun setUp() {
         mockkObject(serializationService)
         clearMocks(serializationService)

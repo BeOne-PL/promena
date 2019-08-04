@@ -2,9 +2,8 @@ package pl.beone.promena.core.configuration.external.akka.actor.serializer
 
 import io.kotlintest.shouldBe
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
-import org.junit.Assert.*
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 

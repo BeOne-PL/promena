@@ -2,7 +2,7 @@ package pl.beone.promena.core.internal.serialization
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor

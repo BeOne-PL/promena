@@ -1,6 +1,6 @@
 package pl.beone.promena.transformer.internal.communication;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters;
 
 import static java.util.Map.entry;

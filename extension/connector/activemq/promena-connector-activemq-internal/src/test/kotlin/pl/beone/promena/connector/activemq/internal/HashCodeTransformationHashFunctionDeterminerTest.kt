@@ -2,7 +2,7 @@ package pl.beone.promena.connector.activemq.internal
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class HashCodeTransformationHashFunctionDeterminerTest {

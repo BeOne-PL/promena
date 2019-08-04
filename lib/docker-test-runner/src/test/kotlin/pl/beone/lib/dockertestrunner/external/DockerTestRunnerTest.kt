@@ -2,7 +2,7 @@ package pl.beone.lib.dockertestrunner.external
 
 import io.kotlintest.shouldBe
 import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 
 @RunWith(DockerTestRunner::class)

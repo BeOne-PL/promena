@@ -3,17 +3,14 @@ package pl.beone.promena.connector.activemq.delivery.jms
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.matchers.maps.shouldContainKey
-import io.kotlintest.matchers.numerics.shouldBeGreaterThan
 import io.kotlintest.matchers.numerics.shouldBeGreaterThanOrEqual
-import io.kotlintest.matchers.numerics.shouldBeInRange
-import io.kotlintest.matchers.numerics.shouldBeLessThan
 import io.kotlintest.shouldBe
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -77,7 +74,7 @@ class TransformationCorrectFlowTest {
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
 
-    @Before
+    @BeforeEach
     fun setUp() {
         mockkObject(transformationUseCase)
         clearMocks(transformationUseCase)

@@ -47,8 +47,8 @@
         <kotlin-logging.version>1.7.2</kotlin-logging.version>
 
         <logback.version>1.2.3</logback.version>
-        <junit.version>4.12</junit.version>
-        <kotlintest-runner-junit4.version>3.3.3</kotlintest-runner-junit4.version>
+        <junit-jupiter.version>5.5.1</junit-jupiter.version>
+        <kotlintest-runner-junit5.version>3.4.0</kotlintest-runner-junit5.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
@@ -91,14 +91,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.kotlintest</groupId>
-            <artifactId>kotlintest-runner-junit4</artifactId>
-            <version>${kotlintest-runner-junit4.version}</version>
+            <artifactId>kotlintest-runner-junit5</artifactId>
+            <version>${kotlintest-runner-junit5.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

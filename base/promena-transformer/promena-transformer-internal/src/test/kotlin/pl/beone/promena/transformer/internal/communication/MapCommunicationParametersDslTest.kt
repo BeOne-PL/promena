@@ -1,7 +1,7 @@
 package pl.beone.promena.transformer.internal.communication
 
 import io.kotlintest.shouldBe
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 
 class MapCommunicationParametersDslTest {

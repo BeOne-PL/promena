@@ -3,7 +3,7 @@ package pl.beone.promena.connector.http.delivery.http
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.util.LinkedMultiValueMap
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 

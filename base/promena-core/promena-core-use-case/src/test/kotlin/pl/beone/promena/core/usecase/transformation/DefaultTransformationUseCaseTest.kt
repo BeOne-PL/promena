@@ -4,7 +4,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter

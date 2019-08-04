@@ -1,6 +1,6 @@
 package pl.beone.promena.transformer.contract.data;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import pl.beone.promena.transformer.contract.model.Data;
 import pl.beone.promena.transformer.contract.model.Metadata;
 

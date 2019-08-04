@@ -1,7 +1,7 @@
 package pl.beone.promena.communication.external.memory.internal
 
 import io.kotlintest.shouldBe
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.internal.communication.communicationParameters
 import pl.beone.promena.transformer.internal.model.data.toMemoryData

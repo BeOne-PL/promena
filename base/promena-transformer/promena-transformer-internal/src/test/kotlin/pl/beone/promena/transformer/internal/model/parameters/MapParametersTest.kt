@@ -3,7 +3,7 @@ package pl.beone.promena.transformer.internal.model.parameters
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
 import pl.beone.promena.transformer.contract.model.Parameters
 import java.time.Duration

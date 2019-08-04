@@ -14,9 +14,9 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.external.akka.actor.GroupedByNameActorService
@@ -63,12 +63,12 @@ class AkkaTransformationServiceTest {
 
     private lateinit var actorSystem: ActorSystem
 
-    @Before
+    @BeforeEach
     fun setUp() {
         actorSystem = ActorSystem.create("Promena", ConfigFactory.load("resource-test.conf"))
     }
 
-    @After
+    @AfterEach
     fun teardown() {
         TestKit.shutdownActorSystem(actorSystem)
     }

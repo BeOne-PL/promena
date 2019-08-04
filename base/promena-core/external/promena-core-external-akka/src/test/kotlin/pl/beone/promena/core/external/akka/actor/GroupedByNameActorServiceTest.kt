@@ -5,7 +5,7 @@ import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.contract.transformer.toTransformerId

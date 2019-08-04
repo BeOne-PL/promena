@@ -2,7 +2,7 @@ package pl.beone.promena.connector.activemq.configuration.delivery.jms
 
 import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.matchers.collections.shouldHaveSize
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class TransformerIdsCombinationDeterminerTest {

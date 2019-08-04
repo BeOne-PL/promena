@@ -5,7 +5,7 @@ import io.kotlintest.matchers.instanceOf
 import io.kotlintest.should
 import io.kotlintest.shouldBe
 import io.mockk.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.*

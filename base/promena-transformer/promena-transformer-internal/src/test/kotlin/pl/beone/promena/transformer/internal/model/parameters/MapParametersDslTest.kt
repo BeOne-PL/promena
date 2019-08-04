@@ -1,7 +1,7 @@
 package pl.beone.promena.transformer.internal.model.parameters
 
 import io.kotlintest.shouldBe
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.contract.model.Parameters
 import java.time.Duration
 

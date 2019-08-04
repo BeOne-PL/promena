@@ -1,8 +1,8 @@
 package pl.beone.promena.connector.activemq.delivery.jms
 
 import io.kotlintest.matchers.numerics.shouldBeGreaterThan
-import io.kotlintest.matchers.numerics.shouldBeInRange
 import io.kotlintest.matchers.numerics.shouldBeLessThan
+import io.kotlintest.matchers.shouldBeInRange
 
 fun getTimestamp(): Long =
     System.currentTimeMillis()

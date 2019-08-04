@@ -1,7 +1,7 @@
 package pl.beone.promena.connector.activemq.delivery.jms
 
 import io.kotlintest.matchers.maps.shouldContainExactly
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class HeadersToSentBackDeterminerTest {
 

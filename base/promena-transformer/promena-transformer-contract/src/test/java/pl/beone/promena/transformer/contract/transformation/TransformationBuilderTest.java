@@ -1,6 +1,6 @@
 package pl.beone.promena.transformer.contract.transformation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType;
 import pl.beone.promena.transformer.contract.model.Parameters;
 

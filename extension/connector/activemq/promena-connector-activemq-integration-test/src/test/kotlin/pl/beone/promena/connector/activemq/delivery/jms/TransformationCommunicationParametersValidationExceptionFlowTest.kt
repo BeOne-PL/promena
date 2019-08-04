@@ -8,8 +8,8 @@ import io.kotlintest.shouldBe
 import io.mockk.clearMocks
 import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -66,7 +66,7 @@ class TransformationCommunicationParametersValidationExceptionFlowTest {
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
 
-    @Before
+    @BeforeEach
     fun setUp() {
         mockkObject(transformationUseCase)
         clearMocks(transformationUseCase)

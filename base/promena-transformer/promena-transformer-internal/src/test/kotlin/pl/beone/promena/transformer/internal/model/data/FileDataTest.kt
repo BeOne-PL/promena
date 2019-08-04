@@ -3,7 +3,7 @@ package pl.beone.promena.transformer.internal.model.data
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotThrow
 import io.kotlintest.shouldThrow
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import java.io.File

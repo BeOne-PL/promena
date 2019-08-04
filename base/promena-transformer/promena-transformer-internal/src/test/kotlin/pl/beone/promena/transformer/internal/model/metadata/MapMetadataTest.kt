@@ -2,7 +2,7 @@ package pl.beone.promena.transformer.internal.model.metadata
 
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 // The same parent as MapParameters. It is covered by MapParametersJavaTest and MapParametersTest tests
 class MapMetadataTest {

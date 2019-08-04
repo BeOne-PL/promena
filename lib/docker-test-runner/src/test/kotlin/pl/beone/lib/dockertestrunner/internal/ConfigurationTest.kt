@@ -2,7 +2,7 @@ package pl.beone.lib.dockertestrunner.internal
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.IOException
 

@@ -3,7 +3,7 @@ package pl.beone.promena.core.internal.communication.external.manager
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactly
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 

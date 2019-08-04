@@ -1,7 +1,7 @@
 package pl.beone.promena.transformer.internal.model.data
 
 import io.kotlintest.shouldBe
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class NoDataDslTest {
 

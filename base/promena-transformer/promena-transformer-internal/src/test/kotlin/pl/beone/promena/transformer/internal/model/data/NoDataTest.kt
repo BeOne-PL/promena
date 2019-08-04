@@ -2,7 +2,7 @@ package pl.beone.promena.transformer.internal.model.data
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class NoDataTest {
 
