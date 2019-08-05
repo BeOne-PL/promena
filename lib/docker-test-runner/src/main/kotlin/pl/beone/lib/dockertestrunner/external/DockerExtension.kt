@@ -1,10 +1,11 @@
 package pl.beone.lib.dockertestrunner.external
 
 import org.junit.jupiter.api.extension.*
+import pl.beone.lib.dockertestrunner.applicationmodel.DockerExtensionException
 import pl.beone.lib.dockertestrunner.internal.Configuration
 import java.io.File
-import java.lang.reflect.Constructor
 import java.lang.reflect.Method
+import java.util.concurrent.atomic.AtomicBoolean
 
 class DockerExtension : BeforeAllCallback, AfterAllCallback, InvocationInterceptor {
 
@@ -39,6 +40,10 @@ class DockerExtension : BeforeAllCallback, AfterAllCallback, InvocationIntercept
     )
 
     override fun beforeAll(context: ExtensionContext) {
+        if (context.getParents().doesNotContainJupiterEngineExecutionContext()) {
+            throw DockerExtensionException("DockerExtension supports only JupiterTestEngine")
+        }
+
         runOnHost {
             testContainerCoordinator.apply {
                 init()
@@ -46,6 +51,18 @@ class DockerExtension : BeforeAllCallback, AfterAllCallback, InvocationIntercept
             }
         }
     }
+
+    private fun ExtensionContext.getParents(): List<ExtensionContext> =
+        if (parent.isPresent) {
+            val parent = parent.get()
+            parent.getParents() + parent
+        } else {
+            emptyList()
+        }
+
+    private fun List<ExtensionContext>.doesNotContainJupiterEngineExecutionContext(): Boolean =
+        !any { it.javaClass.canonicalName == "org.junit.jupiter.engine.descriptor.JupiterEngineExtensionContext" }
+
 
     override fun afterAll(context: ExtensionContext) {
         runOnHost {
@@ -58,14 +75,30 @@ class DockerExtension : BeforeAllCallback, AfterAllCallback, InvocationIntercept
         invocationContext: ReflectiveInvocationContext<Method>,
         extensionContext: ExtensionContext
     ) {
+        val method = invocationContext.executable
+        if (method.isSpecialKotlinName()) {
+            throw DockerExtensionException("DockerExtension supports only classic Java test names (without spaces)")
+        }
+
         runOnHost {
-            mavenOnTestContainerRunner.runTest(invocationContext.executable)
-            invocation.proceed() // TODO mark as executed (ValidatingInvocation)
+            mavenOnTestContainerRunner.runTest(method)
+            markTestAsExecuted(invocation)
         }
 
         runOnDocker {
             super.interceptTestMethod(invocation, invocationContext, extensionContext)
         }
+    }
+
+    private fun Method.isSpecialKotlinName(): Boolean =
+        this.name.contains(" ")
+
+    private fun markTestAsExecuted(invocation: InvocationInterceptor.Invocation<Void>) {
+        Class.forName("org.junit.jupiter.engine.execution.InvocationInterceptorChain\$ValidatingInvocation")
+            .let { clazz -> clazz.getDeclaredField("invoked") }
+            .also { field -> field.isAccessible = true }
+            .also { field -> (field.get(invocation) as AtomicBoolean).set(true) }
+            .also { field -> field.isAccessible = false }
     }
 
     private fun onDocker(): Boolean =

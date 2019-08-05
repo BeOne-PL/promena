@@ -1,10 +1,8 @@
 package pl.beone.lib.dockertestrunner.external
 
 import mu.KotlinLogging
-import org.junit.runners.model.FrameworkMethod
-import org.opentest4j.AssertionFailedError
 import org.testcontainers.containers.Container
-import pl.beone.lib.dockertestrunner.applicationmodel.DockerTestException
+import pl.beone.lib.dockertestrunner.applicationmodel.DockerExtensionTestExecutionException
 import java.lang.reflect.Method
 
 class MavenOnTestContainerRunner(
@@ -30,12 +28,12 @@ class MavenOnTestContainerRunner(
             if (checkIfLogFileExists(logFilePath)) {
                 val mavenLog = readOutputFromContainerMavenLogFile(logFilePath)
                 if (result.exitCode != 0) {
-                    throw DockerTestException(mavenLog)
+                    throw DockerExtensionTestExecutionException(mavenLog)
                 } else {
                     logger.info { mavenLog }
                 }
             } else {
-                throw DockerTestException(result.stderr)
+                throw DockerExtensionTestExecutionException(result.stderr)
             }
         } finally {
             testContainerCoordinator.execInContainer("bash", "-c", mavenContainerTestRunAfter)
