@@ -46,7 +46,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.time.Duration
 
-class AkkaTransformationServiceTest {
+class AkkaTransformationServiceTestIT {
 
     companion object {
         private val internalCommunicationConverter = MirrorInternalCommunicationConverter()

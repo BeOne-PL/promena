@@ -40,7 +40,7 @@ import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = [HttpConnectorModuleConfig::class]
 )
-class TransformerHandlerTest {
+class TransformerHandlerTestIT {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient

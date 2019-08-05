@@ -50,14 +50,16 @@
         <kotlin-logging.version>1.7.2</kotlin-logging.version>
 
         <logback.version>1.2.3</logback.version>
-        <junit.version>4.12</junit.version>
-        <kotlintest-runner-junit4.version>3.3.3</kotlintest-runner-junit4.version>
+        <kotlintest-runner-junit5.version>3.4.0</kotlintest-runner-junit5.version>
+        <junit-jupiter.version>5.5.1</junit-jupiter.version>
         <mockk.version>1.9.3</mockk.version>
         <docker-test-runner.version>0.9.0</docker-test-runner.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -112,14 +114,14 @@
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.kotlintest</groupId>
-                <artifactId>kotlintest-runner-junit4</artifactId>
-                <version>${kotlintest-runner-junit4.version}</version>
+                <artifactId>kotlintest-runner-junit5</artifactId>
+                <version>${kotlintest-runner-junit5.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.mockk</groupId>
@@ -256,6 +258,16 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

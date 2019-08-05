@@ -35,7 +35,7 @@ import java.net.URI
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
-class AkkaKryoSerializationServiceTest {
+class AkkaKryoSerializationServiceTestIT {
 
     private lateinit var actorSystem: ActorSystem
     private lateinit var akkaKryoSerializationService: AkkaKryoSerializationService
