@@ -2,7 +2,7 @@ package ${package}.applicationmodel
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 
 class ${pascalCaseTransformerId}DslTest {

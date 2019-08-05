@@ -5,9 +5,9 @@ import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import org.junit.Test
-import org.junit.runner.RunWith
-import pl.beone.lib.dockertestrunner.external.DockerTestRunner
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import pl.beone.lib.test.junit.jupiter.external.DockerExtension
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.data.emptyDataDescriptor
@@ -17,7 +17,7 @@ import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 
-@RunWith(DockerTestRunner::class)
+@ExtendWith(DockerExtension::class)
 class ${pascalCaseTransformerId}TransformerTest {
 
     companion object {
