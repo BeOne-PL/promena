@@ -1,6 +1,6 @@
 package pl.beone.promena.transformer.applicationmodel.exception.data
 
-class DataReadException(
+open class DataOperationException(
     message: String,
     cause: Throwable? = null
-) : DataOperationException(message, cause)
+) : RuntimeException(message, cause)
