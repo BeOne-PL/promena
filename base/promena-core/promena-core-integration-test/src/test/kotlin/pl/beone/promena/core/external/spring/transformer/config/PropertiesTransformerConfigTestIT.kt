@@ -39,7 +39,7 @@ private class TransformerWithoutProperties : AbstractTransformer()
         "transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithProperties.priority=2"
     ]
 )
-class PropertiesTransformerConfigTest {
+class PropertiesTransformerConfigTestIT {
 
     @Autowired
     private lateinit var propertiesTransformerConfig: PropertiesTransformerConfig
