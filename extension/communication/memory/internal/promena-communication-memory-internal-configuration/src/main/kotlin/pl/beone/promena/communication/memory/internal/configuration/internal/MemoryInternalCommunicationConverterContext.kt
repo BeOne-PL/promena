@@ -2,7 +2,7 @@ package pl.beone.promena.communication.memory.internal.configuration.internal
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.communication.internal.memory.internal.MemoryInternalCommunicationConverter
+import pl.beone.promena.communication.memory.internal.internal.MemoryInternalCommunicationConverter
 
 @Configuration
 class MemoryInternalCommunicationConverterContext {

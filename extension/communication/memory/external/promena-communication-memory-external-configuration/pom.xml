@@ -13,8 +13,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>pl.beone.promena.communication.external</groupId>
-            <artifactId>promena-communication-external-memory-internal</artifactId>
+            <groupId>pl.beone.promena.communication.memory</groupId>
+            <artifactId>promena-communication-memory-external-internal</artifactId>
             <version>${promena-communication-memory-external.version}</version>
         </dependency>
 

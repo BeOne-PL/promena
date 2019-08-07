@@ -10,7 +10,7 @@
         <version>0.9.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>pl.beone.promena.communication.memory-utils</groupId>
+    <groupId>pl.beone.promena.communication.memory.utils</groupId>
     <artifactId>promena-communication-memory-utils</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 

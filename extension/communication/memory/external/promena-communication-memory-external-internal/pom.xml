@@ -17,7 +17,7 @@
             <artifactId>promena-core-internal</artifactId>
         </dependency>
         <dependency>
-            <groupId>pl.beone.promena.communication.memory-utils</groupId>
+            <groupId>pl.beone.promena.communication.memory.utils</groupId>
             <artifactId>promena-communication-memory-utils</artifactId>
             <version>${promena-communication-memory-utils.version}</version>
         </dependency>
