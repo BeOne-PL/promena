@@ -6,7 +6,6 @@ import pl.beone.promena.transformer.contract.model.Data
 abstract class AbstractDescriptorConverter<T : Data> {
 
     private val dataDescriptorConverter = Converter<T, DataDescriptor.Single>(
-        true,
         { it.data },
         { newData, oldDescriptor -> singleDataDescriptor(newData, oldDescriptor.mediaType, oldDescriptor.metadata) },
         { convertData(it) },
@@ -15,7 +14,6 @@ abstract class AbstractDescriptorConverter<T : Data> {
     )
 
     private val transformedDataDescriptorConverter = Converter<T, TransformedDataDescriptor.Single>(
-        false,
         { it.data },
         { newData, oldDescriptor -> singleTransformedDataDescriptor(newData, oldDescriptor.metadata) },
         { convertData(it) },

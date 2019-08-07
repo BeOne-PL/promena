@@ -1,6 +1,7 @@
 package pl.beone.promena.communication.memory.utils
 
 import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.matchers.instanceOf
 import io.kotlintest.shouldBe
 import io.mockk.Runs
 import io.mockk.every
@@ -13,6 +14,7 @@ import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
+import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 
 class MemoryDescriptorConverterTest {
@@ -38,12 +40,14 @@ class MemoryDescriptorConverterTest {
             it.descriptors shouldHaveSize 2
 
             it.descriptors[0].let { dataDescriptor ->
+                dataDescriptor.data shouldBe instanceOf(MemoryData::class)
                 dataDescriptor.data shouldBe data2
                 dataDescriptor.mediaType shouldBe mediaType2
                 dataDescriptor.metadata shouldBe metadata2
             }
 
             it.descriptors[1].let { dataDescriptor ->
+                dataDescriptor.data shouldBe instanceOf(MemoryData::class)
                 dataDescriptor.data.getBytes() shouldBe dataBytes
                 dataDescriptor.mediaType shouldBe mediaType
                 dataDescriptor.metadata shouldBe metadata
@@ -70,11 +74,13 @@ class MemoryDescriptorConverterTest {
             it.descriptors shouldHaveSize 2
 
             it.descriptors[0].let { transformedDataDescriptor ->
+                transformedDataDescriptor.data shouldBe instanceOf(MemoryData::class)
                 transformedDataDescriptor.data shouldBe data2
                 transformedDataDescriptor.metadata shouldBe metadata2
             }
 
             it.descriptors[1].let { transformedDataDescriptor ->
+                transformedDataDescriptor.data shouldBe instanceOf(MemoryData::class)
                 transformedDataDescriptor.data.getBytes() shouldBe dataBytes
                 transformedDataDescriptor.metadata shouldBe metadata
             }
