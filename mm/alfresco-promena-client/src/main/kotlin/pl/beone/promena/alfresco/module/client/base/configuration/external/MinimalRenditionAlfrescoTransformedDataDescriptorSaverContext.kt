@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.base.configuration.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
-import pl.beone.promena.alfresco.module.client.base.external.RenditionAlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.client.base.external.MinimalRenditionAlfrescoTransformedDataDescriptorSaver
 import java.util.*
 
 @Configuration
-class RenditionAlfrescoTransformedDataDescriptorSaverContext {
+class MinimalRenditionAlfrescoTransformedDataDescriptorSaverContext {
 
     @Bean
     fun renditionAlfrescoTransformedDataDescriptorSaver(
@@ -24,7 +24,7 @@ class RenditionAlfrescoTransformedDataDescriptorSaverContext {
         transactionService: TransactionService,
         alfrescoDataConverter: AlfrescoDataConverter
     ) =
-        RenditionAlfrescoTransformedDataDescriptorSaver(
+        MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
             properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.save-if-zero").toBoolean(),
             nodeService,
             contentService,
