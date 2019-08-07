@@ -1,4 +1,4 @@
-package pl.beone.promena.communication.utils.deleter
+package pl.beone.promena.communication.utils.cleaner
 
 import mu.KotlinLogging
 import pl.beone.promena.communication.utils.deleteData

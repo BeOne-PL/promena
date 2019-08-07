@@ -1,6 +1,6 @@
 package pl.beone.promena.communication.memory.utils
 
-import pl.beone.promena.communication.utils.deleter.AbstractDataDescriptorCleaner
+import pl.beone.promena.communication.utils.cleaner.AbstractDataDescriptorCleaner
 import pl.beone.promena.transformer.contract.model.Data
 
 object MemoryDataDescriptorCleaner : AbstractDataDescriptorCleaner() {
