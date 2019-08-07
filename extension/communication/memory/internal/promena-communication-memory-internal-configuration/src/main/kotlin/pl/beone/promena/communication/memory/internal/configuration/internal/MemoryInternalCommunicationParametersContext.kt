@@ -6,7 +6,7 @@ import org.springframework.core.env.Environment
 import pl.beone.promena.transformer.internal.communication.communicationParameters
 
 @Configuration
-class InternalCommunicationParametersContext {
+class MemoryInternalCommunicationParametersContext {
 
     @Bean
     fun internalCommunicationParameters(
