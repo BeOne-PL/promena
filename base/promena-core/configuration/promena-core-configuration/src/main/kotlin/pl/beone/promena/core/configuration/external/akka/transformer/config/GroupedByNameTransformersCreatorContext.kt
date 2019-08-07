@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.core.contract.actor.config.ActorCreator
+import pl.beone.promena.core.contract.communication.internal.InternalCommunicationCleaner
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
@@ -17,11 +18,13 @@ class GroupedByNameTransformersCreatorContext {
     fun groupedByNameTransformersCreator(
         transformerConfig: TransformerConfig,
         internalCommunicationConverter: InternalCommunicationConverter,
+        internalCommunicationCleaner: InternalCommunicationCleaner,
         actorCreator: ActorCreator
     ) =
         GroupedByNameTransformersCreator(
             transformerConfig,
             internalCommunicationConverter,
+            internalCommunicationCleaner,
             actorCreator
         )
 }

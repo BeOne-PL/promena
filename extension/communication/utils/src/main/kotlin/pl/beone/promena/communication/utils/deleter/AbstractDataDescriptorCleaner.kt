@@ -6,7 +6,7 @@ import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 
-abstract class AbstractDataDescriptorDeleter {
+abstract class AbstractDataDescriptorCleaner {
 
     companion object {
         protected val logger = KotlinLogging.logger {}
@@ -14,14 +14,14 @@ abstract class AbstractDataDescriptorDeleter {
 
     protected abstract fun areTheSame(data: Data, data2: Data): Boolean
 
-    fun delete(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor) {
+    fun clean(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor) {
         val transformedDatas = transformedDataDescriptor.getDatas()
         val datasToDelete = dataDescriptor.getDatas()
             .filter { data -> checkIfIsUseInDatas(data, transformedDatas) }
 
         if (datasToDelete.isNotEmpty()) {
             datasToDelete
-                .also { logger.debug { "There are <${it.size}> descriptors that aren't used in transformed descriptors" } }
+                .also { logger.debug { "There are <${it.size}> data from descriptors that aren't used in transformed descriptors" } }
                 .also { logger.debug { "Deleting..." } }
                 .map { deleteData(logger, it) }
                 .also { logger.debug { "Finished deleting" } }

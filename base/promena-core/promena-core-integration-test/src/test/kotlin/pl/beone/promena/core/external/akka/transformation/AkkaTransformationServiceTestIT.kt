@@ -23,6 +23,7 @@ import pl.beone.promena.core.external.akka.actor.GroupedByNameActorService
 import pl.beone.promena.core.external.akka.actor.transformer.GroupedByNameTransformerActor
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
 import pl.beone.promena.core.external.akka.transformation.converter.MirrorInternalCommunicationConverter
+import pl.beone.promena.core.external.akka.transformation.converter.NothingInternalCommunicationCleaner
 import pl.beone.promena.core.external.akka.transformation.transformer.FromTextToXmlAppenderTransformer
 import pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer
 import pl.beone.promena.core.external.akka.transformation.transformer.TimeoutTransformer
@@ -50,6 +51,7 @@ class AkkaTransformationServiceTestIT {
 
     companion object {
         private val internalCommunicationConverter = MirrorInternalCommunicationConverter()
+        private val internalCommunicationCleaner = NothingInternalCommunicationCleaner()
 
         private const val textAppenderTransformerName = "text-appender"
         private const val kotlinTextAppenderTransformerSubName = "kotlin"
@@ -266,7 +268,8 @@ class AkkaTransformationServiceTestIT {
                         TransformerDescriptor(uselessTextAppenderTransformerId, UselessTextAppenderTransformer()),
                         TransformerDescriptor(javaTextAppenderTransformerId, JavaTextAppenderTransformer())
                     ),
-                    internalCommunicationConverter
+                    internalCommunicationConverter,
+                    internalCommunicationCleaner
                 )
             }, textAppenderTransformerName
         )
@@ -276,7 +279,8 @@ class AkkaTransformationServiceTestIT {
                 GroupedByNameTransformerActor(
                     fromTextToXmlAppenderTransformerName,
                     listOf(TransformerDescriptor(fromTextToXmlAppenderTransformerId, FromTextToXmlAppenderTransformer())),
-                    internalCommunicationConverter
+                    internalCommunicationConverter,
+                    internalCommunicationCleaner
                 )
             }, fromTextToXmlAppenderTransformerName
         )
@@ -286,7 +290,8 @@ class AkkaTransformationServiceTestIT {
                 GroupedByNameTransformerActor(
                     timeoutTransformerName,
                     listOf(TransformerDescriptor(timeoutTransformerId, TimeoutTransformer())),
-                    internalCommunicationConverter
+                    internalCommunicationConverter,
+                    internalCommunicationCleaner
                 )
             }, timeoutTransformerName
         )

@@ -41,6 +41,10 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <properties>
+        <promena-communication-utils.version>0.9.0-SNAPSHOT</promena-communication-utils.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -54,7 +58,7 @@
         <dependency>
             <groupId>pl.beone.promena.communication.utils</groupId>
             <artifactId>promena-communication-utils</artifactId>
-            <version>0.9.0-SNAPSHOT</version>
+            <version>${promena-communication-utils.version}</version>
         </dependency>
 
         <dependency>

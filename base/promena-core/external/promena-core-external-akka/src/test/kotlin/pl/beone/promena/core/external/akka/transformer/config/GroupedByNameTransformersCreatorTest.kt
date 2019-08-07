@@ -48,7 +48,7 @@ class GroupedByNameTransformersCreatorTest {
             every { create("barcode", any(), 3) } returns actorRef2
         }
 
-        GroupedByNameTransformersCreator(transformerConfig, mockk(), actorCreator)
+        GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), actorCreator)
             .create(listOf(libreOfficeConverterTransformer, msOfficeConverterTransformer, zxingBarcodeTransformer)) shouldBe
                 listOf(
                     TransformerActorDescriptor(libreOfficeConverterTransformerId, actorRef, 2),
@@ -58,7 +58,7 @@ class GroupedByNameTransformersCreatorTest {
     }
 
     @Test
-    fun `create `() {
+    fun `create _ should throw DuplicatedTransformerIdException`() {
         val libreOfficeConverterTransformer = mockk<Transformer>()
         val libreOfficeConverter2Transformer = mockk<Transformer>()
         val msOfficeConverterTransformer = mockk<Transformer>()
@@ -76,7 +76,7 @@ class GroupedByNameTransformersCreatorTest {
         }
 
         shouldThrow<DuplicatedTransformerIdException> {
-            GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk())
+            GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
                 .create(
                     listOf(
                         libreOfficeConverterTransformer,

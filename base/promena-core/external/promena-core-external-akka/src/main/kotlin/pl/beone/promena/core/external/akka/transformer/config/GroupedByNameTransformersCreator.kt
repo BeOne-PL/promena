@@ -5,6 +5,7 @@ import akka.actor.Props
 import mu.KotlinLogging
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.contract.actor.config.ActorCreator
+import pl.beone.promena.core.contract.communication.internal.InternalCommunicationCleaner
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
@@ -16,6 +17,7 @@ import pl.beone.promena.transformer.contract.Transformer
 class GroupedByNameTransformersCreator(
     private val transformerConfig: TransformerConfig,
     private val internalCommunicationConverter: InternalCommunicationConverter,
+    private val internalCommunicationCleaner: InternalCommunicationCleaner,
     private val actorCreator: ActorCreator
 ) : TransformersCreator {
 
@@ -74,7 +76,7 @@ class GroupedByNameTransformersCreator(
         actorCreator.create(
             transformerName,
             Props.create(GroupedByNameTransformerActor::class.java) {
-                GroupedByNameTransformerActor(transformerName, transformerDescriptors, internalCommunicationConverter)
+                GroupedByNameTransformerActor(transformerName, transformerDescriptors, internalCommunicationConverter, internalCommunicationCleaner)
             },
             maxActors
         )

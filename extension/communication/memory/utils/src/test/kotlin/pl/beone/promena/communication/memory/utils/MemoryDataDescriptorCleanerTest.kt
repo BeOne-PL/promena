@@ -9,15 +9,15 @@ import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 
-class MemoryDataDescriptorDeleterTest {
+class MemoryDataDescriptorCleanerTest {
 
     @Test
-    fun delete() {
+    fun clean() {
         val commonData = mockk<Data>()
         val data = mockk<Data>()
         val transformedData = mockk<Data>()
 
-        MemoryDataDescriptorDeleter.delete(
+        MemoryDataDescriptorCleaner.clean(
             singleDataDescriptor(commonData, MediaTypeConstants.APPLICATION_PDF, mockk()) +
                     singleDataDescriptor(data, MediaTypeConstants.APPLICATION_PDF, mockk()),
             singleTransformedDataDescriptor(transformedData, mockk()) +

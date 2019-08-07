@@ -4,6 +4,7 @@ import akka.actor.AbstractLoggingActor
 import akka.actor.Status
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformersCouldNotTransformException
+import pl.beone.promena.core.contract.communication.internal.InternalCommunicationCleaner
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
@@ -25,7 +26,8 @@ private data class NoSuitedTransformersException(
 class GroupedByNameTransformerActor(
     private val transformerName: String,
     private val transformerDescriptors: List<TransformerDescriptor>,
-    private val internalCommunicationConverter: InternalCommunicationConverter
+    private val internalCommunicationConverter: InternalCommunicationConverter,
+    private val internalCommunicationCleaner: InternalCommunicationCleaner
 ) : AbstractLoggingActor() {
 
     override fun createReceive(): Receive =
@@ -49,9 +51,10 @@ class GroupedByNameTransformerActor(
         parameters: Parameters
     ): TransformedDataDescriptor {
         val (transformedDataDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
-            determineTransformer(transformationTransformerId, dataDescriptor, targetMediaType, parameters)
-                .let { transformer -> transformer.transform(dataDescriptor, targetMediaType, parameters) }
-                .let { transformedDataDescriptor -> internalCommunicationConverter.convert(dataDescriptor, transformedDataDescriptor) }
+            val convertedDataDescriptor = internalCommunicationConverter.convert(dataDescriptor)
+            determineTransformer(transformationTransformerId, convertedDataDescriptor, targetMediaType, parameters)
+                .let { transformer -> transformer.transform(convertedDataDescriptor, targetMediaType, parameters) }
+                .also { transformedDataDescriptor -> internalCommunicationCleaner.clean(convertedDataDescriptor, transformedDataDescriptor) }
         }
 
         if (log().isDebugEnabled) {

@@ -17,11 +17,8 @@ class MemoryExternalCommunicationContext {
         memoryOutgoingExternalCommunicationConverter: MemoryOutgoingExternalCommunicationConverter
     ) =
         ExternalCommunication(
-            environment.getCommunicationId(),
+            environment.getRequiredProperty("communication.memory.external.id"),
             memoryIncomingExternalCommunicationConverter,
             memoryOutgoingExternalCommunicationConverter
         )
-
-    private fun Environment.getCommunicationId(): String =
-        getRequiredProperty("communication.memory.external.id")
 }
