@@ -10,6 +10,7 @@ import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.transaction.TransactionService
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.parameters.PromenaParametersAlfrescoConstants
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -31,8 +32,6 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-
-        internal const val PARAMETER_ALFRESCO_RENDITION_NAME = "alfrescoRenditionName"
     }
 
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
@@ -104,9 +103,11 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     }
 
     private fun Transformation.getAlfrescoRenditionName(): String =
-        transformers.last()
-            .parameters
-            .get(PARAMETER_ALFRESCO_RENDITION_NAME, String::class.java)
+        transformers.map {
+            it.parameters
+                .getParameters(PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO)
+                .get(PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO_RENDITION_NAME, String::class.java)
+        }.last()
 
     private fun Transformation.determineDestinationMediaType(): MediaType =
         transformers.last().targetMediaType

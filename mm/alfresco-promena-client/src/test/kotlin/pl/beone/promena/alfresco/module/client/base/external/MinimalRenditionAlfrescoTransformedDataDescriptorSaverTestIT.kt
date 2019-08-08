@@ -16,8 +16,8 @@ import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.parameters.PromenaParametersAlfrescoConstants
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
-import pl.beone.promena.alfresco.module.client.base.external.MinimalRenditionAlfrescoTransformedDataDescriptorSaver.Companion.PARAMETER_ALFRESCO_RENDITION_NAME
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.emptyTransformedDataDescriptor
@@ -211,7 +211,12 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             alfrescoDataConverter
         )
             .save(
-                singleTransformation("transformer", TEXT_PLAIN, emptyParameters() + (PARAMETER_ALFRESCO_RENDITION_NAME to alfrescoRenditionName)),
+                singleTransformation(
+                    "transformer",
+                    TEXT_PLAIN,
+                    emptyParameters() + (PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO to
+                            emptyParameters() + (PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO_RENDITION_NAME to alfrescoRenditionName))
+                ),
                 listOf(integrationNode),
                 singleTransformedDataDescriptor(noData(), emptyMetadata() + ("alf_string" to "string"))
             )
@@ -230,7 +235,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         ContentModel.PROP_NAME to "transformer",
                         ContentModel.PROP_IS_INDEXED to false,
                         ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={alfrescoRenditionName=pdf}))"),
+                        PromenaTransformationContentModel.PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={alfresco=MapParameters(parameters={renditionName=pdf})}))"),
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 1,
                         QName.createQName("string") to "string"
