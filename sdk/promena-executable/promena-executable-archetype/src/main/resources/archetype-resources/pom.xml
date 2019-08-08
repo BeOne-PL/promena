@@ -128,8 +128,9 @@
 <!--            <version>${promena.cluster.management.kubernetes.version}</version>-->
 <!--        </dependency>-->
 
-        <!-- TRANSFORMER -->
+        <!-- Put TRANSFORMERS configuration dependencies here -->
 
+        <!-- /Put -->
     </dependencies>
 
     <build>
@@ -206,8 +207,9 @@
                 </configuration>
 
                 <dependencies>
-                    <!-- TRANSFORMER -->
+                    <!-- Put TRANSFORMERS dependencies here -->
 
+                    <!-- /Put -->
                 </dependencies>
 
                 <executions>
