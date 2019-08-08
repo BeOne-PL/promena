@@ -17,11 +17,8 @@ class FileExternalCommunicationContext {
         fileOutgoingExternalCommunicationConverter: FileOutgoingExternalCommunicationConverter
     ) =
         ExternalCommunication(
-            environment.getCommunicationId(),
+            environment.getId(),
             fileIncomingExternalCommunicationConverter,
             fileOutgoingExternalCommunicationConverter
         )
-
-    private fun Environment.getCommunicationId(): String =
-        getRequiredProperty("communication.file.external.id")
 }

@@ -3,6 +3,7 @@ package pl.beone.promena.communication.memory.external.configuration.internal
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 import pl.beone.promena.communication.memory.external.internal.MemoryIncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
@@ -13,12 +14,12 @@ class MemoryIncomingExternalCommunicationConverterContext {
 
     @Bean
     fun memoryIncomingExternalCommunicationConverter(
-        @Qualifier("memoryExternalCommunication") externalCommunication: ExternalCommunication,
+        environment: Environment,
         @Qualifier("internalCommunicationParameters") internalCommunicationParameters: CommunicationParameters,
         internalCommunicationConverter: InternalCommunicationConverter
     ) =
         MemoryIncomingExternalCommunicationConverter(
-            externalCommunication.id,
+            environment.getId(),
             internalCommunicationParameters,
             internalCommunicationConverter
         )

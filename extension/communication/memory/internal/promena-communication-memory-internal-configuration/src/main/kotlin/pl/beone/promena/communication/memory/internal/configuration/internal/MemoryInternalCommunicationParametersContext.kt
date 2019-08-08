@@ -12,5 +12,5 @@ class MemoryInternalCommunicationParametersContext {
     fun internalCommunicationParameters(
         environment: Environment
     ) =
-        communicationParameters(environment.getRequiredProperty("communication.memory.internal.id"))
+        communicationParameters(environment.getId())
 }

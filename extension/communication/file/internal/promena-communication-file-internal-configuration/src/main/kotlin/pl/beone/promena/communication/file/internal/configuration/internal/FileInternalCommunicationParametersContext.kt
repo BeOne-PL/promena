@@ -14,6 +14,6 @@ class FileInternalCommunicationParametersContext {
     fun internalCommunicationParameters(
         environment: Environment
     ) =
-        communicationParameters(environment.getRequiredProperty("communication.file.internal.id")) +
-                ("location" to URI(environment.getRequiredProperty("communication.file.internal.location")))
+        communicationParameters(environment.getId()) +
+                ("location" to environment.getLocation())
 }

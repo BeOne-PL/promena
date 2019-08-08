@@ -17,7 +17,7 @@ class MemoryExternalCommunicationContext {
         memoryOutgoingExternalCommunicationConverter: MemoryOutgoingExternalCommunicationConverter
     ) =
         ExternalCommunication(
-            environment.getRequiredProperty("communication.memory.external.id"),
+            environment.getId(),
             memoryIncomingExternalCommunicationConverter,
             memoryOutgoingExternalCommunicationConverter
         )

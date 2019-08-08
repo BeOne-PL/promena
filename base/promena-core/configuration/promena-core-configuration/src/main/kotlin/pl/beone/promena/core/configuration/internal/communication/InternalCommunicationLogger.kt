@@ -20,7 +20,7 @@ class InternalCommunicationLogger(
     @PostConstruct
     private fun log() {
         logger.info {
-            "Internal communication: <${communicationParameters.getId()}> <${internalCommunicationConverter::class.qualifiedName}> <${internalCommunicationConverter::class.qualifiedName}>"
+            "Internal communication <${communicationParameters.getId()}> <${internalCommunicationConverter::class.qualifiedName}> <${internalCommunicationConverter::class.qualifiedName}>"
         }
     }
 }
