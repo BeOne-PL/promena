@@ -81,7 +81,6 @@ class FileDescriptorConverterTest {
             every { getInputStream() } returns dataContent.inputStream()
             every { delete() } just Runs
         }
-        val mediaType = MediaTypeConstants.TEXT_PLAIN
         val metadata = mockk<Metadata>()
 
         val location = createTempDir().toURI()
