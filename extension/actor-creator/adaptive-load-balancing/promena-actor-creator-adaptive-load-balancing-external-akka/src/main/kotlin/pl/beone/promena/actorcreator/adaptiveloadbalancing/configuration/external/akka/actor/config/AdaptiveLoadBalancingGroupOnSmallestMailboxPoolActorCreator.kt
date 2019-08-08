@@ -15,19 +15,22 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(
     private val metricsSelector: MetricsSelector
 ) : ActorCreator {
 
-    override fun create(name: String, props: Props, actors: Int): ActorRef =
+    override fun create(name: String, props: Props, actors: Int): ActorRef {
+        createSmallestMailboxPool(name, props, actors)
+        return createAdaptiveLoadBalancingGroupOnSmallestMailboxPoolPath(name)
+    }
+
+    private fun createSmallestMailboxPool(name: String, props: Props, actors: Int) {
+        actorSystem.actorOf(SmallestMailboxPool(actors).props(props), name)
+    }
+
+    private fun createAdaptiveLoadBalancingGroupOnSmallestMailboxPoolPath(name: String): ActorRef =
         actorSystem.actorOf(
             ClusterRouterGroup(
                 AdaptiveLoadBalancingGroup(metricsSelector, emptySet()),
                 ClusterRouterGroupSettings(Int.MAX_VALUE, listOf("/user/$name"), true, emptySet())
-            )
-                .props(),
+            ).props(),
             "$name-router"
         )
-
-    // TODO it should be use
-    private fun createSmallestMailboxPool(transformerId: String, props: Props, actors: Int) {
-        actorSystem.actorOf(SmallestMailboxPool(actors).props(props), transformerId)
-    }
 
 }
