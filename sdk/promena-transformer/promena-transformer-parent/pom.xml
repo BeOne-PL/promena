@@ -53,7 +53,7 @@
         <kotlintest-runner-junit5.version>3.4.0</kotlintest-runner-junit5.version>
         <junit-jupiter.version>5.5.1</junit-jupiter.version>
         <mockk.version>1.9.3</mockk.version>
-        <docker-extension-test.version>0.9.0-SNAPSHOT</docker-extension-test.version>
+        <docker-extension-junit5.version>0.9.0-SNAPSHOT</docker-extension-junit5.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
@@ -130,8 +130,8 @@
             </dependency>
             <dependency>
                 <groupId>pl.beone.lib</groupId>
-                <artifactId>docker-extension-test</artifactId>
-                <version>${docker-extension-test.version}</version>
+                <artifactId>docker-extension-junit5</artifactId>
+                <version>${docker-extension-junit5.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

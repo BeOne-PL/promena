@@ -11,6 +11,9 @@ import pl.beone.promena.transformer.internal.model.parameters.addIfNotNull
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import pl.beone.promena.transformer.internal.model.parameters.plus
 
+fun ${transformerName}Transformation(targetMediaType: MediaType, parameters: Parameters): Transformation.Single =
+    singleTransformation(${pascalCaseTransformerId}Constants.TRANSFORMER_NAME, targetMediaType, parameters)
+
 fun ${camelCaseTransformerId}Transformation(targetMediaType: MediaType, parameters: Parameters): Transformation.Single =
     singleTransformation(${pascalCaseTransformerId}Constants.TRANSFORMER_ID, targetMediaType, parameters)
 

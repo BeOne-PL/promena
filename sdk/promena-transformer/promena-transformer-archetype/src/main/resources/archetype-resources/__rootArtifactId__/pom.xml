@@ -57,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>pl.beone.lib</groupId>
-            <artifactId>docker-extension-test</artifactId>
+            <artifactId>docker-extension-junit5</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
