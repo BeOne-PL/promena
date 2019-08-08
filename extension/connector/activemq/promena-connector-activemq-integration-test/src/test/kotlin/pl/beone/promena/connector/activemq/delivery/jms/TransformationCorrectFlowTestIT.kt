@@ -27,7 +27,7 @@ import pl.beone.promena.connector.activemq.integrationtest.IntegrationTestApplic
 import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.activemq.integrationtest.test.TransformationResponseConsumer
-import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
@@ -52,7 +52,7 @@ class TransformationCorrectFlowTestIT {
         private val correlationId = UUID.randomUUID().toString()
         private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata())
         private val transformation = singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters())
-        private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptor)
+        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor)
         private val transformedData = """" {"test":"test"} """.toMemoryData()
     }
 

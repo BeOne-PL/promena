@@ -3,7 +3,6 @@ package pl.beone.promena.connector.http.delivery.http
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockkObject
-import org.junit.Before
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
@@ -20,8 +19,9 @@ import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.connector.http.configuration.HttpConnectorModuleConfig
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
-import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
@@ -55,10 +55,9 @@ class TransformerHandlerTestIT {
         private val requestBody = "request body".toByteArray()
         private val transformation = singleTransformation("default", TEXT_PLAIN, emptyParameters())
         private val dataDescriptor = emptyDataDescriptor()
-        private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptor)
+        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor)
         private val transformedDataDescriptor = singleTransformedDataDescriptor("".toMemoryData(), emptyMetadata())
-        private val performedTransformationDescriptor =
-            PerformedTransformationDescriptor.of(transformation, transformedDataDescriptor)
+        private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private val responseBody = "response body".toByteArray()
     }
 

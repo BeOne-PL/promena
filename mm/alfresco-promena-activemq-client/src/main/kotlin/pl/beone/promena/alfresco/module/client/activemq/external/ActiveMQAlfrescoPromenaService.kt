@@ -11,7 +11,7 @@ import pl.beone.promena.alfresco.module.client.base.common.startSync
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaService
-import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono
 import java.time.Duration
@@ -65,7 +65,7 @@ class ActiveMQAlfrescoPromenaService(
         val reactiveTransformation = reactiveTransformationManager.startTransformation(id)
         transformerSender.send(
             id,
-            TransformationDescriptor.of(transformation, dataDescriptors),
+            transformationDescriptor(transformation, dataDescriptors),
             nodeRefs,
             nodesChecksum,
             retry,

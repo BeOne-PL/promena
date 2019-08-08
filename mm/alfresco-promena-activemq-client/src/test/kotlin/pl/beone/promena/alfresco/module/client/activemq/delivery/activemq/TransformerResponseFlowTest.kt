@@ -24,7 +24,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.A
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
-import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
@@ -68,7 +68,7 @@ class TransformerResponseFlowTest {
         )
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
         private val transformedDataDescriptor = singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value"))
-        private val performedTransformationDescriptor = PerformedTransformationDescriptor.of(transformation, transformedDataDescriptor)
+        private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private const val nodesChecksum = "123456789"
         private val resultNodeRef = NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff")
     }

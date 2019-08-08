@@ -24,7 +24,8 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecks
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
-import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
@@ -58,9 +59,9 @@ class HttpClientAlfrescoPromenaServiceTest {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
         private val transformation = singleTransformation("transformer", TEXT_PLAIN, emptyParameters() + ("key" to "value"))
         private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
-        private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptor)
+        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor)
         private val transformedDataDescriptor = singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata())
-        private val performedTransformationDescriptor = PerformedTransformationDescriptor.of(transformation, transformedDataDescriptor)
+        private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private val transformedNodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"))
 
         private lateinit var httpServer: DisposableServer

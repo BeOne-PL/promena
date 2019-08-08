@@ -8,8 +8,8 @@ import org.springframework.web.server.ResponseStatusException
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
-import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import reactor.core.publisher.Mono
@@ -29,7 +29,7 @@ class TransformerHandler(
         serverRequest.bodyToMono(ByteArray::class.java)
             .map(::deserializeTransformationDescriptor)
             .map { (transformation, dataDescriptor) ->
-                PerformedTransformationDescriptor.of(
+                performedTransformationDescriptor(
                     transformation,
                     transformationUseCase.transform(transformation, dataDescriptor, communicationParametersConverter.convert(serverRequest.queryParams()))
                 )

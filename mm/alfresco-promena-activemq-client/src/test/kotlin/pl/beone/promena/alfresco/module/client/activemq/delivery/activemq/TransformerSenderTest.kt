@@ -24,6 +24,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.custo
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
@@ -65,7 +66,7 @@ class TransformerSenderTest {
         private const val nodesChecksum = "123456789"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
         private val dataDescriptors = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
-        private val transformationDescriptor = TransformationDescriptor.of(transformation, dataDescriptors)
+        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptors)
         private const val attempt = 1L
     }
 

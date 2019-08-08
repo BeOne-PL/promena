@@ -27,7 +27,7 @@ import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
 import pl.beone.promena.connector.activemq.integrationtest.test.TransformationResponseConsumer
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
-import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
@@ -112,7 +112,7 @@ class TransformationCommunicationParametersValidationExceptionFlowTestIT {
     private fun sendRequestMessage() {
         jmsTemplate.convertAndSend(
             ActiveMQQueue(queueRequest),
-            TransformationDescriptor.of(
+            transformationDescriptor(
                 singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters()),
                 singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
             )

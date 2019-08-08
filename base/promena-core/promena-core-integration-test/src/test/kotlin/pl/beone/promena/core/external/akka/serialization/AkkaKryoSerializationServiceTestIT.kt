@@ -15,6 +15,8 @@ import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.external.akka.actor.serializer.KryoSerializerActor
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
@@ -84,10 +86,10 @@ class AkkaKryoSerializationServiceTestIT {
 
     @Test
     fun `serialize and deserialize _ single TransformationDescriptor`() {
-        val transformationDescriptor = TransformationDescriptor.of(
-            singleTransformation("test", MediaTypeConstants.APPLICATION_PDF, emptyParameters()),
-            singleDataDescriptor("test".toMemoryData(), MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyMetadata())
+        val transformationDescriptor = transformationDescriptor(
+            singleTransformation("test", APPLICATION_PDF, emptyParameters()),
+            singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
+                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 
         akkaKryoSerializationService.deserialize(
@@ -99,7 +101,7 @@ class AkkaKryoSerializationServiceTestIT {
 
     @Test
     fun `serialize and deserialize _ composite TransformationDescriptor`() {
-        val transformationDescriptor = TransformationDescriptor.of(
+        val transformationDescriptor = transformationDescriptor(
             singleTransformation("test", MediaTypeConstants.APPLICATION_PDF, emptyParameters()) next
                     singleTransformation("test2", MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyParameters()),
             singleDataDescriptor("test".toMemoryData(), MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
@@ -135,7 +137,7 @@ class AkkaKryoSerializationServiceTestIT {
 
     @Test
     fun `serialize _ and _ deserialize _ PerformedTransformationDescriptor`() {
-        val transformedDataDescriptor = PerformedTransformationDescriptor.of(
+        val transformedDataDescriptor = performedTransformationDescriptor(
             singleTransformation("transformer", APPLICATION_PDF, emptyParameters()),
             singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
                     singleTransformedDataDescriptor("test2".toMemoryData(), emptyMetadata())
@@ -150,7 +152,7 @@ class AkkaKryoSerializationServiceTestIT {
 
     @Test
     fun `serialize _ and _ deserialize _ TransformationDescriptor`() {
-        val transformationDescriptor = TransformationDescriptor.of(
+        val transformationDescriptor = transformationDescriptor(
             singleTransformation("test", APPLICATION_PDF, emptyParameters() + ("key" to "value")),
             singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
                     singleDataDescriptor("test2".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())

@@ -18,7 +18,7 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformed
 import pl.beone.promena.alfresco.module.client.http.applicationmodel.exception.HttpException
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
-import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.transformation.Transformation
@@ -84,7 +84,7 @@ class HttpClientAlfrescoPromenaService(
 
         val serializedTransformationDescriptor = Mono.just(nodeRefs)
             .map(alfrescoDataDescriptorGetter::get)
-            .map { dataDescriptor -> TransformationDescriptor.of(transformation, dataDescriptor) }
+            .map { dataDescriptor -> transformationDescriptor(transformation, dataDescriptor) }
             .map(serializationService::serialize)
 
         return httpClient

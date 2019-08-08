@@ -10,8 +10,8 @@ import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
-import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 
 class TransformationConsumer(
@@ -45,7 +45,7 @@ class TransformationConsumer(
         val (transformation, dataDescriptor) = transformationDescriptor
 
         val (queue, payload) = try {
-            responseQueue to PerformedTransformationDescriptor.of(
+            responseQueue to performedTransformationDescriptor(
                 transformation,
                 transformationUseCase.transform(transformation, dataDescriptor, communicationParametersConverter.convert(headers))
             )

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
+import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.data.plus
@@ -47,7 +48,7 @@ class KryoSerializationServiceTest {
 
     @Test
     fun `serialize and deserialize _ single TransformationDescriptor`() {
-        val transformationDescriptor = TransformationDescriptor.of(
+        val transformationDescriptor = transformationDescriptor(
             singleTransformation("test", APPLICATION_PDF, emptyParameters()),
             singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
                     singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
@@ -59,7 +60,7 @@ class KryoSerializationServiceTest {
 
     @Test
     fun `serialize and deserialize _ composite TransformationDescriptor`() {
-        val transformationDescriptor = TransformationDescriptor.of(
+        val transformationDescriptor = transformationDescriptor(
             singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
                     singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
             singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
