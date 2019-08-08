@@ -55,7 +55,10 @@
     <properties>
         <promena-connector-activemq.version>0.9.0-SNAPSHOT</promena-connector-activemq.version>
 
+        <javax.jms-api.version>2.0.1</javax.jms-api.version>
         <commons-math3.version>3.6.1</commons-math3.version>
+
+        <testcontainers.version>1.12.0</testcontainers.version>
     </properties>
 
     <dependencies>

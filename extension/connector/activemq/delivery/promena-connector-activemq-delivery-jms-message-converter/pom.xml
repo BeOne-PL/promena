@@ -12,10 +12,6 @@
 
     <artifactId>promena-connector-activemq-delivery-jms-message-converter</artifactId>
 
-    <properties>
-        <javax.jms-api.version>2.0.1</javax.jms-api.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>pl.beone.promena.core</groupId>
