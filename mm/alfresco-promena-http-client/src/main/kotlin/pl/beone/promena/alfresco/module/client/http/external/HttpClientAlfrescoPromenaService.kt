@@ -11,10 +11,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.N
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.common.*
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaService
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.client.base.contract.*
 import pl.beone.promena.alfresco.module.client.http.applicationmodel.exception.HttpException
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
@@ -40,6 +37,7 @@ class HttpClientAlfrescoPromenaService(
     private val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
     private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
     private val serializationService: SerializationService,
+    private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
     private val httpClient: HttpClient
 ) : AlfrescoPromenaService {
 
@@ -87,6 +85,8 @@ class HttpClientAlfrescoPromenaService(
             .map { dataDescriptor -> transformationDescriptor(transformation, dataDescriptor) }
             .map(serializationService::serialize)
 
+        val userName = alfrescoAuthenticationService.getCurrentUser()
+
         return httpClient
             .setContentTypeHeader()
             .post()
@@ -95,7 +95,10 @@ class HttpClientAlfrescoPromenaService(
             .responseSingle { response, bytes -> zipBytesWithResponse(bytes, response) }
             .map { byteArrayAndClientResponse -> handleTransformationResult(byteArrayAndClientResponse.t2, byteArrayAndClientResponse.t1) }
             .doOnNext { verifyConsistency(nodeRefs, nodesChecksum) }
-            .map { (_, transformedDataDescriptor) -> alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor) }
+            .map { (_, transformedDataDescriptor) ->
+                alfrescoAuthenticationService.runAs(userName)
+                { alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor) }
+            }
             .doOnNext { resultNodeRefs -> logger.transformedSuccessfully(transformation, nodeRefs, resultNodeRefs, startTimestamp, currentTimeMillis()) }
             .doOnError { exception -> handleError(transformation, nodeRefs, nodesChecksum, exception) }
             .retryOnError(transformation, nodeRefs, retry)

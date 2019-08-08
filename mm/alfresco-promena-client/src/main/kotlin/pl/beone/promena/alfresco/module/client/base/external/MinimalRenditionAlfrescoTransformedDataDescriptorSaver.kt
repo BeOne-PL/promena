@@ -48,8 +48,6 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
                 }
             }
 
-            logger.debug { "Created <$transformation> rendition nodes <$renditionsNodeRefs> as a child of <$sourceNodeRef>" }
-
             renditionsNodeRefs
         }
 
