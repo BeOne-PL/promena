@@ -11,10 +11,6 @@
 
     <artifactId>promena-connector-activemq-integration-test</artifactId>
 
-    <properties>
-        <testcontainers.version>1.11.2</testcontainers.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
