@@ -51,7 +51,7 @@
     <properties>
         <promena-transformer.version>0.9.0-SNAPSHOT</promena-transformer.version>
 
-        <type-converter.version>0.9.0</type-converter.version>
+        <type-converter.version>0.9.0-SNAPSHOT</type-converter.version>
     </properties>
 
     <dependencies>
