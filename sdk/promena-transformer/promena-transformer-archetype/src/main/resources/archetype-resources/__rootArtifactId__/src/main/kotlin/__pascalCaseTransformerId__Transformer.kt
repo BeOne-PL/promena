@@ -20,14 +20,14 @@ class ${pascalCaseTransformerId}Transformer(private val internalCommunicationPar
         }.toTransformedDataDescriptor()
 
     override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
-        if (dataDescriptor.descriptors.any { it.mediaType != MediaTypeConstants.TEXT_PLAIN } || targetMediaType != MediaTypeConstants.TEXT_PLAIN) {
-            throw TransformerCouldNotTransformException("Supported transformations: text/plain -> text/plain")
+        if (dataDescriptor.descriptors.any { it.mediaType.mimeType != MediaTypeConstants.TEXT_PLAIN.mimeType } || targetMediaType.mimeType != MediaTypeConstants.TEXT_PLAIN.mimeType) {
+            throw TransformerCouldNotTransformException("Supported transformation: text/plain -> text/plain")
         }
 
         try {
             parameters.get(${pascalCaseTransformerId}Constants.Parameters.EXAMPLE)
         } catch (e: NoSuchElementException) {
-            throw TransformerCouldNotTransformException("Mandatory parameters: ${${pascalCaseTransformerId}Constants.Parameters.EXAMPLE}")
+            throw TransformerCouldNotTransformException("Mandatory parameter: ${${pascalCaseTransformerId}Constants.Parameters.EXAMPLE}")
         }
     }
 }
