@@ -11,6 +11,7 @@ import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransfo
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.common.skippedSavingResult
 import pl.beone.promena.alfresco.module.client.base.common.transformedSuccessfully
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
@@ -19,6 +20,7 @@ import pl.beone.promena.core.applicationmodel.transformation.PerformedTransforma
 class TransformerResponseConsumer(
     private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
     private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
+    private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
     private val reactiveTransformationManager: ReactiveTransformationManager
 ) {
 
@@ -35,6 +37,7 @@ class TransformerResponseConsumer(
         @Header(PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP) endTimestamp: Long,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME) userName: String,
         @Payload performedTransformationDescriptor: PerformedTransformationDescriptor
     ) {
         val nodeRefs = nodeRefsConverter.convert(rawNodeRefs)
@@ -49,7 +52,9 @@ class TransformerResponseConsumer(
             )
             logger.skippedSavingResult(transformation, nodeRefs, nodesChecksum, currentNodesChecksum)
         } else {
-            val targetNodeRefs = alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
+            val targetNodeRefs = alfrescoAuthenticationService.runAs(userName) {
+                alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
+            }
             reactiveTransformationManager.completeTransformation(correlationId, targetNodeRefs)
             logger.transformedSuccessfully(transformation, nodeRefs, targetNodeRefs, startTimestamp, endTimestamp)
         }

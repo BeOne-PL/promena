@@ -3,9 +3,12 @@ package pl.beone.promena.alfresco.module.client.activemq.delivery.activemq
 import io.kotlintest.fail
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
+import io.mockk.clearMocks
+import io.mockk.every
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQMessage
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +25,7 @@ import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.contex
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.File
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
@@ -64,10 +68,20 @@ class TransformerSenderTest {
         private val communicationLocation = URI("file:/tmp")
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
         private const val nodesChecksum = "123456789"
+        private const val userName = "admin"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
         private val dataDescriptors = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
         private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptors)
         private const val attempt = 1L
+    }
+
+    @Autowired
+    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+
+    @Before
+    fun setUp() {
+        clearMocks(alfrescoAuthenticationService)
+        every { alfrescoAuthenticationService.getCurrentUser() } returns userName
     }
 
     @After
@@ -86,6 +100,7 @@ class TransformerSenderTest {
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
+                PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT to attempt,
                 PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED to false,
@@ -110,6 +125,7 @@ class TransformerSenderTest {
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
+                PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT to attempt,
                 PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED to true,

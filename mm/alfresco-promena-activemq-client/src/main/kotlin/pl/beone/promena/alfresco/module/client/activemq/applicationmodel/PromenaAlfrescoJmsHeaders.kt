@@ -7,6 +7,7 @@ object PromenaAlfrescoJmsHeaders {
 
     const val SEND_BACK_NODE_REFS = "${PromenaJmsHeaders.SEND_BACK_PREFIX}node_refs"
     const val SEND_BACK_NODES_CHECKSUM = "${PromenaJmsHeaders.SEND_BACK_PREFIX}nodes_checksum"
+    const val SEND_BACK_USER_NAME = "${PromenaJmsHeaders.SEND_BACK_PREFIX}user_name"
 
     const val SEND_BACK_ATTEMPT = "${PromenaJmsHeaders.SEND_BACK_PREFIX}attempt"
 

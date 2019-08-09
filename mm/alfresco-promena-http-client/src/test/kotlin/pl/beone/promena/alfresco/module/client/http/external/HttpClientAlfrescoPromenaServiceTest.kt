@@ -60,7 +60,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         private val transformedDataDescriptor = singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata())
         private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private val transformedNodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"))
-        private const val userName = "noMatter"
+        private const val userName = "admin"
         private lateinit var alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter
         private lateinit var alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver
         private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService

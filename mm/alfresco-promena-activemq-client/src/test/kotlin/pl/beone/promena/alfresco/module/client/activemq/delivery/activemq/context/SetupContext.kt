@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.JmsQueueUtils
 import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaService
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 
@@ -32,6 +33,10 @@ class SetupContext {
     @Bean
     fun alfrescoTransformedDataDescriptorSaver() =
         mockk<AlfrescoTransformedDataDescriptorSaver>()
+
+    @Bean
+    fun alfrescoAuthenticationService() =
+        mockk<AlfrescoAuthenticationService>()
 
     @Bean
     fun activeMQAlfrescoPromenaService() =

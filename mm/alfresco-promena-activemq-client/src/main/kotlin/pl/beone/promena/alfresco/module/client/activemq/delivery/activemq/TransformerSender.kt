@@ -7,6 +7,7 @@ import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.Promena
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
@@ -16,6 +17,7 @@ import javax.jms.Message
 class TransformerSender(
     private val externalCommunication: ExternalCommunication,
     private val transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
+    private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
     private val queueRequest: ActiveMQQueue,
     private val jmsTemplate: JmsTemplate
 ) {
@@ -40,6 +42,7 @@ class TransformerSender(
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, alfrescoAuthenticationService.getCurrentUser())
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, attempt)
                 if (retry == noRetry()) {

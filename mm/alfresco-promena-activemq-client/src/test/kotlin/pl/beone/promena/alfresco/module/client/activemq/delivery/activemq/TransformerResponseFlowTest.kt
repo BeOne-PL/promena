@@ -2,10 +2,12 @@ package pl.beone.promena.alfresco.module.client.activemq.delivery.activemq
 
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.shouldThrow
+import io.mockk.clearMocks
 import io.mockk.every
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,8 +23,8 @@ import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.contex
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
@@ -58,9 +60,6 @@ class TransformerResponseFlowTest {
     @Autowired
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
-    @Autowired
-    private lateinit var alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver
-
     companion object {
         private val nodeRefs = listOf(
             NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
@@ -70,7 +69,18 @@ class TransformerResponseFlowTest {
         private val transformedDataDescriptor = singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value"))
         private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private const val nodesChecksum = "123456789"
-        private val resultNodeRef = NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff")
+        private const val userName = "admin"
+        private val resultNodeRefs = listOf(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
+    }
+
+    @Autowired
+    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+
+    @Before
+    fun setUp() {
+        clearMocks(alfrescoAuthenticationService)
+        every { alfrescoAuthenticationService.getCurrentUser() } returns userName
+        every { alfrescoAuthenticationService.runAs<List<NodeRef>>(userName, any()) } returns resultNodeRefs
     }
 
     @After
@@ -86,15 +96,11 @@ class TransformerResponseFlowTest {
             alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
         } returns nodesChecksum
 
-        every {
-            alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor)
-        } returns listOf(resultNodeRef)
-
         val transformation = reactiveTransformationManager.startTransformation(id)
         sendResponseMessage(id)
 
         transformation.block(Duration.ofSeconds(2)) shouldContainExactly
-                listOf(resultNodeRef)
+                resultNodeRefs
     }
 
     @Test
@@ -122,6 +128,7 @@ class TransformerResponseFlowTest {
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
                 setStringProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
+                setStringProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, userName)
             }
         }
     }
