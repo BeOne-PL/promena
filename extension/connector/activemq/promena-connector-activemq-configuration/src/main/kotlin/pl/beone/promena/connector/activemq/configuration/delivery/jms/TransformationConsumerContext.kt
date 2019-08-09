@@ -35,7 +35,7 @@ class TransformationConsumerContext {
         val messageSelector =
             transformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
 
-        logger.info { "Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE}>: $messageSelector" }
+        logger.debug { "Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE}>: $messageSelector" }
 
         environment.propertySources.addLast(
             MapPropertySource(
