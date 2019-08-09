@@ -103,7 +103,6 @@ class TransformerSenderTest {
                 PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT to attempt,
-                PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED to false,
                 PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS to 0L,
                 PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY to Duration.ZERO.toString().toUTF8Buffer()
             )
@@ -128,7 +127,6 @@ class TransformerSenderTest {
                 PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT to attempt,
-                PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED to true,
                 PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS to retryMaxAttempts,
                 PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY to retryNextAttemptDelay.toString().toUTF8Buffer()
             )

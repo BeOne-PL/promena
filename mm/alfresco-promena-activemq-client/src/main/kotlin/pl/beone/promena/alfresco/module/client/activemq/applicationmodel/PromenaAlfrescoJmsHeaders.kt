@@ -11,7 +11,6 @@ object PromenaAlfrescoJmsHeaders {
 
     const val SEND_BACK_ATTEMPT = "${PromenaJmsHeaders.SEND_BACK_PREFIX}attempt"
 
-    const val SEND_BACK_RETRY_ENABLED = "${PromenaJmsHeaders.SEND_BACK_PREFIX}retry_enabled"
     const val SEND_BACK_RETRY_MAX_ATTEMPTS = "${PromenaJmsHeaders.SEND_BACK_PREFIX}retry_max_attempts"
     const val SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY = "${PromenaJmsHeaders.SEND_BACK_PREFIX}retry_next_attempt_delay"
 }

@@ -46,16 +46,15 @@ class TransformerSender(
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, attempt)
                 if (retry == noRetry()) {
-                    setRetryHeaders(false, 0, Duration.ZERO)
+                    setRetryHeaders(0, Duration.ZERO)
                 } else {
-                    setRetryHeaders(true, retry.maxAttempts, retry.nextAttemptDelay)
+                    setRetryHeaders(retry.maxAttempts, retry.nextAttemptDelay)
                 }
             }
         }
     }
 
-    private fun Message.setRetryHeaders(enabled: Boolean, maxAttempts: Long, nextAttemptDelay: Duration?) {
-        setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED, enabled)
+    private fun Message.setRetryHeaders(maxAttempts: Long, nextAttemptDelay: Duration?) {
         setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS, maxAttempts)
         setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY, nextAttemptDelay.toString())
     }

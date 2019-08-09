@@ -2,11 +2,12 @@ package pl.beone.promena.alfresco.module.client.activemq.delivery.activemq
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
+import io.mockk.clearMocks
 import io.mockk.every
-import io.mockk.verify
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,6 +24,7 @@ import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.contex
 import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
@@ -68,9 +70,19 @@ class TransformerResponseErrorRetryFlowTest {
             NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")
         )
         private const val nodesChecksum = "123456789"
+        private const val userName = "admin"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
         private val exception = TransformationTerminationException(transformation, "Exception")
-        private val retry = customRetry(2, Duration.ofMillis(100))
+        private val retry = customRetry(1, Duration.ofMillis(100))
+    }
+
+    @Autowired
+    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+
+    @Before
+    fun setUp() {
+        clearMocks(alfrescoAuthenticationService)
+        every { alfrescoAuthenticationService.getCurrentUser() } returns userName
     }
 
     @After
@@ -84,13 +96,9 @@ class TransformerResponseErrorRetryFlowTest {
             alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
         } returns nodesChecksum
 
-        val monoError = Mono.error<List<NodeRef>>(exception)
         every {
-            activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, 1)
-        } returns monoError
-        every {
-            activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, 2)
-        } returns monoError
+            alfrescoAuthenticationService.runAs<Mono<List<NodeRef>>>(userName, any())
+        } returns Mono.error(exception)
 
         val transformation = reactiveTransformationManager.startTransformation(id)
 
@@ -103,10 +111,6 @@ class TransformerResponseErrorRetryFlowTest {
         shouldThrow<TransformationTerminationException> {
             transformation.block(Duration.ofSeconds(2))
         }.message shouldBe exception.message
-
-        verify {
-            activeMQAlfrescoPromenaTransformer.transformAsync(id, Companion.transformation, nodeRefs, retry, 1)
-        }
     }
 
     private fun sendResponseErrorMessage(attempt: Int) {
@@ -118,9 +122,9 @@ class TransformerResponseErrorRetryFlowTest {
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, userName)
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, attempt)
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED, true)
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS, retry.maxAttempts)
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY, retry.nextAttemptDelay.toString())
             }

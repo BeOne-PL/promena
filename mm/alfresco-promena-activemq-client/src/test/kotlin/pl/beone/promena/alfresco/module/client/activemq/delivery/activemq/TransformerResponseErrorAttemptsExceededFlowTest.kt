@@ -59,13 +59,12 @@ class TransformerResponseErrorAttemptsExceededFlowTest {
             NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")
         )
         private const val nodesChecksum = "123456789"
-        private val transformation = singleTransformation("transformer-test", MediaTypeConstants.APPLICATION_PDF, emptyParameters())
         private val exception = TransformationException(
             singleTransformation("transformer-test", MediaTypeConstants.APPLICATION_PDF, emptyParameters() + ("key" to "value")),
             "Exception"
         )
         private val retry = customRetry(1, Duration.ofMillis(100))
-        private const val attempt = 1L
+        private const val attempt = 2L
     }
 
     @After
@@ -83,14 +82,13 @@ class TransformerResponseErrorAttemptsExceededFlowTest {
             transformation.block(Duration.ofSeconds(1))
         }.message shouldContain "Timeout on blocking read for"
 
-        (jmsTemplate.receive(queueResponseError) as ActiveMQBytesMessage).properties[PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT] shouldBe 1
+        (jmsTemplate.receive(queueResponseError) as ActiveMQBytesMessage).properties[PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT] shouldBe attempt
     }
 
     private fun sendResponseErrorMessage() {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) { message ->
             message.apply {
-                jmsCorrelationID =
-                    id
+                jmsCorrelationID = id
                 setLongProperty(PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP, System.currentTimeMillis())
                 setLongProperty(PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP, System.currentTimeMillis() + Duration.ofDays(1).toMillis())
 
@@ -98,7 +96,6 @@ class TransformerResponseErrorAttemptsExceededFlowTest {
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, attempt)
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_ENABLED, true)
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS, retry.maxAttempts)
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY, retry.nextAttemptDelay.toString())
             }
