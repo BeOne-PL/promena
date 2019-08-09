@@ -8,15 +8,15 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticat
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
-import pl.beone.promena.alfresco.module.client.http.external.HttpClientAlfrescoPromenaService
+import pl.beone.promena.alfresco.module.client.http.external.HttpClientAlfrescoPromenaTransformer
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 import reactor.netty.http.client.HttpClient
 
 @Configuration
-class HttpClientAlfrescoPromenaServiceContext {
+class HttpClientAlfrescoPromenaTransformerContext {
 
     @Bean
-    fun httpClientAlfrescoPromenaService(
+    fun httpClientAlfrescoPromenaTransformer(
         externalCommunication: ExternalCommunication,
         retry: Retry,
         alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
@@ -26,7 +26,7 @@ class HttpClientAlfrescoPromenaServiceContext {
         alfrescoAuthenticationService: AlfrescoAuthenticationService,
         httpClient: HttpClient
     ) =
-        HttpClientAlfrescoPromenaService(
+        HttpClientAlfrescoPromenaTransformer(
             externalCommunication,
             retry,
             alfrescoNodesChecksumGenerator,

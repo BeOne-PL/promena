@@ -22,7 +22,7 @@ class TransformationContentService(private val restTransformationService: RestTr
     override fun transform(reader: ContentReader, writer: ContentWriter, options: TransformationOptions) {
         try {
             val convertedByteArray =
-                    transform(reader.readContent(), reader.encoding, reader.mimetype.convertToMimeType(), writer.mimetype.convertToMimeType())
+                transform(reader.readContent(), reader.encoding, reader.mimetype.convertToMimeType(), writer.mimetype.convertToMimeType())
 
             writer.writeContent(convertedByteArray)
         } catch (e: Exception) {
@@ -30,18 +30,22 @@ class TransformationContentService(private val restTransformationService: RestTr
         }
     }
 
-    private fun transform(byteArray: ByteArray,
-                          charset: String,
-                          mimeType: MimeType,
-                          targetMimeType: MimeType): ByteArray {
+    private fun transform(
+        byteArray: ByteArray,
+        charset: String,
+        mimeType: MimeType,
+        targetMimeType: MimeType
+    ): ByteArray {
         val contentWithMetadataList =
-                restTransformationService.transform(TransformationType.CONVERT,
-                                                    byteArray,
-                                                    charset,
-                                                    mimeType,
-                                                    targetMimeType,
-                                                    Parameters.empty(),
-                                                    null)
+            restTransformationService.transform(
+                TransformationType.CONVERT,
+                byteArray,
+                charset,
+                mimeType,
+                targetMimeType,
+                Parameters.empty(),
+                null
+            )
 
         if (contentWithMetadataList.size > 1) {
             throw TransformationException("Transformation returned more than one document <${contentWithMetadataList.size}>")
@@ -51,11 +55,11 @@ class TransformationContentService(private val restTransformationService: RestTr
     }
 
     private fun ContentReader.readContent() =
-            ByteStreams.toByteArray(this.contentInputStream)
+        ByteStreams.toByteArray(this.contentInputStream)
 
     private fun ContentWriter.writeContent(byteArray: ByteArray) =
-            this.putContent(ByteArrayInputStream(byteArray))
+        this.putContent(ByteArrayInputStream(byteArray))
 
     private fun String.convertToMimeType(): MimeType =
-            MimeType.convertToMimeType(this)
+        MimeType.convertToMimeType(this)
 }

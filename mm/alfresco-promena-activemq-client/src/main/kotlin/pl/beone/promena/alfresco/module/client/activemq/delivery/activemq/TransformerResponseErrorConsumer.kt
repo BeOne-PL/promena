@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.convert.NodeRefsConverter
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.convert.RetryConverter
-import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaService
+import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono
 class TransformerResponseErrorConsumer(
     private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
     private val reactiveTransformationManager: ReactiveTransformationManager,
-    private val activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService
+    private val activeMQAlfrescoPromenaTransformer: ActiveMQAlfrescoPromenaTransformer
 ) {
 
     companion object {
@@ -79,7 +79,7 @@ class TransformerResponseErrorConsumer(
             .doOnNext { logger.logOnRetry(transformation, nodeRefs, attempt, retry.maxAttempts, retry.nextAttemptDelay) }
             .delayElement(retry.nextAttemptDelay)
             .doOnNext {
-                activeMQAlfrescoPromenaService.transformAsync(id, transformation, nodeRefs, retry, attempt)
+                activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, attempt)
                     .subscribeAndCompleteErrorTransformationIfLastAttemptFails(id, retry, attempt, exception)
             }
             .subscribe()

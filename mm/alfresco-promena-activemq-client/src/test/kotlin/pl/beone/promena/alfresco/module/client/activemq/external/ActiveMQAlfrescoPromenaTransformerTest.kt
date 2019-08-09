@@ -27,7 +27,7 @@ import pl.beone.promena.transformer.internal.model.parameters.plus
 import reactor.core.publisher.Mono
 import java.time.Duration
 
-class ActiveMQAlfrescoPromenaServiceTest {
+class ActiveMQAlfrescoPromenaTransformerTest {
 
     companion object {
         private val nodeRefs = listOf(
@@ -63,7 +63,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
             every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
         }
 
-        ActiveMQAlfrescoPromenaService(
+        ActiveMQAlfrescoPromenaTransformer(
             retry,
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,
@@ -95,7 +95,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
         }
 
         shouldThrow<TransformationSynchronizationException> {
-            ActiveMQAlfrescoPromenaService(
+            ActiveMQAlfrescoPromenaTransformer(
                 retry,
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -123,7 +123,7 @@ class ActiveMQAlfrescoPromenaServiceTest {
             every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
         }
 
-        ActiveMQAlfrescoPromenaService(
+        ActiveMQAlfrescoPromenaTransformer(
             retry,
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,

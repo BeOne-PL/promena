@@ -50,7 +50,7 @@ import reactor.test.StepVerifier
 import reactor.test.expectError
 import java.time.Duration
 
-class HttpClientAlfrescoPromenaServiceTest {
+class HttpClientAlfrescoPromenaTransformerTest {
 
     companion object {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
@@ -110,7 +110,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             } returns performedTransformationDescriptor
         }
 
-        HttpClientAlfrescoPromenaService(
+        HttpClientAlfrescoPromenaTransformer(
             ExternalCommunication(ExternalCommunicationConstants.Memory),
             noRetry(),
             alfrescoNodesChecksumGenerator,
@@ -151,7 +151,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             } returns performedTransformationDescriptor
         }
 
-        HttpClientAlfrescoPromenaService(
+        HttpClientAlfrescoPromenaTransformer(
             ExternalCommunication(ExternalCommunicationConstants.File, tmpDirUri),
             noRetry(),
             alfrescoNodesChecksumGenerator,
@@ -188,7 +188,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         shouldThrow<TransformationSynchronizationException> {
-            HttpClientAlfrescoPromenaService(
+            HttpClientAlfrescoPromenaTransformer(
                 ExternalCommunication(ExternalCommunicationConstants.Memory),
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
@@ -230,7 +230,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         StepVerifier.create(
-            HttpClientAlfrescoPromenaService(
+            HttpClientAlfrescoPromenaTransformer(
                 ExternalCommunication(ExternalCommunicationConstants.Memory),
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
@@ -274,7 +274,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         StepVerifier.create(
-            HttpClientAlfrescoPromenaService(
+            HttpClientAlfrescoPromenaTransformer(
                 ExternalCommunication(ExternalCommunicationConstants.Memory),
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
@@ -317,7 +317,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         StepVerifier.create(
-            HttpClientAlfrescoPromenaService(
+            HttpClientAlfrescoPromenaTransformer(
                 ExternalCommunication(ExternalCommunicationConstants.Memory),
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
@@ -357,7 +357,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         StepVerifier.create(
-            HttpClientAlfrescoPromenaService(
+            HttpClientAlfrescoPromenaTransformer(
                 ExternalCommunication(ExternalCommunicationConstants.Memory),
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
@@ -400,7 +400,7 @@ class HttpClientAlfrescoPromenaServiceTest {
         }
 
         StepVerifier.create(
-            HttpClientAlfrescoPromenaService(
+            HttpClientAlfrescoPromenaTransformer(
                 ExternalCommunication(ExternalCommunicationConstants.Memory),
                 customRetry(3, Duration.ofMillis(300)),
                 alfrescoNodesChecksumGenerator,
@@ -421,7 +421,7 @@ class HttpClientAlfrescoPromenaServiceTest {
             .verify()
 
         StepVerifier.create(
-            HttpClientAlfrescoPromenaService(
+            HttpClientAlfrescoPromenaTransformer(
                 ExternalCommunication(ExternalCommunicationConstants.Memory),
                 noRetry(),
                 alfrescoNodesChecksumGenerator,

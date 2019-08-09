@@ -8,7 +8,7 @@ import java.util.*
 import javax.annotation.PostConstruct
 
 @Configuration
-@DependsOn("httpClientAlfrescoPromenaService")
+@DependsOn("httpClientAlfrescoPromenaTransformer")
 class HttpConnectorModuleLogger(
     @Qualifier("global-properties") private val properties: Properties
 ) {

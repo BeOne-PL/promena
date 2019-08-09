@@ -20,7 +20,7 @@ import pl.beone.promena.alfresco.module.client.activemq.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.SetupContext
-import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaService
+import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
@@ -59,7 +59,7 @@ class TransformerResponseErrorRetryFlowTest {
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
     @Autowired
-    private lateinit var activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService
+    private lateinit var activeMQAlfrescoPromenaTransformer: ActiveMQAlfrescoPromenaTransformer
 
     companion object {
         private val id = UUID.randomUUID().toString()
@@ -86,10 +86,10 @@ class TransformerResponseErrorRetryFlowTest {
 
         val monoError = Mono.error<List<NodeRef>>(exception)
         every {
-            activeMQAlfrescoPromenaService.transformAsync(id, transformation, nodeRefs, retry, 1)
+            activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, 1)
         } returns monoError
         every {
-            activeMQAlfrescoPromenaService.transformAsync(id, transformation, nodeRefs, retry, 2)
+            activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, 2)
         } returns monoError
 
         val transformation = reactiveTransformationManager.startTransformation(id)
@@ -105,7 +105,7 @@ class TransformerResponseErrorRetryFlowTest {
         }.message shouldBe exception.message
 
         verify {
-            activeMQAlfrescoPromenaService.transformAsync(id, Companion.transformation, nodeRefs, retry, 1)
+            activeMQAlfrescoPromenaTransformer.transformAsync(id, Companion.transformation, nodeRefs, retry, 1)
         }
     }
 

@@ -10,20 +10,20 @@ import pl.beone.promena.alfresco.module.client.base.common.startAsync
 import pl.beone.promena.alfresco.module.client.base.common.startSync
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaService
+import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono
 import java.time.Duration
 import java.util.*
 
-class ActiveMQAlfrescoPromenaService(
+class ActiveMQAlfrescoPromenaTransformer(
     private val retry: Retry,
     private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
     private val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
     private val reactiveTransformationManager: ReactiveTransformationManager,
     private val transformerSender: TransformerSender
-) : AlfrescoPromenaService {
+) : AlfrescoPromenaTransformer {
 
     companion object {
         private val logger = KotlinLogging.logger {}

@@ -20,7 +20,7 @@ import pl.beone.promena.alfresco.module.client.activemq.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.SetupContext
-import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaService
+import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
@@ -60,7 +60,7 @@ class TransformerResponseErrorFlowTest {
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
     @Autowired
-    private lateinit var activeMQAlfrescoPromenaService: ActiveMQAlfrescoPromenaService
+    private lateinit var activeMQAlfrescoPromenaTransformer: ActiveMQAlfrescoPromenaTransformer
 
     companion object {
         private val nodeRefs = listOf(
@@ -87,7 +87,7 @@ class TransformerResponseErrorFlowTest {
         } returns nodesChecksum
 
         every {
-            activeMQAlfrescoPromenaService.transformAsync(id, transformation, nodeRefs, retry, 1)
+            activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, 1)
         } returns Mono.error(exception)
 
         val transformation = reactiveTransformationManager.startTransformation(id)

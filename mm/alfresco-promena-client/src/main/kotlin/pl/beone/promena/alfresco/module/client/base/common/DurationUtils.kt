@@ -23,7 +23,7 @@ private val prettyFormatter = PeriodFormatterBuilder()
 
 fun Duration?.toPrettyString(): String =
     if (this != null) {
-        prettyFormatter.print(org.joda.time.Duration.millis(this.toMillis()).toPeriod());
+        prettyFormatter.print(org.joda.time.Duration.millis(this.toMillis()).toPeriod())
     } else {
         "infinite"
     }

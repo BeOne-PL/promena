@@ -78,14 +78,14 @@ class ReactiveTransformationManagerTest {
         }
 
         StepVerifier.create(transformation)
-                .expectNext(nodeRefs)
-                .expectComplete()
-                .verify()
+            .expectNext(nodeRefs)
+            .expectComplete()
+            .verify()
 
         StepVerifier.create(transformation)
-                .expectNext(nodeRefs)
-                .expectComplete()
-                .verify()
+            .expectNext(nodeRefs)
+            .expectComplete()
+            .verify()
     }
 
     @Test
@@ -103,9 +103,9 @@ class ReactiveTransformationManagerTest {
         }
 
         StepVerifier.create(transformation)
-                .expectNext(nodeRefs)
-                .expectComplete()
-                .verify()
+            .expectNext(nodeRefs)
+            .expectComplete()
+            .verify()
     }
 
     @Test
@@ -121,11 +121,11 @@ class ReactiveTransformationManagerTest {
         }
 
         StepVerifier.create(transformation)
-                .expectErrorSatisfies {
-                    it should beInstanceOf<RuntimeException>()
-                    it.message shouldBe "f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"
-                }
-                .verify()
+            .expectErrorSatisfies {
+                it should beInstanceOf<RuntimeException>()
+                it.message shouldBe "f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"
+            }
+            .verify()
     }
 
     @Test
@@ -146,8 +146,8 @@ class ReactiveTransformationManagerTest {
         }
 
         StepVerifier.create(transformation)
-                .expectNext(nodeRefs)
-                .expectComplete()
-                .verify()
+            .expectNext(nodeRefs)
+            .expectComplete()
+            .verify()
     }
 }

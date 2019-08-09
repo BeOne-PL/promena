@@ -6,7 +6,7 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono
 import java.time.Duration
 
-interface AlfrescoPromenaService {
+interface AlfrescoPromenaTransformer {
 
     fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration? = null, retry: Retry? = null): List<NodeRef>
 

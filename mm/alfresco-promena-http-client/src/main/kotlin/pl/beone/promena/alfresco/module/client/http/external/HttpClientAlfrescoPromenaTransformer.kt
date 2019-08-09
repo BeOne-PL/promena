@@ -30,7 +30,7 @@ import reactor.util.function.Tuple2
 import java.lang.System.currentTimeMillis
 import java.time.Duration
 
-class HttpClientAlfrescoPromenaService(
+class HttpClientAlfrescoPromenaTransformer(
     private val externalCommunication: ExternalCommunication,
     private val retry: Retry,
     private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
@@ -39,7 +39,7 @@ class HttpClientAlfrescoPromenaService(
     private val serializationService: SerializationService,
     private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
     private val httpClient: HttpClient
-) : AlfrescoPromenaService {
+) : AlfrescoPromenaTransformer {
 
     companion object {
         private val logger = KotlinLogging.logger {}
