@@ -33,8 +33,8 @@ class KryoSerializerActorContext {
             Props.create(KryoSerializerActor::class.java) {
                 KryoSerializerActor(kryoSerializationService)
             },
-            (environment.getProperty("core.serializer.actors", Int::class.java)
-                ?: basedOnTransformersNumberOfSerializerActorsDeterminer.determine(transformerActorDescriptors))
-                .also { logger.info { "Property <core.serializer.actors> isn't set. Created actors (the sum of the transformer actors): $it" } }
+            environment.getProperty("core.serializer.actors", Int::class.java)
+                ?: basedOnTransformersNumberOfSerializerActorsDeterminer.determine(transformerActorDescriptors)
+                    .also { logger.info { "Property <core.serializer.actors> isn't set. Created actors (the sum of the transformer actors): $it" } }
         )
 }
