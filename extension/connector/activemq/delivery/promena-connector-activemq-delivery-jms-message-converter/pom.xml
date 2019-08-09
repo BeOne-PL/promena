@@ -23,7 +23,6 @@
             <artifactId>spring-jms</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <!-- TODO verify if it is needed -->
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>

@@ -60,6 +60,9 @@
     <dependencySets>
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
+            <excludes>
+                <exclude>org.slf4j:slf4j-api</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
 
