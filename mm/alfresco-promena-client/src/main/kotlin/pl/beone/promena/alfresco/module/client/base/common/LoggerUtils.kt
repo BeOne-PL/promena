@@ -55,23 +55,43 @@ fun Logger.couldNotTransformButChecksumsAreDifferent(
     currentNodesChecksum: String,
     exception: Throwable
 ) {
-    warn(
-        "Couldn't transform <{}> nodes <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
-        transformation,
-        nodeRefs,
-        oldNodesChecksum,
-        currentNodesChecksum,
-        exception
-    )
+    if (exception.cause != null) {
+        warn(
+            "Couldn't transform <{}> nodes <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+            transformation,
+            nodeRefs,
+            oldNodesChecksum,
+            currentNodesChecksum,
+            exception
+        )
+    } else {
+        warn(
+            "Couldn't transform <{}> nodes <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...\n> {}",
+            transformation,
+            nodeRefs,
+            oldNodesChecksum,
+            currentNodesChecksum,
+            exception.toString()
+        )
+    }
 }
 
 fun Logger.couldNotTransform(transformation: Transformation, nodeRefs: List<NodeRef>, exception: Throwable) {
-    error(
-        "Couldn't transform <{}> nodes <{}>",
-        transformation,
-        nodeRefs,
-        exception
-    )
+    if (exception.cause != null) {
+        error(
+            "Couldn't transform <{}> nodes <{}>",
+            transformation,
+            nodeRefs,
+            exception
+        )
+    } else {
+        error(
+            "Couldn't transform <{}> nodes <{}>\n> {}",
+            transformation,
+            nodeRefs,
+            exception.toString()
+        )
+    }
 }
 
 fun Logger.logOnRetry(transformation: Transformation, nodeRefs: List<NodeRef>, attempt: Long, maxAttempts: Long, nextAttemptDelay: Duration) {
