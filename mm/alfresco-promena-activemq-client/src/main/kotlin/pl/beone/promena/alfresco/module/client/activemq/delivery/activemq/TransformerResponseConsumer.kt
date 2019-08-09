@@ -50,12 +50,14 @@ class TransformerResponseConsumer(
                 correlationId,
                 AnotherTransformationIsInProgressException(transformation, nodeRefs, nodesChecksum, currentNodesChecksum)
             )
+
             logger.skippedSavingResult(transformation, nodeRefs, nodesChecksum, currentNodesChecksum)
         } else {
             val targetNodeRefs = alfrescoAuthenticationService.runAs(userName) {
                 alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
             }
             reactiveTransformationManager.completeTransformation(correlationId, targetNodeRefs)
+
             logger.transformedSuccessfully(transformation, nodeRefs, targetNodeRefs, startTimestamp, endTimestamp)
         }
     }
