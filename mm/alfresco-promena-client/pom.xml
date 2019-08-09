@@ -17,8 +17,8 @@
         <promena-core.version>0.9.0-SNAPSHOT</promena-core.version>
         <promena-transformer.version>0.9.0-SNAPSHOT</promena-transformer.version>
 
-        <kotlin-logging.version>1.7.2</kotlin-logging.version>
-        <reactor-core.version>3.2.10.RELEASE</reactor-core.version>
+        <kotlin-logging.version>1.7.3</kotlin-logging.version>
+        <reactor-core.version>3.2.11.RELEASE</reactor-core.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>

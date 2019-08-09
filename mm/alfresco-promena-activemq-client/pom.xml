@@ -14,7 +14,7 @@
         <kotlin.version>1.3.41</kotlin.version>
         <java.version>11</java.version>
 
-        <kotlin-logging.version>1.7.2</kotlin-logging.version>
+        <kotlin-logging.version>1.7.3</kotlin-logging.version>
 
         <alfresco-promena-client.version>0.9.0-SNAPSHOT</alfresco-promena-client.version>
         <alfresco-promena-connector-activemq.version>0.9.0-SNAPSHOT</alfresco-promena-connector-activemq.version>
