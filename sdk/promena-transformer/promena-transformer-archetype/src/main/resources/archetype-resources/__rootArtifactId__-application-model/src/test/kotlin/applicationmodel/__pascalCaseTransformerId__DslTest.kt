@@ -10,8 +10,8 @@ class ${pascalCaseTransformerId}DslTest {
     @Test
     fun ${camelCaseTransformerId}Parameters() {
         ${camelCaseTransformerId}Parameters(example = "test", example2 = "test2").let {
-            it.get(${pascalCaseTransformerId}Constants.Parameters.EXAMPLE) shouldBe "test"
-            it.get(${pascalCaseTransformerId}Constants.Parameters.EXAMPLE2) shouldBe "test2"
+            it.get(${pascalCaseTransformerId}ParametersConstants.EXAMPLE) shouldBe "test"
+            it.get(${pascalCaseTransformerId}ParametersConstants.EXAMPLE2) shouldBe "test2"
         }
     }
 
@@ -19,7 +19,7 @@ class ${pascalCaseTransformerId}DslTest {
     fun `${camelCaseTransformerId}Parameters _ no optional example2 parameter _ should throw NoSuchElementException`() {
         shouldThrow<NoSuchElementException> {
             ${camelCaseTransformerId}Parameters(example = "test")
-                .get(${pascalCaseTransformerId}Constants.Parameters.EXAMPLE2)
+                .get(${pascalCaseTransformerId}ParametersConstants.EXAMPLE2)
         }
     }
 

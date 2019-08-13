@@ -1,7 +1,5 @@
 package ${package}
 
-import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
-import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
@@ -16,6 +14,8 @@ import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
+import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants
+import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 
 @ExtendWith(DockerExtension::class)
 class ${pascalCaseTransformerId}TransformerTest {
@@ -26,11 +26,11 @@ class ${pascalCaseTransformerId}TransformerTest {
         val mediaType = MediaTypeConstants.TEXT_PLAIN
         val metadata = emptyMetadata()
 
-        AppenderKotlinTransformer(mockk())
+        ${pascalCaseTransformerId}Transformer(mockk())
             .transform(
                 singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
                 MediaTypeConstants.TEXT_PLAIN,
-                appenderKotlinParameters(example = "test")
+                ${camelCaseTransformerId}Parameters(example = "test")
             ).let {
                 val descriptors = it.descriptors
                 descriptors shouldHaveSize 1
@@ -45,11 +45,11 @@ class ${pascalCaseTransformerId}TransformerTest {
     @Test
     fun canTransform_targetMediaTypeIsNotTextPlain_shouldThrowTransformerCouldNotTransformException() {
         shouldThrow<TransformerCouldNotTransformException> {
-            AppenderKotlinTransformer(mockk())
+            ${pascalCaseTransformerId}Transformer(mockk())
                 .canTransform(
                     emptyDataDescriptor(),
                     MediaTypeConstants.APPLICATION_PDF,
-                    appenderKotlinParameters(example = "test")
+                    ${camelCaseTransformerId}Parameters(example = "test")
                 )
         }.message shouldBe "Supported transformation: text/plain -> text/plain"
     }
@@ -57,11 +57,11 @@ class ${pascalCaseTransformerId}TransformerTest {
     @Test
     fun canTransform_dataDescriptorMediaTypeIsNotTextPlain_shouldThrowTransformerCouldNotTransformException() {
         shouldThrow<TransformerCouldNotTransformException> {
-            AppenderKotlinTransformer(mockk())
+            ${pascalCaseTransformerId}Transformer(mockk())
                 .canTransform(
                     singleDataDescriptor("".toMemoryData(), MediaTypeConstants.APPLICATION_PDF, emptyMetadata()),
                     MediaTypeConstants.TEXT_PLAIN,
-                    appenderKotlinParameters(example = "test")
+                    ${camelCaseTransformerId}Parameters(example = "test")
                 )
         }.message shouldBe "Supported transformation: text/plain -> text/plain"
     }
@@ -69,12 +69,12 @@ class ${pascalCaseTransformerId}TransformerTest {
     @Test
     fun canTransform_noMandatoryParameter_shouldThrowTransformerCouldNotTransformException() {
         shouldThrow<TransformerCouldNotTransformException> {
-            AppenderKotlinTransformer(mockk())
+            ${pascalCaseTransformerId}Transformer(mockk())
                 .canTransform(
                     emptyDataDescriptor(),
                     MediaTypeConstants.TEXT_PLAIN,
                     emptyParameters()
                 )
-        }.message shouldBe "Mandatory parameter: ${AppenderKotlinConstants.Parameters.EXAMPLE}"
+        }.message shouldBe "Mandatory parameter: ${${pascalCaseTransformerId}ParametersConstants.EXAMPLE}"
     }
 }

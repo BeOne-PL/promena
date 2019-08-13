@@ -10,10 +10,4 @@ object ${pascalCaseTransformerId}Constants {
 
     @JvmField
     val TRANSFORMER_ID = transformerId(TRANSFORMER_NAME, TRANSFORMER_SUB_NAME)
-
-    object Parameters {
-        const val EXAMPLE = "example"
-
-        const val EXAMPLE2 = "example2"
-    }
 }

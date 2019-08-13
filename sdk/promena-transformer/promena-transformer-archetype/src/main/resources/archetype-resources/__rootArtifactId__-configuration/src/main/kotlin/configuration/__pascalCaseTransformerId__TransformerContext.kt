@@ -1,9 +1,9 @@
 package ${package}.configuration
 
-import ${package}.${pascalCaseTransformerId}Transformer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
+import ${package}.${pascalCaseTransformerId}Transformer
 
 @Configuration
 class ${pascalCaseTransformerId}TransformerContext {

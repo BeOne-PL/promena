@@ -1,6 +1,5 @@
 package ${package}
 
-import ${package}.applicationmodel.${pascalCaseTransformerId}Constants
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
@@ -11,6 +10,7 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.toTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
+import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants
 
 class ${pascalCaseTransformerId}Transformer(private val internalCommunicationParameters: CommunicationParameters) : Transformer {
 
@@ -25,9 +25,9 @@ class ${pascalCaseTransformerId}Transformer(private val internalCommunicationPar
         }
 
         try {
-            parameters.get(${pascalCaseTransformerId}Constants.Parameters.EXAMPLE)
+            parameters.get(${pascalCaseTransformerId}ParametersConstants.EXAMPLE)
         } catch (e: NoSuchElementException) {
-            throw TransformerCouldNotTransformException("Mandatory parameter: ${${pascalCaseTransformerId}Constants.Parameters.EXAMPLE}")
+            throw TransformerCouldNotTransformException("Mandatory parameter: ${${pascalCaseTransformerId}ParametersConstants.EXAMPLE}")
         }
     }
 }
