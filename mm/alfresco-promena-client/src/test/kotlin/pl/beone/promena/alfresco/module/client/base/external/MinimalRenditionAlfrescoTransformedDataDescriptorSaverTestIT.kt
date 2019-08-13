@@ -83,7 +83,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                     "Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={}))",
                     "Single(transformerId=TransformerId(name=transformer2, subName=sub), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={key=value}))"
                 )
-                val name = "transformer, transformer2|sub"
+                val name = "transformer, transformer2_sub"
 
                 node.getType() shouldBe ContentModel.TYPE_THUMBNAIL
                 node.getAspects() shouldNotContainAll listOf(RenditionModel.ASPECT_RENDITION2, RenditionModel.ASPECT_HIDDEN_RENDITION)

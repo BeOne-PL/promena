@@ -80,7 +80,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private fun Transformation.createName(): String =
         transformers.joinToString(", ") {
             if (it.transformerId.subName != null) {
-                "${it.transformerId.name}|${it.transformerId.subName}"
+                "${it.transformerId.name}_${it.transformerId.subName}"
             } else {
                 it.transformerId.name
             }
