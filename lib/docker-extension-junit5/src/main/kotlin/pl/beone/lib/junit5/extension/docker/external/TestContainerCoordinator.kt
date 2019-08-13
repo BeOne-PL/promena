@@ -64,7 +64,7 @@ class TestContainerCoordinator(
             copyDockerDirectories(tmpDirectory)
             replacePlaceholderInDockerfileByDockerfileFragment(tmpDirectory)
 
-            GenericContainer<Nothing>(
+            GenericContainer(
                 ImageFromDockerfile(imageCustomName, imageCustomDeleteOnExit)
                     .withFileFromPath(".", tmpDirectory.toPath())
             )
