@@ -19,7 +19,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
-import pl.beone.promena.core.external.akka.actor.GroupedByNameActorService
+import pl.beone.promena.core.external.akka.actor.GroupedByNameTransformerActorGetter
 import pl.beone.promena.core.external.akka.actor.transformer.GroupedByNameTransformerActor
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
 import pl.beone.promena.core.external.akka.transformation.converter.MirrorInternalCommunicationConverter
@@ -296,15 +296,14 @@ class AkkaTransformationServiceTestIT {
             }, timeoutTransformerName
         )
 
-        val actorService = GroupedByNameActorService(
+        val actorService = GroupedByNameTransformerActorGetter(
             listOf(
                 TransformerActorDescriptor(textAppenderTransformerId, textAppenderTransformerActorRef, 1),
                 TransformerActorDescriptor(javaTextAppenderTransformerId, textAppenderTransformerActorRef, 1),
                 TransformerActorDescriptor(uselessTextAppenderTransformerId, textAppenderTransformerActorRef, 1),
                 TransformerActorDescriptor(fromTextToXmlAppenderTransformerId, fromTextToXmlAppenderTransformerActorRef, 1),
                 TransformerActorDescriptor(timeoutTransformerId, timeoutTransformerActorRef, 1)
-            ),
-            mockk()
+            )
         )
 
         return AkkaTransformationService(Duration.ofSeconds(3), actorMaterializer, actorService)

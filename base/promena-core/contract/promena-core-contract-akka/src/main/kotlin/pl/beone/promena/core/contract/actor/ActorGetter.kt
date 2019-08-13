@@ -4,11 +4,8 @@ import akka.actor.ActorRef
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 
-interface ActorService {
+interface ActorGetter {
 
     @Throws(TransformerNotFoundException::class)
-    fun getTransformerActor(transformationTransformerId: TransformerId): ActorRef
-
-    fun getSerializerActor(): ActorRef
-
+    fun get(transformationTransformerId: TransformerId): ActorRef
 }

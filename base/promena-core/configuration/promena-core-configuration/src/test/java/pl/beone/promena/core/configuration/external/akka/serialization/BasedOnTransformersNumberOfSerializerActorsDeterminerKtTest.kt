@@ -1,17 +1,12 @@
-package pl.beone.promena.core.configuration.external.akka.actor.serializer
+package pl.beone.promena.core.configuration.external.akka.serialization
 
 import io.kotlintest.shouldBe
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
-class BasedOnTransformersNumberOfSerializerActorsDeterminerTest {
-
-    companion object {
-        private val basedOnTransformersNumberOfSerializerActorsDeterminer = BasedOnTransformersNumberOfSerializerActorsDeterminer()
-    }
+internal class BasedOnTransformersNumberOfSerializerActorsDeterminerKtTest {
 
     @Test
     fun determine() {
@@ -21,6 +16,6 @@ class BasedOnTransformersNumberOfSerializerActorsDeterminerTest {
             TransformerActorDescriptor("transformer2".toTransformerId(), mockk(), 3)
         )
 
-        basedOnTransformersNumberOfSerializerActorsDeterminer.determine(transformerActorDescriptors) shouldBe 5
+        determine(transformerActorDescriptors) shouldBe 5
     }
 }

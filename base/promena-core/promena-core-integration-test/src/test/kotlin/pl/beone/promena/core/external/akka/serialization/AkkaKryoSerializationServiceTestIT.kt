@@ -6,8 +6,6 @@ import akka.stream.ActorMaterializer
 import akka.testkit.javadsl.TestKit
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,10 +15,8 @@ import pl.beone.promena.core.applicationmodel.transformation.PerformedTransforma
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
-import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.external.akka.actor.serializer.KryoSerializerActor
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.data.plus
@@ -51,11 +47,7 @@ class AkkaKryoSerializationServiceTestIT {
             Props.create(KryoSerializerActor::class.java) { KryoSerializerActor(KryoSerializationService()) }, "serializer"
         )
 
-        val actorService = mockk<ActorService> {
-            every { getSerializerActor() } returns serializerActor
-        }
-
-        akkaKryoSerializationService = AkkaKryoSerializationService(actorMaterializer, actorService)
+        akkaKryoSerializationService = AkkaKryoSerializationService(actorMaterializer, serializerActor)
     }
 
     @AfterEach
@@ -102,10 +94,10 @@ class AkkaKryoSerializationServiceTestIT {
     @Test
     fun `serialize and deserialize _ composite TransformationDescriptor`() {
         val transformationDescriptor = transformationDescriptor(
-            singleTransformation("test", MediaTypeConstants.APPLICATION_PDF, emptyParameters()) next
-                    singleTransformation("test2", MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyParameters()),
-            singleDataDescriptor("test".toMemoryData(), MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), MediaTypeConstants.APPLICATION_OCTET_STREAM, emptyMetadata())
+            singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
+                    singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
+            singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
+                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
         )
 
         akkaKryoSerializationService.deserialize(

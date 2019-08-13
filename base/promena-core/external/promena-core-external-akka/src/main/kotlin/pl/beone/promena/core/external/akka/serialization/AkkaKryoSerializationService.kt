@@ -3,12 +3,12 @@
 package pl.beone.promena.core.external.akka.serialization
 
 import akka.NotUsed
+import akka.actor.ActorRef
 import akka.stream.ActorMaterializer
 import akka.stream.javadsl.Flow
 import akka.stream.javadsl.Sink
 import akka.stream.javadsl.Source
 import pl.beone.lib.typeconverter.internal.getClazz
-import pl.beone.promena.core.contract.actor.ActorService
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.message.DeserializedMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.SerializedMessage
@@ -19,7 +19,7 @@ import pl.beone.promena.core.external.akka.util.unwrapExecutionException
 
 class AkkaKryoSerializationService(
     private val actorMaterializer: ActorMaterializer,
-    private val actorService: ActorService
+    private val actorRef: ActorRef
 ) : SerializationService {
 
     override fun <T> serialize(element: T): ByteArray =
@@ -47,12 +47,12 @@ class AkkaKryoSerializationService(
     private fun createSerializeFlow(): Flow<Any, ByteArray, NotUsed> =
         Flow.of(Any::class.java)
             .map(::ToSerializeMessage)
-            .ask(actorService.getSerializerActor(), SerializedMessage::class.java, infiniteTimeout)
+            .ask(actorRef, SerializedMessage::class.java, infiniteTimeout)
             .map(SerializedMessage::bytes)
 
     private fun <T> createDeserializeFlow(clazz: Class<T>): Flow<ByteArray, T, NotUsed> =
         Flow.of(getClazz<ByteArray>())
             .map { bytes -> ToDeserializeMessage(bytes, clazz) }
-            .ask(actorService.getSerializerActor(), DeserializedMessage::class.java, infiniteTimeout)
+            .ask(actorRef, DeserializedMessage::class.java, infiniteTimeout)
             .map { (element) -> element as T }
 }

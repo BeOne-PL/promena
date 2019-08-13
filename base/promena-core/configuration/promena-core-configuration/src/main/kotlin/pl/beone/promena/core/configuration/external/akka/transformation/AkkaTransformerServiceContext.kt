@@ -5,9 +5,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
-import org.springframework.core.env.get
 import pl.beone.promena.core.configuration.toDuration
-import pl.beone.promena.core.contract.actor.ActorService
+import pl.beone.promena.core.contract.actor.ActorGetter
 import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.core.external.akka.transformation.AkkaTransformationService
 
@@ -19,11 +18,11 @@ class AkkaTransformerServiceContext {
     fun akkaTransformationService(
         environment: Environment,
         actorMaterializer: ActorMaterializer,
-        actorService: ActorService
+        actorGetter: ActorGetter
     ) =
         AkkaTransformationService(
             environment.getRequiredProperty("core.transformation.interruption-timeout-delay").toDuration(),
             actorMaterializer,
-            actorService
+            actorGetter
         )
 }

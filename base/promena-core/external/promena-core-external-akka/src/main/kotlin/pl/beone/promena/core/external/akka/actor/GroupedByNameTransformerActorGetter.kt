@@ -3,15 +3,14 @@ package pl.beone.promena.core.external.akka.actor
 import akka.actor.ActorRef
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
-import pl.beone.promena.core.contract.actor.ActorService
+import pl.beone.promena.core.contract.actor.ActorGetter
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 
-class GroupedByNameActorService(
-    private val transformerActorDescriptors: List<TransformerActorDescriptor>,
-    private val serializerActorRef: ActorRef
-) : ActorService {
+class GroupedByNameTransformerActorGetter(
+    private val transformerActorDescriptors: List<TransformerActorDescriptor>
+) : ActorGetter {
 
-    override fun getTransformerActor(transformationTransformerId: TransformerId): ActorRef =
+    override fun get(transformationTransformerId: TransformerId): ActorRef =
         getTransformer(transformationTransformerId)?.actorRef
             ?: throw throw TransformerNotFoundException("There is no <$transformationTransformerId> transformer")
 
@@ -21,8 +20,4 @@ class GroupedByNameActorService(
         } else {
             transformerActorDescriptors.firstOrNull { it.transformerId.name == transformerId.name }
         }
-
-    override fun getSerializerActor(): ActorRef =
-        serializerActorRef
-
 }
