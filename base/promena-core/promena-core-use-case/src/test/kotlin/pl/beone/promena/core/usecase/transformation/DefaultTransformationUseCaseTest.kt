@@ -80,7 +80,7 @@ class DefaultTransformationUseCaseTest {
             DefaultTransformationUseCase(externalCommunicationManager, mockk())
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
-            it.message shouldBe "Couldn't perform the transformation because an error occurred. Check Promena logs for more details"
+            it.message shouldBe "Couldn't perform the transformation because an error occurred. Check Promena logs for more details: Exception occurred"
             it.cause shouldBe null
         }
     }
