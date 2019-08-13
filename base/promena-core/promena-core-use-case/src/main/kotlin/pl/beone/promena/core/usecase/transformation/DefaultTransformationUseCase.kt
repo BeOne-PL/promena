@@ -46,7 +46,7 @@ class DefaultTransformationUseCase(
             } else {
                 throw TransformationException(
                     transformation,
-                    "Couldn't perform the transformation because an error occurred. Check Promena logs for more details: " + e.message
+                    "Couldn't perform the transformation because an error occurred. Check Promena logs for more details. Exception message: " + e.message
                 )
             }
         }
