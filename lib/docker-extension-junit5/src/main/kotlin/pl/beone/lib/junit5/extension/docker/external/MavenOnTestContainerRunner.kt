@@ -36,7 +36,9 @@ class MavenOnTestContainerRunner(
                 throw DockerExtensionTestExecutionException(result.stderr)
             }
         } finally {
-            testContainerCoordinator.execInContainer("bash", "-c", mavenContainerTestRunAfter)
+            if (mavenContainerTestRunAfter.isNotBlank()) {
+                testContainerCoordinator.execInContainer("bash", "-c", mavenContainerTestRunAfter)
+            }
         }
     }
 

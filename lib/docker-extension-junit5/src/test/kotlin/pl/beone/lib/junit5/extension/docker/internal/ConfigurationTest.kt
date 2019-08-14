@@ -31,6 +31,13 @@ class ConfigurationTest {
     }
 
     @Test
+    fun `getProperty with placeholder`() {
+        val configuration = Configuration()
+
+        configuration.getProperty("docker.test.maven.container.test.run-after") shouldBe "chown -R 1000:1000 /test"
+    }
+
+    @Test
     fun `getProperty _ docker-test_properties exist`() {
         mockDockerTestProperties {
             val configuration = Configuration()
