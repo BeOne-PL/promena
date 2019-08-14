@@ -37,5 +37,5 @@ class DefaultExternalCommunicationManager(
         }
 
     private fun createException(externalCommunications: List<ExternalCommunication>, id: String): ExternalCommunicationManagerException =
-        ExternalCommunicationManagerException("There is no <$id> external communication: <${externalCommunications.map { it.id }}>")
+        ExternalCommunicationManagerException("There is no <$id> external communication: ${externalCommunications.map { it.id }}")
 }

@@ -26,7 +26,7 @@ class GroupedByNameTransformersCreator(
     }
 
     override fun create(transformers: List<Transformer>): List<TransformerActorDescriptor> {
-        logger.info { "Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.java.canonicalName}" }
+        logger.info { "Found <${transformers.size}> transformer(s). Actor config: <${actorCreator::class.java.canonicalName}>" }
 
         validateTransformers(transformers)
 
@@ -84,7 +84,7 @@ class GroupedByNameTransformersCreator(
     private fun logSuccessfulActorCreation(transformerName: String, transformers: List<Transformer>) {
         logger.info {
             "> Registered <$transformerName> with <${transformers.size}> transformer(s) " +
-                    "${transformers.map { "${it::class.java.canonicalName}(${it.getSubName()}), ${it.getPriority()} priority" }} and <${transformers.getMaxActors()}> actor(s) "
+                    "${transformers.map { "<${it::class.java.canonicalName}(${it.getSubName()}), ${it.getPriority()} priority>" }} and <${transformers.getMaxActors()}> actor(s) "
         }
     }
 

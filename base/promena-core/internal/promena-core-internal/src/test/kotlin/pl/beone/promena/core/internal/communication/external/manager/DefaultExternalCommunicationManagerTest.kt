@@ -27,7 +27,7 @@ class DefaultExternalCommunicationManagerTest {
     fun `getCommunication _ should throw ExternalCommunicationManagerException`() {
         shouldThrowExactly<ExternalCommunicationManagerException> {
             DefaultExternalCommunicationManager(externalCommunications, false, externalId).getCommunication("absent")
-        }.message shouldBe "There is no <absent> external communication: <[external, external2]>"
+        }.message shouldBe "There is no <absent> external communication: [external, external2]"
     }
 
     @Test

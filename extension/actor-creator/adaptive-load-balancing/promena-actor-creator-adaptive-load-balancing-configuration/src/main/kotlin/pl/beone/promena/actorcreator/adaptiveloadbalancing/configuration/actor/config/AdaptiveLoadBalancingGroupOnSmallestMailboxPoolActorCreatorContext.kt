@@ -22,7 +22,7 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
     ): AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator {
         val metricsSelector = environment.getSelectorInstance()
 
-        logger.info { "Adaptive load balancing metrics selector: ${metricsSelector::class.qualifiedName}" }
+        logger.info { "Adaptive load balancing metrics selector: <${metricsSelector::class.qualifiedName}>" }
 
         return AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(actorSystem, metricsSelector)
     }

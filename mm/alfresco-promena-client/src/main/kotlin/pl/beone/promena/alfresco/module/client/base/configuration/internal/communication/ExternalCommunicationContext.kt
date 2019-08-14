@@ -21,15 +21,17 @@ class ExternalCommunicationContext {
     @Bean
     fun externalCommunication(
         @Qualifier("global-properties") properties: Properties
-    ): ExternalCommunication {
-        val externalCommunicationId = properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.id")
-
-        logger.info { "Promena external communication: $externalCommunicationId" }
-
-        return when (externalCommunicationId) {
-            Memory -> ExternalCommunication(externalCommunicationId, null)
-            File   -> ExternalCommunication(externalCommunicationId, properties.getLocation())
+    ): ExternalCommunication =
+        when (val externalCommunicationId = properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.id")) {
+            Memory -> {
+                logger.info { "Promena external communication: <memory>" }
+                ExternalCommunication(externalCommunicationId, null)
+            }
+            File   -> {
+                val location = properties.getLocation()
+                logger.info { "Promena external communication: <file, location: $location>" }
+                ExternalCommunication(externalCommunicationId, location)
+            }
             else   -> throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
         }
-    }
 }
