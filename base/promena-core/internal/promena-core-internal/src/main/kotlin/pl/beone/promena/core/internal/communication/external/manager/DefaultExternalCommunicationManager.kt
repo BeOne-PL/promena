@@ -1,7 +1,5 @@
 package pl.beone.promena.core.internal.communication.external.manager
 
-import mu.KotlinLogging
-import org.slf4j.LoggerFactory
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
