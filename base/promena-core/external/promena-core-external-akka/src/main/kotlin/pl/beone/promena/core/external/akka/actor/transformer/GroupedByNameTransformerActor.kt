@@ -19,10 +19,6 @@ import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 import java.util.concurrent.TimeoutException
 
-private data class NoSuitedTransformersException(
-    val transformerExceptionsAccumulator: TransformerExceptionsAccumulator
-) : RuntimeException()
-
 class GroupedByNameTransformerActor(
     private val transformerName: String,
     private val transformerDescriptors: List<TransformerDescriptor>,
@@ -80,14 +76,10 @@ class GroupedByNameTransformerActor(
         targetMediaType: MediaType,
         parameters: Parameters
     ): Transformer =
-        try {
-            if (transformationTransformerId.isSubNameSet()) {
-                getDetailedTransformer(transformationTransformerId, dataDescriptor, targetMediaType, parameters)
-            } else {
-                getGeneralTransformer(dataDescriptor, targetMediaType, parameters)
-            }
-        } catch (e: NoSuitedTransformersException) {
-            throw createException(transformationTransformerId, dataDescriptor, targetMediaType, parameters, e.transformerExceptionsAccumulator)
+        if (transformationTransformerId.isSubNameSet()) {
+            getDetailedTransformer(transformationTransformerId, dataDescriptor, targetMediaType, parameters)
+        } else {
+            getGeneralTransformer(dataDescriptor, targetMediaType, parameters)
         }
 
     private fun getGeneralTransformer(
@@ -96,17 +88,28 @@ class GroupedByNameTransformerActor(
         parameters: Parameters
     ): Transformer {
         val transformerExceptionsAccumulator = TransformerExceptionsAccumulator()
-        return transformerDescriptors.map { it.transformer }
-            .firstOrNull { transformer ->
+        return transformerDescriptors
+            .firstOrNull { transformerDescriptor ->
                 try {
-                    transformer.canTransform(dataDescriptor, targetMediaType, parameters)
+                    transformerDescriptor.transformer.canTransform(dataDescriptor, targetMediaType, parameters)
                     true
                 } catch (e: TransformerCouldNotTransformException) {
-                    transformerExceptionsAccumulator.add(transformer, e.message!!)
+                    transformerExceptionsAccumulator.add(transformerDescriptor, e.message!!)
                     false
                 }
-            } ?: throw NoSuitedTransformersException(transformerExceptionsAccumulator)
+            }?.transformer
+            ?: throw createGeneralException(dataDescriptor, targetMediaType, parameters, transformerExceptionsAccumulator)
     }
+
+    private fun createGeneralException(
+        dataDescriptor: DataDescriptor,
+        targetMediaType: MediaType,
+        parameters: Parameters,
+        transformerExceptionsAccumulator: TransformerExceptionsAccumulator
+    ): TransformersCouldNotTransformException =
+        TransformersCouldNotTransformException(
+            "There is no transformer in group <$transformerName> that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
+        )
 
     private fun getDetailedTransformer(
         transformationTransformerId: TransformerId,
@@ -114,41 +117,19 @@ class GroupedByNameTransformerActor(
         targetMediaType: MediaType,
         parameters: Parameters
     ): Transformer {
-        val transformerExceptionsAccumulator = TransformerExceptionsAccumulator()
-
-        val suitedTransformerDescriptor = try {
-            transformerDescriptors.get(transformationTransformerId)
-        } catch (e: NoSuchElementException) {
-            transformerDescriptors.forEach { transformerExceptionsAccumulator.addUnsuitable(it, transformationTransformerId) }
-            throw NoSuitedTransformersException(transformerExceptionsAccumulator)
-        }
-
+        val transformer = transformerDescriptors.get(transformationTransformerId).transformer
         return try {
-            val suitedTransformer = suitedTransformerDescriptor.transformer
-            suitedTransformer.canTransform(dataDescriptor, targetMediaType, parameters)
-            suitedTransformer
+            transformer
+                .also { it.canTransform(dataDescriptor, targetMediaType, parameters) }
         } catch (e: TransformerCouldNotTransformException) {
-            transformerExceptionsAccumulator.add(suitedTransformerDescriptor.transformer, e.message!!)
-            (transformerDescriptors - suitedTransformerDescriptor).forEach {
-                transformerExceptionsAccumulator.addUnsuitable(it, transformationTransformerId)
-            }
-            throw NoSuitedTransformersException(transformerExceptionsAccumulator)
+            throw TransformersCouldNotTransformException(
+                "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) can't transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${e.message}"
+            )
         }
     }
 
     private fun List<TransformerDescriptor>.get(transformerId: TransformerId): TransformerDescriptor =
         first { it.transformerId == transformerId }
-
-    private fun createException(
-        transformationTransformerId: TransformerId,
-        dataDescriptor: DataDescriptor,
-        targetMediaType: MediaType,
-        parameters: Parameters,
-        transformerExceptionsAccumulator: TransformerExceptionsAccumulator
-    ): TransformersCouldNotTransformException =
-        TransformersCouldNotTransformException(
-            "There is no <$transformerName> transformer that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$transformationTransformerId, $targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
-        )
 
     private fun DataDescriptor.generateDescription(): String =
         descriptors.joinToString(", ") {

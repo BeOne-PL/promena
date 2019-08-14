@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import pl.beone.promena.core.configuration.toDuration
-import pl.beone.promena.core.contract.actor.ActorGetter
+import pl.beone.promena.core.contract.actor.TransformerActorGetter
 import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.core.external.akka.transformation.AkkaTransformationService
 
@@ -18,11 +18,11 @@ class AkkaTransformerServiceContext {
     fun akkaTransformationService(
         environment: Environment,
         actorMaterializer: ActorMaterializer,
-        actorGetter: ActorGetter
+        transformerActorGetter: TransformerActorGetter
     ) =
         AkkaTransformationService(
             environment.getRequiredProperty("core.transformation.interruption-timeout-delay").toDuration(),
             actorMaterializer,
-            actorGetter
+            transformerActorGetter
         )
 }

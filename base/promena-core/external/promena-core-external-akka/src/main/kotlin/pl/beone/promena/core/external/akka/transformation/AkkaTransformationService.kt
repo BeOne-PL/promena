@@ -14,7 +14,7 @@ import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerException
-import pl.beone.promena.core.contract.actor.ActorGetter
+import pl.beone.promena.core.contract.actor.TransformerActorGetter
 import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
@@ -39,7 +39,7 @@ private data class ActorTransformerDescriptor(
 class AkkaTransformationService(
     private val interruptionTimeoutDelay: Duration,
     private val actorMaterializer: ActorMaterializer,
-    private val actorGetter: ActorGetter
+    private val transformerActorGetter: TransformerActorGetter
 ) : TransformationService {
 
     companion object {
@@ -85,7 +85,7 @@ class AkkaTransformationService(
 
     private fun getActorTransformerDescriptors(transformation: Transformation): List<ActorTransformerDescriptor> =
         transformation.transformers.map { (id, mediaType, parameters) ->
-            ActorTransformerDescriptor(id, actorGetter.get(id), mediaType, parameters)
+            ActorTransformerDescriptor(id, transformerActorGetter.get(id), mediaType, parameters)
         }
 
     private fun createSource(dataDescriptor: DataDescriptor): Source<DataDescriptor, NotUsed> =

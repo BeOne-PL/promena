@@ -1,32 +1,21 @@
 package pl.beone.promena.core.external.akka.actor.transformer
 
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
-import pl.beone.promena.transformer.contract.Transformer
-import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 internal class TransformerExceptionsAccumulator {
 
-    private data class TransformerAndReason(
-        val transformer: Transformer,
+    private data class TransformerDescriptorAndReason(
+        val transformerDescriptor: TransformerDescriptor,
         val reason: String
     )
 
-    private val transformerAndReasonList = ArrayList<TransformerAndReason>()
+    private val transformerAndReasonList = ArrayList<TransformerDescriptorAndReason>()
 
-    fun add(transformer: Transformer, reason: String) {
-        transformerAndReasonList.add(TransformerAndReason(transformer, reason))
-    }
-
-    fun addUnsuitable(transformerDescriptor: TransformerDescriptor, transformationTransformerId: TransformerId) {
-        val transformerId = transformerDescriptor.transformerId
-        transformerAndReasonList.add(
-            TransformerAndReason(
-                transformerDescriptor.transformer,
-                "Transformer <$transformerId> isn't suitable for <$transformationTransformerId>"
-            )
-        )
+    fun add(transformerDescriptor: TransformerDescriptor, reason: String) {
+        transformerAndReasonList.add(TransformerDescriptorAndReason(transformerDescriptor, reason))
     }
 
     fun generateDescription(): String =
-        "[" + transformerAndReasonList.joinToString(", ") { (transformer, reason) -> "<${transformer.javaClass.canonicalName}, $reason>" } + "]"
+        "[" + transformerAndReasonList.joinToString(", ")
+        { (transformerDescriptor, reason) -> "<${transformerDescriptor.transformer.javaClass.canonicalName}(${transformerDescriptor.transformerId.subName}); $reason>" } + "]"
 }

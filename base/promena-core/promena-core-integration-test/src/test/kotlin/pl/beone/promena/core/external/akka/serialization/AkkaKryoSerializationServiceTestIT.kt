@@ -111,7 +111,7 @@ class AkkaKryoSerializationServiceTestIT {
     fun `serialize and deserialize _ stress test`() {
         val executor = Executors.newFixedThreadPool(4)
 
-        (1..100).map {
+        (1..10).map {
             executor.submit(Callable<String> {
                 akkaKryoSerializationService.deserialize(akkaKryoSerializationService.serialize("test"), String::class.java)
             })
