@@ -7,5 +7,4 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 interface TransformationService {
 
     fun transform(transformation: Transformation, dataDescriptor: DataDescriptor): TransformedDataDescriptor
-
 }

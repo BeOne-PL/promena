@@ -47,10 +47,8 @@ class GroupedByNameTransformerActor(
         parameters: Parameters
     ): TransformedDataDescriptor {
         val (transformedDataDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
-            val convertedDataDescriptor = internalCommunicationConverter.convert(dataDescriptor)
-            determineTransformer(transformationTransformerId, convertedDataDescriptor, targetMediaType, parameters)
-                .let { transformer -> transformer.transform(convertedDataDescriptor, targetMediaType, parameters) }
-                .also { transformedDataDescriptor -> internalCommunicationCleaner.clean(convertedDataDescriptor, transformedDataDescriptor) }
+            determineTransformer(transformationTransformerId, dataDescriptor, targetMediaType, parameters)
+                .let { transformer -> transformer.transform(dataDescriptor, targetMediaType, parameters) }
         }
 
         if (log().isDebugEnabled) {
@@ -67,7 +65,8 @@ class GroupedByNameTransformerActor(
             )
         }
 
-        return transformedDataDescriptor
+        return internalCommunicationConverter.convert(transformedDataDescriptor)
+            .also { internalCommunicationCleaner.clean(dataDescriptor, it) }
     }
 
     private fun determineTransformer(
@@ -143,6 +142,6 @@ class GroupedByNameTransformerActor(
     private fun processException(exception: Exception, parameters: Parameters): Exception =
         when (exception) {
             is TimeoutException -> TransformerTimeoutException("Couldn't transform because <$transformerName> transformer timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
-            else                -> exception
+            else -> exception
         }
 }
