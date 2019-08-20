@@ -1,5 +1,6 @@
 package pl.beone.promena.core.internal.communication.external.manager
 
+import mu.KotlinLogging
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
@@ -7,8 +8,12 @@ import pl.beone.promena.core.contract.communication.external.manager.ExternalCom
 class DefaultExternalCommunicationManager(
     private val externalCommunications: List<ExternalCommunication>,
     private val backPressureCommunicationEnabled: Boolean,
-    backPressureId: String
+    private val backPressureId: String
 ) : ExternalCommunicationManager {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     private val communicationMap: Map<String, ExternalCommunication>
     private lateinit var backPressureCommunication: ExternalCommunication
@@ -22,7 +27,12 @@ class DefaultExternalCommunicationManager(
 
     override fun getCommunication(id: String): ExternalCommunication =
         communicationMap[id]
-            ?: if (backPressureCommunicationEnabled) backPressureCommunication else throw createException(externalCommunications, id)
+            ?: if (backPressureCommunicationEnabled) {
+                logger.warn { "There is no <$id> external communication. Using <$backPressureId> as back pressure" }
+                backPressureCommunication
+            } else {
+                throw createException(externalCommunications, id)
+            }
 
     private fun createCommunicationMap(externalCommunications: List<ExternalCommunication>): Map<String, ExternalCommunication> =
         externalCommunications.map { it.id to it }.toMap()

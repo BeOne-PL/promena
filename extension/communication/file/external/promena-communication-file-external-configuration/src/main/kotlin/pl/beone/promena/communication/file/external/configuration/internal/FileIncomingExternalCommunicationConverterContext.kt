@@ -19,6 +19,7 @@ class FileIncomingExternalCommunicationConverterContext {
     ) =
         FileIncomingExternalCommunicationConverter(
             environment.getId(),
+            internalCommunicationParameters.getId(),
             internalCommunicationParameters,
             internalCommunicationConverter
         )

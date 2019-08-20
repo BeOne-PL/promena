@@ -9,7 +9,7 @@ import pl.beone.promena.transformer.contract.data.DataDescriptor
 
 class MemoryIncomingExternalCommunicationConverter(
     private val externalCommunicationId: String,
-    private val internalCommunicationParameters: CommunicationParameters,
+    private val internalCommunicationId: String,
     private val internalCommunicationConverter: InternalCommunicationConverter
 ) : IncomingExternalCommunicationConverter {
 
@@ -18,7 +18,7 @@ class MemoryIncomingExternalCommunicationConverter(
     }
 
     override fun convert(dataDescriptor: DataDescriptor, externalCommunicationParameters: CommunicationParameters): DataDescriptor {
-        logger.warnIfCommunicationsAreDifferent(internalCommunicationParameters.getId(), externalCommunicationId)
+        logger.warnIfCommunicationsAreDifferent(internalCommunicationId, externalCommunicationId)
         return internalCommunicationConverter.convert(dataDescriptor)
     }
 }

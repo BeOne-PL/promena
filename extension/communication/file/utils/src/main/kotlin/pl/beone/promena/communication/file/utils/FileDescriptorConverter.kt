@@ -12,11 +12,9 @@ class FileDescriptorConverter(private val location: URI) : AbstractDescriptorCon
         "file (location=$location)"
 
     override fun isCompatible(data: Data): Boolean =
-        data is FileData && data.getLocation().isSubPath(location)
+        data is FileData &&
+                (data.getLocation().isTheSame(location) || data.getLocation().isSubPath(location))
 
     override fun convertData(data: Data): FileData =
         data.getInputStream().toFileData(location)
-
-    private fun URI.isSubPath(location: URI): Boolean =
-        toString().startsWith(location.toString())
 }
