@@ -166,7 +166,13 @@ class HttpClientAlfrescoPromenaTransformer(
                 transformation, nodeRefs, nodesChecksum, currentNodesChecksum
             )
         } else {
-            logger.couldNotTransform(transformation, nodeRefs, exception)
+            // ReactiveException isn't accessible - it causes that exception isn't printed by logger.
+            // It only wraps the target exception
+            if (exception.isReactiveException()) {
+                logger.couldNotTransform(transformation, nodeRefs, exception.cause!!)
+            } else {
+                logger.couldNotTransform(transformation, nodeRefs, exception)
+            }
 
             throw exception
         }
@@ -175,14 +181,21 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun Mono<List<NodeRef>>.retryOnError(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> =
         if (retry != Retry.No) {
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
-                          .fixedBackoff(retry.nextAttemptDelay)
-                          .retryMax(retry.maxAttempts)
-                          .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
+                .fixedBackoff(retry.nextAttemptDelay)
+                .retryMax(retry.maxAttempts)
+                .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
         } else {
             this
         }
 
-
     private fun unwrapRetryExhaustedException(exception: Throwable): Throwable =
         if (exception is RetryExhaustedException) exception.cause!! else exception
+
+
+    private fun Throwable.isReactiveException(): Boolean =
+        try {
+            javaClass == Class.forName("reactor.core.Exceptions\$ReactiveException")
+        } catch (e: Exception) {
+            false
+        }
 }
