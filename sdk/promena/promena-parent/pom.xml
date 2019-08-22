@@ -52,7 +52,7 @@
 
         <kotlin-logging.version>1.7.3</kotlin-logging.version>
         <kryo.version>4.0.2</kryo.version>
-        <akka.version>2.5.21</akka.version>
+        <akka.version>2.5.23</akka.version>
         <akka-kryo-serialization.version>0.5.2</akka-kryo-serialization.version>
         <kryo-serializers.version>0.45</kryo-serializers.version>
 

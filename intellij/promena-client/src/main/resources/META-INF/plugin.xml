@@ -1,0 +1,14 @@
+<idea-plugin>
+    <id>pl.beone.promena.intellijj.plugin.PromenaClient</id>
+    <name>Promena client</name>
+    <description>...</description>
+    <version>0.9.0-SNAPSHOT</version>
+    <vendor>BeOne</vendor>
+
+    <idea-version since-build="141.0"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="pl.beone.promena.intellij.plugin.linemarker.PromenaRelatedItemLineMarkerProvider"/>
+    </extensions>
+
+</idea-plugin>
