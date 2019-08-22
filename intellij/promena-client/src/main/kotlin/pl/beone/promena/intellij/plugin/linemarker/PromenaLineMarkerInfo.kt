@@ -41,12 +41,5 @@ class PromenaLineMarkerInfo<T : PsiElement>(
 
             override fun getPopupMenuActions(): ActionGroup? =
                 null
-//                DefaultActionGroup().apply {
-//                    add(LineMarkerActionWrapper(element, object : AnAction("Transform using HTTP", null, AllIcons.RunConfigurations.TestState.Run) {
-//                        override fun actionPerformed(e: AnActionEvent) {
-//                            executeOnClick()
-//                        }
-//                    }))
-//                }
         }
 }
