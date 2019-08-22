@@ -1,10 +1,7 @@
 package pl.beone.promena.intellij.plugin.linemarker
 
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
-import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.codeInsight.daemon.LineMarkerInfo
+import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.PsiMethodImpl
 import com.intellij.psi.impl.source.PsiParameterImpl
@@ -14,9 +11,9 @@ import com.intellij.psi.impl.source.tree.java.PsiIdentifierImpl
 import pl.beone.promena.intellij.plugin.common.getFileName
 import pl.beone.promena.intellij.plugin.toolwindow.RunToolWindowTab
 
-class PromenaRelatedItemLineMarkerProvider : RelatedItemLineMarkerProvider() {
+class PromenaRelatedItemLineMarkerProvider : LineMarkerProvider {
 
-    override fun collectNavigationMarkers(element: PsiElement, result: MutableCollection<in RelatedItemLineMarkerInfo<PsiElement>>) {
+    override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (isIdentifier(element) && isMethod(element)) {
             val method = (element.parent as PsiMethodImpl)
 
@@ -24,22 +21,25 @@ class PromenaRelatedItemLineMarkerProvider : RelatedItemLineMarkerProvider() {
             if (isDataDescriptorParameter(method) && isTransformationReturnType(method)) {
                 val comments = getMethodComments(method)
 
-                val project = element.project
-                val tabName = project.getFileName()
-                val runToolWindowTab = RunToolWindowTab(project).also {
-                    ApplicationManager.getApplication().invokeLater {
-                        it.create(tabName)
+                return PromenaLineMarkerInfo(element) {
+                    val project = element.project
+
+                    val runToolWindowTab = RunToolWindowTab(project).also {
+                        it.create(project.getFileName())
                         it.show()
                     }
-                }
 
-                val builder = NavigationGutterIconBuilder
-                    .create(AllIcons.RunConfigurations.TestState.Run)
-                    .setTarget(null)
-                    .setTooltipText("RUN!!!")
-                result.add(builder.createLineMarkerInfo(element))
+                    runToolWindowTab.println("ASDAS")
+                    runToolWindowTab.printlnException(RuntimeException("ASDASASD"))
+                }
             }
         }
+
+        return null
+    }
+
+    override fun collectSlowLineMarkers(elements: MutableList<PsiElement>, result: MutableCollection<LineMarkerInfo<PsiElement>>) {
+        // deliberately omitted
     }
 
     private fun isIdentifier(element: PsiElement): Boolean =

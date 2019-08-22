@@ -9,7 +9,6 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.Content
-import java.time.Duration
 
 internal class RunToolWindowTab(private val project: Project) {
 
@@ -35,10 +34,12 @@ internal class RunToolWindowTab(private val project: Project) {
 
     fun println(message: String) {
         consoleView.print(message, ConsoleViewContentType.NORMAL_OUTPUT)
+        consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
     }
 
     fun printlnException(exception: Exception) {
         consoleView.print(exception.toString(), ConsoleViewContentType.ERROR_OUTPUT)
+        consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
     }
 
     private fun getToolWindow(): ToolWindow =
