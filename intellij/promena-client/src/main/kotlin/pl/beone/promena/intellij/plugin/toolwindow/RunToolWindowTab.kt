@@ -3,12 +3,14 @@ package pl.beone.promena.intellij.plugin.toolwindow
 import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.icons.AllIcons
+import com.intellij.execution.ui.RunContentManager
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.Content
+import javax.swing.Icon
 
 internal class RunToolWindowTab(private val project: Project) {
 
@@ -17,11 +19,11 @@ internal class RunToolWindowTab(private val project: Project) {
     private lateinit var content: Content
 
     fun create(tabName: String) {
+        initRunToolWindow()
         toolWindow = getToolWindow()
         consoleView = createConsoleView()
 
         content = createContent(tabName)
-        setIcon()
     }
 
     fun show() {
@@ -32,14 +34,23 @@ internal class RunToolWindowTab(private val project: Project) {
         }
     }
 
-    fun println(message: String) {
+    fun println(message: String = "") {
         consoleView.print(message, ConsoleViewContentType.NORMAL_OUTPUT)
         consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
     }
 
-    fun printlnException(exception: Exception) {
-        consoleView.print(exception.toString(), ConsoleViewContentType.ERROR_OUTPUT)
+    fun printlnError(message: String) {
+        consoleView.print(message, ConsoleViewContentType.ERROR_OUTPUT)
         consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
+    }
+
+    fun setIcon(icon: Icon) {
+        content.icon = icon
+        content.putUserData(ToolWindow.SHOW_CONTENT_ICON, true)
+    }
+
+    private fun initRunToolWindow() {
+        ServiceManager.getService(project, RunContentManager::class.java)
     }
 
     private fun getToolWindow(): ToolWindow =
@@ -53,15 +64,4 @@ internal class RunToolWindowTab(private val project: Project) {
 
     private fun createContent(tabName: String): Content =
         toolWindow.contentManager.factory.createContent(consoleView.component, tabName, true)
-
-    private fun setIcon() {
-        content.icon = AllIcons.RunConfigurations.TestState.Run
-        content.putUserData(ToolWindow.SHOW_CONTENT_ICON, true)
-    }
-
-//    private fun Duration.prettyPrint(): String =
-//        this.toString()
-//            .substring(2)
-//            .replace("(\\d[HMS])(?!$)", "$1 ")
-//            .toLowerCase()
 }

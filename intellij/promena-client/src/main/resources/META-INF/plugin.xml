@@ -5,10 +5,14 @@
     <version>0.9.0-SNAPSHOT</version>
     <vendor>BeOne</vendor>
 
-    <idea-version since-build="141.0"/>
+    <idea-version since-build="192"/>
+
+    <depends>com.intellij.modules.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="pl.beone.promena.intellij.plugin.linemarker.PromenaRelatedItemLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="pl.beone.promena.intellij.plugin.linemarker.JavaRelatedItemLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="pl.beone.promena.intellij.plugin.linemarker.KotlinRelatedItemLineMarkerProvider"/>
     </extensions>
 
 </idea-plugin>
