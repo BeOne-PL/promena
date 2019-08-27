@@ -13,7 +13,10 @@ internal class TransformedDataDescriptorSaver {
 
         val tempDir = createTempDir()
         return transformedDataDescriptor.descriptors
-            .map { (data) -> saveFile(tempDir, data, extension) }
+            .map { (data) ->
+                saveFile(tempDir, data, extension)
+                    .apply { deleteOnExit() }
+            }
     }
 
     private fun saveFile(tempDir: File, data: Data, extension: String?): File =
