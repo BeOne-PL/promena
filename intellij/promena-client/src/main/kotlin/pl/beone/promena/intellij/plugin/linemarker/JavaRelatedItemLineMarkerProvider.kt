@@ -4,7 +4,10 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
-import pl.beone.promena.intellij.plugin.common.*
+import pl.beone.promena.intellij.plugin.common.getActiveFile
+import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
+import pl.beone.promena.intellij.plugin.common.getModule
+import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
 
 class JavaRelatedItemLineMarkerProvider : LineMarkerProvider {
 
@@ -17,7 +20,7 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider {
 
             if (
                 project.isFileInAnyModule(activeFile) &&
-                isNotInInnerClass(psiMethod) && isPublicStatic(psiMethod) && isDataDescriptorParameter(psiMethod) && isTransformationReturnType(psiMethod)
+                isNotInInnerClass(psiMethod) && isPublicStatic(psiMethod) && hasNoParameters(psiMethod) && isTransformationReturnType(psiMethod)
             ) {
                 return PromenaLineMarkerInfo(
                     element,
@@ -50,9 +53,8 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider {
     private fun isPublicStatic(method: PsiMethod): Boolean =
         method.modifierList.hasExplicitModifier("public") && method.modifierList.hasExplicitModifier("static")
 
-    private fun isDataDescriptorParameter(method: PsiMethod): Boolean =
-        method.parameters.size == 1 && method.parameters[0] is PsiParameter &&
-                (method.parameters[0] as PsiParameter).type.canonicalText == "pl.beone.promena.transformer.contract.data.DataDescriptor"
+    private fun hasNoParameters(method: PsiMethod): Boolean =
+        method.parameters.isEmpty()
 
     private fun isTransformationReturnType(method: PsiMethod): Boolean =
         method.returnType?.canonicalText == "pl.beone.promena.transformer.contract.transformation.Transformation"

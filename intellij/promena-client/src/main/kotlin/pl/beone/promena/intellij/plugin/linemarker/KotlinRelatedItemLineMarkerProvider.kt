@@ -9,7 +9,10 @@ import org.jetbrains.kotlin.nj2k.postProcessing.type
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
-import pl.beone.promena.intellij.plugin.common.*
+import pl.beone.promena.intellij.plugin.common.getActiveFile
+import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
+import pl.beone.promena.intellij.plugin.common.getModule
+import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
 
 class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
 
@@ -22,7 +25,7 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
 
             if (
                 project.isFileInAnyModule(activeFile) &&
-                isNotInClass(ktNamedFunction) && isDataDescriptorParameter(ktNamedFunction) && isTransformationReturnType(ktNamedFunction)
+                isNotInClass(ktNamedFunction) && hasNoParameters(ktNamedFunction) && isTransformationReturnType(ktNamedFunction)
             ) {
                 return PromenaLineMarkerInfo(
                     element,
@@ -55,9 +58,8 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
     private fun isNotInClass(function: KtNamedFunction): Boolean =
         function.containingClass() == null
 
-    private fun isDataDescriptorParameter(function: KtNamedFunction): Boolean =
-        function.valueParameterList?.parameters?.size == 1 &&
-                function.valueParameterList!!.parameters[0]?.type()?.getJetTypeFqName(false) == "pl.beone.promena.transformer.contract.data.DataDescriptor"
+    private fun hasNoParameters(function: KtNamedFunction): Boolean =
+        function.valueParameterList?.parameters?.size == 0
 
     private fun isTransformationReturnType(function: KtNamedFunction): Boolean =
         function.type()?.getJetTypeFqName(false) == "pl.beone.promena.transformer.contract.transformation.Transformation"

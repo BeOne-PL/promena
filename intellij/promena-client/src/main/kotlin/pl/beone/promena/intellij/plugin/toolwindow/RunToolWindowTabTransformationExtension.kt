@@ -1,10 +1,13 @@
 package pl.beone.promena.intellij.plugin.toolwindow
 
 import com.intellij.icons.AllIcons
+import org.apache.commons.lang3.exception.ExceptionUtils
 import pl.beone.promena.intellij.plugin.parser.Parameters
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.DataDescriptor
-import java.io.PrintWriter
-import java.io.StringWriter
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import java.io.File
 
 internal fun RunToolWindowTab.logStart(tabName: String) {
     create(tabName)
@@ -22,13 +25,19 @@ internal fun RunToolWindowTab.logData(dataDescriptor: DataDescriptor) {
     val descriptors = dataDescriptor.descriptors
     println("Data descriptors <${descriptors.size}>:")
     descriptors.forEach {
-        println("> Data: <${it.data.getBytes().toMB().format(2)} MB> | MediaType: <${it.mediaType.mimeType}, ${it.mediaType.charset.name()}>")
+        println("> Data: <${it.data.getBytes().toMB().format(2)} MB> | MediaType: <${it.mediaType.mimeType}, ${it.mediaType.charset.name()}> | Metadata: <${emptyMetadata()}>")
     }
     println()
 }
 
-internal fun RunToolWindowTab.logSuccess() {
+internal fun RunToolWindowTab.logSuccess(transformedDataDescriptor: TransformedDataDescriptor, targetMediaType: MediaType, savedFiles: List<File>) {
     setIcon(AllIcons.RunConfigurations.TestPassed)
+
+    val descriptors = transformedDataDescriptor.descriptors
+    println("Transformed <${targetMediaType.mimeType}, ${targetMediaType.charset.name()}> data descriptors <${descriptors.size}>:")
+    descriptors.zip(savedFiles).forEach { (transformedDataDescriptor, savedFile) ->
+        println("> Data: <${savedFile.path}, ${transformedDataDescriptor.data.getBytes().toMB().format(2)} MB> | Metadata: <${transformedDataDescriptor.metadata}>")
+    }
 }
 
 internal fun RunToolWindowTab.logFailureCompilationError() {
@@ -42,9 +51,7 @@ internal fun RunToolWindowTab.logFailureException(exception: Throwable) {
 }
 
 private fun Throwable.toFullString(): String =
-    StringWriter().apply {
-        printStackTrace(PrintWriter(this))
-    }.toString()
+    ExceptionUtils.getStackTrace(this)
 
 private fun ByteArray.toMB(): Double =
     this.size.toDouble() / 1024 / 1024
