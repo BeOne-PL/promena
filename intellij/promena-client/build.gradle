@@ -18,12 +18,12 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:1.3.50"
 
     compile "pl.beone.promena.transformer:promena-transformer-internal:0.9.0-SNAPSHOT"
-    compile("pl.beone.promena.core:promena-core-application-model:0.9.0-SNAPSHOT")
+    compile "pl.beone.promena.core:promena-core-application-model:0.9.0-SNAPSHOT"
     compile "pl.beone.promena.core:promena-core-internal-serialization:0.9.0-SNAPSHOT"
-    compile 'com.esotericsoftware:kryo:4.0.2'
     compile 'pl.beone.promena.connector:promena-connector-http-application-model:0.9.0-SNAPSHOT'
 
     compile 'org.apache.tika:tika-core:1.22'
+//    compile 'org.apache.httpcomponents:httpcore-nio:4.4.11'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

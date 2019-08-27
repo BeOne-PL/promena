@@ -10,6 +10,7 @@ import pl.beone.promena.intellij.plugin.classloader.loadClasses
 import pl.beone.promena.intellij.plugin.common.getOutputFolderFile
 import pl.beone.promena.intellij.plugin.connector.HttpConnectorTransformer
 import pl.beone.promena.intellij.plugin.parser.DataDescriptorParser
+import pl.beone.promena.intellij.plugin.parser.HttpConnectorParser
 import pl.beone.promena.intellij.plugin.parser.ParametersParser
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
 import pl.beone.promena.intellij.plugin.toolwindow.*
@@ -19,6 +20,7 @@ private val parametersParser = ParametersParser()
 
 private val transformedDataDescriptorSaver = TransformedDataDescriptorSaver()
 
+private val httpConnectorParser = HttpConnectorParser()
 private val httpConnectorTransformer = HttpConnectorTransformer()
 
 fun createOnClickHandler(
@@ -51,7 +53,7 @@ fun createOnClickHandler(
 
                     val transformation = clazz.invokePromenaMethod(methodName)
                     val transformedDataDescriptor = httpConnectorTransformer.transform(
-                        "localhost:8080",
+                        httpConnectorParser.parseAddress(comments),
                         transformationDescriptor(transformation, dataDescriptor)
                     )
 

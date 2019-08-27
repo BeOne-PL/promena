@@ -36,7 +36,11 @@ internal class DataDescriptorParser {
 
     private fun createCommentDataDescriptor(comment: String): CommentDataDescriptor =
         determineDataDescriptorWithMediaTypeAndCharset(comment) ?: determineDataDescriptorWithMediaType(comment) ?: determineData(comment)
-        ?: throw IllegalStateException("Couldn't parse <$comment>. Correct format: // Data: <absolute/resource path> [| MediaType: <mime type>; <charset>]")
+        ?: throw IllegalStateException(
+            "Couldn't parse <$comment>. Correct format: " +
+                    "// Data: <absolute/resource path> [| MediaType: <mime type>; <charset>], " +
+                    "for example: // Data: <absolute/resource path> [| MediaType: <mime type>; <charset>]"
+        )
 
     private fun determineDataDescriptorWithMediaTypeAndCharset(comment: String): CommentDataDescriptor? =
         dataWithMediaTypeAndCharsetRegex.find(comment)?.let {
@@ -81,8 +85,8 @@ internal class DataDescriptorParser {
     private fun createMediaType(file: File, mimeType: String?, charset: String?): MediaType =
         when {
             mimeType != null && charset != null -> mediaType(mimeType, Charset.forName(charset))
-            mimeType != null                    -> mediaType(mimeType, file.detectCharset())
-            else                                -> mediaType(file.detectMimeType(), file.detectCharset())
+            mimeType != null -> mediaType(mimeType, file.detectCharset())
+            else -> mediaType(file.detectMimeType(), file.detectCharset())
         }
 
     private fun getResourceUrl(path: String, clazz: Class<*>): URL =
