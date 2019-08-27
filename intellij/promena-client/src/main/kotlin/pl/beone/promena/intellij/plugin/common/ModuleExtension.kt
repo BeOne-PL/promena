@@ -10,7 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile
 fun Project.isFileInAnyModule(file: VirtualFile): Boolean =
     getModuleForFile(file) != null
 
-fun Project.getFileModule(file: VirtualFile): Module =
+fun Project.getModule(file: VirtualFile): Module =
     getModuleForFile(file) ?: throw IllegalStateException("No active module")
 
 fun Module.getOutputFolderFile(): VirtualFile =

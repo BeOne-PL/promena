@@ -28,10 +28,9 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
                     element,
                     createOnClickHandler(
                         project,
+                        project.getModule(activeFile),
                         ktNamedFunction.getClassQualifiedName(),
                         ktNamedFunction.name!!,
-                        activeFile,
-                        project.getFileModule(activeFile).getOutputFolderFile(),
                         { getMethodComments(ktNamedFunction) }
                     )
                 )

@@ -43,7 +43,7 @@ apply plugin: 'kotlin'
 
 intellij {
     version '2019.2.1'
-    plugins = ['java', 'kotlin']
+    plugins = ['java', 'Kotlin']
     updateSinceUntilBuild false
 }
 
