@@ -9,13 +9,15 @@ import pl.beone.promena.intellij.plugin.classloader.invokePromenaMethod
 import pl.beone.promena.intellij.plugin.classloader.loadClasses
 import pl.beone.promena.intellij.plugin.common.getOutputFolderFile
 import pl.beone.promena.intellij.plugin.connector.HttpConnectorTransformer
-import pl.beone.promena.intellij.plugin.parser.DataDescriptorParser
 import pl.beone.promena.intellij.plugin.parser.HttpConnectorParser
-import pl.beone.promena.intellij.plugin.parser.ParametersParser
+import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorParser
+import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorWithFile
+import pl.beone.promena.intellij.plugin.parser.parameter.ParametersParser
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
 import pl.beone.promena.intellij.plugin.toolwindow.*
+import pl.beone.promena.transformer.contract.data.dataDescriptor
 
-private val dataDescriptorParser = DataDescriptorParser()
+private val dataDescriptorWithFileParser = DataDescriptorParser()
 private val parametersParser = ParametersParser()
 
 private val transformedDataDescriptorSaver = TransformedDataDescriptorSaver()
@@ -48,8 +50,11 @@ fun createOnClickHandler(
                     val parameters = parametersParser.parse(comments)
                         .also { runToolWindowTab.logParameters(it) }
 
-                    val dataDescriptor = dataDescriptorParser.parse(comments, clazz)
+                    val dataDescriptor = dataDescriptorWithFileParser.parse(comments, clazz)
                         .also { runToolWindowTab.logData(it) }
+                        .also { runToolWindowTab.println() }
+                        .map(DataDescriptorWithFile::dataDescriptor)
+                        .let(::dataDescriptor)
 
                     val transformation = clazz.invokePromenaMethod(methodName)
                     val transformedDataDescriptor = httpConnectorTransformer.transform(
@@ -62,7 +67,7 @@ fun createOnClickHandler(
                         .also { runToolWindowTab.logSuccess(transformedDataDescriptor, targetMediaType, it) }
                 }
             } catch (e: Throwable) {
-                runToolWindowTab.logFailureException(e)
+                runToolWindowTab.logFailureThrowable(e)
             }
         }
     }

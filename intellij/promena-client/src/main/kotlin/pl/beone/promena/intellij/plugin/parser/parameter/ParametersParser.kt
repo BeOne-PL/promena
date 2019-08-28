@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.parser
+package pl.beone.promena.intellij.plugin.parser.parameter
 
 internal class ParametersParser {
 

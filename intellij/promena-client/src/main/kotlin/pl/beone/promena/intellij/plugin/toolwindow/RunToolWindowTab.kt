@@ -10,6 +10,8 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.Content
+import org.jetbrains.kotlin.idea.run.LocalFileHyperlinkInfo
+import java.io.File
 import javax.swing.Icon
 
 internal class RunToolWindowTab(private val project: Project) {
@@ -34,14 +36,26 @@ internal class RunToolWindowTab(private val project: Project) {
         }
     }
 
-    fun println(message: String = "") {
+    fun print(message: String) {
         consoleView.print(message, ConsoleViewContentType.NORMAL_OUTPUT)
+    }
+
+    fun print(file: File) {
+        consoleView.printHyperlink(file.path, LocalFileHyperlinkInfo(file.path, 0, 0))
+    }
+
+    fun println(message: String = "") {
+        print(message)
         consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
     }
 
     fun printlnError(message: String) {
         consoleView.print(message, ConsoleViewContentType.ERROR_OUTPUT)
         consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
+    }
+
+    fun scrollToTheBeginning() {
+        consoleView.scrollTo(0)
     }
 
     fun setIcon(icon: Icon) {

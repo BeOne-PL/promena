@@ -1,11 +1,9 @@
-package pl.beone.promena.intellij.plugin.parser
+package pl.beone.promena.intellij.plugin.parser.datadescriptor
 
 import pl.beone.promena.intellij.plugin.common.detectCharset
 import pl.beone.promena.intellij.plugin.common.detectMimeType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
-import pl.beone.promena.transformer.contract.data.DataDescriptor
-import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
@@ -27,16 +25,14 @@ internal class DataDescriptorParser {
         private val dataWithMediaTypeAndCharsetRegex = "$dataWithMediaTypeRegex;(.*)".toRegex()
     }
 
-    fun parse(comments: List<String>, clazz: Class<*>): DataDescriptor =
-        dataDescriptor(
-            comments.filter { it.contains("Data") }
-                .map(::createCommentDataDescriptor)
-                .map { createMemoryDataDescriptor(it, clazz) }
-        )
+    fun parse(comments: List<String>, clazz: Class<*>): List<DataDescriptorWithFile> =
+        comments.filter { it.contains("Data") }
+            .map(::createCommentDataDescriptor)
+            .map { createMemoryDataDescriptor(it, clazz) }
 
     private fun createCommentDataDescriptor(comment: String): CommentDataDescriptor =
         determineDataDescriptorWithMediaTypeAndCharset(comment) ?: determineDataDescriptorWithMediaType(comment) ?: determineData(comment)
-        ?: throw IllegalStateException(
+        ?: throw IllegalArgumentException(
             "Couldn't parse <$comment>. Correct format: " +
                     "// Data: <absolute/resource path> [| MediaType: <mime type>; <charset>], " +
                     "for example: // Data: <absolute/resource path> [| MediaType: <mime type>; <charset>]"
@@ -60,13 +56,16 @@ internal class DataDescriptorParser {
             CommentDataDescriptor(dataPath.trim(), null, null)
         }
 
-    private fun createMemoryDataDescriptor(commentDataDescriptor: CommentDataDescriptor, clazz: Class<*>): DataDescriptor.Single =
+    private fun createMemoryDataDescriptor(commentDataDescriptor: CommentDataDescriptor, clazz: Class<*>): DataDescriptorWithFile =
         try {
             val file = determineFile(commentDataDescriptor.dataPath, clazz)
-            singleDataDescriptor(
-                file.readBytes().toMemoryData(),
-                createMediaType(file, commentDataDescriptor.mimeType, commentDataDescriptor.charset),
-                emptyMetadata()
+            DataDescriptorWithFile(
+                singleDataDescriptor(
+                    file.readBytes().toMemoryData(),
+                    createMediaType(file, commentDataDescriptor.mimeType, commentDataDescriptor.charset),
+                    emptyMetadata()
+                ),
+                file
             )
         } catch (e: Exception) {
             throw RuntimeException("Couldn't create DataDescriptor from <$commentDataDescriptor>", e)
@@ -85,10 +84,10 @@ internal class DataDescriptorParser {
     private fun createMediaType(file: File, mimeType: String?, charset: String?): MediaType =
         when {
             mimeType != null && charset != null -> mediaType(mimeType, Charset.forName(charset))
-            mimeType != null -> mediaType(mimeType, file.detectCharset())
-            else -> mediaType(file.detectMimeType(), file.detectCharset())
+            mimeType != null                    -> mediaType(mimeType, file.detectCharset())
+            else                                -> mediaType(file.detectMimeType(), file.detectCharset())
         }
 
     private fun getResourceUrl(path: String, clazz: Class<*>): URL =
-        clazz.getResource("/$path") ?: throw IllegalStateException("Couldn't get <$path> from resources")
+        clazz.getResource("/$path") ?: throw IllegalArgumentException("Couldn't get <$path> from resources")
 }
