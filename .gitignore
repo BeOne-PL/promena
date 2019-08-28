@@ -80,27 +80,28 @@ local.properties
 
 *.iml
 # User-specific stuff
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
-
-# Generated files
-.idea/**/contentModel.xml
-
-# Sensitive or high-churn files
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/**/dbnavigator.xml
-
-# Gradle
-.idea/**/gradle.xml
-.idea/**/libraries
+#.idea/**/workspace.xml
+#.idea/**/tasks.xml
+#.idea/**/usage.statistics.xml
+#.idea/**/dictionaries
+#.idea/**/shelf
+#
+## Generated files
+#.idea/**/contentModel.xml
+#
+## Sensitive or high-churn files
+#.idea/**/dataSources/
+#.idea/**/dataSources.ids
+#.idea/**/dataSources.local.xml
+#.idea/**/sqlDataSources.xml
+#.idea/**/dynamic.xml
+#.idea/**/uiDesigner.xml
+#.idea/**/dbnavigator.xml
+#
+## Gradle
+#.idea/**/gradle.xml
+#.idea/**/libraries
+.idea
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
@@ -196,4 +197,23 @@ hs_err_pid*
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 
-# End of https://www.gitignore.io/api/eclipse,intellij,kotlin,jav
+### Gradle ###
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+# gradle/wrapper/gradle-wrapper.properties
+
+# End of https://www.gitignore.io/api/eclipse,intellij,kotlin,jav,gradle
+
+### KotlinTest ###
+.kotlintest

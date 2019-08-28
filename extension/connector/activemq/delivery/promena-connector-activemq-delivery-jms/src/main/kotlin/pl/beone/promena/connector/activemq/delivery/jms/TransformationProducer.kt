@@ -23,13 +23,13 @@ internal class TransformationProducer(private val jmsTemplate: JmsTemplate) {
     private fun Message.setProperty(key: String, value: Any) {
         when (value::class) {
             Boolean::class -> setBooleanProperty(key, value as Boolean)
-            Byte::class    -> setByteProperty(key, value as Byte)
-            Int::class     -> setIntProperty(key, value as Int)
-            Long::class    -> setLongProperty(key, value as Long)
-            Float::class   -> setFloatProperty(key, value as Float)
-            Double::class  -> setDoubleProperty(key, value as Double)
-            String::class  -> setStringProperty(key, value as String)
-            else           -> setObjectProperty(key, value)
+            Byte::class -> setByteProperty(key, value as Byte)
+            Int::class -> setIntProperty(key, value as Int)
+            Long::class -> setLongProperty(key, value as Long)
+            Float::class -> setFloatProperty(key, value as Float)
+            Double::class -> setDoubleProperty(key, value as Double)
+            String::class -> setStringProperty(key, value as String)
+            else -> setObjectProperty(key, value)
         }
     }
 }

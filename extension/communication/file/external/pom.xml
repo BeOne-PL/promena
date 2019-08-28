@@ -49,7 +49,7 @@
 
     <properties>
         <promena-communication-file-external.version>0.9.0-SNAPSHOT</promena-communication-file-external.version>
-        <promena-communication-file-utils.version>0.9.0-SNAPSHOT</promena-communication-file-utils.version>
+        <promena-communication-file-common.version>0.9.0-SNAPSHOT</promena-communication-file-common.version>
     </properties>
 
     <dependencies>

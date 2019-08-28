@@ -11,5 +11,5 @@ class MemberClusterListenerContext {
 
     @Bean
     fun memberClusterListener(actorSystem: ActorSystem) =
-            actorSystem.actorOf(Props.create(MemberClusterListener::class.java) { MemberClusterListener() }, "memberClusterListener")!!
+        actorSystem.actorOf(Props.create(MemberClusterListener::class.java) { MemberClusterListener() }, "memberClusterListener")!!
 }

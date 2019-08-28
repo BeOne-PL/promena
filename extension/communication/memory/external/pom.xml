@@ -49,7 +49,7 @@
 
     <properties>
         <promena-communication-memory-external.version>0.9.0-SNAPSHOT</promena-communication-memory-external.version>
-        <promena-communication-memory-utils.version>0.9.0-SNAPSHOT</promena-communication-memory-utils.version>
+        <promena-communication-memory-common.version>0.9.0-SNAPSHOT</promena-communication-memory-common.version>
     </properties>
 
     <dependencies>
