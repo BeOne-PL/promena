@@ -1,6 +1,7 @@
 package pl.beone.promena.intellij.plugin.toolwindow
 
 import com.intellij.execution.filters.TextConsoleBuilderFactory
+import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentManager
@@ -17,8 +18,8 @@ import javax.swing.Icon
 internal class RunToolWindowTab(private val project: Project) {
 
     private lateinit var toolWindow: ToolWindow
-    private lateinit var consoleView: ConsoleView
     private lateinit var content: Content
+    private lateinit var consoleView: ConsoleView
 
     fun create(tabName: String) {
         initRunToolWindow()
@@ -55,12 +56,20 @@ internal class RunToolWindowTab(private val project: Project) {
     }
 
     fun scrollToTheBeginning() {
+        flush()
         consoleView.scrollTo(0)
     }
 
     fun setIcon(icon: Icon) {
         content.icon = icon
         content.putUserData(ToolWindow.SHOW_CONTENT_ICON, true)
+    }
+
+    fun getText(): String =
+        (consoleView as ConsoleViewImpl).text
+
+    fun flush() {
+        (consoleView as ConsoleViewImpl).flushDeferredText()
     }
 
     private fun initRunToolWindow() {

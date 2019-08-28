@@ -56,8 +56,16 @@ internal fun RunToolWindowTab.logFailureCompilationError() {
 
 internal fun RunToolWindowTab.logFailureThrowable(exception: Throwable) {
     setIcon(AllIcons.RunConfigurations.TestError)
+    if (notEndsWithDoubleNewLine()) {
+        println()
+    }
     printlnError(exception.toFullString())
     scrollToTheBeginning()
+}
+
+private fun RunToolWindowTab.notEndsWithDoubleNewLine(): Boolean {
+    flush()
+    return !getText().endsWith("\n\n")
 }
 
 private fun Throwable.toFullString(): String =
