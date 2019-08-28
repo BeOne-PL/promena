@@ -11,8 +11,10 @@
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="pl.beone.promena.intellij.plugin.linemarker.JavaRelatedItemLineMarkerProvider"/>
-        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="pl.beone.promena.intellij.plugin.linemarker.KotlinRelatedItemLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="pl.beone.promena.intellij.plugin.linemarker.JavaRelatedItemLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="pl.beone.promena.intellij.plugin.linemarker.KotlinRelatedItemLineMarkerProvider"/>
     </extensions>
 
 </idea-plugin>

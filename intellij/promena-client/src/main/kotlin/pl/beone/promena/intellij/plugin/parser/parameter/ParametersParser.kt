@@ -10,12 +10,12 @@ internal class ParametersParser {
     fun parse(comments: List<String>): Parameters =
         Parameters(determineRepeat(comments) ?: 1, determineConcurrency(comments) ?: 1)
 
-    fun determineRepeat(comments: List<String>): Int? =
+    private fun determineRepeat(comments: List<String>): Int? =
         comments.mapNotNull { repeatRegex.find(it) }
             .map { it.groupValues[1].toInt() }
             .firstOrNull()
 
-    fun determineConcurrency(comments: List<String>): Int? =
+    private fun determineConcurrency(comments: List<String>): Int? =
         comments.mapNotNull { concurrencyRegex.find(it) }
             .map { it.groupValues[1].toInt() }
             .firstOrNull()

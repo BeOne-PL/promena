@@ -16,10 +16,13 @@ import pl.beone.promena.intellij.plugin.parser.parameter.ParametersParser
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
 import pl.beone.promena.intellij.plugin.toolwindow.*
 import pl.beone.promena.intellij.plugin.transformer.HttpTransformer
+import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.lang.System.currentTimeMillis
+import java.util.concurrent.Executors
+
 
 private val dataDescriptorWithFileParser = DataDescriptorParser()
 private val parametersParser = ParametersParser()
@@ -40,50 +43,73 @@ fun createOnClickHandler(
         val comments = getComments()
 
         CompilerManager.getInstance(project).make(module) { aborted, errors, _, _ ->
-            val startTimestamp = currentTimeMillis()
+            if (successfulCompilation(aborted, errors)) {
+                val startTimestamp = currentTimeMillis()
 
-            val runToolWindowTab = RunToolWindowTab(project).also {
-                it.logStart(createTabName(qualifiedClassName, methodName))
-            }
+                val parameters = parametersParser.parse(comments)
 
-            try {
-                if (aborted || errors > 0) {
-                    runToolWindowTab.logFailureCompilationError()
-                } else {
+                val httpAddress = httpConnectorParser.parseAddress(comments)
+
+                val runToolWindowTabs = (0 until parameters.repeat).map { RunToolWindowTab(project) }.apply {
+                    logStart(createTabName(qualifiedClassName, methodName))
+                    logParameters(parameters)
+                }
+
+                try {
                     val clazz = loadClasses(JavaRelatedItemLineMarkerProvider::class.java.classLoader, module.getOutputFolderFile().path)
                         .createClass(qualifiedClassName)
 
-                    val parameters = parametersParser.parse(comments)
-                        .also { runToolWindowTab.logParameters(it) }
-
                     val dataDescriptor = dataDescriptorWithFileParser.parse(comments, clazz)
-                        .also { runToolWindowTab.logData(it) }
-                        .also { runToolWindowTab.println() }
+                        .also { runToolWindowTabs.logData(it) }
+                        .also { runToolWindowTabs.newLine() }
                         .map(DataDescriptorWithFile::dataDescriptor)
                         .let(::dataDescriptor)
 
                     val transformation = clazz.invokePromenaMethod(methodName)
-                    httpTransformer.transform(httpConnectorParser.parseAddress(comments), transformationDescriptor(transformation, dataDescriptor))
-                        .subscribe(
-                            { (_, transformedDataDescriptor) ->
-                                handleSuccessfulTransformation(
-                                    runToolWindowTab,
-                                    transformation,
-                                    transformedDataDescriptor,
-                                    currentTimeMillis() - startTimestamp
-                                )
-                            },
-                            { exception -> handleFailedTransformation(runToolWindowTab, exception) }
-                        )
+
+                    val executors = Executors.newFixedThreadPool(parameters.concurrency)
+                    try {
+                        runToolWindowTabs.map { runToolWindowTab ->
+                            executors.submit {
+                                transformUsingHttp(runToolWindowTab, transformation, dataDescriptor, httpAddress, startTimestamp)
+                            }
+                        }
+                    } finally {
+                        executors.shutdown()
+                    }
+                } catch (e: Throwable) {
+                    runToolWindowTabs.logFailureThrowable(e)
                 }
-            } catch (e: Throwable) {
-                runToolWindowTab.logFailureThrowable(e)
             }
         }
     }
 
+private fun successfulCompilation(aborted: Boolean, errors: Int): Boolean =
+    !aborted && errors == 0
+
 private fun createTabName(qualifiedClassName: String, methodName: String): String =
     "${qualifiedClassName.split(".").last()}.$methodName"
+
+private fun transformUsingHttp(
+    runToolWindowTab: RunToolWindowTab,
+    transformation: Transformation,
+    dataDescriptor: DataDescriptor,
+    httpAddress: String,
+    startTimestamp: Long
+) {
+    httpTransformer.transform(httpAddress, transformationDescriptor(transformation, dataDescriptor))
+        .subscribe(
+            { (_, transformedDataDescriptor) ->
+                handleSuccessfulTransformation(
+                    runToolWindowTab,
+                    transformation,
+                    transformedDataDescriptor,
+                    currentTimeMillis() - startTimestamp
+                )
+            },
+            { exception -> handleFailedTransformation(runToolWindowTab, exception) }
+        )
+}
 
 private fun handleSuccessfulTransformation(
     runToolWindowTab: RunToolWindowTab,

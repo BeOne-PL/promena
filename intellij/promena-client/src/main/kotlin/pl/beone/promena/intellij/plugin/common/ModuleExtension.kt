@@ -4,7 +4,6 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.CompilerModuleExtension
-import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.vfs.VirtualFile
 
 fun Project.isFileInAnyModule(file: VirtualFile): Boolean =

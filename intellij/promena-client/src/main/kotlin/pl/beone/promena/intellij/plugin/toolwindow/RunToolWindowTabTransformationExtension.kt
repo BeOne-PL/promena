@@ -10,28 +10,40 @@ import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import java.io.File
 
-internal fun RunToolWindowTab.logStart(tabName: String) {
-    create(tabName)
-    setIcon(AllIcons.RunConfigurations.TestState.Run)
-    show()
+internal fun List<RunToolWindowTab>.logStart(tabName: String) {
+    forEachIndexed { index, runToolWindowTab ->
+        runToolWindowTab.create(tabName + " #${index + 1}")
+        runToolWindowTab.setIcon(AllIcons.RunConfigurations.TestState.Run)
+        runToolWindowTab.show()
 
-    println("Transforming...")
+        runToolWindowTab.println("Transforming...")
+    }
 }
 
-internal fun RunToolWindowTab.logParameters(parameters: Parameters) {
-    println("Parameters: <repeat: ${parameters.repeat}>, <concurrency: ${parameters.concurrency}>")
-    scrollToTheBeginning()
+internal fun List<RunToolWindowTab>.logParameters(parameters: Parameters) {
+    all {
+        println("Parameters: <repeat: ${parameters.repeat}>, <concurrency: ${parameters.concurrency}>")
+        scrollToTheBeginning()
+    }
 }
 
-internal fun RunToolWindowTab.logData(singleDataDescriptorWithFileList: List<DataDescriptorWithFile>) {
-    println("Data descriptors <${singleDataDescriptorWithFileList.size}>:")
-    singleDataDescriptorWithFileList.forEach { (dataDescriptor, file) ->
-        print("> Data: <")
-        print(file)
-        print(", ${dataDescriptor.data.calculateSizeInMB()} MB> | MediaType: <${dataDescriptor.mediaType.mimeType}, ${dataDescriptor.mediaType.charset.name()}> | Metadata: <${emptyMetadata()}>")
+internal fun List<RunToolWindowTab>.logData(singleDataDescriptorWithFileList: List<DataDescriptorWithFile>) {
+    all {
+        println("Data descriptors <${singleDataDescriptorWithFileList.size}>:")
+        singleDataDescriptorWithFileList.forEach { (dataDescriptor, file) ->
+            print("> Data: <")
+            print(file)
+            print(", ${dataDescriptor.data.calculateSizeInMB()} MB> | MediaType: <${dataDescriptor.mediaType.mimeType}, ${dataDescriptor.mediaType.charset.name()}> | Metadata: <${emptyMetadata()}>")
+            println()
+        }
+        scrollToTheBeginning()
+    }
+}
+
+internal fun List<RunToolWindowTab>.newLine() {
+    all {
         println()
     }
-    scrollToTheBeginning()
 }
 
 internal fun RunToolWindowTab.logSuccess(
@@ -43,8 +55,10 @@ internal fun RunToolWindowTab.logSuccess(
     setIcon(AllIcons.RunConfigurations.TestPassed)
 
     val descriptors = transformedDataDescriptor.descriptors
-    println("Transformed <${targetMediaType.mimeType}, ${targetMediaType.charset.name()}> data descriptors <${descriptors.size}> " +
-                    "in <${calculateTimeInSeconds(executionTimeMillis)} s>:")
+    println(
+        "Transformed <${targetMediaType.mimeType}, ${targetMediaType.charset.name()}> data descriptors <${descriptors.size}> " +
+                "in <${calculateTimeInSeconds(executionTimeMillis)} s>:"
+    )
     descriptors.zip(files).forEach { (transformedDataDescriptor, file) ->
         print("> Data: <")
         print(file)
@@ -55,10 +69,10 @@ internal fun RunToolWindowTab.logSuccess(
     scrollToTheBeginning()
 }
 
-internal fun RunToolWindowTab.logFailureCompilationError() {
-    setIcon(AllIcons.RunConfigurations.TestError)
-    printlnError("Compilation failed. Check messages for more details.")
-    scrollToTheBeginning()
+internal fun List<RunToolWindowTab>.logFailureThrowable(exception: Throwable) {
+    all {
+        logFailureThrowable(exception)
+    }
 }
 
 internal fun RunToolWindowTab.logFailureThrowable(exception: Throwable) {
@@ -89,3 +103,9 @@ private fun Double.format(digits: Int): String =
 
 private fun calculateTimeInSeconds(millis: Long): String =
     String.format("%.3f", millis / 1000.0)
+
+private fun List<RunToolWindowTab>.all(block: RunToolWindowTab.() -> Unit) {
+    forEach {
+        it.apply(block)
+    }
+}
