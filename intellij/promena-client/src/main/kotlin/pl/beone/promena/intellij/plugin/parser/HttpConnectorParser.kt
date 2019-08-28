@@ -13,10 +13,6 @@ internal class HttpConnectorParser {
                 address.trim()
             }
             .firstOrNull()
-            ?: throw IllegalStateException(
-                "No HTTP connector address. Correct format: " +
-                        "// HTTP: <host>:<port>, " +
-                        "for example: // HTTP: localhost:8080"
-            )
+            ?: throw IllegalStateException("No HTTP connector address. Correct format: // HTTP: <host>:<port>, for example: // HTTP: localhost:8080")
 
 }
