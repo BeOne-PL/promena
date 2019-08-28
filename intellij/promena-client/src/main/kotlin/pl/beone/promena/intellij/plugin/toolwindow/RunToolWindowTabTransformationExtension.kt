@@ -34,17 +34,24 @@ internal fun RunToolWindowTab.logData(singleDataDescriptorWithFileList: List<Dat
     scrollToTheBeginning()
 }
 
-internal fun RunToolWindowTab.logSuccess(transformedDataDescriptor: TransformedDataDescriptor, targetMediaType: MediaType, files: List<File>) {
+internal fun RunToolWindowTab.logSuccess(
+    transformedDataDescriptor: TransformedDataDescriptor,
+    targetMediaType: MediaType,
+    files: List<File>,
+    executionTimeMillis: Long
+) {
     setIcon(AllIcons.RunConfigurations.TestPassed)
 
     val descriptors = transformedDataDescriptor.descriptors
-    println("Transformed <${targetMediaType.mimeType}, ${targetMediaType.charset.name()}> data descriptors <${descriptors.size}>:")
+    println("Transformed <${targetMediaType.mimeType}, ${targetMediaType.charset.name()}> data descriptors <${descriptors.size}> " +
+                    "in <${calculateTimeInSeconds(executionTimeMillis)} s>:")
     descriptors.zip(files).forEach { (transformedDataDescriptor, file) ->
         print("> Data: <")
         print(file)
         print(", ${transformedDataDescriptor.data.calculateSizeInMB()} MB> | Metadata: <${transformedDataDescriptor.metadata}>")
         println()
     }
+    println("")
     scrollToTheBeginning()
 }
 
@@ -80,8 +87,5 @@ private fun ByteArray.toMB(): Double =
 private fun Double.format(digits: Int): String =
     String.format("%.${digits}f", this)
 
-//    private fun Duration.prettyPrint(): String =
-//        this.toString()
-//            .substring(2)
-//            .replace("(\\d[HMS])(?!$)", "$1 ")
-//            .toLowerCase()
+private fun calculateTimeInSeconds(millis: Long): String =
+    String.format("%.3f", millis / 1000.0)
