@@ -35,11 +35,13 @@ private val httpTransformer = HttpTransformer()
 fun createOnClickHandler(
     project: Project,
     module: Module,
-    qualifiedClassName: String,
-    methodName: String,
+    getQualifiedClassName: () -> String,
+    getMethodName: () -> String,
     getComments: () -> List<String>
 ): () -> Unit =
     {
+        val qualifiedClassName = getQualifiedClassName()
+        val methodName = getMethodName()
         val comments = getComments()
 
         CompilerManager.getInstance(project).make(module) { aborted, errors, _, _ ->
@@ -50,7 +52,7 @@ fun createOnClickHandler(
 
                 val httpAddress = httpConnectorParser.parseAddress(comments)
 
-                val runToolWindowTabs = (0 until parameters.repeat).map { RunToolWindowTab(project) }.apply {
+                val runToolWindowTabs = createRunToolWindowTabs(project, parameters.repeat).apply {
                     logStart(createTabName(qualifiedClassName, methodName))
                     logParameters(parameters)
                 }
@@ -60,7 +62,7 @@ fun createOnClickHandler(
                         .createClass(qualifiedClassName)
 
                     val dataDescriptor = dataDescriptorWithFileParser.parse(comments, clazz)
-                        .also { runToolWindowTabs.logData(it) }
+                        .also(runToolWindowTabs::logData)
                         .also { runToolWindowTabs.newLine() }
                         .map(DataDescriptorWithFile::dataDescriptor)
                         .let(::dataDescriptor)
@@ -83,6 +85,9 @@ fun createOnClickHandler(
             }
         }
     }
+
+private fun createRunToolWindowTabs(project: Project, number: Int): List<RunToolWindowTab> =
+    (0 until number).map { RunToolWindowTab(project) }
 
 private fun successfulCompilation(aborted: Boolean, errors: Int): Boolean =
     !aborted && errors == 0

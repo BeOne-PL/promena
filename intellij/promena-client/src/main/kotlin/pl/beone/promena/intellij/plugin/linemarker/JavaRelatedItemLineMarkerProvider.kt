@@ -27,8 +27,8 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider {
                     createOnClickHandler(
                         project,
                         project.getModule(activeFile),
-                        psiMethod.getClassQualifiedName(),
-                        psiMethod.name,
+                        { psiMethod.getClassQualifiedName() },
+                        { psiMethod.name },
                         { getMethodComments(psiMethod) }
                     )
                 )
