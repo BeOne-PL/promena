@@ -54,7 +54,7 @@ public class MapParametersJavaTest {
     public void of_timeoutNotSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value"),
                                                   entry("key2", "value2")))
-                           .getAll())
+                                .getAll())
                 .containsOnly(entry("key", "value"),
                               entry("key2", "value2"));
     }
@@ -63,7 +63,7 @@ public class MapParametersJavaTest {
     public void of_timeoutSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value")),
                                     Duration.ofMillis(100))
-                           .getAll())
+                                .getAll())
                 .containsOnly(entry("key", "value"),
                               entry(Parameters.TIMEOUT, Duration.ofMillis(100)));
     }

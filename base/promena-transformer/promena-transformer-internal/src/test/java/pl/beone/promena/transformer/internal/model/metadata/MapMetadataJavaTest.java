@@ -20,7 +20,7 @@ public class MapMetadataJavaTest {
     public void of() {
         assertThat(MapMetadata.of(Map.ofEntries(entry("key", "value"),
                                                 entry("key2", "value2")))
-                           .getAll())
+                              .getAll())
                 .containsOnly(entry("key", "value"),
                               entry("key2", "value2"));
     }

@@ -14,7 +14,7 @@ public class MapCommunicationParametersJavaTest {
     @Test
     public void of_withoutParameters() {
         assertThat(MapCommunicationParameters.of("memory")
-                           .getAll())
+                                             .getAll())
                 .containsOnly(entry(CommunicationParameters.ID, "memory"));
     }
 
@@ -23,7 +23,7 @@ public class MapCommunicationParametersJavaTest {
         assertThat(MapCommunicationParameters.of("memory",
                                                  Map.ofEntries(entry("key", "value"),
                                                                entry("key2", "value2")))
-                           .getAll())
+                                             .getAll())
                 .containsOnly(entry(CommunicationParameters.ID, "memory"),
                               entry("key", "value"),
                               entry("key2", "value2"));

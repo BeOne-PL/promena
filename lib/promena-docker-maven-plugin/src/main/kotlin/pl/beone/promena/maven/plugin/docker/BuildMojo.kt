@@ -140,7 +140,7 @@ class BuildMojo : AbstractMojo() {
                     destinationFile.mkdir()
                     log.debug("Finished creating directory: $destinationPath")
                 } else {
-                    if(isNotDockerFileFragment(artificialRelativePath)) {
+                    if (isNotDockerFileFragment(artificialRelativePath)) {
                         log.debug("Copying file from <$artificialAbsolutePath> to <$destinationPath>...")
                         Files.newInputStream(it).copyTo(destinationFile.outputStream())
                         log.debug("Finished copying file from <$artificialAbsolutePath> to <$destinationPath>")

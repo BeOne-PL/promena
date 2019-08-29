@@ -27,11 +27,11 @@ class ExternalCommunicationContext {
                 logger.info { "Promena external communication: <memory>" }
                 ExternalCommunication(externalCommunicationId, null)
             }
-            File   -> {
+            File -> {
                 val location = properties.getLocation()
                 logger.info { "Promena external communication: <file, location: $location>" }
                 ExternalCommunication(externalCommunicationId, location)
             }
-            else   -> throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
+            else -> throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
         }
 }

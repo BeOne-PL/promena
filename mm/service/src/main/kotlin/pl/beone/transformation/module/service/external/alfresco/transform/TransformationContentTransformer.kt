@@ -49,7 +49,7 @@ class TransformationContentTransformer : AbstractContentTransformer2() {
                     TEXT_PLAIN,
                     TEXT_XML -> true
 
-                    else     -> false
+                    else -> false
                 }
             }
         } catch (e: MimeTypeNotFound) {

@@ -85,7 +85,7 @@ data class FileData private constructor(
         } catch (e: Exception) {
             throw when (e) {
                 is DataDeleteException -> e
-                else                   -> DataDeleteException("Couldn't delete <$uri> file", e)
+                else -> DataDeleteException("Couldn't delete <$uri> file", e)
             }
         }
     }

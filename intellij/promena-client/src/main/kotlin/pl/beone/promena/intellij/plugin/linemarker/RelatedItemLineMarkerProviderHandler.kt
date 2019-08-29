@@ -7,9 +7,7 @@ import pl.beone.promena.core.applicationmodel.transformation.transformationDescr
 import pl.beone.promena.intellij.plugin.classloader.createClass
 import pl.beone.promena.intellij.plugin.classloader.invokePromenaMethod
 import pl.beone.promena.intellij.plugin.classloader.loadClasses
-import pl.beone.promena.intellij.plugin.common.getActiveFile
 import pl.beone.promena.intellij.plugin.common.getExistingOutputFolders
-import pl.beone.promena.intellij.plugin.common.getModule
 import pl.beone.promena.intellij.plugin.common.invokeLater
 import pl.beone.promena.intellij.plugin.parser.HttpConnectorParser
 import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorParser

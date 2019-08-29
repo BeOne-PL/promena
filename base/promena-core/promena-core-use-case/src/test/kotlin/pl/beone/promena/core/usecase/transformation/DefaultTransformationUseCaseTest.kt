@@ -129,7 +129,9 @@ class DefaultTransformationUseCaseTest {
         val externalCommunicationId = "file"
         val externalCommunicationParameters = communicationParameters(externalCommunicationId)
         val incomingCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
-            every { convert(dataDescriptor, externalCommunicationParameters) } throws CommunicationParametersValidationException("Communication parameters exception")
+            every {
+                convert(dataDescriptor, externalCommunicationParameters)
+            } throws CommunicationParametersValidationException("Communication parameters exception")
         }
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {

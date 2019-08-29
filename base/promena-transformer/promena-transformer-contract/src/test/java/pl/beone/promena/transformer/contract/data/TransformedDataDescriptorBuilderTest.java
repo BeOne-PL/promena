@@ -14,7 +14,7 @@ public class TransformedDataDescriptorBuilderTest {
     @Test
     public void build_zeroTransformedDataDescriptors() {
         assertThat(new TransformedDataDescriptorBuilder()
-                           .build())
+                .build())
                 .isEqualTo(TransformedDataDescriptor.Empty.INSTANCE);
     }
 
