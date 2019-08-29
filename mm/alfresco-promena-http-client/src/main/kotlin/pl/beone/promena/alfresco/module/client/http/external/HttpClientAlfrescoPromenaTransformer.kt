@@ -28,6 +28,7 @@ import reactor.netty.http.client.HttpClientResponse
 import reactor.retry.RetryExhaustedException
 import reactor.util.function.Tuple2
 import java.lang.System.currentTimeMillis
+import java.lang.reflect.Modifier
 import java.time.Duration
 
 class HttpClientAlfrescoPromenaTransformer(
@@ -166,9 +167,9 @@ class HttpClientAlfrescoPromenaTransformer(
                 transformation, nodeRefs, nodesChecksum, currentNodesChecksum
             )
         } else {
-            // ReactiveException isn't accessible - it causes that exception isn't printed by logger.
-            // It only wraps the target exception
-            if (exception.isReactiveException()) {
+            // private static inner classes aren't accessible (popular attitude in Reactor) - it causes that exception isn't printed by logger.
+            // unwrapping it to get the essence of the exception
+            if (exception.isInstanceOfInnerPrivateStaticClass()) {
                 logger.couldNotTransform(transformation, nodeRefs, exception.cause!!)
             } else {
                 logger.couldNotTransform(transformation, nodeRefs, exception)
@@ -181,9 +182,9 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun Mono<List<NodeRef>>.retryOnError(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> =
         if (retry != Retry.No) {
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
-                .fixedBackoff(retry.nextAttemptDelay)
-                .retryMax(retry.maxAttempts)
-                .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
+                          .fixedBackoff(retry.nextAttemptDelay)
+                          .retryMax(retry.maxAttempts)
+                          .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
         } else {
             this
         }
@@ -191,10 +192,9 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun unwrapRetryExhaustedException(exception: Throwable): Throwable =
         if (exception is RetryExhaustedException) exception.cause!! else exception
 
-
-    private fun Throwable.isReactiveException(): Boolean =
+    private fun Throwable.isInstanceOfInnerPrivateStaticClass(): Boolean =
         try {
-            javaClass == Class.forName("reactor.core.Exceptions\$ReactiveException")
+            javaClass.isMemberClass && Modifier.isPrivate(javaClass.modifiers)
         } catch (e: Exception) {
             false
         }
