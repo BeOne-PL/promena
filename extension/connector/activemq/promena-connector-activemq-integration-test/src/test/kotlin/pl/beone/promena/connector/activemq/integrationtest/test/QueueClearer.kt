@@ -25,5 +25,6 @@ class QueueClearer(
         while (jmsTemplate.receive(queue) != null) {
 
         }
-        jmsTemplate.receiveTimeout = receiveTimeout    }
+        jmsTemplate.receiveTimeout = receiveTimeout
+    }
 }

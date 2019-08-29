@@ -20,12 +20,12 @@ class MemberClusterListener : AbstractActor() {
     }
 
     override fun createReceive(): Receive =
-            receiveBuilder()
-                    .match(MemberUp::class.java) { log.info("Member is Up: {}", it.member()) }
-                    .match(UnreachableMember::class.java) { log.info("Member detected as unreachable: {}", it.member()) }
-                    .match(MemberRemoved::class.java) { log.info("Member is Removed: {}", it.member()) }
-                    .match(MemberEvent::class.java) {
-                        // ignore
-                    }
-                    .build()
+        receiveBuilder()
+            .match(MemberUp::class.java) { log.info("Member is Up: {}", it.member()) }
+            .match(UnreachableMember::class.java) { log.info("Member detected as unreachable: {}", it.member()) }
+            .match(MemberRemoved::class.java) { log.info("Member is Removed: {}", it.member()) }
+            .match(MemberEvent::class.java) {
+                // ignore
+            }
+            .build()
 }

@@ -17,9 +17,9 @@
             <artifactId>promena-core-internal</artifactId>
         </dependency>
         <dependency>
-            <groupId>pl.beone.promena.communication.file.utils</groupId>
-            <artifactId>promena-communication-file-utils</artifactId>
-            <version>${promena-communication-file-utils.version}</version>
+            <groupId>pl.beone.promena.communication.file</groupId>
+            <artifactId>promena-communication-file-common</artifactId>
+            <version>${promena-communication-file-common.version}</version>
         </dependency>
     </dependencies>
 </project>
