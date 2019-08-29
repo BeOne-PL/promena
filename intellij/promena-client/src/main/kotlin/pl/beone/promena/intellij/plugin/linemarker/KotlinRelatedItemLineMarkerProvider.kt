@@ -11,27 +11,24 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
 import pl.beone.promena.intellij.plugin.common.getActiveFile
 import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
-import pl.beone.promena.intellij.plugin.common.getModule
 import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
 
 class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project
-        val activeFile = project.getActiveFile()
 
         if (isKtNamedFunction(element)) {
             val ktNamedFunction = (element as KtNamedFunction)
 
             if (
-                project.isFileInAnyModule(activeFile) &&
+                project.isFileInAnyModule(project.getActiveFile()) &&
                 isNotInClass(ktNamedFunction) && hasNoParameters(ktNamedFunction) && isTransformationReturnType(ktNamedFunction)
             ) {
                 return PromenaLineMarkerInfo(
                     element,
                     createOnClickHandler(
                         project,
-                        project.getModule(activeFile),
                         { ktNamedFunction.getClassQualifiedName() },
                         { ktNamedFunction.name!! },
                         { getMethodComments(ktNamedFunction) }

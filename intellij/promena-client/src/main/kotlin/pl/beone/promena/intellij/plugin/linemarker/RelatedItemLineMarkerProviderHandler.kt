@@ -1,13 +1,15 @@
 package pl.beone.promena.intellij.plugin.linemarker
 
 import com.intellij.openapi.compiler.CompilerManager
-import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
+import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.intellij.plugin.classloader.createClass
 import pl.beone.promena.intellij.plugin.classloader.invokePromenaMethod
 import pl.beone.promena.intellij.plugin.classloader.loadClasses
-import pl.beone.promena.intellij.plugin.common.getOutputFolderFile
+import pl.beone.promena.intellij.plugin.common.getActiveFile
+import pl.beone.promena.intellij.plugin.common.getExistingOutputFolders
+import pl.beone.promena.intellij.plugin.common.getModule
 import pl.beone.promena.intellij.plugin.common.invokeLater
 import pl.beone.promena.intellij.plugin.parser.HttpConnectorParser
 import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorParser
@@ -23,7 +25,6 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.lang.System.currentTimeMillis
 import java.util.concurrent.Executors
 
-
 private val dataDescriptorWithFileParser = DataDescriptorParser()
 private val parametersParser = ParametersParser()
 
@@ -34,7 +35,6 @@ private val httpTransformer = HttpTransformer()
 
 fun createOnClickHandler(
     project: Project,
-    module: Module,
     getQualifiedClassName: () -> String,
     getMethodName: () -> String,
     getComments: () -> List<String>
@@ -44,7 +44,7 @@ fun createOnClickHandler(
         val methodName = getMethodName()
         val comments = getComments()
 
-        CompilerManager.getInstance(project).make(module) { aborted, errors, _, _ ->
+        CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
             if (successfulCompilation(aborted, errors)) {
                 val startTimestamp = currentTimeMillis()
 
@@ -58,7 +58,10 @@ fun createOnClickHandler(
                 }
 
                 try {
-                    val clazz = loadClasses(JavaRelatedItemLineMarkerProvider::class.java.classLoader, module.getOutputFolderFile().path)
+                    val clazz = loadClasses(
+                        JavaRelatedItemLineMarkerProvider::class.java.classLoader,
+                        project.getExistingOutputFolders()
+                    )
                         .createClass(qualifiedClassName)
 
                     val dataDescriptor = dataDescriptorWithFileParser.parse(comments, clazz)
