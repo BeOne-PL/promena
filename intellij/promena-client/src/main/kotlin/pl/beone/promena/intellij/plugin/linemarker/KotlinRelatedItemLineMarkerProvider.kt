@@ -14,7 +14,7 @@ import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
 import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
-class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
+class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedItemLineMarkerProvider() {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project

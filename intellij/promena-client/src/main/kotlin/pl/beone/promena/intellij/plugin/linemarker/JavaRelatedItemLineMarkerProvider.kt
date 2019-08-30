@@ -13,12 +13,13 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedIte
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project
+        val activeFile = project.getActiveFile()
 
         if (isMethod(element)) {
             val psiMethod = (element.parent as PsiMethod)
 
             if (
-                project.isFileInAnyModule(project.getActiveFile()) &&
+                project.isFileInAnyModule(activeFile) &&
                 isNotInInnerClass(psiMethod) && isPublicStatic(psiMethod) && hasNoParameters(psiMethod) && isTransformationReturnType(psiMethod)
             ) {
                 return PromenaLineMarkerInfo(
