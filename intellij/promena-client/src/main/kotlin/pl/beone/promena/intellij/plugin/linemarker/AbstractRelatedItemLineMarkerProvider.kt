@@ -4,6 +4,7 @@ import com.intellij.openapi.compiler.CompilerManager
 import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
+import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.intellij.plugin.classloader.createClassLoaderBasedOnFoldersWithCompiledFiles
 import pl.beone.promena.intellij.plugin.common.getExistingOutputFolders
 import pl.beone.promena.intellij.plugin.common.invokeLater
@@ -13,6 +14,7 @@ import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorPars
 import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorWithFile
 import pl.beone.promena.intellij.plugin.parser.parameter.ParametersParser
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
+import pl.beone.promena.intellij.plugin.serialization.ClassLoaderKryoSerializationService
 import pl.beone.promena.intellij.plugin.toolwindow.*
 import pl.beone.promena.intellij.plugin.transformer.HttpTransformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
@@ -31,7 +33,6 @@ abstract class AbstractRelatedItemLineMarkerProvider {
         private val transformedDataDescriptorSaver = TransformedDataDescriptorSaver()
 
         private val httpConnectorParser = HttpConnectorParser()
-        private val httpTransformer = HttpTransformer()
     }
 
     protected fun createOnClickHandler(
@@ -59,22 +60,33 @@ abstract class AbstractRelatedItemLineMarkerProvider {
                     }
 
                     try {
-                        val clazz = createClassLoaderBasedOnFoldersWithCompiledFiles(this.javaClass.classLoader, project.getExistingOutputFolders())
+                        val classLoader = createClassLoaderBasedOnFoldersWithCompiledFiles(this.javaClass.classLoader, project.getExistingOutputFolders())
+
+                        val promenaClass = classLoader
                             .loadClass(qualifiedClassName)
 
-                        val dataDescriptor = dataDescriptorWithFileParser.parse(comments, clazz)
+                        val kryoSerializationService = ClassLoaderKryoSerializationService(classLoader)
+
+                        val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
                             .also(runToolWindowTabs::logData)
                             .also { runToolWindowTabs.newLine() }
                             .map(DataDescriptorWithFile::dataDescriptor)
                             .let(::dataDescriptor)
 
-                        val transformation = clazz.invokePromenaMethod(methodName)
+                        val transformation = promenaClass.invokePromenaMethod(methodName)
 
                         val executors = Executors.newFixedThreadPool(parameters.concurrency)
                         try {
                             runToolWindowTabs.map { runToolWindowTab ->
                                 executors.submit {
-                                    transformUsingHttp(runToolWindowTab, transformation, dataDescriptor, httpAddress, startTimestamp)
+                                    transformUsingHttp(
+                                        kryoSerializationService,
+                                        runToolWindowTab,
+                                        transformation,
+                                        dataDescriptor,
+                                        httpAddress,
+                                        startTimestamp
+                                    )
                                 }
                             }
                         } finally {
@@ -97,13 +109,14 @@ abstract class AbstractRelatedItemLineMarkerProvider {
         "${qualifiedClassName.split(".").last()}.$methodName"
 
     private fun transformUsingHttp(
+        serializationService: SerializationService,
         runToolWindowTab: RunToolWindowTab,
         transformation: Transformation,
         dataDescriptor: DataDescriptor,
         httpAddress: String,
         startTimestamp: Long
     ) {
-        httpTransformer.transform(httpAddress, transformationDescriptor(transformation, dataDescriptor))
+        HttpTransformer(serializationService).transform(httpAddress, transformationDescriptor(transformation, dataDescriptor))
             .subscribe(
                 { (_, transformedDataDescriptor) ->
                     handleSuccessfulTransformation(

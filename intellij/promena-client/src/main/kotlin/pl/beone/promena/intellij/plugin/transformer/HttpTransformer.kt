@@ -6,7 +6,7 @@ import io.netty.handler.codec.http.HttpResponseStatus
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
-import pl.beone.promena.core.internal.serialization.KryoSerializationService
+import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
@@ -16,10 +16,11 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.http.client.HttpClientResponse
 import reactor.util.function.Tuple2
 
-internal class HttpTransformer {
+internal class HttpTransformer(private val serializationService: SerializationService) {
 
-    private val httpClient = HttpClient.create()
-    private val serializationService = KryoSerializationService()
+    companion object {
+        private val httpClient = HttpClient.create()
+    }
 
     fun transform(address: String, transformationDescriptor: TransformationDescriptor): Mono<PerformedTransformationDescriptor> {
         val serializedTransformationDescriptor = Mono.just(transformationDescriptor)
@@ -46,11 +47,11 @@ internal class HttpTransformer {
 
     private fun handleTransformationResult(clientResponse: HttpClientResponse, bytes: ByteArray): PerformedTransformationDescriptor =
         when (clientResponse.status()) {
-            HttpResponseStatus.OK ->
+            HttpResponseStatus.OK                    ->
                 serializationService.deserialize(bytes, getClazz())
             HttpResponseStatus.INTERNAL_SERVER_ERROR ->
                 throw serializationService.deserialize(bytes, clientResponse.responseHeaders().getSerializationClass())
-            else ->
+            else                                     ->
                 throw HttpException(clientResponse.status(), bytes)
         }
 
