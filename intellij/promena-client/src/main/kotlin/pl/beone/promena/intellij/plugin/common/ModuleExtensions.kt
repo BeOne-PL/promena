@@ -12,7 +12,7 @@ fun Project.isFileInAnyModule(file: VirtualFile): Boolean =
 fun Project.getModule(file: VirtualFile): Module =
     getModuleForFile(file) ?: throw IllegalStateException("No active module")
 
-fun Module.getOutputFolderFile(): VirtualFile =
+fun Module.getOutputFolder(): VirtualFile =
     CompilerModuleExtension.getInstance(this)!!.compilerOutputPath ?: throw IllegalStateException("Module <$this> has no output path")
 
 private fun Project.getModuleForFile(file: VirtualFile): Module? =

@@ -28,8 +28,8 @@ operator fun DataDescriptor.Multi.plus(descriptor: DataDescriptor.Single): DataD
 
 fun dataDescriptor(descriptors: List<DataDescriptor.Single>): DataDescriptor =
     when (descriptors.size) {
-        0    -> DataDescriptor.Empty
-        1    -> descriptors.first()
+        0 -> DataDescriptor.Empty
+        1 -> descriptors.first()
         else -> DataDescriptor.Multi.of(descriptors.toList())
     }
 

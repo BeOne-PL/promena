@@ -6,27 +6,24 @@ import com.intellij.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import pl.beone.promena.intellij.plugin.common.getActiveFile
 import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
-import pl.beone.promena.intellij.plugin.common.getModule
 import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
 
 class JavaRelatedItemLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project
-        val activeFile = project.getActiveFile()
 
         if (isMethod(element)) {
             val psiMethod = (element.parent as PsiMethod)
 
             if (
-                project.isFileInAnyModule(activeFile) &&
+                project.isFileInAnyModule(project.getActiveFile()) &&
                 isNotInInnerClass(psiMethod) && isPublicStatic(psiMethod) && hasNoParameters(psiMethod) && isTransformationReturnType(psiMethod)
             ) {
                 return PromenaLineMarkerInfo(
                     element,
                     createOnClickHandler(
                         project,
-                        project.getModule(activeFile),
                         { psiMethod.getClassQualifiedName() },
                         { psiMethod.name },
                         { getMethodComments(psiMethod) }
