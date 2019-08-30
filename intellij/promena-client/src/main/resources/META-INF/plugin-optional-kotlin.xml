@@ -1,0 +1,9 @@
+<idea-plugin>
+    <depends optional="true" config-file="plugin-kotlin.xml">com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="pl.beone.promena.intellij.plugin.linemarker.KotlinRelatedItemLineMarkerProvider"/>
+    </extensions>
+
+</idea-plugin>
