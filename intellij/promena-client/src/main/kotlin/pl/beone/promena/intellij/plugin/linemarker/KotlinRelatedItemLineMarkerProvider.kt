@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.psi.psiUtil.containingClass
 import pl.beone.promena.intellij.plugin.common.getActiveFile
 import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
 import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
+import pl.beone.promena.transformer.contract.transformation.Transformation
 
 class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
 
@@ -59,5 +60,5 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider {
         function.valueParameterList?.parameters?.size == 0
 
     private fun isTransformationReturnType(function: KtNamedFunction): Boolean =
-        function.type()?.getJetTypeFqName(false) == "pl.beone.promena.transformer.contract.transformation.Transformation"
+        function.type()?.getJetTypeFqName(false) == Transformation::class.java.canonicalName
 }

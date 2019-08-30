@@ -7,8 +7,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import pl.beone.promena.intellij.plugin.common.getActiveFile
 import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
 import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
+import pl.beone.promena.transformer.contract.transformation.Transformation
 
-class JavaRelatedItemLineMarkerProvider : LineMarkerProvider {
+class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedItemLineMarkerProvider() {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project
@@ -54,7 +55,7 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider {
         method.parameters.isEmpty()
 
     private fun isTransformationReturnType(method: PsiMethod): Boolean =
-        method.returnType?.canonicalText == "pl.beone.promena.transformer.contract.transformation.Transformation"
+        method.returnType?.canonicalText == Transformation::class.java.canonicalName
 
     private fun getMethodComments(method: PsiMethod): List<String> =
         method
