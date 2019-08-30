@@ -19,13 +19,10 @@ private fun Kryo.setInstantiatorStrategyForNoArgsConstructors() {
 
 private fun Kryo.registerSerializers() {
     // kryo-serializers
-    register(listOf("")::class.java, ArraysAsListSerializer())
-    register(mutableListOf("")::class.java, ArraysAsListSerializer()) // to ensure Kotlin compatibility
-    register(Arrays.asList("")::class.java, ArraysAsListSerializer()) // to ensure Kotlin compatibility
-
     register(Collections.EMPTY_LIST::class.java, CollectionsEmptyListSerializer())
     register(Collections.EMPTY_MAP::class.java, CollectionsEmptyMapSerializer())
     register(Collections.EMPTY_SET::class.java, CollectionsEmptySetSerializer())
+    register(Arrays.asList("")::class.java, ArraysAsListSerializer())
     register(Collections.singleton("")::class.java, CollectionsSingletonSetSerializer())
     register(Collections.singletonMap("", "")::class.java, CollectionsSingletonMapSerializer())
     register(GregorianCalendar::class.java, GregorianCalendarSerializer())
