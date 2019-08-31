@@ -8,16 +8,16 @@ import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // The same parent as MapParameters. It is covered by MapParametersJavaTest and MapParametersTest tests
-public class MapMetadataJavaTest {
+class MapMetadataJavaTest {
 
     @Test
-    public void empty() {
+    void empty() {
         assertThat(MapMetadata.empty().getAll())
                 .isEmpty();
     }
 
     @Test
-    public void of() {
+    void of() {
         assertThat(MapMetadata.of(Map.ofEntries(entry("key", "value"),
                                                 entry("key2", "value2")))
                               .getAll())

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-class TestUtils {
+class FileUtils {
 
     static File createTempFile(String string) {
         try {

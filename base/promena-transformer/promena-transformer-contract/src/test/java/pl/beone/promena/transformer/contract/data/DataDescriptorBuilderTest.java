@@ -12,16 +12,16 @@ import static org.mockito.Mockito.mock;
 import static pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN;
 import static pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML;
 
-public class DataDescriptorBuilderTest {
+class DataDescriptorBuilderTest {
 
     @Test
-    public void build_zeroDataDescriptors() {
+    void build_zeroDataDescriptors() {
         assertThat(new DataDescriptorBuilder().build())
                 .isEqualTo(DataDescriptor.Empty.INSTANCE);
     }
 
     @Test
-    public void build_oneSingleDataDescriptor() {
+    void build_oneSingleDataDescriptor() {
         Data data = mock(Data.class);
         MediaType mediaType = TEXT_PLAIN;
         Metadata metadata = mock(Metadata.class);
@@ -36,7 +36,7 @@ public class DataDescriptorBuilderTest {
     }
 
     @Test
-    public void build_twoSingleDataDescriptors() {
+    void build_twoSingleDataDescriptors() {
         DataDescriptor.Single singleDataDescriptor = DataDescriptor.Single.of(mock(Data.class), TEXT_PLAIN, mock(Metadata.class));
         DataDescriptor.Single singleDataDescriptor2 = DataDescriptor.Single.of(mock(Data.class), TEXT_XML, mock(Metadata.class));
         assertThat(

@@ -7,10 +7,10 @@ import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class MapCommunicationParametersBuilderTest {
+class MapCommunicationParametersBuilderTest {
 
     @Test
-    public void build() {
+    void build() {
         assertThat(new MapCommunicationParametersBuilder()
                            .id("memory")
                            .build()
@@ -27,7 +27,7 @@ public class MapCommunicationParametersBuilderTest {
     }
 
     @Test
-    public void build_noId_shouldThrowIllegalArgumentException() {
+    void build_noId_shouldThrowIllegalArgumentException() {
         assertThatThrownBy(() -> new MapCommunicationParametersBuilder().build())
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Communication parameters must contain <id>");

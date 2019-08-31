@@ -7,7 +7,7 @@ import pl.beone.promena.transformer.internal.model.getList
 import pl.beone.promena.transformer.internal.model.getListWithoutType
 import java.time.Duration
 
-data class MapParameters private constructor(
+data class MapParameters internal constructor(
     private val parameters: Map<String, Any>
 ) : Parameters {
 

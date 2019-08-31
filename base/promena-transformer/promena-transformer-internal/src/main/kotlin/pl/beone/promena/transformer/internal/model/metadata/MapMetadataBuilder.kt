@@ -8,5 +8,4 @@ class MapMetadataBuilder {
         apply { metadata[key] = value }
 
     fun build(): MapMetadata = metadata(metadata)
-
 }

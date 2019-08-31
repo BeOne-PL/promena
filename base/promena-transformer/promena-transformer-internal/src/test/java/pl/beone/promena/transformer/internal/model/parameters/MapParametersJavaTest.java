@@ -15,9 +15,9 @@ import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class MapParametersJavaTest {
+class MapParametersJavaTest {
 
-    private static Parameters parameters = new MapParametersBuilder()
+    private static final Parameters parameters = new MapParametersBuilder()
             .add("int", 3)
             .add("long", 10L)
             .add("double", 3.5)
@@ -45,13 +45,13 @@ public class MapParametersJavaTest {
             .build();
 
     @Test
-    public void empty() {
+    void empty() {
         assertThat(MapParameters.empty().getAll())
                 .isEmpty();
     }
 
     @Test
-    public void of_timeoutNotSpecified() {
+    void of_timeoutNotSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value"),
                                                   entry("key2", "value2")))
                                 .getAll())
@@ -60,7 +60,7 @@ public class MapParametersJavaTest {
     }
 
     @Test
-    public void of_timeoutSpecified() {
+    void of_timeoutSpecified() {
         assertThat(MapParameters.of(Map.ofEntries(entry("key", "value")),
                                     Duration.ofMillis(100))
                                 .getAll())
@@ -69,7 +69,7 @@ public class MapParametersJavaTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         assertThat(parameters.get("int")).isEqualTo(3);
         assertThat(parameters.get("long")).isEqualTo(10L);
         assertThat(parameters.get("double")).isEqualTo(3.5);
@@ -84,7 +84,7 @@ public class MapParametersJavaTest {
     }
 
     @Test
-    public void getWithClass() {
+    void getWithClass() {
         assertThat(parameters.get("int", Integer.class)).isEqualTo(3);
         assertThat(parameters.get("long", Long.class)).isEqualTo(10L);
         assertThat(parameters.get("double", Double.class)).isEqualTo(3.5);
@@ -120,7 +120,7 @@ public class MapParametersJavaTest {
     }
 
     @Test
-    public void getParameters() {
+    void getParameters() {
         assertThat(parameters.getParameters("parameters"))
                 .isEqualTo(MapParameters.of(new HashMap<>() {{
                     put("key", "value");
@@ -141,7 +141,7 @@ public class MapParametersJavaTest {
     }
 
     @Test
-    public void getList() {
+    void getList() {
         assertThat(parameters.getList("intList")).isEqualTo(Arrays.asList(1, 2, 3));
         assertThat(parameters.getList("mixList")).isEqualTo(Arrays.asList(1, "string", true));
         assertThat(parameters.getList("stringList")).isEqualTo(Arrays.asList("1", "2", "3"));
@@ -156,7 +156,7 @@ public class MapParametersJavaTest {
     }
 
     @Test
-    public void getListWithClass() {
+    void getListWithClass() {
         assertThat(parameters.getList("intList", Integer.class)).isEqualTo(Arrays.asList(1, 2, 3));
         assertThat(parameters.getList("stringList", String.class)).isEqualTo(Arrays.asList("1", "2", "3"));
         assertThat(parameters.getList("stringList", Long.class)).isEqualTo(Arrays.asList(1L, 2L, 3L));
@@ -171,7 +171,7 @@ public class MapParametersJavaTest {
     }
 
     @Test
-    public void getAll() {
+    void getAll() {
         assertThat(parameters.getAll())
                 .hasSize(18)
                 .containsEntry("int", 3)

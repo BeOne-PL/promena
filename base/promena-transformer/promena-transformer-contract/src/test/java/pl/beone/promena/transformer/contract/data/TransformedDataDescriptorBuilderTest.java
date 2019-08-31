@@ -9,17 +9,17 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class TransformedDataDescriptorBuilderTest {
+class TransformedDataDescriptorBuilderTest {
 
     @Test
-    public void build_zeroTransformedDataDescriptors() {
+    void build_zeroTransformedDataDescriptors() {
         assertThat(new TransformedDataDescriptorBuilder()
                            .build())
                 .isEqualTo(TransformedDataDescriptor.Empty.INSTANCE);
     }
 
     @Test
-    public void build_oneSingleTransformedDataDescriptor() {
+    void build_oneSingleTransformedDataDescriptor() {
         Data data = mock(Data.class);
         Metadata metadata = mock(Metadata.class);
 
@@ -33,7 +33,7 @@ public class TransformedDataDescriptorBuilderTest {
     }
 
     @Test
-    public void build_twoSingleTransformedDataDescriptors() {
+    void build_twoSingleTransformedDataDescriptors() {
         TransformedDataDescriptor.Single singleTransformedDataDescriptor = TransformedDataDescriptor.Single.of(mock(Data.class), mock(Metadata.class));
         TransformedDataDescriptor.Single singleTransformedDataDescriptor2 = TransformedDataDescriptor.Single.of(mock(Data.class), mock(Metadata.class));
         assertThat(

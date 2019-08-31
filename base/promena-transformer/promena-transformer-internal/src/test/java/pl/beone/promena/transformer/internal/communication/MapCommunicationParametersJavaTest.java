@@ -9,17 +9,17 @@ import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // The same parent as MapParameters. It is covered by MapParametersJavaTest and MapParametersTest tests
-public class MapCommunicationParametersJavaTest {
+class MapCommunicationParametersJavaTest {
 
     @Test
-    public void of_withoutParameters() {
+    void of_withoutParameters() {
         assertThat(MapCommunicationParameters.of("memory")
                                              .getAll())
                 .containsOnly(entry(CommunicationParameters.ID, "memory"));
     }
 
     @Test
-    public void of_withParameters() {
+    void of_withParameters() {
         assertThat(MapCommunicationParameters.of("memory",
                                                  Map.ofEntries(entry("key", "value"),
                                                                entry("key2", "value2")))

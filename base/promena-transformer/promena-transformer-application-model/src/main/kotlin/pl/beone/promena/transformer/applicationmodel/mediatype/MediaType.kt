@@ -2,7 +2,7 @@ package pl.beone.promena.transformer.applicationmodel.mediatype
 
 import java.nio.charset.Charset
 
-data class MediaType private constructor(
+data class MediaType internal constructor(
     val mimeType: String,
     val charset: Charset
 ) {

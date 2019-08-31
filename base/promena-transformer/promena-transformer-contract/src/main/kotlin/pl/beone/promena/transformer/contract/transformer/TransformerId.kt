@@ -1,6 +1,6 @@
 package pl.beone.promena.transformer.contract.transformer
 
-data class TransformerId private constructor(
+data class TransformerId internal constructor(
     val name: String,
     val subName: String?
 ) {

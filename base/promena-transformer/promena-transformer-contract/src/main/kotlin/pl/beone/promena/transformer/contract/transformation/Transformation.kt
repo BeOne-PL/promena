@@ -6,7 +6,7 @@ import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 sealed class Transformation {
 
-    data class Single private constructor(
+    data class Single internal constructor(
         val transformerId: TransformerId,
         val targetMediaType: MediaType,
         val parameters: Parameters
@@ -30,7 +30,7 @@ sealed class Transformation {
             get() = listOf(this)
     }
 
-    data class Composite private constructor(
+    data class Composite internal constructor(
         override val transformers: List<Single>
     ) : Transformation() {
 

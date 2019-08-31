@@ -74,7 +74,7 @@ class TransformationDslTest {
     fun `transformation _ zero transformation _ should throw IllegalArgumentException`() {
         shouldThrow<IllegalArgumentException> {
             transformation()
-        }.message shouldBe "Transformation must consist of at least one transformer"
+        }.message shouldBe "Transformation must consist of at least one transformation stage"
     }
 
     @Test

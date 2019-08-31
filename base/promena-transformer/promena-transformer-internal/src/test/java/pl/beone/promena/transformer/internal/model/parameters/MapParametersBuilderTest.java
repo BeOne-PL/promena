@@ -8,10 +8,10 @@ import java.time.Duration;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapParametersBuilderTest {
+class MapParametersBuilderTest {
 
     @Test
-    public void build() {
+    void build() {
         assertThat(new MapParametersBuilder()
                            .add("key", "value")
                            .add("key2", "value2")

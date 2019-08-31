@@ -6,7 +6,7 @@ import pl.beone.promena.transformer.internal.model.get
 import pl.beone.promena.transformer.internal.model.getList
 import pl.beone.promena.transformer.internal.model.getListWithoutType
 
-data class MapMetadata private constructor(
+data class MapMetadata internal constructor(
     private val metadata: Map<String, Any>
 ) : Metadata {
 

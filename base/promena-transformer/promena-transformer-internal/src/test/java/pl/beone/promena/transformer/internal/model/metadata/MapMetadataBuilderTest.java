@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapMetadataBuilderTest {
+class MapMetadataBuilderTest {
 
     @Test
-    public void build() {
+    void build() {
         assertThat(new MapMetadataBuilder()
                            .add("key", "value")
                            .add("key2", "value2")

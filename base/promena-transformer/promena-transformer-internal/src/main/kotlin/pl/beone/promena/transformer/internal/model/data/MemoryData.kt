@@ -4,7 +4,7 @@ import pl.beone.promena.transformer.contract.model.Data
 import java.io.InputStream
 import java.net.URI
 
-data class MemoryData private constructor(
+data class MemoryData internal constructor(
     private val bytes: ByteArray
 ) : Data {
 
@@ -29,6 +29,7 @@ data class MemoryData private constructor(
     }
 
     override fun isAccessible() {
+        // deliberately omitted. Memory is always accessible
     }
 
     override fun delete() {

@@ -12,7 +12,7 @@ sealed class DataDescriptor {
             get() = emptyList()
     }
 
-    data class Single private constructor(
+    data class Single internal constructor(
         val data: Data,
         val mediaType: MediaType,
         val metadata: Metadata
@@ -28,7 +28,7 @@ sealed class DataDescriptor {
             get() = listOf(this)
     }
 
-    data class Multi private constructor(
+    data class Multi internal constructor(
         override val descriptors: List<Single>
     ) : DataDescriptor() {
 

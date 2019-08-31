@@ -12,17 +12,17 @@ import static org.mockito.Mockito.mock;
 import static pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN;
 import static pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML;
 
-public class TransformationBuilderTest {
+class TransformationBuilderTest {
 
     @Test
-    public void build_zeroTransformations_shouldThrowIllegalArgumentException() {
+    void build_zeroTransformations_shouldThrowIllegalArgumentException() {
         assertThatThrownBy(() -> new TransformationBuilder().build())
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Transformation must consist of at least one transformer");
+                .hasMessage("Transformation must consist of at least one transformation stage");
     }
 
     @Test
-    public void build_oneSingleTransformation() {
+    void build_oneSingleTransformation() {
         String id = "test";
         MediaType mediaType = TEXT_PLAIN;
         Parameters parameters = mock(Parameters.class);
@@ -37,7 +37,7 @@ public class TransformationBuilderTest {
     }
 
     @Test
-    public void build_twoSingleTransformations() {
+    void build_twoSingleTransformations() {
         Transformation.Single singleTransformation = Transformation.Single.of("test", TEXT_PLAIN, mock(Parameters.class));
         Transformation.Single singleTransformation2 = Transformation.Single.of("test2", TEXT_XML, mock(Parameters.class));
         assertThat(
