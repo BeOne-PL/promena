@@ -1,4 +1,4 @@
-package pl.beone.promena.core.internal.serialization
+package pl.beone.promena.core.internal.serialization.util
 
 import com.esotericsoftware.kryo.Kryo
 

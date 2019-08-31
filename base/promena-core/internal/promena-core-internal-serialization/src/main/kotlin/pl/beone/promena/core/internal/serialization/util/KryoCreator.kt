@@ -1,4 +1,4 @@
-package pl.beone.promena.core.internal.serialization
+package pl.beone.promena.core.internal.serialization.util
 
 import com.esotericsoftware.kryo.Kryo
 import de.javakaffee.kryoserializers.*
@@ -7,8 +7,9 @@ import java.lang.reflect.InvocationHandler
 import java.net.URI
 import java.util.*
 
-fun createKryo(): Kryo =
+internal fun createKryo(classLoader: ClassLoader? = null): Kryo =
     Kryo().apply {
+        classLoader?.let { this.classLoader = classLoader }
         setInstantiatorStrategyForNoArgsConstructors()
         registerSerializers()
     }
