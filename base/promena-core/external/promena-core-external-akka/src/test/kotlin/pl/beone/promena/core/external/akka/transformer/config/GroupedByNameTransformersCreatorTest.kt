@@ -94,7 +94,7 @@ class GroupedByNameTransformersCreatorTest {
     }
 
     @Test
-    fun `create _ no transformers _ should throw IllegalStateException`() {
+    fun `create _ no transformer _ should throw IllegalStateException`() {
         shouldThrow<IllegalStateException> {
             GroupedByNameTransformersCreator(mockk(), mockk(), mockk(), mockk())
                 .create(emptyList())
