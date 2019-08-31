@@ -8,10 +8,10 @@ import java.net.URL
 internal fun createClassLoaderBasedOnFoldersWithCompiledFiles(parent: ClassLoader, folders: List<VirtualFile>): UrlClassLoader =
     UrlClassLoader.build()
         .parent(parent)
-        .urls(folders.mapToUrls()).get()
+        .urls(mapToUrls(folders)).get()
 
-private fun List<VirtualFile>.mapToUrls(): List<URL> =
-    map { it.path.toUrl() }
+private fun mapToUrls(files: List<VirtualFile>): List<URL> =
+    files.map { it.path.toUrl() }
 
 private fun String.toUrl(): URL =
     File(this).toURI().toURL()

@@ -5,7 +5,6 @@ import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import pl.beone.promena.intellij.plugin.common.getActiveFile
-import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
 import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
@@ -57,6 +56,9 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedIte
 
     private fun isTransformationReturnType(method: PsiMethod): Boolean =
         method.returnType?.canonicalText == Transformation::class.java.canonicalName
+
+    private fun PsiMethod.getClassQualifiedName(): String =
+        containingClass!!.qualifiedName!!
 
     private fun getMethodComments(method: PsiMethod): List<String> =
         method

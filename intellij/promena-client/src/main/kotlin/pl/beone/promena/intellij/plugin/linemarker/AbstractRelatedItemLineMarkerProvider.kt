@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
+import pl.beone.promena.core.internal.serialization.ThreadUnsafeKryoSerializationService
 import pl.beone.promena.intellij.plugin.classloader.createClassLoaderBasedOnFoldersWithCompiledFiles
 import pl.beone.promena.intellij.plugin.common.getExistingOutputFolders
 import pl.beone.promena.intellij.plugin.common.invokeLater
@@ -14,7 +15,6 @@ import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorPars
 import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorWithFile
 import pl.beone.promena.intellij.plugin.parser.parameter.ParametersParser
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
-import pl.beone.promena.intellij.plugin.serialization.ClassLoaderKryoSerializationService
 import pl.beone.promena.intellij.plugin.toolwindow.*
 import pl.beone.promena.intellij.plugin.transformer.HttpTransformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
@@ -65,7 +65,7 @@ abstract class AbstractRelatedItemLineMarkerProvider {
                         val promenaClass = classLoader
                             .loadClass(qualifiedClassName)
 
-                        val kryoSerializationService = ClassLoaderKryoSerializationService(classLoader)
+                        val kryoSerializationService = ThreadUnsafeKryoSerializationService(classLoader)
 
                         val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
                             .also(runToolWindowTabs::logData)

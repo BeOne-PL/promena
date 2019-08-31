@@ -33,7 +33,7 @@ internal fun List<RunToolWindowTab>.logData(singleDataDescriptorWithFileList: Li
         singleDataDescriptorWithFileList.forEach { (dataDescriptor, file) ->
             print("> Data: <")
             print(file)
-            print(", ${dataDescriptor.data.calculateSizeInMB()} MB> | MediaType: <${dataDescriptor.mediaType.mimeType}, ${dataDescriptor.mediaType.charset.name()}> | Metadata: <${emptyMetadata()}>")
+            print("; ${dataDescriptor.data.calculateSizeInMB()} MB> | MediaType: <${dataDescriptor.mediaType.mimeType}, ${dataDescriptor.mediaType.charset.name()}> | Metadata: <${emptyMetadata()}>")
             println()
         }
         scrollToTheBeginning()
@@ -62,7 +62,7 @@ internal fun RunToolWindowTab.logSuccess(
     descriptors.zip(files).forEach { (transformedDataDescriptor, file) ->
         print("> Data: <")
         print(file)
-        print(", ${transformedDataDescriptor.data.calculateSizeInMB()} MB> | Metadata: <${transformedDataDescriptor.metadata}>")
+        print("; ${transformedDataDescriptor.data.calculateSizeInMB()} MB> | Metadata: <${transformedDataDescriptor.metadata}>")
         println()
     }
     println("")

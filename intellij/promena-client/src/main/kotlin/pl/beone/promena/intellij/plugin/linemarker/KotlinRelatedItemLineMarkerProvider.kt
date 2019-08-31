@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
 import pl.beone.promena.intellij.plugin.common.getActiveFile
-import pl.beone.promena.intellij.plugin.common.getClassQualifiedName
 import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
@@ -41,11 +40,6 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedI
         return null
     }
 
-    private fun getMethodComments(function: KtNamedFunction): List<String> =
-        function.bodyBlockExpression!!.children()
-            .filterIsInstance<PsiComment>().map { it.text }
-            .toList()
-
     override fun collectSlowLineMarkers(elements: MutableList<PsiElement>, result: MutableCollection<LineMarkerInfo<PsiElement>>) {
         // deliberately omitted
     }
@@ -61,4 +55,12 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedI
 
     private fun isTransformationReturnType(function: KtNamedFunction): Boolean =
         function.type()?.getJetTypeFqName(false) == Transformation::class.java.canonicalName
+
+    private fun KtNamedFunction.getClassQualifiedName(): String =
+        containingKtFile.packageFqName.asString() + "." + containingKtFile.name.removeSuffix(".kt") + "Kt"
+
+    private fun getMethodComments(function: KtNamedFunction): List<String> =
+        function.bodyBlockExpression!!.children()
+            .filterIsInstance<PsiComment>().map { it.text }
+            .toList()
 }
