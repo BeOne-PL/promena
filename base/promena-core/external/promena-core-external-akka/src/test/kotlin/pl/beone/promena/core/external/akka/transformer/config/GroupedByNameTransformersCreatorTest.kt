@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
-import pl.beone.promena.core.external.akka.applicationmodel.exception.DuplicatedTransformerIdException
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
@@ -58,7 +57,7 @@ class GroupedByNameTransformersCreatorTest {
     }
 
     @Test
-    fun `create _ should throw DuplicatedTransformerIdException`() {
+    fun `create _ duplicate id _ should throw IllegalStateException`() {
         val libreOfficeConverterTransformer = mockk<Transformer>()
         val libreOfficeConverter2Transformer = mockk<Transformer>()
         val msOfficeConverterTransformer = mockk<Transformer>()
@@ -75,7 +74,7 @@ class GroupedByNameTransformersCreatorTest {
             every { getTransformerId(dssDocumentSigner2Transformer) } returns ("document-signer" to "dss").toTransformerId()
         }
 
-        shouldThrow<DuplicatedTransformerIdException> {
+        shouldThrow<IllegalStateException> {
             GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
                 .create(
                     listOf(
@@ -94,4 +93,13 @@ class GroupedByNameTransformersCreatorTest {
         }
     }
 
+    @Test
+    fun `create _ no transformers _ should throw IllegalStateException`() {
+        shouldThrow<IllegalStateException> {
+            GroupedByNameTransformersCreator(mockk(), mockk(), mockk(), mockk())
+                .create(emptyList())
+        }.let {
+            it.message shouldContain "No transformer was found. You must add at least <1> transformer"
+        }
+    }
 }

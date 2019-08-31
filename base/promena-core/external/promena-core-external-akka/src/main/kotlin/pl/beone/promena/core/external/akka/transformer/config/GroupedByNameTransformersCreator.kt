@@ -11,7 +11,6 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
 import pl.beone.promena.core.external.akka.actor.transformer.GroupedByNameTransformerActor
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
-import pl.beone.promena.core.external.akka.applicationmodel.exception.DuplicatedTransformerIdException
 import pl.beone.promena.transformer.contract.Transformer
 
 class GroupedByNameTransformersCreator(
@@ -28,7 +27,8 @@ class GroupedByNameTransformersCreator(
     override fun create(transformers: List<Transformer>): List<TransformerActorDescriptor> {
         logger.info { "Found <${transformers.size}> transformer(s). Actor config: <${actorCreator::class.java.canonicalName}>" }
 
-        validateTransformers(transformers)
+        validateNumberOfTransformers(transformers)
+        validateUniqueTransformers(transformers)
 
         return transformers.groupBy { transformerConfig.getTransformerId(it).name }
             .flatMap { (transformerName, transformers) ->
@@ -47,18 +47,22 @@ class GroupedByNameTransformersCreator(
             }
     }
 
-    private fun validateTransformers(transformers: List<Transformer>) {
+    private fun validateNumberOfTransformers(transformers: List<Transformer>) {
+        check(transformers.isNotEmpty()) {
+            "No transformer was found. You must add at least <1> transformer"
+        }
+    }
+
+    private fun validateUniqueTransformers(transformers: List<Transformer>) {
         val notUniqueTransforms = transformers.groupBy { transformerConfig.getTransformerId(it) }
             .filter { (_, transformers) -> transformers.size >= 2 }
             .toList()
 
-        if (notUniqueTransforms.isNotEmpty()) {
-            throw DuplicatedTransformerIdException(
-                "Detected <${notUniqueTransforms.size}> transformers with duplicated id:\n" +
-                        notUniqueTransforms.joinToString("\n") { (transformerId, transformers) ->
-                            "> $transformerId: <${transformers.joinToString(", ") { it::class.java.canonicalName }}>"
-                        }
-            )
+        check(notUniqueTransforms.isEmpty()) {
+            "Detected <${notUniqueTransforms.size}> transformers with duplicated id:\n" +
+                    notUniqueTransforms.joinToString("\n") { (transformerId, transformers) ->
+                        "> $transformerId: <${transformers.joinToString(", ") { it::class.java.canonicalName }}>"
+                    }
         }
     }
 
