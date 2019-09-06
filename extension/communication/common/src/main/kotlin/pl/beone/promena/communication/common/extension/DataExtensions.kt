@@ -15,9 +15,8 @@ private fun Data.deleteAndHandleExceptions(logger: KLogger) {
         delete()
     } catch (e: Exception) {
         if (e !is UnsupportedOperationException) {
-            val message = "Couldn't delete <${toSimplifiedString()}> resource"
-            logger.error(e) { message }
-            throw  DataOperationException(message, e)
+            throw  DataOperationException("Couldn't delete <${toSimplifiedString()}> resource", e)
+                .also { logger.error(e) { it.message } }
         }
     }
 }

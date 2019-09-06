@@ -54,8 +54,7 @@ internal class Converter<T : Data, D>(
         try {
             convertData(data)
         } catch (e: Exception) {
-            val message = "Couldn't create data for communication <${communicationDescriptor()}> from <${data.toSimplifiedString()}>"
-            logger.error(e) { message }
-            throw DataOperationException(message, e)
+            throw DataOperationException("Couldn't create data for communication <${communicationDescriptor()}> from <${data.toSimplifiedString()}>", e)
+                .also { logger.error(e) { it.message } }
         }
 }
