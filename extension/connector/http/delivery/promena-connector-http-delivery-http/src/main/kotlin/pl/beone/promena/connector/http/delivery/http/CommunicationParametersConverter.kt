@@ -46,6 +46,10 @@ internal class CommunicationParametersConverter {
     private fun Any.convertToLong(): Long? =
         this.toString().toLongOrNull()
 
-    private fun unWrapIfArrayContainsOnlyOneElement(it: List<Any>): Any =
-        if (it.size == 1) it.first() else it
+    private fun unWrapIfArrayContainsOnlyOneElement(elements: List<Any>): Any =
+        if (elements.size == 1) {
+            elements.first()
+        } else {
+            elements
+        }
 }

@@ -6,7 +6,8 @@ import pl.beone.promena.transformer.contract.transformer.TransformerId
 class HashCodeTransformationHashFunctionDeterminer : TransformationHashFunctionDeterminer {
 
     override fun determine(transformerIds: List<TransformerId>): String =
-        transformerIds.distinct()
+        transformerIds
+            .distinct()
             .map { it.name + it.subName }
             .sorted()
             .hashCode()

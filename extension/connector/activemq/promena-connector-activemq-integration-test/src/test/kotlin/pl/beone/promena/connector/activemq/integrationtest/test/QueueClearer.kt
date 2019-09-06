@@ -23,7 +23,7 @@ class QueueClearer(
         val receiveTimeout = jmsTemplate.receiveTimeout
         jmsTemplate.receiveTimeout = timeout.toMillis()
         while (jmsTemplate.receive(queue) != null) {
-
+            // deliberately omitted. Just waiting for a message
         }
         jmsTemplate.receiveTimeout = receiveTimeout
     }

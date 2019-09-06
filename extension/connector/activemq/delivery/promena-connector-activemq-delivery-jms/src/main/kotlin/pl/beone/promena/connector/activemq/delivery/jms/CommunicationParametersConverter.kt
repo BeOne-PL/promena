@@ -10,7 +10,7 @@ internal class CommunicationParametersConverter {
     fun convert(headers: Map<String, Any>): CommunicationParameters =
         communicationParameters(
             headers.getCommunicationId(),
-            headers.filter { (key, _) -> key.startsWith(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX) }
+            headers.filter { (key) -> key.startsWith(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX) }
                 .map { (key, value) -> key.removePrefix(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX) to value }
                 .toMap()
         )

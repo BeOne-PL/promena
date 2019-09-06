@@ -43,7 +43,7 @@ import java.util.*
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IntegrationTestApplication::class])
-@TestPropertySource("classpath:module-connector-activemq-test.properties")
+@TestPropertySource("classpath:extension-connector-activemq-test.properties")
 class TransformationCorrectFlowTestIT {
 
     companion object {

@@ -20,8 +20,8 @@ class KryoMessageConverter(private val serializationService: SerializationServic
         }
 
     override fun fromMessage(message: Message): Any {
-        if (message !is BytesMessage) {
-            throw IllegalArgumentException("This implementation supports only <javax.jms.BytesMessage> but it received <${message.javaClass.canonicalName}>")
+        require(message is BytesMessage) {
+            "This implementation supports only <javax.jms.BytesMessage> but it received <${message.javaClass.canonicalName}>"
         }
 
         val clazz = message.getClassFromProperties()

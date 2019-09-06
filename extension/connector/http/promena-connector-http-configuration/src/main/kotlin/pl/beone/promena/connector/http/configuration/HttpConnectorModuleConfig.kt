@@ -6,5 +6,5 @@ import org.springframework.context.annotation.PropertySource
 
 @Configuration
 @ComponentScan("pl.beone.promena.connector.http.configuration")
-@PropertySource("classpath:module-connector-http.properties")
+@PropertySource("classpath:extension-connector-http.properties")
 class HttpConnectorModuleConfig

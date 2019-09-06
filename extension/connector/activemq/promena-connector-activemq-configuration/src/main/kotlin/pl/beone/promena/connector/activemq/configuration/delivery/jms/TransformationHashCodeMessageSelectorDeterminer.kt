@@ -22,7 +22,7 @@ internal class TransformationHashCodeMessageSelectorDeterminer {
             .let(::createMessageSelector)
 
     private fun getTransformerIds(transformers: List<Transformer>, transformerConfig: TransformerConfig): List<TransformerId> =
-        transformers.map { transformerConfig.getTransformerId(it) }
+        transformers.map(transformerConfig::getTransformerId)
 
     private fun createMessageSelector(transformationHashFunctionAllCombinations: List<String>): String =
         PromenaJmsHeaders.TRANSFORMATION_HASH_CODE + " IN (" + transformationHashFunctionAllCombinations.joinToString(", ") { "'$it'" } + ")"

@@ -20,11 +20,10 @@ abstract class AbstractDataDescriptorCleaner {
             .filter { data -> checkIfIsUseInDatas(data, transformedDatas) }
 
         if (datasToDelete.isNotEmpty()) {
-            datasToDelete
-                .also { logger.debug { "There are <${it.size}> data from descriptors that aren't used in transformed descriptors" } }
-                .also { logger.debug { "Deleting..." } }
-                .map { it.deleteAndLog(logger) }
-                .also { logger.debug { "Finished deleting" } }
+            logger.debug { "There are <${datasToDelete.size}> data from descriptors that aren't used in transformed descriptors" }
+            logger.debug { "Deleting..." }
+            datasToDelete.forEach { data -> data.deleteAndLog(logger) }
+            logger.debug { "Finished deleting" }
         }
     }
 

@@ -22,7 +22,7 @@ internal class TransformerIdsCombinationDeterminer {
     private fun createGeneralTransformerIds(transformerIds: List<TransformerId>): List<TransformerId> =
         transformerIds.map { it.name }
             .distinct()
-            .map { it.toTransformerId() }
+            .map(String::toTransformerId)
 
     private fun createIndexToTransformerIdMap(transformerIds: List<TransformerId>): Map<Int, TransformerId> =
         transformerIds.mapIndexed { index, transformerId -> index to transformerId }
@@ -33,7 +33,5 @@ internal class TransformerIdsCombinationDeterminer {
 
     private fun generateTransformerIdsCombinations(n: Int, k: Int, idToTransformerMap: Map<Int, TransformerId>): List<List<TransformerId>> =
         Combinations(n, k)
-            .map { idCombination ->
-                idCombination.toList().map { idToTransformerMap.getValue(it) }
-            }
+            .map { idCombination -> idCombination.toList().map { idToTransformerMap.getValue(it) } }
 }

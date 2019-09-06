@@ -24,9 +24,9 @@ internal class Converter<T : Data, D>(
 
         val convertedNotCompatibleDescriptors =
             if (notCompatibleDescriptors.isNotEmpty()) {
+                logger.debug { "There are <${descriptors.size}> incompatible descriptors with communication <${communicationDescriptor()}>" }
+                logger.debug { "Converting..." }
                 notCompatibleDescriptors
-                    .also { "There are <${descriptors.size}> incompatible descriptors with communication <${communicationDescriptor()}>" }
-                    .also { logger.debug { "Converting..." } }
                     .map { descriptor -> processData(getData(descriptor)) to descriptor }
                     .map { (newData, oldDescriptor) -> createDescriptor(newData, oldDescriptor) }
                     .also { logger.debug { "Finished converting" } }
@@ -44,19 +44,18 @@ internal class Converter<T : Data, D>(
     private fun filterNotCompatibleDescriptors(descriptors: List<D>): List<D> =
         descriptors.filter { !isCompatible(getData(it)) }
 
-    private fun createData(data: Data): T =
-        this
-            .also { logger.debug { "Creating data from <${data.toSimplifiedString()}>..." } }
-            .let { createDataAndHandleExceptions(data) }
+    private fun createData(data: Data): T {
+        logger.debug { "Creating data from <${data.toSimplifiedString()}>..." }
+        return createDataAndHandleExceptions(data)
             .also { logger.debug { "Finished creating data from <${data.toSimplifiedString()}>" } }
+    }
 
     private fun createDataAndHandleExceptions(data: Data): T =
         try {
             convertData(data)
         } catch (e: Exception) {
-            throw "Couldn't create data for communication <${communicationDescriptor()}> from <${data.toSimplifiedString()}>"
-                .also { logger.error(e) { it } }
-                .let { DataOperationException(it, e) }
+            val message = "Couldn't create data for communication <${communicationDescriptor()}> from <${data.toSimplifiedString()}>"
+            logger.error(e) { message }
+            throw DataOperationException(message, e)
         }
-
 }
