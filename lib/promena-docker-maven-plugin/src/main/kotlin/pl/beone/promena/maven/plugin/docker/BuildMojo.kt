@@ -83,11 +83,11 @@ class BuildMojo : AbstractMojo() {
 
     private fun getTransformerArtifactDescriptors(): List<ArtifactDescriptor> =
         pluginDescriptor.artifacts
-            .filter { containsDockerfileFragment(it) }
+            .filter(this::containsDockerfileFragment)
             .map { ArtifactDescriptor(generateDescription(it), readDockerfileFragment(it), getDockerPaths(it)) }
-            .also {
-                log.info("Found $dockerfileFragment in <${it.size}> transformers:")
-                it.forEach { (artifactDescription, _, _) -> log.info("> $artifactDescription") }
+            .also { artifactDescriptors ->
+                log.info("Found $dockerfileFragment in <${artifactDescriptors.size}> transformers:")
+                artifactDescriptors.forEach { (artifactDescription) -> log.info("> $artifactDescription") }
             }
 
     private fun containsDockerfileFragment(artifact: Artifact): Boolean =
@@ -99,12 +99,10 @@ class BuildMojo : AbstractMojo() {
     private fun readDockerfileFragment(artifact: Artifact): String =
         getDockerfileFragmentUri(artifact)!!.readText()
 
-    private fun getDockerPaths(artifact: Artifact): List<Path> {
-        val uri = URI("jar:" + artifact.file.toURI())
-        val dockerResourceAbsolutePath = FileSystems.newFileSystem(uri, emptyMap<String, Any>())
+    private fun getDockerPaths(artifact: Artifact): List<Path> =
+        FileSystems.newFileSystem(URI("jar:" + artifact.file.toURI()), emptyMap<String, Any>())
             .getPath(dockerResourcePath)
-        return Files.walk(dockerResourceAbsolutePath).toList()
-    }
+            .let { dockerResourceAbsolutePath -> Files.walk(dockerResourceAbsolutePath).toList() }
 
     private fun getImageFullName(): String =
         "$name:$version"
@@ -156,7 +154,7 @@ class BuildMojo : AbstractMojo() {
 
     private fun concatDockerfileFragments(artifactDescriptors: List<ArtifactDescriptor>): String =
         artifactDescriptors.joinToString("\n\n")
-        { (description, dockerfileFragment, _) -> "# $description\n$dockerfileFragment" }
+        { (description, dockerfileFragment) -> "# $description\n$dockerfileFragment" }
 
     private fun replacePlaceholdersInDockerfile(dockerfileFragments: String): String {
         return File(context, dockerfile)
@@ -177,9 +175,7 @@ class BuildMojo : AbstractMojo() {
 
     private fun createDockerClient(): DockerClient =
         DockerClientBuilder
-            .getInstance(
-                DefaultDockerClientConfig.createDefaultConfigBuilder()
-            )
+            .getInstance(DefaultDockerClientConfig.createDefaultConfigBuilder())
             .build()
 
     private fun buildImage(processedDockerfileFile: File) {
