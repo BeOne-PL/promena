@@ -7,10 +7,10 @@ import pl.beone.promena.core.external.akka.actor.serializer.message.Deserialized
 import pl.beone.promena.core.external.akka.actor.serializer.message.SerializedMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToDeserializeMessage
 import pl.beone.promena.core.external.akka.actor.serializer.message.ToSerializeMessage
-import pl.beone.promena.core.external.akka.util.format
+import pl.beone.promena.core.external.akka.extension.format
+import pl.beone.promena.core.external.akka.extension.toMB
+import pl.beone.promena.core.external.akka.extension.toSeconds
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
-import pl.beone.promena.core.external.akka.util.toMB
-import pl.beone.promena.core.external.akka.util.toSeconds
 
 class KryoSerializerActor(
     private val serializationService: SerializationService

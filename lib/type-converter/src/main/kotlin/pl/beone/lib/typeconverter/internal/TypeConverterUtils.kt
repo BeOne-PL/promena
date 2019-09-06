@@ -6,17 +6,16 @@ import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionExcep
 import pl.beone.lib.typeconverter.internal.JavaTypesUtils.*
 import java.net.URI
 
-fun <T> Any.castOrConvert(clazz: Class<T>): T {
-    return try {
+fun <T> Any.castOrConvert(clazz: Class<T>): T =
+    try {
         clazz.cast(this)
     } catch (e: Exception) {
         this.convert(clazz)
     }
-}
 
-private fun <T> Any.convert(clazz: Class<T>): T {
+private fun <T> Any.convert(clazz: Class<T>): T =
     try {
-        return when {
+        when {
             clazz == Boolean::class || clazz == Boolean::class.java || isBoolean(clazz) -> toBoolean(this) as T
 
             clazz == String::class || clazz == String::class.java || isString(clazz) -> this.toString() as T
@@ -38,7 +37,6 @@ private fun <T> Any.convert(clazz: Class<T>): T {
     } catch (e: Exception) {
         throw TypeConversionException("Couldn't convert <$this> (${this::class.java.name}) to <${clazz.name}>")
     }
-}
 
 private fun toBoolean(value: Any): Boolean =
     when (value.toString()) {
