@@ -4,6 +4,10 @@ import java.net.URI;
 
 public class JavaTypesUtils {
 
+    private JavaTypesUtils() {
+
+    }
+
     public static Boolean isString(Class<?> clazz) {
         return clazz.equals(String.class);
     }
@@ -35,6 +39,5 @@ public class JavaTypesUtils {
     public static Boolean isURI(Class<?> clazz) {
         return clazz.equals(URI.class);
     }
-
 }
 
