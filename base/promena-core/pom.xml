@@ -27,7 +27,7 @@
         <module>external/promena-core-external-akka</module>
         <module>external/promena-core-external-spring</module>
         <module>promena-core-use-case</module>
-        <module>configuration/promena-core-configuration</module>
+        <module>promena-core-configuration</module>
         <module>promena-core-integration-test</module>
     </modules>
 

@@ -21,8 +21,8 @@
         <module>promena-connector-activemq-application-model</module>
         <module>promena-connector-activemq-contract</module>
         <module>promena-connector-activemq-internal</module>
-        <module>delivery/promena-connector-activemq-delivery-jms</module>
-        <module>delivery/promena-connector-activemq-delivery-jms-message-converter</module>
+        <module>delivery/promena-connector-activemq-delivery</module>
+        <module>delivery/promena-connector-activemq-delivery-message-converter</module>
         <module>promena-connector-activemq-configuration</module>
         <module>promena-connector-activemq-integration-test</module>
     </modules>

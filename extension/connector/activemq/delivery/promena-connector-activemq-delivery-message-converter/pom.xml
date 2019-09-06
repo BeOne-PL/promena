@@ -10,27 +10,23 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>promena-connector-activemq-delivery-jms</artifactId>
+    <artifactId>promena-connector-activemq-delivery-message-converter</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-activemq-application-model</artifactId>
-            <version>${promena-connector-activemq.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>promena-transformer-internal</artifactId>
-        </dependency>
-        <dependency>
             <groupId>pl.beone.promena.core</groupId>
-            <artifactId>promena-core-internal</artifactId>
+            <artifactId>promena-core-internal-serialization</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
+            <version>${javax.jms-api.version}</version>
         </dependency>
     </dependencies>
 </project>

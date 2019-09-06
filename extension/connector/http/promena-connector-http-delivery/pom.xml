@@ -6,11 +6,10 @@
         <groupId>pl.beone.promena.connector</groupId>
         <artifactId>promena-connector-http</artifactId>
         <version>0.9.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>promena-connector-http-delivery-http</artifactId>
+    <artifactId>promena-connector-http-delivery</artifactId>
 
     <dependencies>
         <dependency>

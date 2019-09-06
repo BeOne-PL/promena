@@ -19,12 +19,12 @@
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-activemq-delivery-jms</artifactId>
+            <artifactId>promena-connector-activemq-delivery</artifactId>
             <version>${promena-connector-activemq.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-activemq-delivery-jms-message-converter</artifactId>
+            <artifactId>promena-connector-activemq-delivery-message-converter</artifactId>
             <version>${promena-connector-activemq.version}</version>
         </dependency>
 

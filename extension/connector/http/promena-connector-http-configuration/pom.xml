@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-http-delivery-http</artifactId>
+            <artifactId>promena-connector-http-delivery</artifactId>
             <version>${promena-connector-http.version}</version>
         </dependency>
     </dependencies>
