@@ -20,35 +20,44 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
         environment: Environment,
         actorSystem: ActorSystem
     ): AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator {
-        val metricsSelector = environment.getSelectorInstance()
+        val metricsSelector = getSelectorInstance(environment)
 
         logger.info { "Adaptive load balancing metrics selector: <${metricsSelector::class.qualifiedName}>" }
 
         return AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(actorSystem, metricsSelector)
     }
 
-    private fun Environment.getSelectorInstance(): MetricsSelector {
-        val property = this.getRequiredProperty("actor-creator.adaptive-load-balancing.metrics-selector")
+    private fun getSelectorInstance(environment: Environment): MetricsSelector {
+        val property = environment.getRequiredProperty("actor-creator.adaptive-load-balancing.metrics-selector")
 
         return if (property.contains("::")) {
-            val (className, methodName) = property.split("::")
-
-            try {
-                Class.forName(className)
-                    .methods
-                    .firstOrNull { it.name == methodName }!!.let { it.invoke(null) as MetricsSelector }
-            } catch (e: Exception) {
-                throw Exception("Couldn't create MetricsSelector using <$property>. It must be static method without arguments!", e)
-            }
+            createUsingStaticMethod(property)
         } else {
-            try {
-                Class.forName(property)
-                    .getDeclaredConstructor()
-                    .newInstance() as MetricsSelector
-            } catch (e: Exception) {
-                throw Exception("Couldn't create MetricsSelector using <$property>. It must be class with constructor without arguments!", e)
-            }
+            createUsingConstructor(property)
         }
     }
+
+    private fun createUsingStaticMethod(property: String): MetricsSelector {
+        val (className, methodName) = property.split("::")
+
+        return try {
+            Class.forName(className)
+                .methods
+                .firstOrNull { it.name == methodName }
+                ?.let { it.invoke(null) as MetricsSelector }
+                ?: throw IllegalStateException("Class <$className> doesn't contain <$methodName> method")
+        } catch (e: Exception) {
+            throw IllegalStateException("Couldn't create MetricsSelector using <$property>. It must be static method without arguments!", e)
+        }
+    }
+
+    private fun createUsingConstructor(property: String): MetricsSelector =
+        try {
+            Class.forName(property)
+                .getDeclaredConstructor()
+                .newInstance() as MetricsSelector
+        } catch (e: Exception) {
+            throw IllegalStateException("Couldn't create MetricsSelector using <$property>. It must be class with constructor without arguments!", e)
+        }
 
 }
