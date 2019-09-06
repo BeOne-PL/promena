@@ -60,13 +60,12 @@ class MavenOnTestContainerRunner(
         return testContainerCoordinator.execInContainer("bash", "-c", command)
     }
 
-    private fun determineDebuggerParameters(): String? {
-        return if (debuggerEnabled) {
+    private fun determineDebuggerParameters(): String? =
+        if (debuggerEnabled) {
             """ -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:$debuggerPort -Xnoagent -Djava.compiler=NONE" """.trim()
         } else {
             null
         }
-    }
 
     private fun checkIfLogFileExists(logFilePath: String): Boolean =
         testContainerCoordinator.execInContainer("test", "-e", logFilePath).exitCode == 0

@@ -95,7 +95,7 @@ class DockerExtension : BeforeAllCallback, AfterAllCallback, InvocationIntercept
 
     private fun markTestAsExecuted(invocation: InvocationInterceptor.Invocation<Void>) {
         Class.forName("org.junit.jupiter.engine.execution.InvocationInterceptorChain\$ValidatingInvocation")
-            .let { clazz -> clazz.getDeclaredField("invoked") }
+            .getDeclaredField("invoked")
             .also { field -> field.isAccessible = true }
             .also { field -> (field.get(invocation) as AtomicBoolean).set(true) }
             .also { field -> field.isAccessible = false }

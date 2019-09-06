@@ -129,11 +129,11 @@ class TestContainerCoordinator(
         }
     }
 
-    // at startup, Maven isn't run so you can't wait to start listening on given port
-    // port is open when test is executed
     private fun GenericContainer<Nothing>.setEmptyWaitStrategy() {
         setWaitStrategy(object : AbstractWaitStrategy() {
             override fun waitUntilReady() {
+                // at startup, Maven isn't run so you can't wait to start listening on given port
+                // port is open when test is executed
             }
         })
     }
