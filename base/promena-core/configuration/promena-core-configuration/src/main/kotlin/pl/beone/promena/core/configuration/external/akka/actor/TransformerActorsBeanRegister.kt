@@ -23,6 +23,4 @@ class TransformerActorsBeanRegister(
 
     private fun createName(transformerId: TransformerId): String =
         transformerId.name + "-" + transformerId.subName
-
-
 }

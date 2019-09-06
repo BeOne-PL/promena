@@ -4,7 +4,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactly
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
+import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerValidationException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 
 class DefaultExternalCommunicationManagerTest {
@@ -24,10 +24,10 @@ class DefaultExternalCommunicationManagerTest {
     }
 
     @Test
-    fun `getCommunication _ should throw ExternalCommunicationManagerException`() {
-        shouldThrowExactly<ExternalCommunicationManagerException> {
+    fun `getCommunication _ should throw ExternalCommunicationManagerValidationException`() {
+        shouldThrowExactly<ExternalCommunicationManagerValidationException> {
             DefaultExternalCommunicationManager(externalCommunications, false, externalId).getCommunication("absent")
-        }.message shouldBe "There is no <absent> external communication: [external, external2]"
+        }.message shouldBe "Couldn't determine back pressure communication. There is no <absent> external communication: [external, external2]"
     }
 
     @Test
@@ -37,9 +37,9 @@ class DefaultExternalCommunicationManagerTest {
     }
 
     @Test
-    fun `getCommunication _ absent back pressure _ should throw ExternalCommunicationManagerException`() {
-        shouldThrowExactly<ExternalCommunicationManagerException> {
+    fun `getCommunication _ absent back pressure _ should throw ExternalCommunicationManagerValidationException`() {
+        shouldThrowExactly<ExternalCommunicationManagerValidationException> {
             DefaultExternalCommunicationManager(externalCommunications, true, "absent")
-        }.message shouldBe "Couldn't determine back pressure communication"
+        }.message shouldBe "Couldn't determine back pressure communication. There is no <absent> external communication: [external, external2]"
     }
 }

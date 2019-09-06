@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
-internal class BasedOnTransformersNumberOfSerializerActorsDeterminerKtTest {
+class BasedOnTransformersNumberOfSerializerActorsDeterminerKtTest {
 
     @Test
     fun determine() {

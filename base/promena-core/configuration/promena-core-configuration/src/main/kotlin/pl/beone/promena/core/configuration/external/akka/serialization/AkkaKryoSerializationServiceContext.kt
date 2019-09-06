@@ -43,10 +43,17 @@ class AkkaKryoSerializationServiceContext {
         actorCreator.create(
             KryoSerializerActor.actorName,
             Props.create(KryoSerializerActor::class.java) { KryoSerializerActor(createSerializationService(environment)) },
-            environment.getProperty("core.serializer.actors", Int::class.java)?.also { logger.info { "Created serializer actors: <$it>" } }
-                ?: determine(transformerActorDescriptors).also { logger.info { "Property <core.serializer.actors> isn't set. Created serializer actors (the sum of the transformer actors): <$it>" } }
+            getNumberOfActors(environment) ?: determineNumberOfActors(transformerActorDescriptors)
         )
 
     private fun createSerializationService(environment: Environment): KryoSerializationService =
         KryoSerializationService(environment.getRequiredProperty("core.serializer.kryo.buffer-size", Int::class.java))
+
+    private fun getNumberOfActors(environment: Environment): Int? =
+        environment.getProperty("core.serializer.actors", Int::class.java)
+            ?.also { logger.info { "Created serializer actors: <$it>" } }
+
+    private fun determineNumberOfActors(transformerActorDescriptors: List<TransformerActorDescriptor>): Int =
+        determine(transformerActorDescriptors)
+            .also { logger.info { "Property <core.serializer.actors> isn't set. Created serializer actors (the sum of the transformer actors): <$it>" } }
 }

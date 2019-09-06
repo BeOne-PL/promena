@@ -48,7 +48,7 @@ class GroupedByNameTransformerActor(
     ): TransformedDataDescriptor {
         val (transformedDataDescriptor, measuredTimeMs) = measureTimeMillisWithContent {
             determineTransformer(transformationTransformerId, dataDescriptor, targetMediaType, parameters)
-                .let { transformer -> transformer.transform(dataDescriptor, targetMediaType, parameters) }
+                .transform(dataDescriptor, targetMediaType, parameters)
         }
 
         if (log().isDebugEnabled) {
@@ -81,6 +81,23 @@ class GroupedByNameTransformerActor(
             getGeneralTransformer(dataDescriptor, targetMediaType, parameters)
         }
 
+    private fun getDetailedTransformer(
+        transformationTransformerId: TransformerId,
+        dataDescriptor: DataDescriptor,
+        targetMediaType: MediaType,
+        parameters: Parameters
+    ): Transformer {
+        val transformer = transformerDescriptors.get(transformationTransformerId).transformer
+        return try {
+            transformer
+                .also { it.canTransform(dataDescriptor, targetMediaType, parameters) }
+        } catch (e: TransformerCouldNotTransformException) {
+            throw TransformersCouldNotTransformException(
+                "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) can't transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${e.message}"
+            )
+        }
+    }
+
     private fun getGeneralTransformer(
         dataDescriptor: DataDescriptor,
         targetMediaType: MediaType,
@@ -110,23 +127,6 @@ class GroupedByNameTransformerActor(
             "There is no transformer in group <$transformerName> that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
         )
 
-    private fun getDetailedTransformer(
-        transformationTransformerId: TransformerId,
-        dataDescriptor: DataDescriptor,
-        targetMediaType: MediaType,
-        parameters: Parameters
-    ): Transformer {
-        val transformer = transformerDescriptors.get(transformationTransformerId).transformer
-        return try {
-            transformer
-                .also { it.canTransform(dataDescriptor, targetMediaType, parameters) }
-        } catch (e: TransformerCouldNotTransformException) {
-            throw TransformersCouldNotTransformException(
-                "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) can't transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${e.message}"
-            )
-        }
-    }
-
     private fun List<TransformerDescriptor>.get(transformerId: TransformerId): TransformerDescriptor =
         first { it.transformerId == transformerId }
 
@@ -140,8 +140,9 @@ class GroupedByNameTransformerActor(
         }
 
     private fun processException(exception: Exception, parameters: Parameters): Exception =
-        when (exception) {
-            is TimeoutException -> TransformerTimeoutException("Couldn't transform because <$transformerName> transformer timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
-            else -> exception
+        if (exception is TimeoutException) {
+            TransformerTimeoutException("Couldn't transform because <$transformerName> transformer timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
+        } else {
+            exception
         }
 }

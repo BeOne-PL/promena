@@ -10,7 +10,7 @@ class ApplyAkkaDebugLogging(
     private val actorSystem: ActorSystem
 ) {
 
-    // apply DEBUG because everything is controlled by Spring Boot logging
+    // applying DEBUG because everything is controlled by Spring Boot logging
     @PostConstruct
     private fun execute() {
         actorSystem.eventStream.setLogLevel(Logging.DebugLevel())

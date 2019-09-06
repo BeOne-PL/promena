@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
+import pl.beone.promena.core.applicationmodel.akka.exception.actor.TransformersCreatorValidationException
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
@@ -57,7 +58,7 @@ class GroupedByNameTransformersCreatorTest {
     }
 
     @Test
-    fun `create _ duplicate id _ should throw IllegalStateException`() {
+    fun `create _ duplicate id _ should throw TransformersCreatorValidationException`() {
         val libreOfficeConverterTransformer = mockk<Transformer>()
         val libreOfficeConverter2Transformer = mockk<Transformer>()
         val msOfficeConverterTransformer = mockk<Transformer>()
@@ -74,7 +75,7 @@ class GroupedByNameTransformersCreatorTest {
             every { getTransformerId(dssDocumentSigner2Transformer) } returns ("document-signer" to "dss").toTransformerId()
         }
 
-        shouldThrow<IllegalStateException> {
+        shouldThrow<TransformersCreatorValidationException> {
             GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
                 .create(
                     listOf(
@@ -94,8 +95,8 @@ class GroupedByNameTransformersCreatorTest {
     }
 
     @Test
-    fun `create _ no transformer _ should throw IllegalStateException`() {
-        shouldThrow<IllegalStateException> {
+    fun `create _ no transformer _ should throw TransformersCreatorValidationException`() {
+        shouldThrow<TransformersCreatorValidationException> {
             GroupedByNameTransformersCreator(mockk(), mockk(), mockk(), mockk())
                 .create(emptyList())
         }.let {

@@ -12,6 +12,10 @@ class PropertiesTransformerConfigContext {
 
     @Bean
     @ConditionalOnMissingBean(TransformerConfig::class)
-    fun propertiesTransformerConfig(environment: Environment) =
-        PropertiesTransformerConfig(environment)
+    fun propertiesTransformerConfig(
+        environment: Environment
+    ) =
+        PropertiesTransformerConfig(
+            environment
+        )
 }

@@ -28,9 +28,8 @@ class DefaultTransformationUseCase(
             val (_, incomingExternalCommunicationConverter, outgoingExternalCommunicationConverter) =
                 externalCommunicationManager.getCommunication(externalCommunicationParameters.getId())
 
-            return dataDescriptor
-                .let { incomingExternalCommunicationConverter.convert(it, externalCommunicationParameters) }
-                .let { transformationService.transform(transformation, it) }
+            return incomingExternalCommunicationConverter.convert(dataDescriptor, externalCommunicationParameters)
+                .let { convertedDataDescriptor -> transformationService.transform(transformation, convertedDataDescriptor) }
                 .let { transformedDataDescriptor ->
                     outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters)
                 }

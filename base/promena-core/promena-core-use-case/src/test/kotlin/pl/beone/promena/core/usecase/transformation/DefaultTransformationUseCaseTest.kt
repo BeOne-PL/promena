@@ -6,7 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
-import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerException
+import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerValidationException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.external.OutgoingExternalCommunicationConverter
@@ -74,7 +74,7 @@ class DefaultTransformationUseCaseTest {
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
             every { getCommunication(externalCommunicationId) } throws
-                    ExternalCommunicationManagerException("Exception occurred", RuntimeException("Stack exception"))
+                    ExternalCommunicationManagerValidationException("Exception occurred", RuntimeException("Stack exception"))
         }
 
         shouldThrow<TransformationException> {
@@ -140,7 +140,7 @@ class DefaultTransformationUseCaseTest {
         }
 
         shouldThrow<TransformationException> {
-            DefaultTransformationUseCase(externalCommunicationManager, mockk<TransformationService>())
+            DefaultTransformationUseCase(externalCommunicationManager, mockk())
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message shouldBe "Couldn't perform the transformation because an error occurred. Check Promena logs for more details. Exception message: <Communication parameters exception>"

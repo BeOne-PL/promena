@@ -14,7 +14,6 @@ import pl.beone.promena.transformer.internal.model.metadata.MapMetadata;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN;
@@ -25,14 +24,16 @@ public class JavaTextAppenderTransformer implements Transformer {
 
     @NotNull
     @Override
-    public TransformedDataDescriptor transform(@NotNull DataDescriptor dataDescriptor, @NotNull MediaType targetMediaType, @NotNull Parameters parameters) throws TimeoutException {
+    public TransformedDataDescriptor transform(@NotNull DataDescriptor dataDescriptor,
+                                               @NotNull MediaType targetMediaType,
+                                               @NotNull Parameters parameters) {
         return transformedDataDescriptor(
                 dataDescriptor.getDescriptors().stream()
-                        .map(it -> singleTransformedDataDescriptor(
-                                MemoryData.of(addHashAtTheEnd(it.getData(), getAppend(parameters)).getBytes()),
-                                addTransformerId(it.getMetadata())
-                        ))
-                        .collect(Collectors.toList())
+                              .map(it -> singleTransformedDataDescriptor(
+                                      MemoryData.of(addHashAtTheEnd(it.getData(), getAppend(parameters)).getBytes()),
+                                      addTransformerId(it.getMetadata())
+                              ))
+                              .collect(Collectors.toList())
         );
     }
 
@@ -54,7 +55,9 @@ public class JavaTextAppenderTransformer implements Transformer {
     }
 
     @Override
-    public void canTransform(@NotNull DataDescriptor dataDescriptor, @NotNull MediaType targetMediaType, @NotNull Parameters parameters) throws TransformerCouldNotTransformException {
+    public void canTransform(@NotNull DataDescriptor dataDescriptor,
+                             @NotNull MediaType targetMediaType,
+                             @NotNull Parameters parameters) throws TransformerCouldNotTransformException {
         dataDescriptor.getDescriptors().forEach(it -> {
             if (!it.getMediaType().equals(TEXT_PLAIN)) {
                 throwException();

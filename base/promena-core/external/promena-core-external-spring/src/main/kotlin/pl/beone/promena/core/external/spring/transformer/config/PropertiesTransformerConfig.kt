@@ -28,7 +28,7 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
     private fun <T> determine(transformer: Transformer, keyElement: String, clazz: Class<T>, default: T?): T {
         val key = "transformer.${transformer.javaClass.canonicalName}.$keyElement"
 
-        return if (environment.getProperty(key) != null) {
+        return if (environment.containsProperty(key)) {
             environment.getRequiredProperty(key, clazz)
         } else {
             if (default == null) {
