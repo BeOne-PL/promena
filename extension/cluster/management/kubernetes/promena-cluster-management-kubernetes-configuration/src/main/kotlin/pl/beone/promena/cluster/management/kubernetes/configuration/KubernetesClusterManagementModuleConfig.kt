@@ -4,5 +4,5 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 
 @Configuration
-@PropertySource("classpath:module-cluster-management-kubernetes.properties")
+@PropertySource("classpath:extension-cluster-management-kubernetes.properties")
 class KubernetesClusterManagementModuleConfig
