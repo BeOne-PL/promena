@@ -1,6 +1,6 @@
 package pl.beone.promena.core.external.akka.transformation.transformer
 
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.Transformer
@@ -30,7 +30,7 @@ class TextAppenderTransformer : Transformer {
     private fun Metadata.addTransformerId(): Metadata =
         this + ("text-appender-transformer" to true)
 
-    override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
+    override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         dataDescriptor.descriptors.forEach {
             if (it.mediaType != TEXT_PLAIN) {
                 throwException()
@@ -43,7 +43,7 @@ class TextAppenderTransformer : Transformer {
     }
 
     private fun throwException() {
-        throw TransformerCouldNotTransformException("Only the transformation from text/plain to text/plain is supported")
+        throw TransformationNotSupportedException("Only the transformation from text/plain to text/plain is supported")
     }
 
 }

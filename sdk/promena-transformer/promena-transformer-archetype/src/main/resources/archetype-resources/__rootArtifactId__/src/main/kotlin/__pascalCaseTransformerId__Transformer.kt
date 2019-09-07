@@ -1,6 +1,6 @@
 package ${package}
 
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.Transformer
@@ -19,15 +19,15 @@ class ${pascalCaseTransformerId}Transformer(private val internalCommunicationPar
             singleTransformedDataDescriptor(data, metadata)
         }.toTransformedDataDescriptor()
 
-    override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
+    override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         if (dataDescriptor.descriptors.any { it.mediaType.mimeType != MediaTypeConstants.TEXT_PLAIN.mimeType } || targetMediaType.mimeType != MediaTypeConstants.TEXT_PLAIN.mimeType) {
-            throw TransformerCouldNotTransformException("Supported transformation: text/plain -> text/plain")
+            throw TransformationNotSupportedException("Supported transformation: text/plain -> text/plain")
         }
 
         try {
             parameters.get(${pascalCaseTransformerId}ParametersConstants.EXAMPLE)
         } catch (e: NoSuchElementException) {
-            throw TransformerCouldNotTransformException("Mandatory parameter: ${${pascalCaseTransformerId}ParametersConstants.EXAMPLE}")
+            throw TransformationNotSupportedException("Mandatory parameter: ${${pascalCaseTransformerId}ParametersConstants.EXAMPLE}")
         }
     }
 }

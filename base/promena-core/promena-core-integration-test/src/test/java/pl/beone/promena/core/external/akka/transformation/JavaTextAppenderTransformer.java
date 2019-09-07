@@ -1,7 +1,7 @@
 package pl.beone.promena.core.external.akka.transformation;
 
 import org.jetbrains.annotations.NotNull;
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException;
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException;
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType;
 import pl.beone.promena.transformer.contract.Transformer;
 import pl.beone.promena.transformer.contract.data.DataDescriptor;
@@ -55,9 +55,9 @@ public class JavaTextAppenderTransformer implements Transformer {
     }
 
     @Override
-    public void canTransform(@NotNull DataDescriptor dataDescriptor,
-                             @NotNull MediaType targetMediaType,
-                             @NotNull Parameters parameters) throws TransformerCouldNotTransformException {
+    public void isSupported(@NotNull DataDescriptor dataDescriptor,
+                            @NotNull MediaType targetMediaType,
+                            @NotNull Parameters parameters) throws TransformationNotSupportedException {
         dataDescriptor.getDescriptors().forEach(it -> {
             if (!it.getMediaType().equals(TEXT_PLAIN)) {
                 throwException();
@@ -70,6 +70,6 @@ public class JavaTextAppenderTransformer implements Transformer {
     }
 
     private void throwException() {
-        throw new TransformerCouldNotTransformException("Only the transformation from text/plain to text/plain is supported");
+        throw new TransformationNotSupportedException("Only the transformation from text/plain to text/plain is supported");
     }
 }

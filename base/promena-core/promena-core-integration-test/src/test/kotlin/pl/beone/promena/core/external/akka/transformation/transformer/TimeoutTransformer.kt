@@ -14,7 +14,7 @@ class TimeoutTransformer : Transformer {
         throw TimeoutException()
     }
 
-    override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
+    override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
 
     }
 

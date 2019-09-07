@@ -163,7 +163,7 @@ class AkkaTransformationServiceTestIT {
     }
 
     @Test
-    fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException (created from TransformersCouldNotTransformException)`() {
+    fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException (created from NoTransformerCouldTransformException)`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation(textAppenderTransformerName, APPLICATION_EPUB_ZIP, emptyParameters())
@@ -175,12 +175,12 @@ class AkkaTransformationServiceTestIT {
         }.apply {
             this.transformation shouldBe transformation
             this.message shouldBe "Couldn't perform the transformation | There is no transformer in group <text-appender> that can transform data descriptors [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>: [<pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(kotlin); Only the transformation from text/plain to text/plain is supported>, <pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer(kotlin-useless); I can't transform nothing. I'm useless>, <pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(java); Only the transformation from text/plain to text/plain is supported>]"
-            this.getStringStackTrace() shouldContain "TransformersCouldNotTransformException"
+            this.getStringStackTrace() shouldContain "NoTransformerCouldTransformException"
         }
     }
 
     @Test
-    fun `transform _ target media type that isn't supported by transformer and detailed transformer id _ should throw TransformationException (created from TransformersCouldNotTransformException)`() {
+    fun `transform _ target media type that isn't supported by transformer and detailed transformer id _ should throw TransformationException (created from NoTransformerCouldTransformException)`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation(textAppenderTransformerName, "kotlin", APPLICATION_EPUB_ZIP, emptyParameters())
@@ -192,7 +192,7 @@ class AkkaTransformationServiceTestIT {
         }.apply {
             this.transformation shouldBe transformation
             this.message shouldBe "Couldn't perform the transformation | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text-appender, kotlin) can't transform data descriptors [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>: Only the transformation from text/plain to text/plain is supported"
-            this.getStringStackTrace() shouldContain "TransformersCouldNotTransformException"
+            this.getStringStackTrace() shouldContain "NoTransformerCouldTransformException"
         }
     }
 

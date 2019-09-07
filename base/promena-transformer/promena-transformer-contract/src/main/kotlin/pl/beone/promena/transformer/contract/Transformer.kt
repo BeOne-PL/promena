@@ -1,6 +1,6 @@
 package pl.beone.promena.transformer.contract
 
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
@@ -12,6 +12,6 @@ interface Transformer {
     @Throws(TimeoutException::class)
     fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor
 
-    @Throws(TransformerCouldNotTransformException::class)
-    fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters)
+    @Throws(TransformationNotSupportedException::class)
+    fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters)
 }

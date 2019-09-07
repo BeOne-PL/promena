@@ -3,7 +3,7 @@ package pl.beone.promena.core.external.akka.actor.transformer
 import akka.actor.AbstractLoggingActor
 import akka.actor.Status
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
-import pl.beone.promena.core.applicationmodel.exception.transformer.TransformersCouldNotTransformException
+import pl.beone.promena.core.applicationmodel.exception.transformer.NoTransformerCouldTransformException
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationCleaner
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
@@ -14,7 +14,7 @@ import pl.beone.promena.core.external.akka.extension.getTimeoutOrInfiniteIfNotFo
 import pl.beone.promena.core.external.akka.extension.toMB
 import pl.beone.promena.core.external.akka.extension.toSeconds
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
@@ -94,9 +94,9 @@ class GroupedByNameTransformerActor(
         val transformer = transformerDescriptors.get(transformationTransformerId).transformer
         return try {
             transformer
-                .also { it.canTransform(dataDescriptor, targetMediaType, parameters) }
-        } catch (e: TransformerCouldNotTransformException) {
-            throw TransformersCouldNotTransformException(
+                .also { transformer.isSupported(dataDescriptor, targetMediaType, parameters) }
+        } catch (e: TransformationNotSupportedException) {
+            throw NoTransformerCouldTransformException(
                 "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) can't transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${e.message}"
             )
         }
@@ -111,9 +111,9 @@ class GroupedByNameTransformerActor(
         return transformerDescriptors
             .firstOrNull { transformerDescriptor ->
                 try {
-                    transformerDescriptor.transformer.canTransform(dataDescriptor, targetMediaType, parameters)
+                    transformerDescriptor.transformer.isSupported(dataDescriptor, targetMediaType, parameters)
                     true
-                } catch (e: TransformerCouldNotTransformException) {
+                } catch (e: TransformationNotSupportedException) {
                     transformerExceptionsAccumulator.add(transformerDescriptor, e.message!!)
                     false
                 }
@@ -126,8 +126,8 @@ class GroupedByNameTransformerActor(
         targetMediaType: MediaType,
         parameters: Parameters,
         transformerExceptionsAccumulator: TransformerExceptionsAccumulator
-    ): TransformersCouldNotTransformException =
-        TransformersCouldNotTransformException(
+    ): NoTransformerCouldTransformException =
+        NoTransformerCouldTransformException(
             "There is no transformer in group <$transformerName> that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
         )
 

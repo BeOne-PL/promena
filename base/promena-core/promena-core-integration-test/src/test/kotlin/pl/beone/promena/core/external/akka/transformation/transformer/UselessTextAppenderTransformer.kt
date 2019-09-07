@@ -1,6 +1,6 @@
 package pl.beone.promena.core.external.akka.transformation.transformer
 
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
@@ -13,7 +13,7 @@ class UselessTextAppenderTransformer : Transformer {
         throw IllegalStateException("It shouldn't be invoked")
     }
 
-    override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
-        throw TransformerCouldNotTransformException("I can't transform nothing. I'm useless")
+    override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
+        throw TransformationNotSupportedException("I can't transform nothing. I'm useless")
     }
 }

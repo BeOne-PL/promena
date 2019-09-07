@@ -11,6 +11,7 @@
     <modules>
         <module>${rootArtifactId}-application-model</module>
         <module>${rootArtifactId}</module>
+        <module>${rootArtifactId}-example</module>
         <module>${rootArtifactId}-configuration</module>
     </modules>
     <packaging>pom</packaging>

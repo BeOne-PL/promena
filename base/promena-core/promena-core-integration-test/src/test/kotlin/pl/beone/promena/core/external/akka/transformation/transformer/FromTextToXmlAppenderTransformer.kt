@@ -1,6 +1,6 @@
 package pl.beone.promena.core.external.akka.transformation.transformer
 
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML
@@ -31,7 +31,7 @@ class FromTextToXmlAppenderTransformer : Transformer {
     private fun Metadata.addTransformerId(): Metadata =
         this + ("from-text-to-xml-appender-transformer" to true)
 
-    override fun canTransform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
+    override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         dataDescriptor.descriptors.forEach {
             if (it.mediaType != TEXT_PLAIN) {
                 throwException()
@@ -44,7 +44,7 @@ class FromTextToXmlAppenderTransformer : Transformer {
     }
 
     private fun throwException() {
-        throw TransformerCouldNotTransformException("Only a transformation from text/plain to text/xml is supported")
+        throw TransformationNotSupportedException("Only a transformation from text/plain to text/xml is supported")
     }
 
 }

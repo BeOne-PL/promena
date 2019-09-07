@@ -7,7 +7,7 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.beone.lib.junit5.extension.docker.external.DockerExtension
-import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformerCouldNotTransformException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.data.emptyDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
@@ -43,10 +43,10 @@ class ${pascalCaseTransformerId}TransformerTest {
     }
 
     @Test
-    fun canTransform_targetMediaTypeIsNotTextPlain_shouldThrowTransformerCouldNotTransformException() {
-        shouldThrow<TransformerCouldNotTransformException> {
+    fun isSupported_targetMediaTypeIsNotTextPlain_shouldThrowTransformationNotSupportedException() {
+        shouldThrow<TransformationNotSupportedException> {
             ${pascalCaseTransformerId}Transformer(mockk())
-                .canTransform(
+                .isSupported(
                     emptyDataDescriptor(),
                     MediaTypeConstants.APPLICATION_PDF,
                     ${camelCaseTransformerId}Parameters(example = "test")
@@ -55,10 +55,10 @@ class ${pascalCaseTransformerId}TransformerTest {
     }
 
     @Test
-    fun canTransform_dataDescriptorMediaTypeIsNotTextPlain_shouldThrowTransformerCouldNotTransformException() {
-        shouldThrow<TransformerCouldNotTransformException> {
+    fun isSupported_dataDescriptorMediaTypeIsNotTextPlain_shouldThrowTransformationNotSupportedException() {
+        shouldThrow<TransformationNotSupportedException> {
             ${pascalCaseTransformerId}Transformer(mockk())
-                .canTransform(
+                .isSupported(
                     singleDataDescriptor("".toMemoryData(), MediaTypeConstants.APPLICATION_PDF, emptyMetadata()),
                     MediaTypeConstants.TEXT_PLAIN,
                     ${camelCaseTransformerId}Parameters(example = "test")
@@ -67,10 +67,10 @@ class ${pascalCaseTransformerId}TransformerTest {
     }
 
     @Test
-    fun canTransform_noMandatoryParameter_shouldThrowTransformerCouldNotTransformException() {
-        shouldThrow<TransformerCouldNotTransformException> {
+    fun isSupported_noMandatoryParameter_shouldThrowTransformationNotSupportedException() {
+        shouldThrow<TransformationNotSupportedException> {
             ${pascalCaseTransformerId}Transformer(mockk())
-                .canTransform(
+                .isSupported(
                     emptyDataDescriptor(),
                     MediaTypeConstants.TEXT_PLAIN,
                     emptyParameters()

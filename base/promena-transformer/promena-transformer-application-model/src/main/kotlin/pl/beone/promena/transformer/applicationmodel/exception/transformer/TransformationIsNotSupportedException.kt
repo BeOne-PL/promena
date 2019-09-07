@@ -1,5 +1,5 @@
 package pl.beone.promena.transformer.applicationmodel.exception.transformer
 
-class TransformerCouldNotTransformException(
+class TransformationNotSupportedException(
     reason: String
-) : RuntimeException(reason)
+) : IllegalArgumentException(reason)
