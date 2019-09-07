@@ -26,7 +26,7 @@ class RenditionAlfrescoContentNodesChecksumGenerator(
         )
 
         return if (contentData != null) {
-            // Originally we used the contentData URL, but that is not enough if the mimetype changes.
+            // Originally we used the contentData URL, but that is not enough if the MimeType changes.
             (contentData.contentUrl + contentData.mimetype).hashCode()
         } else {
             RenditionService2Impl.SOURCE_HAS_NO_CONTENT

@@ -10,8 +10,8 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.A
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.NodesInconsistencyException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
-import pl.beone.promena.alfresco.module.client.base.common.*
 import pl.beone.promena.alfresco.module.client.base.contract.*
+import pl.beone.promena.alfresco.module.client.base.extension.*
 import pl.beone.promena.alfresco.module.client.http.applicationmodel.exception.HttpException
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
@@ -182,9 +182,9 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun Mono<List<NodeRef>>.retryOnError(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> =
         if (retry != Retry.No) {
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
-                          .fixedBackoff(retry.nextAttemptDelay)
-                          .retryMax(retry.maxAttempts)
-                          .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
+                .fixedBackoff(retry.nextAttemptDelay)
+                .retryMax(retry.maxAttempts)
+                .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
         } else {
             this
         }

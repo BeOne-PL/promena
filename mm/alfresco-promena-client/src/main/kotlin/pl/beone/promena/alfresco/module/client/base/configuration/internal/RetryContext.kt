@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
-import pl.beone.promena.alfresco.module.client.base.configuration.getRequiredPropertyWithResolvedPlaceholders
-import pl.beone.promena.alfresco.module.client.base.configuration.toDuration
+import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
+import pl.beone.promena.alfresco.module.client.base.extension.toDuration
 import java.util.*
 
 @Configuration

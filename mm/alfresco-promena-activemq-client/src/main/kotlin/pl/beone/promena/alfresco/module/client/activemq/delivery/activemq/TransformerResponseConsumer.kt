@@ -9,11 +9,11 @@ import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.Promena
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.convert.NodeRefsConverter
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
-import pl.beone.promena.alfresco.module.client.base.common.skippedSavingResult
-import pl.beone.promena.alfresco.module.client.base.common.transformedSuccessfully
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.client.base.extension.skippedSavingResult
+import pl.beone.promena.alfresco.module.client.base.extension.transformedSuccessfully
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 

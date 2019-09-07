@@ -1,6 +1,5 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
-import mu.KotlinLogging
 import org.alfresco.model.ContentModel
 import org.alfresco.model.RenditionModel
 import org.alfresco.service.cmr.repository.ContentService
@@ -30,10 +29,6 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private val alfrescoDataConverter: AlfrescoDataConverter
 ) : AlfrescoTransformedDataDescriptorSaver {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
         transactionService.retryingTransactionHelper.doInTransaction {
             val sourceNodeRef = nodeRefs.first()
@@ -58,9 +53,9 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     ): List<NodeRef> {
         return transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
             val dataSize = transformedDataDescriptors.size
-            val properties = createGeneralAndThumbnailProperties(transformation.createName()) +
+            val properties = createGeneralAndThumbnailProperties(createNodeName(transformation)) +
                     determinePromenaProperties(transformation, index, dataSize) +
-                    transformedDataDescriptor.metadata.determineAlfrescoProperties()
+                    determineAlfrescoProperties(transformedDataDescriptor.metadata)
 
             createRenditionNode(sourceNodeRef, determineAssociationName(transformation, index, dataSize), properties).apply {
                 if (transformedDataDescriptor.hasContent()) {
@@ -71,14 +66,14 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     }
 
     private fun handleZero(sourceNodeRef: NodeRef, transformation: Transformation): List<NodeRef> {
-        val properties = createGeneralAndThumbnailProperties(transformation.createName()) +
+        val properties = createGeneralAndThumbnailProperties(createNodeName(transformation)) +
                 determinePromenaProperties(transformation)
 
         return listOf(createRenditionNode(sourceNodeRef, determineAssociationName(transformation, -1, 0), properties))
     }
 
-    private fun Transformation.createName(): String =
-        transformers.joinToString(", ") {
+    private fun createNodeName(transformation: Transformation): String =
+        transformation.transformers.joinToString(", ") {
             if (it.transformerId.subName != null) {
                 "${it.transformerId.name}_${it.transformerId.subName}"
             } else {
@@ -88,9 +83,9 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
     private fun determineAssociationName(transformation: Transformation, dataIndex: Int, dataSize: Int): String {
         val baseName = try {
-            transformation.getAlfrescoRenditionName()
+            determineRenditionName(transformation)
         } catch (e: NoSuchElementException) {
-            transformation.createName()
+            createNodeName(transformation)
         }
 
         return if (dataSize > 1) {
@@ -100,8 +95,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
         }
     }
 
-    private fun Transformation.getAlfrescoRenditionName(): String =
-        transformers.map {
+    private fun determineRenditionName(transformation: Transformation): String =
+        transformation.transformers.map {
             it.parameters
                 .getParameters(PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO)
                 .get(PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO_RENDITION_NAME, String::class.java)
@@ -110,9 +105,9 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private fun Transformation.determineDestinationMediaType(): MediaType =
         transformers.last().targetMediaType
 
-    private fun createGeneralAndThumbnailProperties(name: String): Map<QName, Serializable?> =
-        mapOf<QName, Serializable?>(
-            ContentModel.PROP_NAME to name,
+    private fun createGeneralAndThumbnailProperties(nodeName: String): Map<QName, Serializable?> =
+        mapOf(
+            ContentModel.PROP_NAME to nodeName,
             ContentModel.PROP_IS_INDEXED to false,
             ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT
         )
@@ -123,19 +118,20 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
         transformationDataSize: Int? = null
     ): Map<QName, Serializable?> =
         mapOf(
-            PromenaTransformationContentModel.PROP_TRANSFORMATION to transformation.toListDescription(),
+            PromenaTransformationContentModel.PROP_TRANSFORMATION to
+                    ArrayList(convertToStringifiedDescriptions(transformation)), // must be mutable because Alfresco operates on original List
             PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to transformationDataIndex,
             PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to transformationDataSize
         ).filterNotNullValues()
 
-    private fun Transformation.toListDescription(): ArrayList<String> =
-        ArrayList(transformers.map { it.toString() })
+    private fun convertToStringifiedDescriptions(transformation: Transformation): List<String> =
+        transformation.transformers.map { it.toString() }
 
     private fun <T, U> Map<T, U>.filterNotNullValues(): Map<T, U> =
         filter { (_, value) -> value != null }
 
-    private fun Metadata.determineAlfrescoProperties(): Map<QName, Serializable?> =
-        getAll()
+    private fun determineAlfrescoProperties(metadata: Metadata): Map<QName, Serializable?> =
+        metadata.getAll()
             .filter { it.key.startsWith("alf_") }
             .map { it.key.removePrefix("alf_") to it.value }
             .map { QName.createQName(it.first, namespaceService) to it.second as Serializable? }

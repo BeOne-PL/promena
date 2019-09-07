@@ -6,11 +6,11 @@ import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.Transf
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
-import pl.beone.promena.alfresco.module.client.base.common.startAsync
-import pl.beone.promena.alfresco.module.client.base.common.startSync
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
+import pl.beone.promena.alfresco.module.client.base.extension.startAsync
+import pl.beone.promena.alfresco.module.client.base.extension.startSync
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono

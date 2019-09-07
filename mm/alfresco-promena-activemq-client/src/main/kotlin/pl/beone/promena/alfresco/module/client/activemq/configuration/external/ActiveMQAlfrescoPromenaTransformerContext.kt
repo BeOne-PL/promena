@@ -14,7 +14,6 @@ import java.util.*
 @Configuration
 class ActiveMQAlfrescoPromenaTransformerContext {
 
-
     @Bean
     fun activeMQAlfrescoPromenaTransformer(
         @Qualifier("global-properties") properties: Properties,

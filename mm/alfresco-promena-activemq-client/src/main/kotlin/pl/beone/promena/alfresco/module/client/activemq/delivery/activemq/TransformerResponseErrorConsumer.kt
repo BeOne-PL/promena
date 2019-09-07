@@ -13,11 +13,11 @@ import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfresc
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
-import pl.beone.promena.alfresco.module.client.base.common.couldNotTransform
-import pl.beone.promena.alfresco.module.client.base.common.couldNotTransformButChecksumsAreDifferent
-import pl.beone.promena.alfresco.module.client.base.common.logOnRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
+import pl.beone.promena.alfresco.module.client.base.extension.couldNotTransform
+import pl.beone.promena.alfresco.module.client.base.extension.couldNotTransformButChecksumsAreDifferent
+import pl.beone.promena.alfresco.module.client.base.extension.logOnRetry
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono

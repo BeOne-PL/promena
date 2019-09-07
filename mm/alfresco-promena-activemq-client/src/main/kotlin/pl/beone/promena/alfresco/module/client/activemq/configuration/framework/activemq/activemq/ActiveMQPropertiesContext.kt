@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.activemq.configuration.autoconfigure.jms.activemq.ActiveMQProperties
-import pl.beone.promena.alfresco.module.client.activemq.configuration.getPropertyWithResolvedPlaceholders
-import pl.beone.promena.alfresco.module.client.activemq.configuration.toDuration
+import pl.beone.promena.alfresco.module.client.base.extension.getPropertyWithResolvedPlaceholders
+import pl.beone.promena.alfresco.module.client.base.extension.toDuration
 import java.util.*
 
 @Configuration

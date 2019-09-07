@@ -87,7 +87,7 @@
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-activemq-delivery-jms-message-converter</artifactId>
+            <artifactId>promena-connector-activemq-delivery-message-converter</artifactId>
             <version>${alfresco-promena-connector-activemq.version}</version>
             <exclusions>
                 <exclusion>

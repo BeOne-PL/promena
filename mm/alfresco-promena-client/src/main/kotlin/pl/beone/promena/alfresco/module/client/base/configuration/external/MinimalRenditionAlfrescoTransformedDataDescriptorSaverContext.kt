@@ -7,8 +7,8 @@ import org.alfresco.service.transaction.TransactionService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.client.base.configuration.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
+import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.base.external.MinimalRenditionAlfrescoTransformedDataDescriptorSaver
 import java.util.*
 
@@ -16,7 +16,7 @@ import java.util.*
 class MinimalRenditionAlfrescoTransformedDataDescriptorSaverContext {
 
     @Bean
-    fun renditionAlfrescoTransformedDataDescriptorSaver(
+    fun minimalRenditionAlfrescoTransformedDataDescriptorSaver(
         @Qualifier("global-properties") properties: Properties,
         nodeService: NodeService,
         contentService: ContentService,

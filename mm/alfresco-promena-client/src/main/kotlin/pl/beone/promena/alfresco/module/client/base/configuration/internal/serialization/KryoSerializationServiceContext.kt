@@ -3,7 +3,7 @@ package pl.beone.promena.alfresco.module.client.base.configuration.internal.seri
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.client.base.configuration.getRequiredPropertyWithResolvedPlaceholders
+import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 import java.util.*
 

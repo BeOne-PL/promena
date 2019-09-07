@@ -3,7 +3,6 @@ package pl.beone.promena.alfresco.module.client.base.applicationmodel.exception
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
-@Suppress("MemberVisibilityCanBePrivate", "CanBeParameter")
 class AnotherTransformationIsInProgressException(
     val transformation: Transformation,
     val nodeRefs: List<NodeRef>,

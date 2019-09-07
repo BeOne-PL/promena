@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import pl.beone.promena.alfresco.module.client.activemq.configuration.autoconfigure.jms.JmsProperties
-import pl.beone.promena.alfresco.module.client.activemq.configuration.autoconfigure.jms.activemq.ActiveMQProperties
+import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
 import java.util.*
 import javax.annotation.PostConstruct
 
@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct
 @DependsOn("transformerResponseConsumer", "transformerResponseErrorConsumer", "transformerSender")
 class ActiveMQConnectorLogger(
     @Qualifier("global-properties") private val properties: Properties,
-    private val activeMQProperties: ActiveMQProperties,
     private val jmsProperties: JmsProperties
 ) {
 

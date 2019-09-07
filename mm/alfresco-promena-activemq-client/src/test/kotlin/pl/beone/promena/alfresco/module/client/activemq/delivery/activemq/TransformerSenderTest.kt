@@ -7,6 +7,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQMessage
+import org.fusesource.hawtbuf.UTF8Buffer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -159,4 +160,6 @@ class TransformerSenderTest {
         }
     }
 
+    private fun String.toUTF8Buffer(): UTF8Buffer =
+        UTF8Buffer(this)
 }

@@ -22,7 +22,7 @@ class ContentPropertyAlfrescoDataDescriptorGetter(
 
     override fun get(nodeRefs: List<NodeRef>): DataDescriptor {
         nodeRefs.forEach { it.checkIfExists() }
-        return dataDescriptor(nodeRefs.map { it.convertToSingleDataDescriptor() })
+        return dataDescriptor(nodeRefs.map(::convertToSingleDataDescriptor))
     }
 
     private fun NodeRef.checkIfExists() {
@@ -31,8 +31,8 @@ class ContentPropertyAlfrescoDataDescriptorGetter(
         }
     }
 
-    private fun NodeRef.convertToSingleDataDescriptor(): DataDescriptor.Single {
-        val contentReader = contentService.getReader(this, ContentModel.PROP_CONTENT)
+    private fun convertToSingleDataDescriptor(nodeRef: NodeRef): DataDescriptor.Single {
+        val contentReader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT)
         val mediaType = MediaType.of(contentReader.mimetype, Charset.forName(contentReader.encoding))
 
         return singleDataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType, emptyMetadata())

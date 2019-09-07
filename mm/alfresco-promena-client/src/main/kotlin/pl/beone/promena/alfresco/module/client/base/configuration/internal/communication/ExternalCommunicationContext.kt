@@ -7,8 +7,9 @@ import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.File
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.Memory
-import pl.beone.promena.alfresco.module.client.base.configuration.getLocation
-import pl.beone.promena.alfresco.module.client.base.configuration.getRequiredPropertyWithResolvedPlaceholders
+import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
+import java.io.IOException
+import java.net.URI
 import java.util.*
 
 @Configuration
@@ -28,10 +29,31 @@ class ExternalCommunicationContext {
                 ExternalCommunication(externalCommunicationId, null)
             }
             File -> {
-                val location = properties.getLocation()
+                val location =
+                    determineLocation(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.file.location"))
                 logger.info { "Promena external communication: <file, location: $location>" }
                 ExternalCommunication(externalCommunicationId, location)
             }
-            else -> throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
+            else -> throw IllegalStateException("External communication must be <$Memory> or <$File>")
         }
+
+    fun determineLocation(location: String): URI =
+        try {
+            URI(location)
+                .also { validate(it) }
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Communication location <$location> isn't correct", e)
+        }
+
+    private fun validate(uri: URI) {
+        val file = java.io.File(uri)
+
+        if (!file.exists()) {
+            throw IOException("Path <$uri> doesn't exist")
+        }
+
+        if (file.isFile) {
+            throw IOException("Path <$uri> is a file but should be a directory")
+        }
+    }
 }
