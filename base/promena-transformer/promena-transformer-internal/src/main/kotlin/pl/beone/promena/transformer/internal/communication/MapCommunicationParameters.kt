@@ -1,8 +1,8 @@
 package pl.beone.promena.transformer.internal.communication
 
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import pl.beone.promena.transformer.internal.model._get
-import pl.beone.promena.transformer.internal.model.get
+import pl.beone.promena.transformer.internal.model.extensions._get
+import pl.beone.promena.transformer.internal.model.extensions.get
 
 data class MapCommunicationParameters internal constructor(
     private val parameters: Map<String, Any>

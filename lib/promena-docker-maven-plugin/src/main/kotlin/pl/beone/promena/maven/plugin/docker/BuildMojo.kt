@@ -83,7 +83,7 @@ class BuildMojo : AbstractMojo() {
 
     private fun getTransformerArtifactDescriptors(): List<ArtifactDescriptor> =
         pluginDescriptor.artifacts
-            .filter(this::containsDockerfileFragment)
+            .filter(::containsDockerfileFragment)
             .map { ArtifactDescriptor(generateDescription(it), readDockerfileFragment(it), getDockerPaths(it)) }
             .also { artifactDescriptors ->
                 log.info("Found $dockerfileFragment in <${artifactDescriptors.size}> transformers:")

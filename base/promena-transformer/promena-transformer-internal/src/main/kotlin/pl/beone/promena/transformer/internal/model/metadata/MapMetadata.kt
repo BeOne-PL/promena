@@ -1,10 +1,10 @@
 package pl.beone.promena.transformer.internal.model.metadata
 
 import pl.beone.promena.transformer.contract.model.Metadata
-import pl.beone.promena.transformer.internal.model._get
-import pl.beone.promena.transformer.internal.model.get
-import pl.beone.promena.transformer.internal.model.getList
-import pl.beone.promena.transformer.internal.model.getListWithoutType
+import pl.beone.promena.transformer.internal.model.extensions._get
+import pl.beone.promena.transformer.internal.model.extensions.get
+import pl.beone.promena.transformer.internal.model.extensions.getList
+import pl.beone.promena.transformer.internal.model.extensions.getListWithoutType
 
 data class MapMetadata internal constructor(
     private val metadata: Map<String, Any>

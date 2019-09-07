@@ -1,10 +1,10 @@
 package pl.beone.promena.transformer.internal.model.parameters
 
 import pl.beone.promena.transformer.contract.model.Parameters
-import pl.beone.promena.transformer.internal.model._get
-import pl.beone.promena.transformer.internal.model.get
-import pl.beone.promena.transformer.internal.model.getList
-import pl.beone.promena.transformer.internal.model.getListWithoutType
+import pl.beone.promena.transformer.internal.model.extensions._get
+import pl.beone.promena.transformer.internal.model.extensions.get
+import pl.beone.promena.transformer.internal.model.extensions.getList
+import pl.beone.promena.transformer.internal.model.extensions.getListWithoutType
 import java.time.Duration
 
 data class MapParameters internal constructor(

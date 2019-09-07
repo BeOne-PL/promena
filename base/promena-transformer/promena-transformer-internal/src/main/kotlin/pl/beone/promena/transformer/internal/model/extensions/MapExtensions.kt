@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName", "UNCHECKED_CAST")
 
-package pl.beone.promena.transformer.internal.model
+package pl.beone.promena.transformer.internal.model.extensions
 
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
 import pl.beone.lib.typeconverter.internal.castOrConvert
