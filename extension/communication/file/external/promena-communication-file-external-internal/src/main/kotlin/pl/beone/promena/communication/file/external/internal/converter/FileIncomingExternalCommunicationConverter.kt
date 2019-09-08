@@ -2,7 +2,8 @@ package pl.beone.promena.communication.file.external.internal.converter
 
 import mu.KotlinLogging
 import pl.beone.promena.communication.common.extension.warnIfCommunicationsAreDifferent
-import pl.beone.promena.communication.file.common.extension.getDirectory
+import pl.beone.promena.communication.file.common.extension.getExternalCommunicationDirectory
+import pl.beone.promena.communication.file.common.extension.getInternalCommunicationDirectory
 import pl.beone.promena.communication.file.common.extension.isSubPath
 import pl.beone.promena.communication.file.common.extension.notIncludedInPath
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
@@ -37,7 +38,7 @@ class FileIncomingExternalCommunicationConverter(
 
     private fun validateAndGetExternalCommunicationDirectory(externalCommunicationParameters: CommunicationParameters): File =
         try {
-            externalCommunicationParameters.getDirectory()
+            externalCommunicationParameters.getExternalCommunicationDirectory()
         } catch (e: NoSuchElementException) {
             throw CommunicationParametersValidationException("Communication <$externalCommunicationId>: parameter <directoryPath> is mandatory")
         }
@@ -46,7 +47,7 @@ class FileIncomingExternalCommunicationConverter(
         externalCommunicationId == internalCommunicationId
 
     private fun logFileCommunicationsPotentialProblems(externalCommunicationDirectory: File) {
-        val internalCommunicationDirectory = internalCommunicationParameters.getDirectory()
+        val internalCommunicationDirectory = internalCommunicationParameters.getInternalCommunicationDirectory()
 
         when {
             externalCommunicationDirectory.isSubPath(internalCommunicationDirectory) ->

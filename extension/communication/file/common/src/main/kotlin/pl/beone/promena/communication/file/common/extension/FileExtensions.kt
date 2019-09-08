@@ -7,10 +7,10 @@ fun File.isTheSamePath(file: File): Boolean =
     path == file.path
 
 fun File.isSubPath(file: File): Boolean =
-    path.startsWith(file.path)
+    path.startsWith(file.path) && !isTheSamePath(file)
 
 fun File.notIncludedInPath(file: File): Boolean =
-    !this.isTheSamePath(file) || !this.isSubPath(file)
+    !this.isTheSamePath(file) && !this.isSubPath(file)
 
 fun URI.toFile(): File =
     File(this)
