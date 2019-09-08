@@ -3,6 +3,7 @@ package pl.beone.promena.transformer.internal.communication
 import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
 import org.junit.jupiter.api.Test
+import java.io.File
 
 // The same parent as MapParameters. It is covered by MapParametersJavaTest and MapParametersTest tests
 class MapCommunicationParametersTest {
@@ -12,7 +13,8 @@ class MapCommunicationParametersTest {
                 ("int" to 3) +
                 ("string" to "value") +
                 ("stringInt" to "3") +
-                ("location" to "file:/tmp")
+                ("directoryPath" to "/tmp") +
+                ("directory" to File("/tmp"))
     }
 
     @Test
@@ -42,7 +44,8 @@ class MapCommunicationParametersTest {
 
     @Test
     fun getAll() {
-        communicationParameters.getAll().size shouldBe 5
-        communicationParameters.getAll() shouldContainAll mapOf("location" to "file:/tmp")
+        communicationParameters.getAll().size shouldBe 6
+        communicationParameters.getAll() shouldContainAll
+                mapOf("directoryPath" to "/tmp", "directory" to File("/tmp"))
     }
 }

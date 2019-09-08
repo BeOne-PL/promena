@@ -10,83 +10,61 @@ import java.io.InputStream
 import java.net.URI
 
 data class FileData internal constructor(
-    private val uri: URI
+    private val file: File
 ) : Data {
 
     companion object {
         @JvmStatic
-        fun of(uri: URI): FileData =
-            FileData(uri)
+        fun of(file: File): FileData {
+            require(file.exists() && file.isFile) { "File <$file> doesn't exist or isn't a file" }
+
+            return FileData(file)
+        }
 
         @JvmStatic
-        fun of(file: File): FileData =
-            FileData(file.toURI())
-
-        @JvmStatic
-        fun of(inputStream: InputStream, directoryUri: URI): FileData {
-            val directory = File(directoryUri)
-
-            if (!directory.exists() || !directory.isDirectory) {
-                throw IOException("URI <$directoryUri> doesn't exist or isn't a directory")
-            }
+        fun of(inputStream: InputStream, directory: File): FileData {
+            require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't a directory" }
 
             val file = createTempFile(directory = directory).apply {
                 outputStream().use { inputStream.copyTo(it) }
             }
 
-            return FileData(file.toURI())
-        }
-
-        @JvmStatic
-        fun of(inputStream: InputStream, directoryFile: File): FileData =
-            of(inputStream, directoryFile.toURI())
-    }
-
-    init {
-        if (uri.scheme == "file") {
-            uri
-        } else {
-            throw UnsupportedOperationException("Location URI <$uri> has <${uri.scheme}> scheme but this implementation supports only <file> scheme")
+            return FileData(file)
         }
     }
 
     override fun getBytes(): ByteArray {
-        val location = getLocation()
-
         isAccessible()
 
         return try {
-            File(location).readBytes()
+            file.readBytes()
         } catch (e: Exception) {
-            throw DataReadException("Couldn't read bytes from <$location>", e)
+            throw DataReadException("Couldn't read bytes from <$file>", e)
         }
     }
 
     override fun getInputStream(): InputStream {
         isAccessible()
 
-        return File(uri).inputStream()
+        return file.inputStream()
     }
 
     override fun getLocation(): URI =
-        uri
+        file.toURI()
 
     override fun isAccessible() {
-        if (!File(uri).exists()) {
-            throw DataAccessibilityException("File <${getLocation()}> doesn't exist")
+        if (!file.exists()) {
+            throw DataAccessibilityException("File <$file> doesn't exist")
         }
     }
 
     override fun delete() {
         try {
-            if (!File(uri).delete()) {
-                throw DataDeleteException("Couldn't delete <$uri> file. Maybe file doesn't exist")
+            if (!file.delete()) {
+                throw IOException("File <$file> wasn't successfully deleted. Maybe file doesn't exist")
             }
         } catch (e: Exception) {
-            throw when (e) {
-                is DataDeleteException -> e
-                else -> DataDeleteException("Couldn't delete <$uri> file", e)
-            }
+            throw DataDeleteException("Couldn't delete <$file> file", e)
         }
     }
 }

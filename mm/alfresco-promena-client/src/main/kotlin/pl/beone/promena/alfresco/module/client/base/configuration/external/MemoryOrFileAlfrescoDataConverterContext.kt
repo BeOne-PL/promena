@@ -12,5 +12,5 @@ class MemoryOrFileAlfrescoDataConverterContext {
     fun memoryOrFileAlfrescoDataConverter(
         externalCommunication: ExternalCommunication
     ): MemoryOrFileAlfrescoDataConverter =
-        MemoryOrFileAlfrescoDataConverter(externalCommunication.id, externalCommunication.location)
+        MemoryOrFileAlfrescoDataConverter(externalCommunication.id, externalCommunication.directory)
 }

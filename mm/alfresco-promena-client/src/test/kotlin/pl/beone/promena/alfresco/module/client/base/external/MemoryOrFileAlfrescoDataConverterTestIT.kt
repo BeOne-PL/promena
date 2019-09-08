@@ -38,7 +38,7 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
                 saveContent(MediaTypeConstants.TEXT_PLAIN, "test")
             }
 
-            MemoryOrFileAlfrescoDataConverter(File, tmpDir.toURI())
+            MemoryOrFileAlfrescoDataConverter(File, tmpDir)
                 .createData(node.getContentReader()).let {
                     it.getBytes() shouldBe "test".toByteArray()
                     it.getLocation().toString() shouldContain tmpDir.toString()

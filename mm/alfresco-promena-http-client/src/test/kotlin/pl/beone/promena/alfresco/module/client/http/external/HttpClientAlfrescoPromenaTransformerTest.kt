@@ -124,16 +124,16 @@ class HttpClientAlfrescoPromenaTransformerTest {
     }
 
     @Test
-    fun `transform _ with communication location`() {
+    fun `transform _ with communication directoryPath`() {
         val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
         val serializedPerformedTransformationDescriptor = "performedTransformationDescriptor".toByteArray()
 
-        val tmpDirUri = createTempDir().toURI()
+        val tmpDir = createTempDir()
 
         httpServer = startServer { request, response ->
-            val location = QueryStringDecoder(request.uri()).parameters()["location"]
+            val directoryPath = QueryStringDecoder(request.uri()).parameters()["directoryPath"]
 
-            val serialized = if (location == null || location.first() != tmpDirUri.toString()) {
+            val serialized = if (directoryPath == null || directoryPath.first() != tmpDir.path) {
                 "not expected".toByteArray()
             } else {
                 serializedPerformedTransformationDescriptor
@@ -152,7 +152,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
         }
 
         HttpClientAlfrescoPromenaTransformer(
-            ExternalCommunication(ExternalCommunicationConstants.File, tmpDirUri),
+            ExternalCommunication(ExternalCommunicationConstants.File, tmpDir),
             noRetry(),
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,

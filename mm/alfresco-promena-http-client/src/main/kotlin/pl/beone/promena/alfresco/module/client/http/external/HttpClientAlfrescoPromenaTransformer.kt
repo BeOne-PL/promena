@@ -114,7 +114,7 @@ class HttpClientAlfrescoPromenaTransformer(
         uri(
             "/transform"
                     + "?id=${externalCommunication.id}"
-                    + if (externalCommunication.location != null) "&location=${externalCommunication.location}" else ""
+                    + if (externalCommunication.directory != null) "&directoryPath=${externalCommunication.directory!!.path}" else ""
         )
 
     // defaultIfEmpty is necessary. In other case complete event is emitted if content is null

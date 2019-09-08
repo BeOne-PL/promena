@@ -8,8 +8,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.communicati
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.File
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.Memory
 import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
-import java.io.IOException
-import java.net.URI
+import java.io.File
 import java.util.*
 
 @Configuration
@@ -29,31 +28,15 @@ class ExternalCommunicationContext {
                 ExternalCommunication(externalCommunicationId, null)
             }
             File -> {
-                val location =
-                    determineLocation(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.file.location"))
-                logger.info { "Promena external communication: <file, location: $location>" }
-                ExternalCommunication(externalCommunicationId, location)
+                val directory =
+                    determineDirectory(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.file.directory.path"))
+                logger.info { "Promena external communication: <file, directory: $directory>" }
+                ExternalCommunication(externalCommunicationId, directory)
             }
             else -> throw IllegalStateException("External communication must be <$Memory> or <$File>")
         }
 
-    fun determineLocation(location: String): URI =
-        try {
-            URI(location)
-                .also { validate(it) }
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Communication location <$location> isn't correct", e)
-        }
-
-    private fun validate(uri: URI) {
-        val file = java.io.File(uri)
-
-        if (!file.exists()) {
-            throw IOException("Path <$uri> doesn't exist")
-        }
-
-        if (file.isFile) {
-            throw IOException("Path <$uri> is a file but should be a directory")
-        }
-    }
+    fun determineDirectory(path: String): File =
+        File(path)
+            .also { require(it.exists() && it.isDirectory) { "Directory <$it> doesn't exist or isn't a directory" } }
 }

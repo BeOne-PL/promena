@@ -88,17 +88,17 @@ class TransformerHandlerTestIT {
     }
 
     @Test
-    fun `transform _ file communication parameters with location`() {
+    fun `transform _ file communication parameters with directoryPath`() {
         every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
         every { serializationService.serialize(performedTransformationDescriptor) } returns responseBody
 
         every {
             transformationUseCase.transform(
-                transformation, dataDescriptor, communicationParameters("file") + ("location" to "file:/tmp")
+                transformation, dataDescriptor, communicationParameters("file") + ("directoryPath" to "/tmp")
             )
         } returns transformedDataDescriptor
 
-        webTestClient.post().uri("/transform/?id=file&location=file:/tmp")
+        webTestClient.post().uri("/transform/?id=file&directoryPath=/tmp")
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
             .expectStatus().isOk

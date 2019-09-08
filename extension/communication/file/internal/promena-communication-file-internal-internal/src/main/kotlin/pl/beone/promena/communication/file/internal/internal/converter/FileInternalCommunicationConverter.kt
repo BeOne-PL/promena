@@ -4,13 +4,13 @@ import pl.beone.promena.communication.file.common.converter.FileDescriptorConver
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
-import java.net.URI
+import java.io.File
 
 class FileInternalCommunicationConverter(
-    internalCommunicationLocation: URI
+    directory: File
 ) : InternalCommunicationConverter {
 
-    private val fileDescriptorConverter = FileDescriptorConverter(internalCommunicationLocation)
+    private val fileDescriptorConverter = FileDescriptorConverter(directory)
 
     override fun convert(dataDescriptor: DataDescriptor): DataDescriptor =
         fileDescriptorConverter.convert(dataDescriptor)

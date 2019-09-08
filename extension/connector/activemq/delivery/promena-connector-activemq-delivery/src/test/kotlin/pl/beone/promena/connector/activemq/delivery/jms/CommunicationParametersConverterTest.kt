@@ -21,13 +21,13 @@ class CommunicationParametersConverterTest {
                 "key" to "value",
                 PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID to "memory",
                 "promena_communication_parameter_key" to "promena_communication_parameter_value",
-                "promena_communication_parameter_location" to "locationValue"
+                "promena_communication_parameter_directoryPath" to "/tmp"
             )
         ).getAll() shouldContainExactly
                 mapOf(
                     CommunicationParameters.ID to "memory",
                     "key" to "promena_communication_parameter_value",
-                    "location" to "locationValue"
+                    "directoryPath" to "/tmp"
                 )
     }
 

@@ -12,11 +12,11 @@ import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.FileData
 import pl.beone.promena.transformer.internal.model.data.MemoryData
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
-import java.net.URI
+import java.io.File
 
 class MemoryOrFileAlfrescoDataConverter(
     private val externalCommunicationId: String,
-    private val externalCommunicationLocation: URI? = null
+    private val externalCommunicationDirectory: File? = null
 ) : AlfrescoDataConverter {
 
     companion object {
@@ -26,7 +26,7 @@ class MemoryOrFileAlfrescoDataConverter(
     override fun createData(contentReader: ContentReader): Data =
         if (externalCommunicationId == File) {
             if (contentReader is FileContentReader) {
-                FileData.of(contentReader.contentInputStream, externalCommunicationLocation!!)
+                FileData.of(contentReader.contentInputStream, externalCommunicationDirectory!!)
             } else {
                 logger.warn { "Content reader type isn't FileContentReader (<${contentReader::class.java.simpleName}>). Implementation <MemoryData> will be use as back pressure" }
                 contentReader.toMemoryData()

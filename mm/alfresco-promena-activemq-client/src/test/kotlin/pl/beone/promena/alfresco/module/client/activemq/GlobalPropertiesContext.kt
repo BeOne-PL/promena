@@ -18,7 +18,7 @@ class GlobalPropertiesContext(
             "promena.client.serializer.kryo.buffer-size".let { setProperty(it, environment.getProperty(it)) }
 
             "promena.client.communication.external.id".let { setProperty(it, environment.getProperty(it)) }
-            "promena.client.communication.external.file.location".let { setProperty(it, environment.getProperty(it)) }
+            "promena.client.communication.external.file.directory.path".let { setProperty(it, environment.getProperty(it)) }
 
             "promena.client.transformation.error.retry.enabled".let { setProperty(it, environment.getProperty(it)) }
             "promena.client.transformation.error.retry.max-attempts".let { setProperty(it, environment.getProperty(it)) }

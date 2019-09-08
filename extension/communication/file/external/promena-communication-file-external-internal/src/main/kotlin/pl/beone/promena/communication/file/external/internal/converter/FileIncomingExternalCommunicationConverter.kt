@@ -2,15 +2,15 @@ package pl.beone.promena.communication.file.external.internal.converter
 
 import mu.KotlinLogging
 import pl.beone.promena.communication.common.extension.warnIfCommunicationsAreDifferent
-import pl.beone.promena.communication.file.common.extension.getLocation
+import pl.beone.promena.communication.file.common.extension.getDirectory
 import pl.beone.promena.communication.file.common.extension.isSubPath
-import pl.beone.promena.communication.file.common.extension.notIncludedIn
+import pl.beone.promena.communication.file.common.extension.notIncludedInPath
 import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.data.DataDescriptor
-import java.net.URI
+import java.io.File
 
 class FileIncomingExternalCommunicationConverter(
     private val externalCommunicationId: String,
@@ -24,10 +24,10 @@ class FileIncomingExternalCommunicationConverter(
     }
 
     override fun convert(dataDescriptor: DataDescriptor, externalCommunicationParameters: CommunicationParameters): DataDescriptor {
-        val externalCommunicationLocation = validateAndGetExternalCommunicationLocation(externalCommunicationParameters)
+        val externalCommunicationDirectory = validateAndGetExternalCommunicationDirectory(externalCommunicationParameters)
 
         if (bothCommunicationsAreFile()) {
-            logFileCommunicationsPotentialProblems(externalCommunicationLocation)
+            logFileCommunicationsPotentialProblems(externalCommunicationDirectory)
         }
 
         logger.warnIfCommunicationsAreDifferent(internalCommunicationId, externalCommunicationId)
@@ -35,25 +35,25 @@ class FileIncomingExternalCommunicationConverter(
         return internalCommunicationConverter.convert(dataDescriptor)
     }
 
-    private fun validateAndGetExternalCommunicationLocation(externalCommunicationParameters: CommunicationParameters): URI =
+    private fun validateAndGetExternalCommunicationDirectory(externalCommunicationParameters: CommunicationParameters): File =
         try {
-            externalCommunicationParameters.getLocation()
+            externalCommunicationParameters.getDirectory()
         } catch (e: NoSuchElementException) {
-            throw CommunicationParametersValidationException("Communication <$externalCommunicationId>: parameter <location> is mandatory")
+            throw CommunicationParametersValidationException("Communication <$externalCommunicationId>: parameter <directoryPath> is mandatory")
         }
 
     private fun bothCommunicationsAreFile(): Boolean =
         externalCommunicationId == internalCommunicationId
 
-    private fun logFileCommunicationsPotentialProblems(externalCommunicationLocation: URI) {
-        val internalCommunicationLocation = internalCommunicationParameters.getLocation()
+    private fun logFileCommunicationsPotentialProblems(externalCommunicationDirectory: File) {
+        val internalCommunicationDirectory = internalCommunicationParameters.getDirectory()
 
         when {
-            externalCommunicationLocation.isSubPath(internalCommunicationLocation) ->
-                logger.warn { "Communication <$externalCommunicationId>: you should use the same communication locations for performance reasons. Now external communication location <$externalCommunicationLocation> is a subpath of internal communication location <$internalCommunicationLocation>. It causes one more conversion" }
+            externalCommunicationDirectory.isSubPath(internalCommunicationDirectory) ->
+                logger.warn { "Communication <$externalCommunicationId>: you should use the same communication directories for performance reasons. Now external communication directory <$externalCommunicationDirectory> is a subpath of internal communication directory <$internalCommunicationDirectory>. It causes one more conversion" }
 
-            externalCommunicationLocation.notIncludedIn(internalCommunicationLocation) ->
-                logger.warn { "Communication <$externalCommunicationId>: external communication location <$externalCommunicationLocation> isn't included in internal communication location <$internalCommunicationLocation>. It is highly possible that external communication location isn't accessible from Promena" }
+            externalCommunicationDirectory.notIncludedInPath(internalCommunicationDirectory) ->
+                logger.warn { "Communication <$externalCommunicationId>: external communication directory <$externalCommunicationDirectory> isn't included in internal communication directory <$internalCommunicationDirectory>. It is highly possible that external communication directory isn't accessible from Promena" }
 
         }
     }

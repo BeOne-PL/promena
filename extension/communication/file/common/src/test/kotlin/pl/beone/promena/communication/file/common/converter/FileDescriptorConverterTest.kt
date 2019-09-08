@@ -9,6 +9,7 @@ import io.mockk.just
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import pl.beone.promena.communication.file.common.extension.exists
+import pl.beone.promena.communication.file.common.extension.toFile
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
@@ -31,10 +32,10 @@ class FileDescriptorConverterTest {
         val mediaType = MediaTypeConstants.TEXT_PLAIN
         val metadata = mockk<Metadata>()
 
-        val location = createTempDir().toURI()
+        val directory = createTempDir().toURI().toFile()
 
         val dataContent2 = "data2".toByteArray()
-        val data2 = createFileData(dataContent2, File(location))
+        val data2 = createFileData(dataContent2, directory)
         val mediaType2 = MediaTypeConstants.APPLICATION_PDF
         val metadata2 = mockk<Metadata>()
 
@@ -43,7 +44,7 @@ class FileDescriptorConverterTest {
         val mediaType3 = MediaTypeConstants.APPLICATION_PDF
         val metadata3 = mockk<Metadata>()
 
-        FileDescriptorConverter(location).convert(
+        FileDescriptorConverter(directory).convert(
             singleDataDescriptor(data, mediaType, metadata) +
                     singleDataDescriptor(data2, mediaType2, metadata2) +
                     singleDataDescriptor(data3, mediaType3, metadata3)
@@ -84,17 +85,17 @@ class FileDescriptorConverterTest {
         }
         val metadata = mockk<Metadata>()
 
-        val location = createTempDir().toURI()
+        val directory = createTempDir().toURI().toFile()
 
         val dataContent2 = "data2".toByteArray()
-        val data2 = createFileData(dataContent2, File(location))
+        val data2 = createFileData(dataContent2, directory)
         val metadata2 = mockk<Metadata>()
 
         val dataContent3 = "data3".toByteArray()
         val data3 = createFileData(dataContent3)
         val metadata3 = mockk<Metadata>()
 
-        FileDescriptorConverter(location).convert(
+        FileDescriptorConverter(directory).convert(
             singleTransformedDataDescriptor(data, metadata) +
                     singleTransformedDataDescriptor(data2, metadata2) +
                     singleTransformedDataDescriptor(data3, metadata3)

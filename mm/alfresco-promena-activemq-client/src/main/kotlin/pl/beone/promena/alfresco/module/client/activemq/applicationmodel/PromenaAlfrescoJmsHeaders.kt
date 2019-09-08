@@ -3,7 +3,7 @@ package pl.beone.promena.alfresco.module.client.activemq.applicationmodel
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 
 object PromenaAlfrescoJmsHeaders {
-    const val COMMUNICATION_PARAMETERS_LOCATION = "${PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX}location"
+    const val COMMUNICATION_PARAMETERS_DIRECTORY_PATH = "${PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX}directoryPath"
 
     const val SEND_BACK_NODE_REFS = "${PromenaJmsHeaders.SEND_BACK_PREFIX}node_refs"
     const val SEND_BACK_NODES_CHECKSUM = "${PromenaJmsHeaders.SEND_BACK_PREFIX}nodes_checksum"

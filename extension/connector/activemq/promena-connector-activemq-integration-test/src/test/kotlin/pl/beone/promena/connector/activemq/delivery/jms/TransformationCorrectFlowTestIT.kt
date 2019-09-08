@@ -48,7 +48,7 @@ class TransformationCorrectFlowTestIT {
 
     companion object {
         private val transformerIds = listOf(TestTransformerMockContext.TRANSFORMER_ID)
-        private const val location = "file:/tmp"
+        private const val directoryPath = "/tmp"
         private val correlationId = UUID.randomUUID().toString()
         private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata())
         private val transformation = singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters())
@@ -88,7 +88,7 @@ class TransformationCorrectFlowTestIT {
             transformationUseCase.transform(
                 transformation,
                 dataDescriptor,
-                communicationParameters("memory") + ("location" to location)
+                communicationParameters("memory") + ("directoryPath" to directoryPath)
             )
         } answers {
             Thread.sleep(300)
@@ -140,7 +140,7 @@ class TransformationCorrectFlowTestIT {
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
-                setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX + "location", location)
+                setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_PREFIX + "directoryPath", directoryPath)
             }
         }
     }

@@ -12,14 +12,14 @@ import pl.beone.promena.transformer.internal.communication.plus
 class FileIncomingExternalCommunicationConverterTest {
 
     @Test
-    fun convert() {
+    fun `convert _ no external communication directory parameter _ should throw CommunicationParametersValidationException`() {
         shouldThrow<CommunicationParametersValidationException> {
             FileIncomingExternalCommunicationConverter(
                 "file",
                 "file",
-                communicationParameters("file") + ("location" to createTempDir().toURI()),
+                communicationParameters("file") + ("directoryPath" to createTempDir()),
                 mockk()
             ).convert(emptyDataDescriptor(), communicationParameters("file"))
-        }.message shouldBe "Communication <file>: parameter <location> is mandatory"
+        }.message shouldBe "Communication <file>: parameter <directoryPath> is mandatory"
     }
 }

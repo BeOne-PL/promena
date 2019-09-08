@@ -1,7 +1,7 @@
 package pl.beone.promena.communication.file.common.extension
 
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
-import java.net.URI
+import java.io.File
 
-fun CommunicationParameters.getLocation(): URI =
-    get("location", URI::class.java)
+fun CommunicationParameters.getDirectory(): File =
+    File(get("directoryPath", String::class.java))

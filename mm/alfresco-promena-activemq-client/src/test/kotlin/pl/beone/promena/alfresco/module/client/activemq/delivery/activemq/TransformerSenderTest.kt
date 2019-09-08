@@ -39,7 +39,6 @@ import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import pl.beone.promena.transformer.internal.model.parameters.plus
-import java.net.URI
 import java.time.Duration
 import java.util.*
 
@@ -66,7 +65,7 @@ class TransformerSenderTest {
     companion object {
         private val id = UUID.randomUUID().toString()
         private const val communicationId = File
-        private val communicationLocation = URI("file:/tmp")
+        private const val communicationDirectoryPath = "/tmp"
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
@@ -97,7 +96,7 @@ class TransformerSenderTest {
         validateHeaders(
             mapOf(
                 PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID to communicationId.toUTF8Buffer(),
-                PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_LOCATION to communicationLocation.toString().toUTF8Buffer(),
+                PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_DIRECTORY_PATH to communicationDirectoryPath.toUTF8Buffer(),
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
@@ -121,7 +120,7 @@ class TransformerSenderTest {
         validateHeaders(
             mapOf(
                 PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID to communicationId.toUTF8Buffer(),
-                PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_LOCATION to communicationLocation.toString().toUTF8Buffer(),
+                PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_DIRECTORY_PATH to communicationDirectoryPath.toUTF8Buffer(),
 
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
