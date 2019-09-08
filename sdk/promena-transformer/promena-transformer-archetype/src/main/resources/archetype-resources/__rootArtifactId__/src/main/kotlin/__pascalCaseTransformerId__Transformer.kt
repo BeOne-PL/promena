@@ -15,9 +15,9 @@ import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants
 class ${pascalCaseTransformerId}Transformer(private val internalCommunicationParameters: CommunicationParameters) : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor =
-        dataDescriptor.descriptors.map { (data, _, metadata) ->
-            singleTransformedDataDescriptor(data, metadata)
-        }.toTransformedDataDescriptor()
+        dataDescriptor.descriptors
+            .map { (data, _, metadata) -> singleTransformedDataDescriptor(data, metadata) }
+            .toTransformedDataDescriptor()
 
     override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         if (dataDescriptor.descriptors.any { it.mediaType.mimeType != MediaTypeConstants.TEXT_PLAIN.mimeType } || targetMediaType.mimeType != MediaTypeConstants.TEXT_PLAIN.mimeType) {

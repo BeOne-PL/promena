@@ -51,7 +51,7 @@ under the License.
         </requiredProperty>
 
         <requiredProperty key="pascalCaseTransformerId">
-            <defaultValue>${pascalCaseTransformerName}${pascalCaseTransformerSubName}</defaultValue>
+            <defaultValue>${pascalCaseTransformerSubName}${pascalCaseTransformerName}</defaultValue>
         </requiredProperty>
         <requiredProperty key="camelCaseTransformerId">
             <defaultValue>${pascalCaseTransformerId.substring(0,1).toLowerCase()}${pascalCaseTransformerId.substring(1)}</defaultValue>
