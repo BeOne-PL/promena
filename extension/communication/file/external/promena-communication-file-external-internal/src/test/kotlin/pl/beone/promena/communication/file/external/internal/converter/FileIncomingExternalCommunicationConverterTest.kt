@@ -17,7 +17,7 @@ class FileIncomingExternalCommunicationConverterTest {
             FileIncomingExternalCommunicationConverter(
                 "file",
                 "file",
-                communicationParameters("file") + ("directoryPath" to createTempDir()),
+                communicationParameters("file") + ("directory" to createTempDir()),
                 mockk()
             ).convert(emptyDataDescriptor(), communicationParameters("file"))
         }.message shouldBe "Communication <file>: parameter <directoryPath> is mandatory"

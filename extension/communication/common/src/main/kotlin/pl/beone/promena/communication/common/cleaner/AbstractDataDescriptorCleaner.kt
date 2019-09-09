@@ -17,12 +17,12 @@ abstract class AbstractDataDescriptorCleaner {
     fun clean(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor) {
         val transformedDatas = transformedDataDescriptor.getDatas()
         val datasToDelete = dataDescriptor.getDatas()
-            .filter { data -> checkIfIsUseInDatas(data, transformedDatas) }
+            .filter { checkIfIsUsed(it, transformedDatas) }
 
         if (datasToDelete.isNotEmpty()) {
             logger.debug { "There are <${datasToDelete.size}> data from descriptors that aren't used in transformed descriptors" }
             logger.debug { "Deleting..." }
-            datasToDelete.forEach { data -> data.deleteAndLog(logger) }
+            datasToDelete.forEach { it.deleteAndLog(logger) }
             logger.debug { "Finished deleting" }
         }
     }
@@ -33,6 +33,6 @@ abstract class AbstractDataDescriptorCleaner {
     private fun DataDescriptor.getDatas(): List<Data> =
         descriptors.map(DataDescriptor.Single::data)
 
-    private fun checkIfIsUseInDatas(data: Data, datas: List<Data>): Boolean =
+    private fun checkIfIsUsed(data: Data, datas: List<Data>): Boolean =
         datas.none { areTheSame(data, it) }
 }
