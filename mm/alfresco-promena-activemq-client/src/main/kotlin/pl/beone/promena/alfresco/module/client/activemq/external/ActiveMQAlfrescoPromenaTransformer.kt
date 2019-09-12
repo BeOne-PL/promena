@@ -12,12 +12,14 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTran
 import pl.beone.promena.alfresco.module.client.base.extension.startAsync
 import pl.beone.promena.alfresco.module.client.base.extension.startSync
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono
 import java.time.Duration
 import java.util.*
 
 class ActiveMQAlfrescoPromenaTransformer(
+    private val externalCommunicationParameters: CommunicationParameters,
     private val retry: Retry,
     private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
     private val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
@@ -65,7 +67,7 @@ class ActiveMQAlfrescoPromenaTransformer(
         val reactiveTransformation = reactiveTransformationManager.startTransformation(id)
         transformerSender.send(
             id,
-            transformationDescriptor(transformation, dataDescriptors),
+            transformationDescriptor(transformation, dataDescriptors, externalCommunicationParameters),
             nodeRefs,
             nodesChecksum,
             retry,

@@ -7,18 +7,9 @@ import pl.beone.promena.communication.file.model.contract.FileCommunicationParam
 class DefaultFileCommunicationParametersDslTest {
 
     @Test
-    fun internalFileCommunicationParameters() {
+    fun fileCommunicationParameters() {
         val directory = createTempDir()
-        internalFileCommunicationParameters(directory).let {
-            it.getId() shouldBe FileCommunicationParameters.ID
-            it.getDirectory() shouldBe directory
-        }
-    }
-
-    @Test
-    fun externalFileCommunicationParameters() {
-        val directory = createTempDir()
-        externalFileCommunicationParameters(directory).let {
+        fileCommunicationParameters(directory).let {
             it.getId() shouldBe FileCommunicationParameters.ID
             it.getDirectory() shouldBe directory
         }

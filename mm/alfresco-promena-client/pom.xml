@@ -16,6 +16,8 @@
 
         <promena-core.version>0.9.0-SNAPSHOT</promena-core.version>
         <promena-transformer.version>0.9.0-SNAPSHOT</promena-transformer.version>
+        <promena-communication-memory-model.version>0.9.0-SNAPSHOT</promena-communication-memory-model.version>
+        <promena-communication-file-model.version>0.9.0-SNAPSHOT</promena-communication-file-model.version>
 
         <kotlin-logging.version>1.7.3</kotlin-logging.version>
         <reactor-core.version>3.2.11.RELEASE</reactor-core.version>
@@ -84,6 +86,16 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.communication.memory.model</groupId>
+            <artifactId>promena-communication-memory-model-internal</artifactId>
+            <version>${promena-communication-memory-model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.communication.file.model</groupId>
+            <artifactId>promena-communication-file-model-internal</artifactId>
+            <version>${promena-communication-file-model.version}</version>
         </dependency>
 
         <dependency>

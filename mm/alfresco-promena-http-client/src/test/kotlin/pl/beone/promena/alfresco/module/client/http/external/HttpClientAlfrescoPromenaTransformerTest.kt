@@ -7,15 +7,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.netty.handler.codec.http.HttpResponseStatus
-import io.netty.handler.codec.http.QueryStringDecoder
 import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.reactivestreams.Publisher
 import pl.beone.lib.typeconverter.internal.getClazz
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
@@ -24,6 +21,7 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticat
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
@@ -56,7 +54,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
         private val transformation = singleTransformation("transformer", TEXT_PLAIN, emptyParameters() + ("key" to "value"))
         private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
-        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor)
+        private val communicationParameters = memoryCommunicationParameters()
+        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor, communicationParameters)
         private val transformedDataDescriptor = singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata())
         private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private val transformedNodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"))
@@ -111,7 +110,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
         }
 
         HttpClientAlfrescoPromenaTransformer(
-            ExternalCommunication(ExternalCommunicationConstants.Memory),
+            communicationParameters,
             noRetry(),
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,
@@ -123,46 +122,6 @@ class HttpClientAlfrescoPromenaTransformerTest {
             .transform(transformation, nodeRefs) shouldBe transformedNodeRefs
     }
 
-    @Test
-    fun `transform _ with communication directoryPath`() {
-        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
-        val serializedPerformedTransformationDescriptor = "performedTransformationDescriptor".toByteArray()
-
-        val tmpDir = createTempDir()
-
-        httpServer = startServer { request, response ->
-            val directoryPath = QueryStringDecoder(request.uri()).parameters()["directoryPath"]
-
-            val serialized = if (directoryPath == null || directoryPath.first() != tmpDir.path) {
-                "not expected".toByteArray()
-            } else {
-                serializedPerformedTransformationDescriptor
-            }
-            response.send(serialized)
-        }
-
-        val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
-            every { generateChecksum(nodeRefs) } returns "123456789"
-        }
-        val serializationService = mockk<SerializationService> {
-            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
-            every {
-                deserialize(serializedPerformedTransformationDescriptor, getClazz<PerformedTransformationDescriptor>())
-            } returns performedTransformationDescriptor
-        }
-
-        HttpClientAlfrescoPromenaTransformer(
-            ExternalCommunication(ExternalCommunicationConstants.File, tmpDir),
-            noRetry(),
-            alfrescoNodesChecksumGenerator,
-            alfrescoDataDescriptorGetter,
-            alfrescoTransformedDataDescriptorSaver,
-            serializationService,
-            alfrescoAuthenticationService,
-            httpServer.createHttpClient()
-        )
-            .transform(transformation, nodeRefs) shouldBe transformedNodeRefs
-    }
 
     @Test
     fun `transform _ timeout expires before the end of transformation _ should throw TransformationSynchronizationException and finish transformation after it`() {
@@ -189,7 +148,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
         shouldThrow<TransformationSynchronizationException> {
             HttpClientAlfrescoPromenaTransformer(
-                ExternalCommunication(ExternalCommunicationConstants.Memory),
+                communicationParameters,
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -231,7 +190,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
         StepVerifier.create(
             HttpClientAlfrescoPromenaTransformer(
-                ExternalCommunication(ExternalCommunicationConstants.Memory),
+                communicationParameters,
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -275,7 +234,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
         StepVerifier.create(
             HttpClientAlfrescoPromenaTransformer(
-                ExternalCommunication(ExternalCommunicationConstants.Memory),
+                communicationParameters,
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -318,7 +277,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
         StepVerifier.create(
             HttpClientAlfrescoPromenaTransformer(
-                ExternalCommunication(ExternalCommunicationConstants.Memory),
+                communicationParameters,
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -358,7 +317,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
         StepVerifier.create(
             HttpClientAlfrescoPromenaTransformer(
-                ExternalCommunication(ExternalCommunicationConstants.Memory),
+                communicationParameters,
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -401,7 +360,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
         StepVerifier.create(
             HttpClientAlfrescoPromenaTransformer(
-                ExternalCommunication(ExternalCommunicationConstants.Memory),
+                communicationParameters,
                 customRetry(3, Duration.ofMillis(300)),
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -422,7 +381,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
         StepVerifier.create(
             HttpClientAlfrescoPromenaTransformer(
-                ExternalCommunication(ExternalCommunicationConstants.Memory),
+                communicationParameters,
                 noRetry(),
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,

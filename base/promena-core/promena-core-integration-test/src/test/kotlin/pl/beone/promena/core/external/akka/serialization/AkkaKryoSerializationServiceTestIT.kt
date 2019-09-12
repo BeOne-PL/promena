@@ -24,6 +24,8 @@ import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.next
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
+import pl.beone.promena.transformer.internal.communication.communicationParameters
+import pl.beone.promena.transformer.internal.communication.plus
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
@@ -81,7 +83,8 @@ class AkkaKryoSerializationServiceTestIT {
         val transformationDescriptor = transformationDescriptor(
             singleTransformation("test", APPLICATION_PDF, emptyParameters()),
             singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
+                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata()),
+            communicationParameters("file") + ("directory" to createTempDir())
         )
 
         akkaKryoSerializationService.deserialize(
@@ -97,7 +100,8 @@ class AkkaKryoSerializationServiceTestIT {
             singleTransformation("test", APPLICATION_PDF, emptyParameters()) next
                     singleTransformation("test2", APPLICATION_OCTET_STREAM, emptyParameters()),
             singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
+                    singleDataDescriptor("""{ "key": "value" }""".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata()),
+            communicationParameters("file") + ("directory" to createTempDir())
         )
 
         akkaKryoSerializationService.deserialize(
@@ -147,7 +151,8 @@ class AkkaKryoSerializationServiceTestIT {
         val transformationDescriptor = transformationDescriptor(
             singleTransformation("test", APPLICATION_PDF, emptyParameters() + ("key" to "value")),
             singleDataDescriptor("test".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata() + ("key" to "value")) +
-                    singleDataDescriptor("test2".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata())
+                    singleDataDescriptor("test2".toMemoryData(), APPLICATION_OCTET_STREAM, emptyMetadata()),
+            communicationParameters("file") + ("directory" to createTempDir())
         )
 
         akkaKryoSerializationService.deserialize(

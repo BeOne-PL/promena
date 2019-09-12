@@ -4,7 +4,6 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
@@ -15,7 +14,6 @@ import java.time.Duration
 import javax.jms.Message
 
 class TransformerSender(
-    private val externalCommunication: ExternalCommunication,
     private val transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
     private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
     private val queueRequest: ActiveMQQueue,
@@ -36,9 +34,6 @@ class TransformerSender(
 
                 val transformerIds = transformationDescriptor.transformation.transformers.map { it.transformerId }
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
-
-                setObjectProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, externalCommunication.id)
-                externalCommunication.directory?.let { setObjectProperty(PromenaAlfrescoJmsHeaders.COMMUNICATION_PARAMETERS_DIRECTORY_PATH, it.path) }
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)

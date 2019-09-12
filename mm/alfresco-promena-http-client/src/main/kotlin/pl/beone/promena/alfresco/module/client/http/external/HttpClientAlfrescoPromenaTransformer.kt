@@ -5,7 +5,6 @@ import io.netty.handler.codec.http.HttpHeaders
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.NodeRef
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunication
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.NodesInconsistencyException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
@@ -18,6 +17,7 @@ import pl.beone.promena.core.applicationmodel.transformation.PerformedTransforma
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
@@ -32,7 +32,7 @@ import java.lang.reflect.Modifier
 import java.time.Duration
 
 class HttpClientAlfrescoPromenaTransformer(
-    private val externalCommunication: ExternalCommunication,
+    private val externalCommunicationParameters: CommunicationParameters,
     private val retry: Retry,
     private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
     private val alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
@@ -83,7 +83,7 @@ class HttpClientAlfrescoPromenaTransformer(
 
         val serializedTransformationDescriptor = Mono.just(nodeRefs)
             .map(alfrescoDataDescriptorGetter::get)
-            .map { dataDescriptor -> transformationDescriptor(transformation, dataDescriptor) }
+            .map { dataDescriptor -> transformationDescriptor(transformation, dataDescriptor, externalCommunicationParameters) }
             .map(serializationService::serialize)
 
         val userName = alfrescoAuthenticationService.getCurrentUser()
@@ -91,7 +91,7 @@ class HttpClientAlfrescoPromenaTransformer(
         return httpClient
             .setContentTypeHeader()
             .post()
-            .setUriWithCommunicationParametersToPromena()
+            .uri("/transform")
             .send(ByteBufFlux.fromInbound(serializedTransformationDescriptor))
             .responseSingle { response, bytes -> zipBytesWithResponse(bytes, response) }
             .map { byteArrayAndClientResponse -> handleTransformationResult(byteArrayAndClientResponse.t2, byteArrayAndClientResponse.t1) }
@@ -109,13 +109,6 @@ class HttpClientAlfrescoPromenaTransformer(
 
     private fun HttpClient.setContentTypeHeader(): HttpClient =
         headers { it.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeConstants.APPLICATION_OCTET_STREAM.mimeType) }
-
-    private fun HttpClient.RequestSender.setUriWithCommunicationParametersToPromena(): HttpClient.RequestSender =
-        uri(
-            "/transform"
-                    + "?id=${externalCommunication.id}"
-                    + if (externalCommunication.directory != null) "&directoryPath=${externalCommunication.directory!!.path}" else ""
-        )
 
     // defaultIfEmpty is necessary. In other case complete event is emitted if content is null
     private fun zipBytesWithResponse(byte: ByteBufMono, response: HttpClientResponse): Mono<Tuple2<ByteArray, HttpClientResponse>> =
@@ -182,9 +175,9 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun Mono<List<NodeRef>>.retryOnError(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> =
         if (retry != Retry.No) {
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
-                .fixedBackoff(retry.nextAttemptDelay)
-                .retryMax(retry.maxAttempts)
-                .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
+                          .fixedBackoff(retry.nextAttemptDelay)
+                          .retryMax(retry.maxAttempts)
+                          .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
         } else {
             this
         }

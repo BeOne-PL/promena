@@ -7,7 +7,6 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.server.ResponseStatusException
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
-import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
@@ -19,24 +18,17 @@ class TransformerHandler(
     private val transformationUseCase: TransformationUseCase
 ) {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-
-        private val communicationParametersConverter = CommunicationParametersConverter()
-    }
-
     fun transform(serverRequest: ServerRequest): Mono<ServerResponse> =
         serverRequest.bodyToMono(ByteArray::class.java)
             .map(::deserializeTransformationDescriptor)
-            .map { (transformation, dataDescriptor) ->
+            .map { (transformation, dataDescriptor, communicationParameters) ->
                 performedTransformationDescriptor(
                     transformation,
-                    transformationUseCase.transform(transformation, dataDescriptor, communicationParametersConverter.convert(serverRequest.queryParams()))
+                    transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
                 )
             }
             .map(serializationService::serialize)
             .flatMap(::createResponse)
-            .doOnError(CommunicationParametersValidationException::class.java) { logger.error(it) { "Couldn't determine communication parameters" } }
             .onErrorResume({ it !is ResponseStatusException }, ::createInternalServerErrorResponse)
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =

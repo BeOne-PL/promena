@@ -14,6 +14,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.T
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
+import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
@@ -37,7 +38,8 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         private const val nodesChecksum = "123456789"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
         private val dataDescriptors = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
-        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptors)
+        private val communicationParameters = memoryCommunicationParameters()
+        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptors, communicationParameters)
         private val retry = noRetry()
         private val resultNodeRefs = listOf(
             NodeRef("workspace://SpacesStore/c0b95525-26a6-4067-9756-6bec11c93c70"),
@@ -64,6 +66,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         }
 
         ActiveMQAlfrescoPromenaTransformer(
+            communicationParameters,
             retry,
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,
@@ -96,6 +99,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
 
         shouldThrow<TransformationSynchronizationException> {
             ActiveMQAlfrescoPromenaTransformer(
+                communicationParameters,
                 retry,
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
@@ -124,6 +128,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         }
 
         ActiveMQAlfrescoPromenaTransformer(
+            communicationParameters,
             retry,
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,

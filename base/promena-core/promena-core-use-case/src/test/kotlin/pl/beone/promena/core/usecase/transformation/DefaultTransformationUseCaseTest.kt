@@ -5,7 +5,6 @@ import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerValidationException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
@@ -118,32 +117,6 @@ class DefaultTransformationUseCaseTest {
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message shouldBe "Exception occurred"
-            it.cause shouldBe null
-        }
-    }
-
-    @Test
-    fun `transform _ incomingCommunicationConverter throws CommunicationParametersValidationException _ should unwrap and throw exception only with message to hide Promena implementation details`() {
-        val dataDescriptor = emptyDataDescriptor()
-
-        val externalCommunicationId = "file"
-        val externalCommunicationParameters = communicationParameters(externalCommunicationId)
-        val incomingCommunicationConverter = mockk<IncomingExternalCommunicationConverter> {
-            every {
-                convert(dataDescriptor, externalCommunicationParameters)
-            } throws CommunicationParametersValidationException("Communication parameters exception")
-        }
-
-        val externalCommunicationManager = mockk<ExternalCommunicationManager> {
-            every { getCommunication(externalCommunicationId) } returns
-                    ExternalCommunication(externalCommunicationId, incomingCommunicationConverter, mockk())
-        }
-
-        shouldThrow<TransformationException> {
-            DefaultTransformationUseCase(externalCommunicationManager, mockk())
-                .transform(transformation, dataDescriptor, externalCommunicationParameters)
-        }.let {
-            it.message shouldBe "Couldn't perform the transformation because an error occurred. Check Promena logs for more details. Exception message: <Communication parameters exception>"
             it.cause shouldBe null
         }
     }
