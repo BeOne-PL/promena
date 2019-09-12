@@ -10,17 +10,17 @@
         <version>0.9.0-SNAPSHOT</version>
     </parent>
 
+    <name>[BASE] Transformer</name>
+
     <groupId>pl.beone.promena.transformer</groupId>
     <artifactId>promena-transformer</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>Transformer</name>
-
     <packaging>pom</packaging>
     <modules>
-        <module>promena-transformer-application-model</module>
-        <module>promena-transformer-contract</module>
-        <module>promena-transformer-internal</module>
+        <module>application-model</module>
+        <module>contract</module>
+        <module>internal</module>
     </modules>
 
     <repositories>

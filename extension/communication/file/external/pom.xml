@@ -14,7 +14,7 @@
     <artifactId>promena-communication-file-external</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][FILE] External</name>
+    <name>[EXTENSION][COMMUNICATION][EXTERNAL] File</name>
 
     <packaging>pom</packaging>
     <modules>

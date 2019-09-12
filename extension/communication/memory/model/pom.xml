@@ -14,7 +14,7 @@
     <artifactId>promena-communication-memory-model</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][MEMORY] Model</name>
+    <name>[EXTENSION][COMMUNICATION][MODEL] Memory</name>
 
     <packaging>pom</packaging>
     <modules>

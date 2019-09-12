@@ -18,7 +18,7 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>promena-cluster-management-kubernetes-configuration</module>
+        <module>configuration</module>
     </modules>
 
     <repositories>

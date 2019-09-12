@@ -18,8 +18,8 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>promena-actor-creator-adaptive-load-balancing-configuration</module>
-        <module>promena-actor-creator-adaptive-load-balancing-external-akka</module>
+        <module>configuration</module>
+        <module>external-akka</module>
     </modules>
 
     <repositories>

@@ -14,7 +14,7 @@
     <artifactId>promena-communication-file-model</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][FILE] Model</name>
+    <name>[EXTENSION][COMMUNICATION][MODEL] File</name>
 
     <packaging>pom</packaging>
     <modules>
