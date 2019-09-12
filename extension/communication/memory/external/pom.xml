@@ -14,12 +14,12 @@
     <artifactId>promena-communication-memory-external</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][EXTERNAL] Memory</name>
+    <name>[EXTENSION][COMMUNICATION][MEMORY] External</name>
 
     <packaging>pom</packaging>
     <modules>
-        <module>promena-communication-memory-external-internal</module>
-        <module>promena-communication-memory-external-configuration</module>
+        <module>internal</module>
+        <module>configuration</module>
     </modules>
 
     <repositories>
@@ -49,7 +49,7 @@
 
     <properties>
         <promena-communication-memory-external.version>0.9.0-SNAPSHOT</promena-communication-memory-external.version>
-        <promena-communication-memory-common.version>0.9.0-SNAPSHOT</promena-communication-memory-common.version>
+        <promena-communication-memory-model.version>0.9.0-SNAPSHOT</promena-communication-memory-model.version>
     </properties>
 
     <dependencies>

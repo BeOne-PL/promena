@@ -5,22 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pl.beone.promena.sdk.maven.parent</groupId>
-        <artifactId>promena-extension-parent</artifactId>
+        <groupId>pl.beone.promena.communication.memory.model</groupId>
+        <artifactId>promena-communication-memory-model</artifactId>
         <version>0.9.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>pl.beone.promena.communication.file.internal</groupId>
-    <artifactId>promena-communication-file-internal</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
-
-    <name>[EXTENSION][COMMUNICATION][FILE] Internal</name>
-
-    <packaging>pom</packaging>
-    <modules>
-        <module>internal</module>
-        <module>configuration</module>
-    </modules>
+    <artifactId>promena-communication-memory-model-common</artifactId>
 
     <repositories>
         <repository>
@@ -47,11 +37,6 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <properties>
-        <promena-communication-file-interal.version>0.9.0-SNAPSHOT</promena-communication-file-interal.version>
-        <promena-communication-file-model.version>0.9.0-SNAPSHOT</promena-communication-file-model.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -60,6 +45,17 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.communication</groupId>
+            <artifactId>promena-communication-common</artifactId>
+            <version>${promena-communication-common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.communication.memory.model</groupId>
+            <artifactId>promena-communication-memory-model-contract</artifactId>
+            <version>${promena-communication-memory-model.version}</version>
         </dependency>
 
         <dependency>

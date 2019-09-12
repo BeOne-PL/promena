@@ -22,7 +22,7 @@ data class MapCommunicationParameters internal constructor(
         parameters.get(key, clazz)
 
     override fun getId(): String =
-        parameters.get("id", String::class.java)
+        parameters.get(CommunicationParameters.ID, String::class.java)
 
     override fun getAll(): Map<String, Any> =
         parameters
