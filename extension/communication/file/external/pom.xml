@@ -10,16 +10,16 @@
         <version>0.9.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>pl.beone.promena.communication.file</groupId>
+    <groupId>pl.beone.promena.communication.file.external</groupId>
     <artifactId>promena-communication-file-external</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][EXTERNAL] File</name>
+    <name>[EXTENSION][COMMUNICATION][FILE] External</name>
 
     <packaging>pom</packaging>
     <modules>
-        <module>promena-communication-file-external-internal</module>
-        <module>promena-communication-file-external-configuration</module>
+        <module>internal</module>
+        <module>configuration</module>
     </modules>
 
     <repositories>
@@ -49,7 +49,7 @@
 
     <properties>
         <promena-communication-file-external.version>0.9.0-SNAPSHOT</promena-communication-file-external.version>
-        <promena-communication-file-common.version>0.9.0-SNAPSHOT</promena-communication-file-common.version>
+        <promena-communication-file-model.version>0.9.0-SNAPSHOT</promena-communication-file-model.version>
     </properties>
 
     <dependencies>

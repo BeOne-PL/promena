@@ -10,16 +10,17 @@
         <version>0.9.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>pl.beone.promena.communication.file.internal</groupId>
-    <artifactId>promena-communication-file-internal</artifactId>
+    <groupId>pl.beone.promena.communication.file.model</groupId>
+    <artifactId>promena-communication-file-model</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][FILE] Internal</name>
+    <name>[EXTENSION][COMMUNICATION][FILE] Model</name>
 
     <packaging>pom</packaging>
     <modules>
+        <module>contract</module>
+        <module>common</module>
         <module>internal</module>
-        <module>configuration</module>
     </modules>
 
     <repositories>
@@ -48,8 +49,8 @@
     </pluginRepositories>
 
     <properties>
-        <promena-communication-file-model.version>0.9.0-SNAPSHOT</promena-communication-file-model.version>
-        <promena-communication-file-interal.version>0.9.0-SNAPSHOT</promena-communication-file-interal.version>
+        <promena-communication-memory-model.version>0.9.0-SNAPSHOT</promena-communication-memory-model.version>
+        <promena-communication-common.version>0.9.0-SNAPSHOT</promena-communication-common.version>
     </properties>
 
     <dependencies>

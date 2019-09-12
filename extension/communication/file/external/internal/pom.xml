@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>pl.beone.promena.communication.file.external</groupId>
+        <artifactId>promena-communication-file-external</artifactId>
+        <version>0.9.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>promena-communication-file-external-internal</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.core</groupId>
+            <artifactId>promena-core-internal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.communication.file.model</groupId>
+            <artifactId>promena-communication-file-model-common</artifactId>
+            <version>${promena-communication-file-model.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.communication.file.model</groupId>
+            <artifactId>promena-communication-file-model-internal</artifactId>
+            <version>${promena-communication-file-model.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
