@@ -9,6 +9,7 @@ import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransfo
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
+import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.util.*
 
 @Configuration
@@ -17,6 +18,7 @@ class ActiveMQAlfrescoPromenaTransformerContext {
     @Bean
     fun activeMQAlfrescoPromenaTransformer(
         @Qualifier("global-properties") properties: Properties,
+        @Qualifier("externalCommunicationParameters") externalCommunicationParameters: CommunicationParameters,
         retry: Retry,
         alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
         alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
@@ -24,6 +26,7 @@ class ActiveMQAlfrescoPromenaTransformerContext {
         transformerSender: TransformerSender
     ) =
         ActiveMQAlfrescoPromenaTransformer(
+            externalCommunicationParameters,
             retry,
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,

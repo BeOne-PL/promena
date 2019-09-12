@@ -1,6 +1,5 @@
 package pl.beone.promena.connector.activemq.delivery.jms
 
-import mu.KotlinLogging
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.core.JmsTemplate
@@ -9,7 +8,6 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
-import pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
@@ -22,9 +20,6 @@ class TransformationConsumer(
 ) {
 
     companion object {
-        private val logger = KotlinLogging.logger {}
-
-        private val communicationParametersConverter = CommunicationParametersConverter()
         private val headersToSentBackDeterminer = HeadersToSentBackDeterminer()
     }
 
@@ -42,18 +37,14 @@ class TransformationConsumer(
     ) {
         val startTimestamp = getTimestamp()
 
-        val (transformation, dataDescriptor) = transformationDescriptor
+        val (transformation, dataDescriptor, communicationParameters) = transformationDescriptor
 
         val (queue, payload) = try {
             responseQueue to performedTransformationDescriptor(
                 transformation,
-                transformationUseCase.transform(transformation, dataDescriptor, communicationParametersConverter.convert(headers))
+                transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
             )
         } catch (e: Exception) {
-            if (e is CommunicationParametersValidationException) {
-                logger.error(e) { "Couldn't determine communication parameters" }
-            }
-
             errorResponseQueue to e
         }
 

@@ -7,12 +7,7 @@ import pl.beone.promena.transformer.internal.communication.communicationParamete
 import pl.beone.promena.transformer.internal.communication.plus
 import java.io.File
 
-fun internalFileCommunicationParameters(directory: File): DefaultFileCommunicationParameters =
+fun fileCommunicationParameters(directory: File): DefaultFileCommunicationParameters =
     DefaultFileCommunicationParameters(
-        communicationParameters(FileCommunicationParameters.ID) + (DefaultFileCommunicationParameters.INTERNAL_DIRECTORY to directory)
-    )
-
-fun externalFileCommunicationParameters(directory: File): DefaultFileCommunicationParameters =
-    DefaultFileCommunicationParameters(
-        communicationParameters(FileCommunicationParameters.ID) + (DefaultFileCommunicationParameters.EXTERNAL_DIRECTORY to directory.path)
+        communicationParameters(FileCommunicationParameters.ID) + (DefaultFileCommunicationParameters.DIRECTORY to directory)
     )

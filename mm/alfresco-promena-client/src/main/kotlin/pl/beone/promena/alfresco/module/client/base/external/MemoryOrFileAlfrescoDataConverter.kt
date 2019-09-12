@@ -4,9 +4,9 @@ import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.ContentReader
 import org.alfresco.service.cmr.repository.ContentWriter
 import org.alfresco.service.cmr.repository.FileContentReader
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.File
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.communication.ExternalCommunicationConstants.Memory
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
+import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
+import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.data.FileData
@@ -24,17 +24,17 @@ class MemoryOrFileAlfrescoDataConverter(
     }
 
     override fun createData(contentReader: ContentReader): Data =
-        if (externalCommunicationId == File) {
+        if (externalCommunicationId == FileCommunicationParameters.ID) {
             if (contentReader is FileContentReader) {
                 FileData.of(contentReader.contentInputStream, externalCommunicationDirectory!!)
             } else {
                 logger.warn { "Content reader type isn't FileContentReader (<${contentReader::class.java.simpleName}>). Implementation <MemoryData> will be use as back pressure" }
                 contentReader.toMemoryData()
             }
-        } else if (externalCommunicationId == Memory) {
+        } else if (externalCommunicationId == MemoryCommunicationParameters.ID) {
             contentReader.toMemoryData()
         } else {
-            throw UnsupportedOperationException("External communication must be <$Memory> or <$File>")
+            throw UnsupportedOperationException("External communication must be <${MemoryCommunicationParameters.ID}> or <${FileCommunicationParameters.ID}>")
         }
 
     override fun saveDataInContentWriter(data: Data, contentWriter: ContentWriter) {
@@ -55,7 +55,7 @@ class MemoryOrFileAlfrescoDataConverter(
             when (e) {
                 is UnsupportedOperationException,
                 is DataDeleteException -> logger.debug(e) { "Couldn't delete <${data.toSimplifiedString()}> resource" }
-                else -> throw e
+                else                   -> throw e
             }
         }
         logger.debug { "Finished deleting <${data.toSimplifiedString()}> resource" }

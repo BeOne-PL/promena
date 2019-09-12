@@ -29,7 +29,6 @@ import pl.beone.promena.transformer.contract.data.emptyDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.communication.communicationParameters
-import pl.beone.promena.transformer.internal.communication.plus
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
@@ -55,7 +54,8 @@ class TransformerHandlerTestIT {
         private val requestBody = "request body".toByteArray()
         private val transformation = singleTransformation("default", TEXT_PLAIN, emptyParameters())
         private val dataDescriptor = emptyDataDescriptor()
-        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor)
+        private val communicationParameters = communicationParameters("")
+        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor, communicationParameters)
         private val transformedDataDescriptor = singleTransformedDataDescriptor("".toMemoryData(), emptyMetadata())
         private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private val responseBody = "response body".toByteArray()
@@ -74,31 +74,13 @@ class TransformerHandlerTestIT {
     }
 
     @Test
-    fun `transform _ memory communication parameters`() {
+    fun transform() {
         every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
         every { serializationService.serialize(performedTransformationDescriptor) } returns responseBody
 
-        every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("memory")) } returns transformedDataDescriptor
+        every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters) } returns transformedDataDescriptor
 
-        webTestClient.post().uri("/transform?id=memory")
-            .body(BodyInserters.fromObject(requestBody))
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<ByteArray>().isEqualTo(responseBody)
-    }
-
-    @Test
-    fun `transform _ file communication parameters with directoryPath`() {
-        every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
-        every { serializationService.serialize(performedTransformationDescriptor) } returns responseBody
-
-        every {
-            transformationUseCase.transform(
-                transformation, dataDescriptor, communicationParameters("file") + ("directoryPath" to "/tmp")
-            )
-        } returns transformedDataDescriptor
-
-        webTestClient.post().uri("/transform/?id=file&directoryPath=/tmp")
+        webTestClient.post().uri("/transform")
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
             .expectStatus().isOk
@@ -113,9 +95,9 @@ class TransformerHandlerTestIT {
         every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
         every { serializationService.serialize(any<TransformationException>()) } returns messageByteArray
 
-        every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters("memory")) } throws exception
+        every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters) } throws exception
 
-        webTestClient.post().uri("/transform?id=memory")
+        webTestClient.post().uri("/transform")
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
             .expectHeader()
@@ -125,21 +107,6 @@ class TransformerHandlerTestIT {
             )
             .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
             .expectBody<ByteArray>().isEqualTo(messageByteArray)
-    }
-
-    @Test
-    fun `transform _ query string without id communication parameter _ should return BadRequest`() {
-        every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
-
-        webTestClient.post().uri("/transform")
-            .body(BodyInserters.fromObject(requestBody))
-            .exchange()
-            .expectHeader()
-            .valueEquals(
-                PromenaHttpHeaders.SERIALIZATION_CLASS,
-                "pl.beone.promena.core.applicationmodel.exception.communication.CommunicationParametersValidationException"
-            )
-            .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Test

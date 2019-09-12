@@ -35,6 +35,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
+import pl.beone.promena.transformer.internal.communication.communicationParameters
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
@@ -127,14 +128,13 @@ class TransformationExceptionFlowTestIT {
             ActiveMQQueue(queueRequest),
             transformationDescriptor(
                 singleTransformation(TestTransformerMockContext.TRANSFORMER_ID, APPLICATION_JSON, emptyParameters()),
-                singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
+                singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata()),
+                communicationParameters("")
             )
         ) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
-
-                setStringProperty(PromenaJmsHeaders.COMMUNICATION_PARAMETERS_ID, "memory")
 
                 setObjectProperty(
                     "send_back_nodeRefs",
