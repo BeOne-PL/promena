@@ -14,7 +14,7 @@
     <artifactId>promena-communication-memory-external</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][MEMORY] External</name>
+    <name>[EXTENSION][COMMUNICATION][EXTERNAL] Memory</name>
 
     <packaging>pom</packaging>
     <modules>

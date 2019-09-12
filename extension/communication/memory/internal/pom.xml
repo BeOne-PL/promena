@@ -14,7 +14,7 @@
     <artifactId>promena-communication-memory-internal</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>[EXTENSION][COMMUNICATION][MEMORY] Internal</name>
+    <name>[EXTENSION][COMMUNICATION][INTERNAL] Memory</name>
 
     <packaging>pom</packaging>
     <modules>

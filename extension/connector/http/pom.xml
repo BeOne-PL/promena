@@ -18,10 +18,10 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>promena-connector-http-application-model</module>
-        <module>promena-connector-http-delivery</module>
-        <module>promena-connector-http-configuration</module>
-        <module>promena-connector-http-integration-test</module>
+        <module>application-model</module>
+        <module>delivery</module>
+        <module>configuration</module>
+        <module>integration-test</module>
     </modules>
 
     <repositories>

@@ -18,13 +18,13 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>promena-connector-activemq-application-model</module>
-        <module>promena-connector-activemq-contract</module>
-        <module>promena-connector-activemq-internal</module>
-        <module>delivery/promena-connector-activemq-delivery</module>
-        <module>delivery/promena-connector-activemq-delivery-message-converter</module>
-        <module>promena-connector-activemq-configuration</module>
-        <module>promena-connector-activemq-integration-test</module>
+        <module>application-model</module>
+        <module>contract</module>
+        <module>internal</module>
+        <module>delivery/delivery</module>
+        <module>delivery/delivery-message-converter</module>
+        <module>configuration</module>
+        <module>integration-test</module>
     </modules>
 
     <repositories>
