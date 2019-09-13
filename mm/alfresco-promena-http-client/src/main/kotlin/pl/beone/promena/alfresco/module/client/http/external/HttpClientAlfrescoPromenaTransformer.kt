@@ -49,14 +49,14 @@ class HttpClientAlfrescoPromenaTransformer(
     override fun transform(
         transformation: Transformation,
         nodeRefs: List<NodeRef>,
-        renditionName: String?,
         waitMax: Duration?,
-        retry: Retry?
+        retry: Retry?,
+        renditionName: String?
     ): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
         return try {
-            transformReactive(transformation, nodeRefs, renditionName, determineRetry(retry))
+            transformReactive(transformation, nodeRefs, determineRetry(retry), renditionName)
                 .doOnCancel {} // without it, if timeout in block(Duration) expires, reactive stream is cancelled
                 .get(waitMax)
         } catch (e: IllegalStateException) {
@@ -74,12 +74,12 @@ class HttpClientAlfrescoPromenaTransformer(
     override fun transformAsync(
         transformation: Transformation,
         nodeRefs: List<NodeRef>,
-        renditionName: String?,
-        retry: Retry?
+        retry: Retry?,
+        renditionName: String?
     ): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
-        return transformReactive(transformation, nodeRefs, renditionName, determineRetry(retry)).apply {
+        return transformReactive(transformation, nodeRefs, determineRetry(retry), renditionName).apply {
             subscribe()
         }
     }
@@ -87,7 +87,12 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
 
-    private fun transformReactive(transformation: Transformation, nodeRefs: List<NodeRef>, renditionName: String?, retry: Retry): Mono<List<NodeRef>> {
+    private fun transformReactive(
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        retry: Retry,
+        renditionName: String?
+    ): Mono<List<NodeRef>> {
         val startTimestamp = currentTimeMillis()
 
         val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)

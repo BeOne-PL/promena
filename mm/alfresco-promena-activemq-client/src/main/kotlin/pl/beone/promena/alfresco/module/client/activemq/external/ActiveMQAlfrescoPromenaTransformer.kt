@@ -34,14 +34,14 @@ class ActiveMQAlfrescoPromenaTransformer(
     override fun transform(
         transformation: Transformation,
         nodeRefs: List<NodeRef>,
-        renditionName: String?,
         waitMax: Duration?,
-        retry: Retry?
+        retry: Retry?,
+        renditionName: String?
     ): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
         return try {
-            transform(generateId(), transformation, nodeRefs, renditionName, determineRetry(retry), 0).get(waitMax)
+            transform(generateId(), transformation, nodeRefs, determineRetry(retry), renditionName, 0).get(waitMax)
         } catch (e: IllegalStateException) {
             throw TransformationSynchronizationException(transformation, nodeRefs, waitMax)
         }
@@ -57,10 +57,10 @@ class ActiveMQAlfrescoPromenaTransformer(
     override fun transformAsync(
         transformation: Transformation,
         nodeRefs: List<NodeRef>,
-        renditionName: String?,
-        retry: Retry?
+        retry: Retry?,
+        renditionName: String?
     ): Mono<List<NodeRef>> =
-        transformAsync(generateId(), transformation, nodeRefs, renditionName, determineRetry(retry), 0)
+        transformAsync(generateId(), transformation, nodeRefs, determineRetry(retry), renditionName, 0)
 
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
@@ -69,21 +69,21 @@ class ActiveMQAlfrescoPromenaTransformer(
         id: String,
         transformation: Transformation,
         nodeRefs: List<NodeRef>,
-        renditionName: String?,
         retry: Retry,
+        renditionName: String?,
         attempt: Long
     ): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
-        return transform(id, transformation, nodeRefs, renditionName, retry, attempt)
+        return transform(id, transformation, nodeRefs, retry, renditionName, attempt)
     }
 
     private fun transform(
         id: String,
         transformation: Transformation,
         nodeRefs: List<NodeRef>,
-        renditionName: String?,
         retry: Retry,
+        renditionName: String?,
         attempt: Long
     ): Mono<List<NodeRef>> {
         val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeRefs)

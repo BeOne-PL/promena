@@ -73,9 +73,9 @@ class TransformerResponseErrorConsumer(
                     correlationId,
                     transformation,
                     nodeRefs,
-                    renditionName,
                     retryConverter.convert(retryMaxAttempts, retryNextAttemptDelay),
                     attempt + 1,
+                    renditionName,
                     userName
                 )
             }
@@ -86,9 +86,9 @@ class TransformerResponseErrorConsumer(
         id: String,
         transformation: Transformation,
         nodeRefs: List<NodeRef>,
-        renditionName: String?,
         retry: Retry,
         attempt: Long,
+        renditionName: String?,
         userName: String
     ) {
         Mono.just("")
@@ -96,7 +96,7 @@ class TransformerResponseErrorConsumer(
             .delayElement(retry.nextAttemptDelay)
             .doOnNext {
                 alfrescoAuthenticationService.runAs(userName) {
-                    activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, renditionName, retry, attempt)
+                    activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, renditionName, attempt)
                 }
             }
             .subscribe()

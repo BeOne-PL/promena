@@ -74,7 +74,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
             alfrescoDataDescriptorGetter,
             reactiveTransformationManager,
             transformerSender
-        ).transform(transformation, nodeRefs, renditionName, Duration.ofSeconds(5)) shouldBe
+        ).transform(transformation, nodeRefs, Duration.ofSeconds(5), renditionName = renditionName) shouldBe
                 resultNodeRefs
     }
 
@@ -107,7 +107,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
                 alfrescoDataDescriptorGetter,
                 reactiveTransformationManager,
                 transformerSender
-            ).transform(transformation, nodeRefs, null, duration)
+            ).transform(transformation, nodeRefs, duration)
         }
     }
 

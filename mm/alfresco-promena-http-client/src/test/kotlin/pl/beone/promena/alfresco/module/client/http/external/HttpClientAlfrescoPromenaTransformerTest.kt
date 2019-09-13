@@ -117,14 +117,14 @@ class HttpClientAlfrescoPromenaTransformerTest {
             alfrescoAuthenticationService,
             httpServer.createHttpClient()
         )
-            .transform(transformation, nodeRefs, null) shouldBe transformedNodeRefs
+            .transform(transformation, nodeRefs) shouldBe transformedNodeRefs
     }
 
     @Test
     fun `transform _ rendition name`() {
         val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
         val serializedPerformedTransformationDescriptor = "performedTransformationDescriptor".toByteArray()
-        val renditionName = "docLib"
+        val renditionName = "doclib"
 
         httpServer = startServer { request, response ->
             response.sendByteArray(
@@ -157,7 +157,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
             alfrescoAuthenticationService,
             httpServer.createHttpClient()
         )
-            .transform(transformation, nodeRefs, renditionName) shouldBe transformedNodeRefs
+            .transform(transformation, nodeRefs, renditionName = renditionName) shouldBe transformedNodeRefs
     }
 
     @Test
@@ -197,7 +197,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transform(transformation, nodeRefs, null, Duration.ofMillis(0))
+                .transform(transformation, nodeRefs, Duration.ofMillis(0))
         }
 
         Thread.sleep(500)
@@ -445,7 +445,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs, retry = customRetry(3, Duration.ofMillis(300)))
+                .transformAsync(transformation, nodeRefs, customRetry(3, Duration.ofMillis(300)))
         )
             .expectSubscription()
             .expectNoEvent(Duration.ofMillis(600))
