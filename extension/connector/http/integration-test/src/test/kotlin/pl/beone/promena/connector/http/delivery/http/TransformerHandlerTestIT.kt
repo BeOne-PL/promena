@@ -88,25 +88,6 @@ class TransformerHandlerTestIT {
     }
 
     @Test
-    fun `transform _ send back headers _ should return headers with send-back prefix`() {
-        every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor
-        every { serializationService.serialize(performedTransformationDescriptor) } returns responseBody
-
-        every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters) } returns transformedDataDescriptor
-
-        val sendBackRenditionNameHeader = PromenaHttpHeaders.SEND_BACK_PREFIX + "rendition-name"
-        val sendBackRenditionNameHeaderValue = "doclib"
-
-        webTestClient.post().uri("/transform")
-            .body(BodyInserters.fromObject(requestBody))
-            .header(sendBackRenditionNameHeader, sendBackRenditionNameHeaderValue)
-            .exchange()
-            .expectHeader().valueEquals(sendBackRenditionNameHeader, sendBackRenditionNameHeaderValue)
-            .expectStatus().isOk
-            .expectBody<ByteArray>().isEqualTo(responseBody)
-    }
-
-    @Test
     fun `transform _ should throw TransformationException and return InternalServerError with serialized exception`() {
         val exception = TransformationException(singleTransformation("test", TEXT_PLAIN, emptyParameters()), "exception")
         val messageByteArray = exception.message!!.toByteArray()
