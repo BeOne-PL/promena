@@ -71,7 +71,12 @@ class HttpClientAlfrescoPromenaTransformer(
             block()!!
         }
 
-    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, renditionName: String?, retry: Retry?): Mono<List<NodeRef>> {
+    override fun transformAsync(
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        renditionName: String?,
+        retry: Retry?
+    ): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
         return transformReactive(transformation, nodeRefs, renditionName, determineRetry(retry)).apply {

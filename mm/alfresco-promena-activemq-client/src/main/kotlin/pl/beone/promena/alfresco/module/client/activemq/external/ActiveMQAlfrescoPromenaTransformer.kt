@@ -54,7 +54,12 @@ class ActiveMQAlfrescoPromenaTransformer(
             block()!!
         }
 
-    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, renditionName: String?, retry: Retry?): Mono<List<NodeRef>> =
+    override fun transformAsync(
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        renditionName: String?,
+        retry: Retry?
+    ): Mono<List<NodeRef>> =
         transformAsync(generateId(), transformation, nodeRefs, renditionName, determineRetry(retry), 0)
 
     private fun determineRetry(retry: Retry?): Retry =

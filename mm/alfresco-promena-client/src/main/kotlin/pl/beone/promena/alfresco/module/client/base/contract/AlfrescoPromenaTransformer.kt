@@ -16,5 +16,10 @@ interface AlfrescoPromenaTransformer {
         retry: Retry? = null
     ): List<NodeRef>
 
-    fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, renditionName: String? = null, retry: Retry? = null): Mono<List<NodeRef>>
+    fun transformAsync(
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        renditionName: String? = null,
+        retry: Retry? = null
+    ): Mono<List<NodeRef>>
 }
