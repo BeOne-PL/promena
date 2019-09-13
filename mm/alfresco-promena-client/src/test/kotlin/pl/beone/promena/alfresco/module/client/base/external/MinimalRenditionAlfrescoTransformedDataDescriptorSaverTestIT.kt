@@ -16,7 +16,6 @@ import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.parameters.PromenaParametersAlfrescoConstants
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
@@ -71,7 +70,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                                     ("alf_float" to 30.0f) +
                                     ("alf_double" to 40.0) +
                                     ("alf_boolean" to true)
-                        )
+                        ),
+                null
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
@@ -160,7 +160,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                singleTransformedDataDescriptor(data, emptyMetadata() + ("alf_string" to "string"))
+                singleTransformedDataDescriptor(data, emptyMetadata() + ("alf_string" to "string")),
+                null
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
@@ -194,12 +195,12 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
     }
 
     @Test
-    fun save_oneResultAndAlfrescoRenditionName() {
+    fun save_oneResultAndRenditionName() {
         val integrationNode = createNodeInIntegrationFolder()
 
         val alfrescoDataConverter = mockk<AlfrescoDataConverter>()
 
-        val alfrescoRenditionName = "pdf"
+        val renditionName = "pdf"
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
         MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
@@ -214,11 +215,11 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 singleTransformation(
                     "transformer",
                     TEXT_PLAIN,
-                    emptyParameters() + (PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO to
-                            emptyParameters() + (PromenaParametersAlfrescoConstants.PARAMETERS_ALFRESCO_RENDITION_NAME to alfrescoRenditionName))
+                    emptyParameters()
                 ),
                 listOf(integrationNode),
-                singleTransformedDataDescriptor(noData(), emptyMetadata() + ("alf_string" to "string"))
+                singleTransformedDataDescriptor(noData(), emptyMetadata() + ("alf_string" to "string")),
+                renditionName
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
@@ -235,7 +236,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         ContentModel.PROP_NAME to "transformer",
                         ContentModel.PROP_IS_INDEXED to false,
                         ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={alfresco=MapParameters(parameters={renditionName=pdf})}))"),
+                        PromenaTransformationContentModel.PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 1,
                         QName.createQName("string") to "string"
@@ -245,7 +246,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 nodes shouldBe
                         integrationNode.getRenditionAssociations().map { it.childRef }
                 integrationNode.getRenditionAssociations().map { it.qName } shouldBe
-                        listOf(QName.createQName(CONTENT_MODEL_1_0_URI, alfrescoRenditionName))
+                        listOf(QName.createQName(CONTENT_MODEL_1_0_URI, renditionName))
             }
     }
 
@@ -268,7 +269,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                emptyTransformedDataDescriptor()
+                emptyTransformedDataDescriptor(),
+                null
             ).let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
 
@@ -319,7 +321,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                emptyTransformedDataDescriptor()
+                emptyTransformedDataDescriptor(),
+                null
             )
             .let { nodes ->
                 nodes shouldHaveSize 0

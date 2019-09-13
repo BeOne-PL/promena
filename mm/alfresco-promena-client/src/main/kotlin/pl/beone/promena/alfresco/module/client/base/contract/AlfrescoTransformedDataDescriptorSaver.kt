@@ -6,5 +6,10 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 
 interface AlfrescoTransformedDataDescriptorSaver {
 
-    fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef>
+    fun save(
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        transformedDataDescriptor: TransformedDataDescriptor,
+        renditionName: String?
+    ): List<NodeRef>
 }
