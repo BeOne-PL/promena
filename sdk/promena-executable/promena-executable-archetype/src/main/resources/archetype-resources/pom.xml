@@ -87,24 +87,24 @@
 
         <!-- Communication - external -->
         <dependency>
-            <groupId>pl.beone.promena.communication.memory</groupId>
+            <groupId>pl.beone.promena.communication.memory.external</groupId>
             <artifactId>promena-communication-memory-external-configuration</artifactId>
             <version>${promena.communication.memory.external.version}</version>
         </dependency>
         <dependency>
-            <groupId>pl.beone.promena.communication.file</groupId>
+            <groupId>pl.beone.promena.communication.file.external</groupId>
             <artifactId>promena-communication-file-external-configuration</artifactId>
             <version>${promena.communication.file.external.version}</version>
         </dependency>
 
         <!-- Communication - internal -->
         <dependency>
-            <groupId>pl.beone.promena.communication.memory</groupId>
+            <groupId>pl.beone.promena.communication.memory.internal</groupId>
             <artifactId>promena-communication-memory-internal-configuration</artifactId>
             <version>${promena.communication.memory.internal.version}</version>
         </dependency>
 <!--        <dependency>-->
-<!--            <groupId>pl.beone.promena.communication.file</groupId>-->
+<!--            <groupId>pl.beone.promena.communication.file.internal</groupId>-->
 <!--            <artifactId>promena-communication-file-internal-configuration</artifactId>-->
 <!--            <version>${promena.communication.file.internal.version}</version>-->
 <!--        </dependency>-->
