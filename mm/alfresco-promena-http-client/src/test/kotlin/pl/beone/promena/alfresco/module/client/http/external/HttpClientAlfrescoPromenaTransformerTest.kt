@@ -37,9 +37,7 @@ import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import pl.beone.promena.transformer.internal.model.parameters.plus
 import reactor.core.publisher.Mono
-import reactor.netty.ByteBufFlux
 import reactor.netty.DisposableServer
-import reactor.netty.NettyOutbound
 import reactor.netty.http.client.HttpClient
 import reactor.netty.http.server.HttpServer
 import reactor.netty.http.server.HttpServerRequest
@@ -60,8 +58,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
         private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
         private val transformedNodeRefs = listOf(NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"))
         private const val userName = "admin"
+
         private lateinit var alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter
-        private lateinit var alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver
         private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
 
         private lateinit var httpServer: DisposableServer
@@ -71,9 +69,6 @@ class HttpClientAlfrescoPromenaTransformerTest {
     fun setUp() {
         alfrescoDataDescriptorGetter = mockk {
             every { get(nodeRefs) } returns dataDescriptor
-        }
-        alfrescoTransformedDataDescriptorSaver = mockk {
-            every { save(transformation, nodeRefs, transformedDataDescriptor) } returns transformedNodeRefs
         }
         alfrescoAuthenticationService = mockk {
             every { getCurrentUser() } returns userName
@@ -99,6 +94,9 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .then(Mono.just(serializedPerformedTransformationDescriptor)))
         }
 
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, null) } returns transformedNodeRefs
+        }
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
@@ -119,9 +117,48 @@ class HttpClientAlfrescoPromenaTransformerTest {
             alfrescoAuthenticationService,
             httpServer.createHttpClient()
         )
-            .transform(transformation, nodeRefs) shouldBe transformedNodeRefs
+            .transform(transformation, nodeRefs, null) shouldBe transformedNodeRefs
     }
 
+    @Test
+    fun `transform _ rendition name`() {
+        val serializedTransformationDescriptor = "transformationDescriptor".toByteArray()
+        val serializedPerformedTransformationDescriptor = "performedTransformationDescriptor".toByteArray()
+        val renditionName = "docLib"
+
+        httpServer = startServer { request, response ->
+            response.sendByteArray(
+                request.receive()
+                    .asByteArray()
+                    .map { it shouldBe serializedTransformationDescriptor }
+                    .then(Mono.just(serializedPerformedTransformationDescriptor)))
+        }
+
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, renditionName) } returns transformedNodeRefs
+        }
+        val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
+            every { generateChecksum(nodeRefs) } returns "123456789"
+        }
+        val serializationService = mockk<SerializationService> {
+            every { serialize(transformationDescriptor) } returns serializedTransformationDescriptor
+            every {
+                deserialize(serializedPerformedTransformationDescriptor, getClazz<PerformedTransformationDescriptor>())
+            } returns performedTransformationDescriptor
+        }
+
+        HttpClientAlfrescoPromenaTransformer(
+            communicationParameters,
+            noRetry(),
+            alfrescoNodesChecksumGenerator,
+            alfrescoDataDescriptorGetter,
+            alfrescoTransformedDataDescriptorSaver,
+            serializationService,
+            alfrescoAuthenticationService,
+            httpServer.createHttpClient()
+        )
+            .transform(transformation, nodeRefs, renditionName) shouldBe transformedNodeRefs
+    }
 
     @Test
     fun `transform _ timeout expires before the end of transformation _ should throw TransformationSynchronizationException and finish transformation after it`() {
@@ -136,6 +173,9 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .then(Mono.just(serializedPerformedTransformationDescriptor)))
         }
 
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, null) } returns transformedNodeRefs
+        }
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
@@ -157,7 +197,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transform(transformation, nodeRefs, Duration.ofMillis(0))
+                .transform(transformation, nodeRefs, null, Duration.ofMillis(0))
         }
 
         Thread.sleep(500)
@@ -178,6 +218,9 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .then(Mono.just(serializedPerformedTransformationDescriptor)))
         }
 
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, null) } returns transformedNodeRefs
+        }
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
@@ -224,6 +267,9 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .then(Mono.just(serializedServerException)))
         }
 
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, null) } returns transformedNodeRefs
+        }
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
@@ -265,6 +311,9 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .then(Mono.just(serializedPerformedTransformationDescriptor)))
         }
 
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, null) } returns transformedNodeRefs
+        }
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
@@ -305,6 +354,9 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .then(Mono.just(serializedPerformedTransformationDescriptor)))
         }
 
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, null) } returns transformedNodeRefs
+        }
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returnsMany listOf("123456789", "987654321")
         }
@@ -350,6 +402,9 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .then(Mono.just(serializedServerException)))
         }
 
+        val alfrescoTransformedDataDescriptorSaver = mockk<AlfrescoTransformedDataDescriptorSaver> {
+            every { save(transformation, nodeRefs, transformedDataDescriptor, null) } returns transformedNodeRefs
+        }
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns "123456789"
         }
@@ -390,7 +445,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs, customRetry(3, Duration.ofMillis(300)))
+                .transformAsync(transformation, nodeRefs, retry = customRetry(3, Duration.ofMillis(300)))
         )
             .expectSubscription()
             .expectNoEvent(Duration.ofMillis(600))
@@ -400,9 +455,6 @@ class HttpClientAlfrescoPromenaTransformerTest {
             }
             .verify()
     }
-
-    private fun HttpServerResponse.send(data: ByteArray): NettyOutbound =
-        send(ByteBufFlux.fromInbound(Mono.just(data)))
 
     private fun startServer(handler: (request: HttpServerRequest, response: HttpServerResponse) -> Publisher<Void>): DisposableServer =
         HttpServer.create()

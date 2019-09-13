@@ -46,11 +46,17 @@ class HttpClientAlfrescoPromenaTransformer(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {
+    override fun transform(
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        renditionName: String?,
+        waitMax: Duration?,
+        retry: Retry?
+    ): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
         return try {
-            transformReactive(transformation, nodeRefs, determineRetry(retry))
+            transformReactive(transformation, nodeRefs, renditionName, determineRetry(retry))
                 .doOnCancel {} // without it, if timeout in block(Duration) expires, reactive stream is cancelled
                 .get(waitMax)
         } catch (e: IllegalStateException) {
@@ -65,10 +71,10 @@ class HttpClientAlfrescoPromenaTransformer(
             block()!!
         }
 
-    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry?): Mono<List<NodeRef>> {
+    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, renditionName: String?, retry: Retry?): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
-        return transformReactive(transformation, nodeRefs, determineRetry(retry)).apply {
+        return transformReactive(transformation, nodeRefs, renditionName, determineRetry(retry)).apply {
             subscribe()
         }
     }
@@ -76,7 +82,7 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
 
-    private fun transformReactive(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> {
+    private fun transformReactive(transformation: Transformation, nodeRefs: List<NodeRef>, renditionName: String?, retry: Retry): Mono<List<NodeRef>> {
         val startTimestamp = currentTimeMillis()
 
         val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
@@ -98,7 +104,7 @@ class HttpClientAlfrescoPromenaTransformer(
             .doOnNext { verifyConsistency(nodeRefs, nodesChecksum) }
             .map { (_, transformedDataDescriptor) ->
                 alfrescoAuthenticationService.runAs(userName)
-                { alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor) }
+                { alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor, renditionName) }
             }
             .doOnNext { resultNodeRefs -> logger.transformedSuccessfully(transformation, nodeRefs, resultNodeRefs, startTimestamp, currentTimeMillis()) }
             .doOnError { exception -> handleError(transformation, nodeRefs, nodesChecksum, exception) }

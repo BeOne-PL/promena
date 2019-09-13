@@ -64,6 +64,7 @@ class TransformerSenderTest {
     companion object {
         private val id = UUID.randomUUID().toString()
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
+        private const val renditionName = "doclib"
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
@@ -88,11 +89,12 @@ class TransformerSenderTest {
 
     @Test
     fun `should send message with no retry policy to queue`() {
-        transformerSender.send(id, transformationDescriptor, nodeRefs, nodesChecksum, noRetry(), 1)
+        transformerSender.send(id, transformationDescriptor, nodeRefs, renditionName, nodesChecksum, noRetry(), 1)
 
         validateHeaders(
             mapOf(
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
+                PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME to renditionName.toUTF8Buffer(),
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
                 PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
 
@@ -109,11 +111,20 @@ class TransformerSenderTest {
         val retryMaxAttempts = 3L
         val retryNextAttemptDelay = Duration.ofMillis(1500)
 
-        transformerSender.send(id, transformationDescriptor, nodeRefs, nodesChecksum, customRetry(retryMaxAttempts, retryNextAttemptDelay), attempt)
+        transformerSender.send(
+            id,
+            transformationDescriptor,
+            nodeRefs,
+            renditionName,
+            nodesChecksum,
+            customRetry(retryMaxAttempts, retryNextAttemptDelay),
+            attempt
+        )
 
         validateHeaders(
             mapOf(
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
+                PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME to renditionName.toUTF8Buffer(),
                 PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
                 PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
 

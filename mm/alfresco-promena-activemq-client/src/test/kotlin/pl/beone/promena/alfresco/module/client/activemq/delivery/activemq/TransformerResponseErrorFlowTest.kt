@@ -22,7 +22,6 @@ import pl.beone.promena.alfresco.module.client.activemq.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.SetupContext
-import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
@@ -61,14 +60,12 @@ class TransformerResponseErrorFlowTest {
     @Autowired
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
-    @Autowired
-    private lateinit var activeMQAlfrescoPromenaTransformer: ActiveMQAlfrescoPromenaTransformer
-
     companion object {
         private val nodeRefs = listOf(
             NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
             NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")
         )
+        private const val renditionName = "doclib"
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
@@ -103,7 +100,7 @@ class TransformerResponseErrorFlowTest {
         } returns Mono.error(exception)
 
         val transformation = reactiveTransformationManager.startTransformation(id)
-        sendResponseErrorMessage(id, 0, retry)
+        sendResponseErrorMessage(id, retry)
 
         shouldThrow<IllegalStateException> {
             transformation.block(Duration.ofSeconds(2))
@@ -119,22 +116,23 @@ class TransformerResponseErrorFlowTest {
         } returns nodesChecksum
 
         val transformation = reactiveTransformationManager.startTransformation(id)
-        sendResponseErrorMessage(id, 0, noRetry())
+        sendResponseErrorMessage(id, noRetry())
 
         shouldThrow<TransformationException> {
             transformation.block(Duration.ofSeconds(1))
         }.message shouldBe exception.message
     }
 
-    private fun sendResponseErrorMessage(correlationId: String, attempt: Long, retry: Retry) {
+    private fun sendResponseErrorMessage(correlationId: String, retry: Retry) {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME, renditionName)
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, userName)
 
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, attempt)
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, 0)
                 setRetryHeaders(retry)
             }
         }

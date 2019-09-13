@@ -60,9 +60,6 @@ class TransformerResponseErrorRetryFlowTest {
     @Autowired
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
-    @Autowired
-    private lateinit var activeMQAlfrescoPromenaTransformer: ActiveMQAlfrescoPromenaTransformer
-
     companion object {
         private val id = UUID.randomUUID().toString()
         private val nodeRefs = listOf(

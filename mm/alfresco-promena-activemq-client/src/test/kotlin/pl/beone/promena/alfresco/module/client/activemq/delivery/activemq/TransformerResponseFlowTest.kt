@@ -60,11 +60,15 @@ class TransformerResponseFlowTest {
     @Autowired
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
+    @Autowired
+    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+
     companion object {
         private val nodeRefs = listOf(
             NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
             NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")
         )
+        private const val renditionName = "doclib"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
         private val transformedDataDescriptor = singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value"))
         private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
@@ -72,9 +76,6 @@ class TransformerResponseFlowTest {
         private const val userName = "admin"
         private val resultNodeRefs = listOf(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
     }
-
-    @Autowired
-    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
 
     @Before
     fun setUp() {
@@ -127,6 +128,7 @@ class TransformerResponseFlowTest {
                 setLongProperty(PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP, System.currentTimeMillis() + Duration.ofDays(1).toMillis())
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
+                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME, renditionName)
                 setStringProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
                 setStringProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, userName)
             }

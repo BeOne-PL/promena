@@ -43,6 +43,7 @@ class TransformerResponseErrorConsumer(
     fun receiveQueue(
         @Header(CORRELATION_ID) correlationId: String,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
+        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME) renditionName: String?,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME) userName: String,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT) attempt: Long,
@@ -68,18 +69,34 @@ class TransformerResponseErrorConsumer(
             if (wasLastAttempt(attempt, retryMaxAttempts)) {
                 reactiveTransformationManager.completeErrorTransformation(correlationId, transformationException)
             } else {
-                retry(correlationId, transformation, nodeRefs, retryConverter.convert(retryMaxAttempts, retryNextAttemptDelay), attempt + 1, userName)
+                retry(
+                    correlationId,
+                    transformation,
+                    nodeRefs,
+                    renditionName,
+                    retryConverter.convert(retryMaxAttempts, retryNextAttemptDelay),
+                    attempt + 1,
+                    userName
+                )
             }
         }
     }
 
-    private fun retry(id: String, transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry, attempt: Long, userName: String) {
+    private fun retry(
+        id: String,
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        renditionName: String?,
+        retry: Retry,
+        attempt: Long,
+        userName: String
+    ) {
         Mono.just("")
             .doOnNext { logger.logOnRetry(transformation, nodeRefs, attempt, retry.maxAttempts, retry.nextAttemptDelay) }
             .delayElement(retry.nextAttemptDelay)
             .doOnNext {
                 alfrescoAuthenticationService.runAs(userName) {
-                    activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, attempt)
+                    activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, renditionName, retry, attempt)
                 }
             }
             .subscribe()

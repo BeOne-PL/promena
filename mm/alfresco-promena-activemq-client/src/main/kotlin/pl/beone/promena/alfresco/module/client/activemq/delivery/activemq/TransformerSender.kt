@@ -24,6 +24,7 @@ class TransformerSender(
         id: String,
         transformationDescriptor: TransformationDescriptor,
         nodeRefs: List<NodeRef>,
+        renditionName: String?,
         nodesChecksum: String,
         retry: Retry,
         attempt: Long
@@ -36,6 +37,7 @@ class TransformerSender(
                 setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
+                renditionName?.let { setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME, it) }
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
                 setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, alfrescoAuthenticationService.getCurrentUser())
 
