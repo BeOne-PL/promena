@@ -1,6 +1,5 @@
 package pl.beone.promena.connector.http.delivery.http
 
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -18,6 +17,10 @@ class TransformerHandler(
     private val transformationUseCase: TransformationUseCase
 ) {
 
+    companion object {
+        private val headersToSentBackDeterminer = HeadersToSentBackDeterminer()
+    }
+
     fun transform(serverRequest: ServerRequest): Mono<ServerResponse> =
         serverRequest.bodyToMono(ByteArray::class.java)
             .map(::deserializeTransformationDescriptor)
@@ -28,18 +31,22 @@ class TransformerHandler(
                 )
             }
             .map(serializationService::serialize)
-            .flatMap(::createResponse)
+            .flatMap { createResponse(it, headersToSentBackDeterminer.determine(serverRequest.headers().asHttpHeaders())) }
             .onErrorResume({ it !is ResponseStatusException }, ::createInternalServerErrorResponse)
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
         serializationService.deserialize(byteArray, getClazz())
 
-    private fun createResponse(bytes: ByteArray): Mono<ServerResponse> =
-        ServerResponse.ok().body(Mono.just(bytes), ByteArray::class.java)
+    private fun createResponse(bytes: ByteArray, headers: Map<String, List<String>>): Mono<ServerResponse> =
+        ServerResponse.ok()
+            .addAll(headers)
+            .body(Mono.just(bytes), ByteArray::class.java)
 
     private fun createInternalServerErrorResponse(exception: Throwable): Mono<ServerResponse> =
         ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .header(PromenaHttpHeaders.SERIALIZATION_CLASS, exception.javaClass.name)
             .body(Mono.just(exception).map(serializationService::serialize), ByteArray::class.java)
 
+    private fun ServerResponse.BodyBuilder.addAll(headers: Map<String, List<String>>): ServerResponse.BodyBuilder =
+        headers { consumer -> headers.forEach { (key, value) -> consumer.addAll(key, value) } }
 }
