@@ -49,8 +49,6 @@ class ActiveMQAlfrescoPromenaTransformerTest {
 
     @Test
     fun transform() {
-        val renditionName = "doclib"
-
         val alfrescoNodesChecksumGenerator = mockk<AlfrescoNodesChecksumGenerator> {
             every { generateChecksum(nodeRefs) } returns nodesChecksum
         }
@@ -64,7 +62,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(any(), transformationDescriptor, nodeRefs, renditionName, nodesChecksum, retry, 0) } just Runs
+            every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
         }
 
         ActiveMQAlfrescoPromenaTransformer(
@@ -74,7 +72,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
             alfrescoDataDescriptorGetter,
             reactiveTransformationManager,
             transformerSender
-        ).transform(transformation, nodeRefs, Duration.ofSeconds(5), renditionName = renditionName) shouldBe
+        ).transform(transformation, nodeRefs, Duration.ofSeconds(5)) shouldBe
                 resultNodeRefs
     }
 
@@ -96,7 +94,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(any(), transformationDescriptor, nodeRefs, null, nodesChecksum, retry, 0) } just Runs
+            every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
         }
 
         shouldThrow<TransformationSynchronizationException> {
@@ -126,7 +124,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(any(), transformationDescriptor, nodeRefs, null, nodesChecksum, retry, 0) } just Runs
+            every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
         }
 
         ActiveMQAlfrescoPromenaTransformer(

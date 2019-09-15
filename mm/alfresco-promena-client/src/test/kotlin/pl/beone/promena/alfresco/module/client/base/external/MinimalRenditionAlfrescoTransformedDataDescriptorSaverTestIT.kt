@@ -70,8 +70,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                                     ("alf_float" to 30.0f) +
                                     ("alf_double" to 40.0) +
                                     ("alf_boolean" to true)
-                        ),
-                null
+                        )
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
@@ -160,8 +159,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                singleTransformedDataDescriptor(data, emptyMetadata() + ("alf_string" to "string")),
-                null
+                singleTransformedDataDescriptor(data, emptyMetadata() + ("alf_string" to "string"))
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
@@ -195,62 +193,6 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
     }
 
     @Test
-    fun save_oneResultAndRenditionName() {
-        val integrationNode = createNodeInIntegrationFolder()
-
-        val alfrescoDataConverter = mockk<AlfrescoDataConverter>()
-
-        val renditionName = "pdf"
-        val currentUserName = serviceRegistry.authenticationService.currentUserName
-
-        MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
-            true,
-            serviceRegistry.nodeService,
-            serviceRegistry.contentService,
-            serviceRegistry.namespaceService,
-            serviceRegistry.transactionService,
-            alfrescoDataConverter
-        )
-            .save(
-                singleTransformation(
-                    "transformer",
-                    TEXT_PLAIN,
-                    emptyParameters()
-                ),
-                listOf(integrationNode),
-                singleTransformedDataDescriptor(noData(), emptyMetadata() + ("alf_string" to "string")),
-                renditionName
-            )
-            .let { nodes ->
-                integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
-
-                nodes shouldHaveSize 1
-                val (node) = nodes
-
-                node.getType() shouldBe ContentModel.TYPE_THUMBNAIL
-                node.getAspects() shouldNotContainAll listOf(RenditionModel.ASPECT_RENDITION2, RenditionModel.ASPECT_HIDDEN_RENDITION)
-                node.getProperties().let { properties ->
-                    properties shouldContainAll mapOf(
-                        ContentModel.PROP_CREATOR to currentUserName,
-                        ContentModel.PROP_MODIFIER to currentUserName,
-                        ContentModel.PROP_NAME to "transformer",
-                        ContentModel.PROP_IS_INDEXED to false,
-                        ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 1,
-                        QName.createQName("string") to "string"
-                    )
-                }
-
-                nodes shouldBe
-                        integrationNode.getRenditionAssociations().map { it.childRef }
-                integrationNode.getRenditionAssociations().map { it.qName } shouldBe
-                        listOf(QName.createQName(CONTENT_MODEL_1_0_URI, renditionName))
-            }
-    }
-
-    @Test
     fun save_saveOneNodeDespiteNoResults() {
         val integrationNode = createNodeInIntegrationFolder()
 
@@ -269,8 +211,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                emptyTransformedDataDescriptor(),
-                null
+                emptyTransformedDataDescriptor()
             ).let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
 
@@ -321,8 +262,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                emptyTransformedDataDescriptor(),
-                null
+                emptyTransformedDataDescriptor()
             )
             .let { nodes ->
                 nodes shouldHaveSize 0

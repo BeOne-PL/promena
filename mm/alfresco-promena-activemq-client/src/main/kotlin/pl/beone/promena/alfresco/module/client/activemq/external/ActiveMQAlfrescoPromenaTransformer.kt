@@ -31,17 +31,11 @@ class ActiveMQAlfrescoPromenaTransformer(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun transform(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        waitMax: Duration?,
-        retry: Retry?,
-        renditionName: String?
-    ): List<NodeRef> {
+    override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
         return try {
-            transform(generateId(), transformation, nodeRefs, determineRetry(retry), renditionName, 0).get(waitMax)
+            transform(generateId(), transformation, nodeRefs, determineRetry(retry), 0).get(waitMax)
         } catch (e: IllegalStateException) {
             throw TransformationSynchronizationException(transformation, nodeRefs, waitMax)
         }
@@ -54,38 +48,19 @@ class ActiveMQAlfrescoPromenaTransformer(
             block()!!
         }
 
-    override fun transformAsync(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry?,
-        renditionName: String?
-    ): Mono<List<NodeRef>> =
-        transformAsync(generateId(), transformation, nodeRefs, determineRetry(retry), renditionName, 0)
+    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry?): Mono<List<NodeRef>> =
+        transformAsync(generateId(), transformation, nodeRefs, determineRetry(retry), 0)
 
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
 
-    internal fun transformAsync(
-        id: String,
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry,
-        renditionName: String?,
-        attempt: Long
-    ): Mono<List<NodeRef>> {
+    internal fun transformAsync(id: String, transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry, attempt: Long): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
-        return transform(id, transformation, nodeRefs, retry, renditionName, attempt)
+        return transform(id, transformation, nodeRefs, retry, attempt)
     }
 
-    private fun transform(
-        id: String,
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry,
-        renditionName: String?,
-        attempt: Long
-    ): Mono<List<NodeRef>> {
+    private fun transform(id: String, transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry, attempt: Long): Mono<List<NodeRef>> {
         val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeRefs)
 
         val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
@@ -94,7 +69,6 @@ class ActiveMQAlfrescoPromenaTransformer(
             id,
             transformationDescriptor(transformation, dataDescriptors, externalCommunicationParameters),
             nodeRefs,
-            renditionName,
             nodesChecksum,
             retry,
             attempt

@@ -4,15 +4,19 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- The bootstrap-context.xml file is used for patch definitions, importers, 
-		 workflow, and loading custom content models.  -->
+    <bean id="thumbnailService" class="pl.beone.promena.alfresco.module.rendition.external.thumbnail.PromenaThumbnailService">
+        <constructor-arg index="0" ref="nodeService"/>
+        <constructor-arg index="1" ref="promenaRenditionDefinitionManager"/>
+        <constructor-arg index="2" ref="promenaRenditionCoordinator"/>
+    </bean>
 
-    <!-- Registration of new models -->
-    <bean id="alfresco-promena-client.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
-        <property name="models">
-            <list>
-                <value>alfresco/module/${project.artifactId}/model/content-model.xml</value>
-            </list>
-        </property>
+    <bean id="renditionService" class="pl.beone.promena.alfresco.module.rendition.external.rendition.PromenaRenditionService">
+        <constructor-arg index="0" ref="nodeService"/>
+        <constructor-arg index="1" ref="promenaRenditionCoordinator"/>
+    </bean>
+
+    <bean id="renditionService2" class="pl.beone.promena.alfresco.module.rendition.external.rendition2.PromenaRenditionService2">
+        <constructor-arg index="0" ref="promenaRenditionDefinitionManager"/>
+        <constructor-arg index="1" ref="promenaRenditionCoordinator"/>
     </bean>
 </beans>

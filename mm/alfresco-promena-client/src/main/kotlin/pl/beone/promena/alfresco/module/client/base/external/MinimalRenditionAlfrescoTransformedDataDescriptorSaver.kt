@@ -11,6 +11,7 @@ import org.alfresco.service.transaction.TransactionService
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.client.base.util.createNodeName
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
@@ -28,20 +29,15 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private val alfrescoDataConverter: AlfrescoDataConverter
 ) : AlfrescoTransformedDataDescriptorSaver {
 
-    override fun save(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        transformedDataDescriptor: TransformedDataDescriptor,
-        renditionName: String?
-    ): List<NodeRef> =
+    override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
         transactionService.retryingTransactionHelper.doInTransaction {
             val sourceNodeRef = nodeRefs.first()
 
             val renditionsNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
-                handle(sourceNodeRef, transformation, transformedDataDescriptor.descriptors, renditionName)
+                handle(sourceNodeRef, transformation, transformedDataDescriptor.descriptors)
             } else {
                 if (saveIfZero) {
-                    handleZero(sourceNodeRef, transformation, renditionName)
+                    handleZero(sourceNodeRef, transformation)
                 } else {
                     emptyList()
                 }
@@ -53,16 +49,15 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private fun handle(
         sourceNodeRef: NodeRef,
         transformation: Transformation,
-        transformedDataDescriptors: List<TransformedDataDescriptor.Single>,
-        renditionName: String?
+        transformedDataDescriptors: List<TransformedDataDescriptor.Single>
     ): List<NodeRef> {
         return transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
             val dataSize = transformedDataDescriptors.size
-            val properties = createGeneralAndThumbnailProperties(createNodeName(transformation)) +
+            val properties = createGeneralAndThumbnailProperties(transformation.createNodeName()) +
                     determinePromenaProperties(transformation, index, dataSize) +
                     determineAlfrescoProperties(transformedDataDescriptor.metadata)
 
-            createRenditionNode(sourceNodeRef, renditionName ?: determineAssociationName(transformation, index, dataSize), properties).apply {
+            createRenditionNode(sourceNodeRef, transformation.createNodeName(), properties).apply {
                 if (transformedDataDescriptor.hasContent()) {
                     saveContent(transformation.determineDestinationMediaType(), transformedDataDescriptor.data)
                 }
@@ -70,33 +65,13 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
         }
     }
 
-    private fun handleZero(
-        sourceNodeRef: NodeRef,
-        transformation: Transformation,
-        renditionName: String?
-    ): List<NodeRef> {
-        val properties = createGeneralAndThumbnailProperties(createNodeName(transformation)) +
+    private fun handleZero(sourceNodeRef: NodeRef, transformation: Transformation): List<NodeRef> {
+        val name = transformation.createNodeName()
+
+        val properties = createGeneralAndThumbnailProperties(name) +
                 determinePromenaProperties(transformation)
 
-        return listOf(createRenditionNode(sourceNodeRef, renditionName ?: determineAssociationName(transformation, -1, 0), properties))
-    }
-
-    private fun createNodeName(transformation: Transformation): String =
-        transformation.transformers.joinToString(", ") {
-            if (it.transformerId.subName != null) {
-                "${it.transformerId.name}_${it.transformerId.subName}"
-            } else {
-                it.transformerId.name
-            }
-        }
-
-    private fun determineAssociationName(transformation: Transformation, dataIndex: Int, dataSize: Int): String {
-        val baseName = createNodeName(transformation)
-        return if (dataSize > 1) {
-            "$baseName - $dataIndex"
-        } else {
-            baseName
-        }
+        return listOf(createRenditionNode(sourceNodeRef, name, properties))
     }
 
     private fun Transformation.determineDestinationMediaType(): MediaType =

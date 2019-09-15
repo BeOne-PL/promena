@@ -46,17 +46,11 @@ class HttpClientAlfrescoPromenaTransformer(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun transform(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        waitMax: Duration?,
-        retry: Retry?,
-        renditionName: String?
-    ): List<NodeRef> {
+    override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {
         logger.startSync(transformation, nodeRefs, waitMax)
 
         return try {
-            transformReactive(transformation, nodeRefs, determineRetry(retry), renditionName)
+            transformReactive(transformation, nodeRefs, determineRetry(retry))
                 .doOnCancel {} // without it, if timeout in block(Duration) expires, reactive stream is cancelled
                 .get(waitMax)
         } catch (e: IllegalStateException) {
@@ -71,15 +65,10 @@ class HttpClientAlfrescoPromenaTransformer(
             block()!!
         }
 
-    override fun transformAsync(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry?,
-        renditionName: String?
-    ): Mono<List<NodeRef>> {
+    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry?): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeRefs)
 
-        return transformReactive(transformation, nodeRefs, determineRetry(retry), renditionName).apply {
+        return transformReactive(transformation, nodeRefs, determineRetry(retry)).apply {
             subscribe()
         }
     }
@@ -87,12 +76,7 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
 
-    private fun transformReactive(
-        transformation: Transformation,
-        nodeRefs: List<NodeRef>,
-        retry: Retry,
-        renditionName: String?
-    ): Mono<List<NodeRef>> {
+    private fun transformReactive(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> {
         val startTimestamp = currentTimeMillis()
 
         val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
@@ -114,7 +98,7 @@ class HttpClientAlfrescoPromenaTransformer(
             .doOnNext { verifyConsistency(nodeRefs, nodesChecksum) }
             .map { (_, transformedDataDescriptor) ->
                 alfrescoAuthenticationService.runAs(userName)
-                { alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor, renditionName) }
+                { alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptor) }
             }
             .doOnNext { resultNodeRefs -> logger.transformedSuccessfully(transformation, nodeRefs, resultNodeRefs, startTimestamp, currentTimeMillis()) }
             .doOnError { exception -> handleError(transformation, nodeRefs, nodesChecksum, exception) }
@@ -191,9 +175,9 @@ class HttpClientAlfrescoPromenaTransformer(
     private fun Mono<List<NodeRef>>.retryOnError(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry): Mono<List<NodeRef>> =
         if (retry != Retry.No) {
             retryWhen(reactor.retry.Retry.allBut<List<NodeRef>>(AnotherTransformationIsInProgressException::class.java)
-                          .fixedBackoff(retry.nextAttemptDelay)
-                          .retryMax(retry.maxAttempts)
-                          .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
+                .fixedBackoff(retry.nextAttemptDelay)
+                .retryMax(retry.maxAttempts)
+                .doOnRetry { logger.logOnRetry(transformation, nodeRefs, it.iteration(), retry.maxAttempts, retry.nextAttemptDelay) })
         } else {
             this
         }

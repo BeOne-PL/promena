@@ -43,7 +43,6 @@ class TransformerResponseErrorConsumer(
     fun receiveQueue(
         @Header(CORRELATION_ID) correlationId: String,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
-        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME) renditionName: String?,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME) userName: String,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT) attempt: Long,
@@ -75,7 +74,6 @@ class TransformerResponseErrorConsumer(
                     nodeRefs,
                     retryConverter.convert(retryMaxAttempts, retryNextAttemptDelay),
                     attempt + 1,
-                    renditionName,
                     userName
                 )
             }
@@ -88,7 +86,6 @@ class TransformerResponseErrorConsumer(
         nodeRefs: List<NodeRef>,
         retry: Retry,
         attempt: Long,
-        renditionName: String?,
         userName: String
     ) {
         Mono.just("")
@@ -96,7 +93,7 @@ class TransformerResponseErrorConsumer(
             .delayElement(retry.nextAttemptDelay)
             .doOnNext {
                 alfrescoAuthenticationService.runAs(userName) {
-                    activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, renditionName, attempt)
+                    activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeRefs, retry, attempt)
                 }
             }
             .subscribe()

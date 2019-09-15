@@ -36,7 +36,6 @@ class TransformerResponseConsumer(
         @Header(PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP) startTimestamp: Long,
         @Header(PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP) endTimestamp: Long,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
-        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_RENDITION_NAME) renditionName: String?,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
         @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME) userName: String,
         @Payload performedTransformationDescriptor: PerformedTransformationDescriptor
@@ -55,7 +54,7 @@ class TransformerResponseConsumer(
             logger.skippedSavingResult(transformation, nodeRefs, nodesChecksum, currentNodesChecksum)
         } else {
             val targetNodeRefs = alfrescoAuthenticationService.runAs(userName) {
-                alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors, renditionName)
+                alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
             }
             reactiveTransformationManager.completeTransformation(correlationId, targetNodeRefs)
 

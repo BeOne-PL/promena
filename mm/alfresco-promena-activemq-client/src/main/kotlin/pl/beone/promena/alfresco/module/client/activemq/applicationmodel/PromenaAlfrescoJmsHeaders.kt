@@ -4,7 +4,6 @@ import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
 
 object PromenaAlfrescoJmsHeaders {
     const val SEND_BACK_NODE_REFS = "${PromenaJmsHeaders.SEND_BACK_PREFIX}node_refs"
-    const val SEND_BACK_RENDITION_NAME = "${PromenaJmsHeaders.SEND_BACK_PREFIX}rendition_name"
     const val SEND_BACK_NODES_CHECKSUM = "${PromenaJmsHeaders.SEND_BACK_PREFIX}nodes_checksum"
     const val SEND_BACK_USER_NAME = "${PromenaJmsHeaders.SEND_BACK_PREFIX}user_name"
 
