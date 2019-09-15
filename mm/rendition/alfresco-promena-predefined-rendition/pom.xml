@@ -19,6 +19,8 @@
 
         <alfresco-promena-rendition.version>0.9.0-SNAPSHOT</alfresco-promena-rendition.version>
 
+        <converter-image-magick.version>0.9.0-SNAPSHOT</converter-image-magick.version>
+
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
 
@@ -75,6 +77,12 @@
             <groupId>pl.beone.promena.alfresco.module</groupId>
             <artifactId>alfresco-promena-rendition</artifactId>
             <version>${alfresco-promena-rendition.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>converter-image-magick-application-model</artifactId>
+            <version>${converter-image-magick.version}</version>
         </dependency>
 
         <dependency>
