@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.beone.promena.alfresco.module</groupId>
-    <artifactId>alfresco-promena-rendition</artifactId>
+    <artifactId>alfresco-promena-predefined-rendition</artifactId>
     <version>0.9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>[MM][RENDITION] alfresco-promena-rendition</name>
+    <name>[MM][RENDITION] alfresco-promena-predefined-rendition</name>
 
     <properties>
         <!--        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>-->
@@ -17,7 +17,7 @@
 
         <kotlin-logging.version>1.7.3</kotlin-logging.version>
 
-        <alfresco-promena-client.version>0.9.0-SNAPSHOT</alfresco-promena-client.version>
+        <alfresco-promena-rendition.version>0.9.0-SNAPSHOT</alfresco-promena-rendition.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
@@ -44,7 +44,7 @@
 
         <!-- Environment configuration properties -->
         <share.port>8180</share.port>
-        <acs.host>alfresco-promena-rendition-acs</acs.host>
+        <acs.host>alfresco-promena-predefined-rendition-acs</acs.host>
         <acs.port>8080</acs.port>
         <acs.debug.port>8888</acs.debug.port>
         <postgres.port>5555</postgres.port>
@@ -73,8 +73,8 @@
 
         <dependency>
             <groupId>pl.beone.promena.alfresco.module</groupId>
-            <artifactId>alfresco-promena-client</artifactId>
-            <version>${alfresco-promena-client.version}</version>
+            <artifactId>alfresco-promena-rendition</artifactId>
+            <version>${alfresco-promena-rendition.version}</version>
         </dependency>
 
         <dependency>
@@ -177,7 +177,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/java</source>
+                                <source>src/main/kotlin</source>
                                 <source>src/main/kotlin</source>
                             </sourceDirs>
                         </configuration>
