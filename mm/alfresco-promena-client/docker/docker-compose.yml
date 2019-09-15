@@ -1,6 +1,5 @@
 version: '3.4'
 services:
-#  Optional
   alfresco-promena-client-share:
     image: ${docker.share.image}:${alfresco.share.version}
     environment:
@@ -8,6 +7,7 @@ services:
       REPO_PORT: 8080
     ports:
       - "${share.port}:8080"
+
   alfresco-promena-client-acs:
     image: alfresco-content-services-alfresco-promena-client:development
     build:
@@ -22,6 +22,7 @@ services:
       - alfresco-promena-client-acs-volume:/usr/local/tomcat/alf_data
     depends_on:
       - alfresco-promena-client-postgres
+
   alfresco-promena-client-postgres:
     image: postgres:9.6
     environment:
@@ -33,6 +34,7 @@ services:
       - "${postgres.port}:5432"
     volumes:
       - alfresco-promena-client-db-volume:/var/lib/postgresql/data
+
   alfresco-promena-client-ass:
     image: alfresco/alfresco-search-services:1.2.0
     environment:
@@ -46,10 +48,14 @@ services:
     volumes:
       - alfresco-promena-client-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-client-ass-volume:/opt/alfresco-search-services/data
+      - alfresco-promena-client-ass-solrhome-volume:/opt/alfresco-search-services/solrhome
+
 volumes:
   alfresco-promena-client-acs-volume:
     external: true
   alfresco-promena-client-db-volume:
     external: true
   alfresco-promena-client-ass-volume:
+    external: true
+  alfresco-promena-client-ass-solrhome-volume:
     external: true

@@ -70,6 +70,7 @@ EXIT /B %ERRORLEVEL%
     docker volume create alfresco-promena-activemq-client-acs-volume
     docker volume create alfresco-promena-activemq-client-db-volume
     docker volume create alfresco-promena-activemq-client-ass-volume
+    docker volume create alfresco-promena-activemq-client-ass-solrhome-volume
     docker volume create alfresco-promena-activemq-client-activemq-log-volume
     docker volume create alfresco-promena-activemq-client-activemq-conf-volume
     docker volume create alfresco-promena-activemq-client-activemq-data-volume
@@ -99,6 +100,7 @@ EXIT /B 0
     docker volume rm -f alfresco-promena-activemq-client-acs-volume
     docker volume rm -f alfresco-promena-activemq-client-db-volume
     docker volume rm -f alfresco-promena-activemq-client-ass-volume
+    docker volume rm -f alfresco-promena-activemq-client-ass-solrhome-volume
     docker volume rm -f  alfresco-promena-activemq-client-activemq-log-volume
     docker volume rm -f  alfresco-promena-activemq-client-activemq-conf-volume
     docker volume rm -f  alfresco-promena-activemq-client-activemq-data-volume

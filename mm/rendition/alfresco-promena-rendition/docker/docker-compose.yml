@@ -1,13 +1,13 @@
 version: '3.4'
 services:
-#  Optional
-#  alfresco-promena-rendition-share:
-#    image: ${docker.share.image}:${alfresco.share.version}
-#    environment:
-#      REPO_HOST: alfresco-promena-rendition-acs
-#      REPO_PORT: 8080
-#    ports:
-#      - "${share.port}:8080"
+  alfresco-promena-rendition-share:
+    image: ${docker.share.image}:${alfresco.share.version}
+    environment:
+      REPO_HOST: alfresco-promena-rendition-acs
+      REPO_PORT: 8080
+    ports:
+      - "${share.port}:8080"
+
   alfresco-promena-rendition-acs:
     image: alfresco-content-services-alfresco-promena-rendition:development
     build:
@@ -22,6 +22,7 @@ services:
       - alfresco-promena-rendition-acs-volume:/usr/local/tomcat/alf_data
     depends_on:
       - alfresco-promena-rendition-postgres
+
   alfresco-promena-rendition-postgres:
     image: postgres:9.6
     environment:
@@ -33,6 +34,7 @@ services:
       - "${postgres.port}:5432"
     volumes:
       - alfresco-promena-rendition-db-volume:/var/lib/postgresql/data
+
   alfresco-promena-rendition-ass:
     image: alfresco/alfresco-search-services:1.2.0
     environment:
@@ -46,10 +48,14 @@ services:
     volumes:
       - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/data
+      - alfresco-promena-rendition-ass-solrhome-volume:/opt/alfresco-search-services/data
+
 volumes:
   alfresco-promena-rendition-acs-volume:
     external: true
   alfresco-promena-rendition-db-volume:
     external: true
   alfresco-promena-rendition-ass-volume:
+    external: true
+  alfresco-promena-rendition-ass-solrhome-volume:
     external: true
