@@ -1,5 +1,6 @@
 package pl.beone.promena.alfresco.module.rendition.external
 
+import mu.KotlinLogging
 import pl.beone.promena.alfresco.module.client.base.util.createNodeName
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
@@ -7,6 +8,25 @@ import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRendit
 class PromenaRenditionDefinitionManager(
     private val promenaAlfrescoRenditionDefinitions: List<PromenaAlfrescoRenditionDefinition>
 ) {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
+    init {
+        logger.info { "Found <${promenaAlfrescoRenditionDefinitions.size}> rendition definitions" }
+        promenaAlfrescoRenditionDefinitions.forEach {
+            if (logger.isDebugEnabled) {
+                logger.info {
+                    "> Registered rendition definition <${it::class.java.canonicalName} (${it.getRenditionName()}) [${it.getTransformation()}]>"
+                }
+            } else {
+                logger.info {
+                    "> Registered rendition definition <${it::class.java.canonicalName} (${it.getRenditionName()})>"
+                }
+            }
+        }
+    }
 
     private val renditionNameToDefinitionMap =
         promenaAlfrescoRenditionDefinitions.map { it.getRenditionName() to it }.toMap()
