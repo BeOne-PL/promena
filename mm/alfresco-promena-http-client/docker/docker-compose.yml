@@ -48,7 +48,7 @@ services:
     volumes:
       - alfresco-promena-http-client-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-http-client-ass-volume:/opt/alfresco-search-services/data
-      - alfresco-promena-http-client-ass-solrhome-volume:/opt/alfresco-search-services/solrhome
+      - alfresco-promena-http-client-ass-volume:/opt/alfresco-search-services/solrhome
 
 volumes:
   alfresco-promena-http-client-acs-volume:
@@ -56,6 +56,4 @@ volumes:
   alfresco-promena-http-client-db-volume:
     external: true
   alfresco-promena-http-client-ass-volume:
-    external: true
-  alfresco-promena-http-client-ass-solrhome-volume:
     external: true

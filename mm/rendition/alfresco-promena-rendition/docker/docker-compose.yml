@@ -48,7 +48,7 @@ services:
     volumes:
       - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/data
-      - alfresco-promena-rendition-ass-solrhome-volume:/opt/alfresco-search-services/data
+      - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/solrhome
 
 volumes:
   alfresco-promena-rendition-acs-volume:
@@ -56,6 +56,4 @@ volumes:
   alfresco-promena-rendition-db-volume:
     external: true
   alfresco-promena-rendition-ass-volume:
-    external: true
-  alfresco-promena-rendition-ass-solrhome-volume:
     external: true

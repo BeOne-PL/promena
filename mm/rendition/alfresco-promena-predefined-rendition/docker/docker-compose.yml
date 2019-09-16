@@ -48,6 +48,7 @@ services:
     volumes:
       - alfresco-promena-predefined-rendition-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-predefined-rendition-ass-volume:/opt/alfresco-search-services/data
+      - alfresco-promena-predefined-rendition-ass-volume:/opt/alfresco-search-services/solrhome
 
 volumes:
   alfresco-promena-predefined-rendition-acs-volume:
@@ -55,6 +56,4 @@ volumes:
   alfresco-promena-predefined-rendition-db-volume:
     external: true
   alfresco-promena-predefined-rendition-ass-volume:
-    external: true
-  alfresco-promena-predefined-rendition-ass-solrhome-volume:
     external: true

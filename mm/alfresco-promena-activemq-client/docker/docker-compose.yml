@@ -48,7 +48,7 @@ services:
     volumes:
       - alfresco-promena-activemq-client-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-activemq-client-ass-volume:/opt/alfresco-search-services/data
-      - alfresco-promena-activemq-client-ass-solrhome-volume:/opt/alfresco-search-services/solrhome
+      - alfresco-promena-activemq-client-ass-volume:/opt/alfresco-search-services/solrhome
 
   activemq:
     image: alfresco/alfresco-activemq:5.15.6
@@ -68,8 +68,6 @@ volumes:
   alfresco-promena-activemq-client-db-volume:
     external: true
   alfresco-promena-activemq-client-ass-volume:
-    external: true
-  alfresco-promena-activemq-client-ass-solrhome-volume:
     external: true
   alfresco-promena-activemq-client-activemq-conf-volume:
     external: true
