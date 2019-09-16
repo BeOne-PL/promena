@@ -50,6 +50,9 @@ services:
       - alfresco-promena-predefined-rendition-ass-volume:/opt/alfresco-search-services/data
       - alfresco-promena-predefined-rendition-ass-volume:/opt/alfresco-search-services/solrhome
 
+  promena:
+    image: promena-executable:0.9.0-SNAPSHOT
+
 volumes:
   alfresco-promena-predefined-rendition-acs-volume:
     external: true
