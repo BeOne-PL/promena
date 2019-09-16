@@ -8,11 +8,9 @@ import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionCoord
 import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionDefinitionManager
 
 class PromenaRenditionService2(
-    promenaRenditionDefinitionManager: PromenaRenditionDefinitionManager,
-    private val promenaRenditionCoordinator: PromenaRenditionCoordinator
+    private val promenaRenditionCoordinator: PromenaRenditionCoordinator,
+    private val renditionDefinitionRegistry2: PromenaRenditionDefinitionRegistry2
 ) : RenditionService2 {
-
-    private val renditionDefinitionRegistry2 = PromenaRenditionDefinitionRegistry2(promenaRenditionDefinitionManager)
 
     override fun isEnabled(): Boolean =
         true

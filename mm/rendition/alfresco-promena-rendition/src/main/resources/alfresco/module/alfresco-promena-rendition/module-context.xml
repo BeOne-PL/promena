@@ -24,4 +24,8 @@
 
     <context:component-scan base-package="pl.beone.promena.alfresco.module.rendition.configuration"/>
 
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/thumbnail-service-context.xml" />
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition-services-context.xml" />
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition-services2-context.xml" />
+
 </beans>

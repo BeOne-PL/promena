@@ -17,7 +17,7 @@ class PromenaRenditionDefinitionManager(
         logger.info { "Found <${promenaAlfrescoRenditionDefinitions.size}> rendition definitions" }
         promenaAlfrescoRenditionDefinitions.forEach {
             if (logger.isDebugEnabled) {
-                logger.info {
+                logger.debug {
                     "> Registered rendition definition <${it::class.java.canonicalName} (${it.getRenditionName()}) [${it.getTransformation()}]>"
                 }
             } else {
@@ -30,6 +30,7 @@ class PromenaRenditionDefinitionManager(
 
     private val renditionNameToDefinitionMap =
         promenaAlfrescoRenditionDefinitions.map { it.getRenditionName() to it }.toMap()
+
     private val nodeNameToDefinitionMap =
         promenaAlfrescoRenditionDefinitions.map { it.getTransformation().createNodeName() to it }.toMap()
 

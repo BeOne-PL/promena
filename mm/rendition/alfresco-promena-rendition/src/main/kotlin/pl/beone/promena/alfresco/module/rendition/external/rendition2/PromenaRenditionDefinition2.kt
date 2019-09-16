@@ -12,6 +12,6 @@ internal class PromenaRenditionDefinition2(
     override fun getTargetMimetype(): String? =
         null
 
-    override fun getTransformOptions(): Map<String, String> =
-        emptyMap()
+    override fun getTransformOptions(): Map<String, String>? =
+        null
 }

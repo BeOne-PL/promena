@@ -17,6 +17,8 @@
 
         <kotlin-logging.version>1.7.3</kotlin-logging.version>
 
+        <alfresco-promena-client.version>0.9.0-SNAPSHOT</alfresco-promena-client.version>
+        <alfresco-promena-http-client.version>0.9.0-SNAPSHOT</alfresco-promena-http-client.version>
         <alfresco-promena-rendition.version>0.9.0-SNAPSHOT</alfresco-promena-rendition.version>
 
         <converter-image-magick.version>0.9.0-SNAPSHOT</converter-image-magick.version>
@@ -77,6 +79,28 @@
             <groupId>pl.beone.promena.alfresco.module</groupId>
             <artifactId>alfresco-promena-rendition</artifactId>
             <version>${alfresco-promena-rendition.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.alfresco.module</groupId>
+            <artifactId>alfresco-promena-client</artifactId>
+            <version>${alfresco-promena-client.version}</version>
+            <type>amp</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.alfresco.module</groupId>
+            <artifactId>alfresco-promena-http-client</artifactId>
+            <version>${alfresco-promena-http-client.version}</version>
+            <type>amp</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.alfresco.module</groupId>
+            <artifactId>alfresco-promena-rendition</artifactId>
+            <version>${alfresco-promena-rendition.version}</version>
+            <type>amp</type>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -185,7 +209,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/kotlin</source>
+                                <source>src/main/java</source>
                                 <source>src/main/kotlin</source>
                             </sourceDirs>
                         </configuration>
@@ -408,7 +432,7 @@
                                 <resource>
                                     <directory>target</directory>
                                     <includes>
-                                        <include>${build.finalName}.jar</include>
+                                        <include>${build.finalName}.amp</include>
                                     </includes>
                                     <filtering>false</filtering>
                                 </resource>
@@ -464,7 +488,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/extensions</outputDirectory>
                             <includeScope>runtime</includeScope>
-                            <!-- IMPORTANT: if using amp dependencies only, add <includeTypes>amp</includeTypes> -->
+                            <includeTypes>amp</includeTypes>
                         </configuration>
                     </execution>
                 </executions>

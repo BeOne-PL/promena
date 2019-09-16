@@ -10,15 +10,12 @@ import org.alfresco.service.cmr.thumbnail.ThumbnailParentAssociationDetails
 import org.alfresco.service.cmr.thumbnail.ThumbnailService
 import org.alfresco.service.namespace.QName
 import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionCoordinator
-import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionDefinitionManager
 
 class PromenaThumbnailService(
     private val nodeService: NodeService,
-    promenaRenditionDefinitionManager: PromenaRenditionDefinitionManager,
+    private val thumbnailRegistry: ThumbnailRegistry,
     private val promenaRenditionCoordinator: PromenaRenditionCoordinator
 ) : ThumbnailService {
-
-    private val thumbnailRegistry = PromenaThumbnailRegistry(promenaRenditionDefinitionManager)
 
     override fun getFailedThumbnails(sourceNode: NodeRef?): Map<String, FailedThumbnailInfo> =
         emptyMap()
