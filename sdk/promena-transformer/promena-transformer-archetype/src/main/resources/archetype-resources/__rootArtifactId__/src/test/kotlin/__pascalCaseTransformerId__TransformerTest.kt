@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.beone.lib.junit5.extension.docker.external.DockerExtension
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.emptyDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
-import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants
+import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants.EXAMPLE
 import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 
 @ExtendWith(DockerExtension::class)
@@ -23,13 +24,13 @@ class ${pascalCaseTransformerId}TransformerTest {
     @Test
     fun transform() {
         val dataContent = "test"
-        val mediaType = MediaTypeConstants.TEXT_PLAIN
+        val mediaType = TEXT_PLAIN
         val metadata = emptyMetadata()
 
         ${pascalCaseTransformerId}Transformer(mockk())
             .transform(
                 singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
-                MediaTypeConstants.TEXT_PLAIN,
+                TEXT_PLAIN,
                 ${camelCaseTransformerId}Parameters(example = "test")
             ).let {
                 val descriptors = it.descriptors
@@ -48,7 +49,7 @@ class ${pascalCaseTransformerId}TransformerTest {
             ${pascalCaseTransformerId}Transformer(mockk())
                 .isSupported(
                     emptyDataDescriptor(),
-                    MediaTypeConstants.APPLICATION_PDF,
+                    APPLICATION_PDF,
                     ${camelCaseTransformerId}Parameters(example = "test")
                 )
         }.message shouldBe "Supported transformation: text/plain -> text/plain"
@@ -59,8 +60,8 @@ class ${pascalCaseTransformerId}TransformerTest {
         shouldThrow<TransformationNotSupportedException> {
             ${pascalCaseTransformerId}Transformer(mockk())
                 .isSupported(
-                    singleDataDescriptor("".toMemoryData(), MediaTypeConstants.APPLICATION_PDF, emptyMetadata()),
-                    MediaTypeConstants.TEXT_PLAIN,
+                    singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
+                    TEXT_PLAIN,
                     ${camelCaseTransformerId}Parameters(example = "test")
                 )
         }.message shouldBe "Supported transformation: text/plain -> text/plain"
@@ -72,9 +73,9 @@ class ${pascalCaseTransformerId}TransformerTest {
             ${pascalCaseTransformerId}Transformer(mockk())
                 .isSupported(
                     emptyDataDescriptor(),
-                    MediaTypeConstants.TEXT_PLAIN,
+                    TEXT_PLAIN,
                     emptyParameters()
                 )
-        }.message shouldBe "Mandatory parameter: ${${pascalCaseTransformerId}ParametersConstants.EXAMPLE}"
+        }.message shouldBe "Mandatory parameter: $EXAMPLE"
     }
 }
