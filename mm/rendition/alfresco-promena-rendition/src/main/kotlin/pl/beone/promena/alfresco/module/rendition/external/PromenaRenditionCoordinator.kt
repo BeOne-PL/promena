@@ -14,6 +14,8 @@ import pl.beone.promena.alfresco.module.client.base.util.createNodeName
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.*
 
 class PromenaRenditionCoordinator(
     private val nodeService: NodeService,
@@ -41,7 +43,7 @@ class PromenaRenditionCoordinator(
 
             nodeService.getChildAssocs(node, RenditionModel.ASSOC_RENDITION, nodeNameQName)
                 .also { childRefs -> if (childRefs.isEmpty()) logger.warn { "There is no rendition <$renditionName> node of <$node>" } }
-                .map { childRef -> childRef to nodeService.getProperty(childRef.childRef, ContentModel.PROP_MODIFIED) as LocalDateTime }
+                .map { childRef -> childRef to (nodeService.getProperty(childRef.childRef, ContentModel.PROP_MODIFIED) as Date).toLocalDateTime() }
                 .maxBy { (_, date) -> date }
                 ?.first
         } catch (e: PromenaNoSuchRenditionDefinitionException) {
@@ -53,6 +55,9 @@ class PromenaRenditionCoordinator(
 
             null
         }
+
+    private fun Date.toLocalDateTime(): LocalDateTime =
+        LocalDateTime.ofInstant(toInstant(), ZoneId.systemDefault());
 
     fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef? {
         logger.debug { "Performing rendition <$renditionName> transformation of <$nodeRef>..." }
