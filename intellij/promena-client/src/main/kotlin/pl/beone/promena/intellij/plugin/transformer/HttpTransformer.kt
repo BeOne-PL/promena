@@ -29,7 +29,7 @@ internal class HttpTransformer(private val serializationService: SerializationSe
         return httpClient
             .setContentTypeHeader()
             .post()
-            .setUriWithCommunicationParametersToPromena(address)
+            .uri("http://$address/transform")
             .send(ByteBufFlux.fromInbound(serializedTransformationDescriptor))
             .responseSingle { response, bytes -> zipBytesWithResponse(bytes, response) }
             .map { byteArrayAndClientResponse -> handleTransformationResult(byteArrayAndClientResponse.t2, byteArrayAndClientResponse.t1) }
@@ -37,9 +37,6 @@ internal class HttpTransformer(private val serializationService: SerializationSe
 
     private fun HttpClient.setContentTypeHeader(): HttpClient =
         headers { it.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeConstants.APPLICATION_OCTET_STREAM.mimeType) }
-
-    private fun HttpClient.RequestSender.setUriWithCommunicationParametersToPromena(address: String): HttpClient.RequestSender =
-        uri("http://$address/transform?id=memory")
 
     // defaultIfEmpty is necessary. In other case complete event is emitted if content is null
     private fun zipBytesWithResponse(byte: ByteBufMono, response: HttpClientResponse): Mono<Tuple2<ByteArray, HttpClientResponse>> =

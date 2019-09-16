@@ -3,6 +3,7 @@ package pl.beone.promena.intellij.plugin.linemarker
 import com.intellij.openapi.compiler.CompilerManager
 import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
+import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.internal.serialization.ThreadUnsafeKryoSerializationService
@@ -116,7 +117,10 @@ abstract class AbstractRelatedItemLineMarkerProvider {
         httpAddress: String,
         startTimestamp: Long
     ) {
-        HttpTransformer(serializationService).transform(httpAddress, transformationDescriptor(transformation, dataDescriptor))
+        HttpTransformer(serializationService).transform(
+            httpAddress,
+            transformationDescriptor(transformation, dataDescriptor, memoryCommunicationParameters())
+        )
             .subscribe(
                 { (_, transformedDataDescriptor) ->
                     handleSuccessfulTransformation(
