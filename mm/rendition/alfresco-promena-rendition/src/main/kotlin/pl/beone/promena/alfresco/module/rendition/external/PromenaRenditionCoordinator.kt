@@ -31,7 +31,7 @@ class PromenaRenditionCoordinator(
     fun getRenditions(node: NodeRef): List<ChildAssociationRef> =
         nodeService.getChildAssocs(node, RenditionModel.ASSOC_RENDITION, RegexQNamePattern.MATCH_ALL)
             .map { childRef -> childRef to nodeService.getProperty(childRef.childRef, ContentModel.PROP_NAME) as String }
-            .filter { (_, nodeName) -> hasRendition(nodeName) }
+            .filter { (_, nodeName) -> isRendition(nodeName) }
             .map { (childRef) -> childRef }
 
     fun getRendition(node: NodeRef, renditionName: String): ChildAssociationRef? =
@@ -42,25 +42,22 @@ class PromenaRenditionCoordinator(
             )
 
             nodeService.getChildAssocs(node, RenditionModel.ASSOC_RENDITION, nodeNameQName)
-                .also { childRefs -> if (childRefs.isEmpty()) logger.warn { "There is no rendition <$renditionName> node of <$node>" } }
-                .map { childRef -> childRef to (nodeService.getProperty(childRef.childRef, ContentModel.PROP_MODIFIED) as Date).toLocalDateTime() }
-                .maxBy { (_, date) -> date }
+                .also { childRefs -> if (childRefs.isEmpty()) logger.warn { "There is no <$renditionName> rendition node of <$node>" } }
+                .map { childRef -> childRef to (nodeService.getProperty(childRef.childRef, ContentModel.PROP_MODIFIED) as Date?)?.toLocalDateTime() }
+                .maxBy { (_, date) -> date ?: LocalDateTime.MIN }
                 ?.first
         } catch (e: PromenaNoSuchRenditionDefinitionException) {
             logPromenaNoSuchRenditionDefinitionException(e, renditionName)
 
             null
         } catch (e: Exception) {
-            logger.warn(e) { "Couldn't get rendition <$renditionName> node of <$node>" }
+            logger.warn(e) { "Couldn't get <$renditionName> rendition node of <$node>" }
 
             null
         }
 
-    private fun Date.toLocalDateTime(): LocalDateTime =
-        LocalDateTime.ofInstant(toInstant(), ZoneId.systemDefault());
-
     fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef? {
-        logger.debug { "Performing rendition <$renditionName> transformation of <$nodeRef>..." }
+        logger.debug { "Performing <$renditionName> rendition transformation of <$nodeRef>..." }
 
         try {
             alfrescoPromenaTransformer.transform(
@@ -73,31 +70,34 @@ class PromenaRenditionCoordinator(
 
             return null
         } catch (e: Exception) {
-            logger.error(e) { "Couldn't perform rendition <$renditionName> transformation of <$nodeRef>" }
+            logger.error(e) { "Couldn't perform <$renditionName> rendition transformation of <$nodeRef>" }
 
             return null
         }
 
-        logger.debug { "Finished performing rendition <$renditionName> transformation of <$nodeRef>" }
+        logger.debug { "Finished performing <$renditionName> rendition transformation of <$nodeRef>" }
 
         return getRendition(nodeRef, renditionName)
     }
 
     fun transformAsync(nodeRef: NodeRef, renditionName: String) {
-        logger.debug { "Performing rendition <$renditionName> transformation of <$nodeRef>..." }
+        logger.debug { "Performing <$renditionName> rendition transformation of <$nodeRef>..." }
 
         try {
             alfrescoPromenaTransformer.transformAsync(
                 promenaRenditionDefinitionManager.getByRenditionName(renditionName).getTransformation(),
                 listOf(nodeRef)
             )
-                .also { logger.debug { "Finished performing rendition <$renditionName> transformation of <$nodeRef>" } }
+                .also { logger.debug { "Finished performing <$renditionName> rendition transformation of <$nodeRef>" } }
         } catch (e: PromenaNoSuchRenditionDefinitionException) {
             logPromenaNoSuchRenditionDefinitionException(e, renditionName)
         }
     }
 
-    private fun hasRendition(nodeName: String): Boolean =
+    private fun Date.toLocalDateTime(): LocalDateTime =
+        LocalDateTime.ofInstant(toInstant(), ZoneId.systemDefault());
+
+    private fun isRendition(nodeName: String): Boolean =
         try {
             promenaRenditionDefinitionManager.getByNodeName(nodeName)
             true
