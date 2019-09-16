@@ -58,9 +58,9 @@ services:
       - 61616:61616 # OpenWire
       - 61613:61613 # STOMP
     volumes:
-      - alfresco-promena-activemq-client-activemq-conf-volume:/opt/activemq/conf
-      - alfresco-promena-activemq-client-activemq-log-volume:/var/log/activemq
-      - alfresco-promena-activemq-client-activemq-data-volume:/opt/activemq/data
+      - alfresco-promena-activemq-client-activemq-volume:/opt/activemq/conf
+      - alfresco-promena-activemq-client-activemq-volume:/var/log/activemq
+      - alfresco-promena-activemq-client-activemq-volume:/opt/activemq/data
 
 volumes:
   alfresco-promena-activemq-client-acs-volume:
@@ -69,9 +69,5 @@ volumes:
     external: true
   alfresco-promena-activemq-client-ass-volume:
     external: true
-  alfresco-promena-activemq-client-activemq-conf-volume:
-    external: true
-  alfresco-promena-activemq-client-activemq-log-volume:
-    external: true
-  alfresco-promena-activemq-client-activemq-data-volume:
+  alfresco-promena-activemq-client-activemq-volume:
     external: true

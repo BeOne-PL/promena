@@ -103,6 +103,14 @@
         </dependency>
 
         <dependency>
+            <groupId>pl.beone.promena.alfresco.module</groupId>
+            <artifactId>alfresco-promena-client</artifactId>
+            <version>${alfresco-promena-client.version}</version>
+            <type>amp</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>io.github.microutils</groupId>
             <artifactId>kotlin-logging</artifactId>
             <version>${kotlin-logging.version}</version>
@@ -438,7 +446,7 @@
                                 <resource>
                                     <directory>target</directory>
                                     <includes>
-                                        <include>${build.finalName}.jar</include>
+                                        <include>${build.finalName}.amp</include>
                                     </includes>
                                     <filtering>false</filtering>
                                 </resource>
@@ -494,8 +502,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/extensions</outputDirectory>
                             <includeScope>runtime</includeScope>
-                            <!-- IMPORTANT: if using amp dependencies only, add <includeTypes>amp</includeTypes> -->
-<!--                            <includeTypes>amp</includeTypes>-->
+                            <includeTypes>amp</includeTypes>
                         </configuration>
                     </execution>
                 </executions>
