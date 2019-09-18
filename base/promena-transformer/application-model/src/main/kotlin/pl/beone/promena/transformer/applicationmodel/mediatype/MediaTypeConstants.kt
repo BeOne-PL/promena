@@ -17,6 +17,8 @@ object MediaTypeConstants {
     @JvmField
     val APPLICATION_MSWORD = MediaType.of("application/msword", Charsets.UTF_8)
     @JvmField
+    val APPLICATION_VND_MS_WORD_DOCUMENT_MACROENABLED_12 = MediaType.of("application/vnd.ms-word.document.macroEnabled.12", Charsets.UTF_8)
+    @JvmField
     val APPLICATION_OGG = MediaType.of("application/ogg", Charsets.UTF_8)
     @JvmField
     val APPLICATION_PDF = MediaType.of("application/pdf", Charsets.UTF_8)
@@ -33,24 +35,51 @@ object MediaTypeConstants {
     @JvmField
     val APPLICATION_VND_MS_EXCEL = MediaType.of("application/vnd.ms-excel", Charsets.UTF_8)
     @JvmField
+    val APPLICATION_VND_MS_EXCEL_SHEET_MACRO_ENABLED_12 = MediaType.of("application/application/vnd.ms-excel.sheet.macroEnabled.12", Charsets.UTF_8)
+    @JvmField
+    val APPLICATION_VND_MS_EXCEL_TEMPLATE_MACRO_ENABLED_12 = MediaType.of("application/vnd.ms-excel.template.macroEnabled.12", Charsets.UTF_8)
+    @JvmField
     val APPLICATION_VND_MS_FONTOBJECT = MediaType.of("application/vnd.ms-fontobject", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_MS_POWERPOINT = MediaType.of("application/vnd.ms-powerpoint", Charsets.UTF_8)
     @JvmField
+    val APPLICATION_VND_MS_POWERPOINT_TEMPLATE_MACROENABLED_12 = MediaType.of("application/vnd.ms-powerpoint.template.macroEnabled.12", Charsets.UTF_8)
+    @JvmField
+    val APPLICATION_VND_MS_POWERPOINT_SLIDESHOW_MACROENABLED_12 = MediaType.of("application/vnd.ms-powerpoint.slideshow.macroEnabled.12", Charsets.UTF_8)
+    @JvmField
+    val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_PRESENTATIONML_SLIDESHOW =
+        MediaType.of("application/vnd.openxmlformats-officedocument.presentationml.slideshow", Charsets.UTF_8)
+    @JvmField
+    val APPLICATION_VND_MS_POWERPOINT_PRESENTATION_MACROENABLED_12 =
+        MediaType.of("application/vnd.ms-powerpoint.presentation.macroEnabled.12", Charsets.UTF_8)
+    @JvmField
     val APPLICATION_VND_OASIS_OPENDOCUMENT_PRESENTATION = MediaType.of("application/vnd.oasis.opendocument.presentation", Charsets.UTF_8)
     @JvmField
+    val APPLICATION_VND_OASIS_OPENDOCUMENT_PRESENTATION_TEMPLATE = MediaType.of("application/vnd.oasis.opendocument.presentation-template", Charsets.UTF_8)
+    @JvmField
     val APPLICATION_VND_OASIS_OPENDOCUMENT_SPREADSHEET = MediaType.of("application/vnd.oasis.opendocument.spreadsheet", Charsets.UTF_8)
+    @JvmField
+    val APPLICATION_VND_OASIS_OPENDOCUMENT_SPREADSHEET_TEMPLATE = MediaType.of("application/vnd.oasis.opendocument.spreadsheet-template", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_OASIS_OPENDOCUMENT_TEXT = MediaType.of("application/vnd.oasis.opendocument.text", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_PRESENTATIONML_PRESENTATION =
         MediaType.of("application/vnd.openxmlformats-officedocument.presentationml.presentation", Charsets.UTF_8)
     @JvmField
+    val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_PRESENTATIONML_TEMPLATE =
+        MediaType.of("application/vnd.openxmlformats-officedocument.presentationml.template", Charsets.UTF_8)
+    @JvmField
     val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_SPREADSHEETML_SHEET =
         MediaType.of("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Charsets.UTF_8)
     @JvmField
+    val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_SPREADSHEETML_TEMPLATE =
+        MediaType.of("application/vnd.openxmlformats-officedocument.spreadsheetml.template", Charsets.UTF_8)
+    @JvmField
     val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_WORDPROCESSINGML_DOCUMENT =
         MediaType.of("application/vnd.openxmlformats-officedocument.wordprocessingml.document", Charsets.UTF_8)
+    @JvmField
+    val APPLICATION_VND_OPENXMLFORMATS_OFFICEDOCUMENT_WORDPROCESSINGML_TEMPLATE =
+        MediaType.of("application/vnd.openxmlformats-officedocument.wordprocessingml.template", Charsets.UTF_8)
     @JvmField
     val APPLICATION_VND_VISIO = MediaType.of("application/vnd.visio", Charsets.UTF_8)
     @JvmField

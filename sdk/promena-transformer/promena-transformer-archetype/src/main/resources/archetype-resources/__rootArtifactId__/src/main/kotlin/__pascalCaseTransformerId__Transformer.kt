@@ -12,7 +12,9 @@ import pl.beone.promena.transformer.contract.data.toTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants.EXAMPLE
 
-class ${pascalCaseTransformerId}Transformer(private val internalCommunicationParameters: CommunicationParameters) : Transformer {
+class ${pascalCaseTransformerId}Transformer(
+    private val internalCommunicationParameters: CommunicationParameters
+) : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor =
         dataDescriptor.descriptors

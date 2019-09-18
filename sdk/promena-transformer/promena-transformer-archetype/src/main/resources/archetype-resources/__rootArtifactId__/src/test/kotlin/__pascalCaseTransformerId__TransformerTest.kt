@@ -1,6 +1,7 @@
 package ${package}
 
 import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.matchers.withClue
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.mockk
@@ -32,13 +33,12 @@ class ${pascalCaseTransformerId}TransformerTest {
                 singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
                 TEXT_PLAIN,
                 ${camelCaseTransformerId}Parameters(example = "test")
-            ).let {
-                val descriptors = it.descriptors
-                descriptors shouldHaveSize 1
+            ).let { transformedDataDescriptor ->
+                withClue("Transformed data should contain only <1> element") { transformedDataDescriptor.descriptors shouldHaveSize 1 }
 
-                descriptors[0].let { singleDataDescriptor ->
-                    singleDataDescriptor.data.getBytes() shouldBe dataContent.toByteArray()
-                    singleDataDescriptor.metadata shouldBe metadata
+                transformedDataDescriptor.descriptors[0].let {
+                    it.data.getBytes() shouldBe dataContent.toByteArray()
+                    it.metadata shouldBe metadata
                 }
             }
     }
