@@ -56,6 +56,10 @@ class PromenaRenditionCoordinator(
             null
         }
 
+    // zapisywanie promena:rendition
+    // mozliwosc dodania custom metadata
+    // isRendition by propName i promena:rendtion
+    // getTransformation().createNodeName() jedna extensio nmethod
     fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef? {
         logger.debug { "Performing <$renditionName> rendition transformation of <$nodeRef>..." }
 

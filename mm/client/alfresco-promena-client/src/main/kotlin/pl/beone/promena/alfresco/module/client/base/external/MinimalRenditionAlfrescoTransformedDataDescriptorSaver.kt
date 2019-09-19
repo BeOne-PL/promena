@@ -19,6 +19,8 @@ import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.data.NoData
 import java.io.Serializable
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private val saveIfZero: Boolean,
@@ -51,10 +53,12 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
         transformation: Transformation,
         transformedDataDescriptors: List<TransformedDataDescriptor.Single>
     ): List<NodeRef> {
+        val id = generateId()
+
         return transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
             val dataSize = transformedDataDescriptors.size
             val properties = createGeneralAndThumbnailProperties(transformation.createNodeName()) +
-                    determinePromenaProperties(transformation, index, dataSize) +
+                    determinePromenaProperties(id, transformation, index, dataSize) +
                     determineAlfrescoProperties(transformedDataDescriptor.metadata)
 
             createRenditionNode(sourceNodeRef, transformation.createNodeName(), properties).apply {
@@ -69,7 +73,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
         val name = transformation.createNodeName()
 
         val properties = createGeneralAndThumbnailProperties(name) +
-                determinePromenaProperties(transformation)
+                determinePromenaProperties(generateId(), transformation)
 
         return listOf(createRenditionNode(sourceNodeRef, name, properties))
     }
@@ -80,24 +84,31 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private fun createGeneralAndThumbnailProperties(nodeName: String): Map<QName, Serializable?> =
         mapOf(
             ContentModel.PROP_NAME to nodeName,
-            ContentModel.PROP_IS_INDEXED to false,
-            ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT
+            ContentModel.PROP_IS_INDEXED to false
         )
 
     private fun determinePromenaProperties(
+        id: String,
         transformation: Transformation,
         transformationDataIndex: Int? = null,
         transformationDataSize: Int? = null
     ): Map<QName, Serializable?> =
         mapOf(
-            PromenaTransformationContentModel.PROP_TRANSFORMATION to
-                    ArrayList(convertToStringifiedDescriptions(transformation)), // must be mutable because Alfresco operates on original List
+            PromenaTransformationContentModel.PROP_ID to id,
+            PromenaTransformationContentModel.PROP_TRANSFORMATION to ArrayList(convertToStringifiedTransformation(transformation)), // must be mutable because Alfresco operates on original List
+            PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to ArrayList(convertToStringifiedTransformationId(transformation)), // must be mutable because Alfresco operates on original List
             PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to transformationDataIndex,
             PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to transformationDataSize
         ).filterNotNullValues()
 
-    private fun convertToStringifiedDescriptions(transformation: Transformation): List<String> =
-        transformation.transformers.map { it.toString() }
+    private fun convertToStringifiedTransformation(transformation: Transformation): List<String> =
+        transformation.transformers
+            .map(Transformation.Single::toString)
+
+    private fun convertToStringifiedTransformationId(transformation: Transformation): List<String> =
+        transformation.transformers
+            .map(Transformation.Single::transformerId)
+            .map { if (it.isSubNameSet()) it.name + "-" + it.subName else it.name }
 
     private fun <T, U> Map<T, U>.filterNotNullValues(): Map<T, U> =
         filter { (_, value) -> value != null }
@@ -127,4 +138,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
     private fun TransformedDataDescriptor.Single.hasContent(): Boolean =
         data !is NoData
+
+    private fun generateId(): String =
+        UUID.randomUUID().toString()
 }

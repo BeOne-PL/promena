@@ -4,6 +4,7 @@ import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.collections.shouldNotContainAll
 import io.kotlintest.matchers.maps.shouldContainAll
+import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.maps.shouldNotContainKey
 import io.kotlintest.shouldBe
 import io.mockk.*
@@ -82,7 +83,11 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                     "Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={}))",
                     "Single(transformerId=TransformerId(name=transformer2, subName=sub), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={key=value}))"
                 )
-                val name = "transformer, transformer2_sub"
+                val transformationIdString = listOf(
+                    "transformer",
+                    "transformer2-sub"
+                )
+                val name = "transformer, transformer2"
 
                 node.getType() shouldBe ContentModel.TYPE_THUMBNAIL
                 node.getAspects() shouldNotContainAll listOf(RenditionModel.ASPECT_RENDITION2, RenditionModel.ASPECT_HIDDEN_RENDITION)
@@ -92,11 +97,13 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         ContentModel.PROP_MODIFIER to currentUserName,
                         ContentModel.PROP_NAME to name,
                         ContentModel.PROP_IS_INDEXED to false,
-                        ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION to transformationString,
+                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to transformationIdString,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 2
+//                        PromenaTransformationContentModel.PROP_RENDITION to false
                     )
+                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
                     properties shouldNotContainKey QName.createQName("string")
                     properties shouldNotContainKey QName.createQName("int")
                     properties shouldNotContainKey QName.createQName("long")
@@ -113,10 +120,11 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         ContentModel.PROP_MODIFIER to currentUserName,
                         ContentModel.PROP_NAME to name,
                         ContentModel.PROP_IS_INDEXED to false,
-                        ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION to transformationString,
+                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to transformationIdString,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 1,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 2,
+//                        PromenaTransformationContentModel.PROP_RENDITION to false,
                         QName.createQName("string") to "string",
                         QName.createQName("int") to 10,
                         QName.createQName("long") to 20L,
@@ -124,14 +132,17 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         QName.createQName("double") to 40.0,
                         QName.createQName("boolean") to true
                     )
+                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
                 }
+
+                node.getProperty(PromenaTransformationContentModel.PROP_ID) shouldBe node2.getProperty(PromenaTransformationContentModel.PROP_ID)
 
                 nodes shouldBe
                         integrationNode.getRenditionAssociations().map { it.childRef }
                 integrationNode.getRenditionAssociations().map { it.qName } shouldBe
                         listOf(
-                            QName.createQName(CONTENT_MODEL_1_0_URI, "$name - 0"),
-                            QName.createQName(CONTENT_MODEL_1_0_URI, "$name - 1")
+                            QName.createQName(CONTENT_MODEL_1_0_URI, name),
+                            QName.createQName(CONTENT_MODEL_1_0_URI, name)
                         )
 
                 verify(exactly = 1) { alfrescoDataConverter.saveDataInContentWriter(data, any()) }
@@ -159,7 +170,12 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                singleTransformedDataDescriptor(data, emptyMetadata() + ("alf_string" to "string"))
+                singleTransformedDataDescriptor(
+                    data,
+                    emptyMetadata() +
+//                            ("alf_promena:rendition" to true) +
+                            ("alf_string" to "string")
+                )
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
@@ -177,12 +193,14 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         ContentModel.PROP_MODIFIER to currentUserName,
                         ContentModel.PROP_NAME to name,
                         ContentModel.PROP_IS_INDEXED to false,
-                        ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
+                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to listOf("transformer"),
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 1,
+//                        PromenaTransformationContentModel.PROP_RENDITION to true,
                         QName.createQName("string") to "string"
                     )
+                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
                 }
 
                 nodes shouldBe
@@ -228,10 +246,12 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         ContentModel.PROP_MODIFIER to currentUserName,
                         ContentModel.PROP_NAME to name,
                         ContentModel.PROP_IS_INDEXED to false,
-                        ContentModel.PROP_CONTENT_PROPERTY_NAME to ContentModel.PROP_CONTENT,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION to
-                                listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))")
+                                listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
+                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to listOf("transformer")
+//                        PromenaTransformationContentModel.PROP_RENDITION to false
                     )
+                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
                     properties shouldNotContainKey PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
                     properties shouldNotContainKey PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE
                 }
