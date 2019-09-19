@@ -37,9 +37,7 @@ class TransformerSender(
             message.apply {
                 jmsCorrelationID = id
 
-                setStringProperty(
-                    TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(getTransformationIds(transformationDescriptor))
-                )
+                setStringProperty(TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(getTransformationIds(transformationDescriptor)))
 
                 val transformationParameters =
                     TransformationParameters(nodeDescriptors, nodesChecksum, retry, attempt, alfrescoAuthenticationService.getCurrentUser())

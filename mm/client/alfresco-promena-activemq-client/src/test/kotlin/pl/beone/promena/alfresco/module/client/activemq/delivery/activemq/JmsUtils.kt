@@ -32,14 +32,15 @@ class JmsUtils(
         val receiveTimeout = jmsTemplate.receiveTimeout
         jmsTemplate.receiveTimeout = timeout.toMillis()
         while (jmsTemplate.receive(queue) != null) {
-            // deliberately omitted. Waiting
+            // deliberately omitted
         }
         jmsTemplate.receiveTimeout = receiveTimeout
     }
 
     fun getTransformationParametersFromResponseError(): TransformationParameters =
         transformationParametersSerializationService.deserialize(
-            (jmsTemplate.receive(queueResponseError) as ActiveMQBytesMessage).properties[SEND_BACK_TRANSFORMATION_PARAMETERS].toString()
+            (jmsTemplate.receive(queueResponseError) as ActiveMQBytesMessage)
+                .properties[SEND_BACK_TRANSFORMATION_PARAMETERS].toString()
         )
 
     fun sendResponseMessage(

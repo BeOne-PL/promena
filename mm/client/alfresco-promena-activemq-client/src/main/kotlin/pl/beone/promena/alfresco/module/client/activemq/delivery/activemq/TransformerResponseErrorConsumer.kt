@@ -5,7 +5,6 @@ import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
-import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
 import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
 import pl.beone.promena.alfresco.module.client.activemq.external.ActiveMQAlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
@@ -62,26 +61,12 @@ class TransformerResponseErrorConsumer(
             if (wasLastAttempt(attempt, retry.maxAttempts)) {
                 reactiveTransformationManager.completeErrorTransformation(correlationId, transformationException)
             } else {
-                retry(
-                    correlationId,
-                    transformation,
-                    nodeDescriptors,
-                    retry,
-                    attempt + 1,
-                    userName
-                )
+                retry(correlationId, transformation, nodeDescriptors, retry, attempt + 1, userName)
             }
         }
     }
 
-    private fun retry(
-        id: String,
-        transformation: Transformation,
-        nodeDescriptors: List<NodeDescriptor>,
-        retry: Retry,
-        attempt: Long,
-        userName: String
-    ) {
+    private fun retry(id: String, transformation: Transformation, nodeDescriptors: List<NodeDescriptor>, retry: Retry, attempt: Long, userName: String) {
         Mono.just("")
             .doOnNext { logger.logOnRetry(transformation, nodeDescriptors, attempt, retry.maxAttempts, retry.nextAttemptDelay) }
             .delayElement(retry.nextAttemptDelay)
