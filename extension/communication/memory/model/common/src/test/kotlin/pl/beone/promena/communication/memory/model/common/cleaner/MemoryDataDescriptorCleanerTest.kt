@@ -3,7 +3,7 @@ package pl.beone.promena.communication.memory.model.common.cleaner
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
@@ -18,8 +18,8 @@ class MemoryDataDescriptorCleanerTest {
         val transformedData = mockk<Data>()
 
         MemoryDataDescriptorCleaner.clean(
-            singleDataDescriptor(commonData, MediaTypeConstants.APPLICATION_PDF, mockk()) +
-                    singleDataDescriptor(data, MediaTypeConstants.APPLICATION_PDF, mockk()),
+            singleDataDescriptor(commonData, APPLICATION_PDF, mockk()) +
+                    singleDataDescriptor(data, APPLICATION_PDF, mockk()),
             singleTransformedDataDescriptor(transformedData, mockk()) +
                     singleTransformedDataDescriptor(commonData, mockk())
         )

@@ -8,7 +8,8 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
@@ -26,11 +27,11 @@ class MemoryDescriptorConverterTest {
             every { getBytes() } returns dataBytes
             every { delete() } just Runs
         }
-        val mediaType = MediaTypeConstants.TEXT_PLAIN
+        val mediaType = TEXT_PLAIN
         val metadata = mockk<Metadata>()
 
         val data2 = "".toMemoryData()
-        val mediaType2 = MediaTypeConstants.APPLICATION_PDF
+        val mediaType2 = APPLICATION_PDF
         val metadata2 = mockk<Metadata>()
 
         MemoryDescriptorConverter.convert(

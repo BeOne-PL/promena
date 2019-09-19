@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.StandardEnvironment
 import org.springframework.jms.core.JmsTemplate
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.activemq.delivery.jms.TransformationConsumer
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
@@ -35,7 +35,7 @@ class TransformationConsumerContext {
         val messageSelector =
             transformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
 
-        logger.debug { "Set message selector for TransformationConsumer on <${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE}>: <$messageSelector>" }
+        logger.debug { "Set message selector for TransformationConsumer on <$TRANSFORMATION_HASH_CODE>: <$messageSelector>" }
 
         environment.propertySources.addLast(
             MapPropertySource(

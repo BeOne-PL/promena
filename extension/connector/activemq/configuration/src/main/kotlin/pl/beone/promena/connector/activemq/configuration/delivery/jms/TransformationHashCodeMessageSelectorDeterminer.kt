@@ -1,6 +1,6 @@
 package pl.beone.promena.connector.activemq.configuration.delivery.jms
 
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
@@ -25,5 +25,5 @@ internal class TransformationHashCodeMessageSelectorDeterminer {
         transformers.map(transformerConfig::getTransformerId)
 
     private fun createMessageSelector(transformationHashFunctionAllCombinations: List<String>): String =
-        PromenaJmsHeaders.TRANSFORMATION_HASH_CODE + " IN (" + transformationHashFunctionAllCombinations.joinToString(", ") { "'$it'" } + ")"
+        TRANSFORMATION_HASH_CODE + " IN (" + transformationHashFunctionAllCombinations.joinToString(", ") { "'$it'" } + ")"
 }

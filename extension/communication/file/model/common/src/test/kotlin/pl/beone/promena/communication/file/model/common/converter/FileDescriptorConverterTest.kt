@@ -10,7 +10,8 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import pl.beone.promena.communication.file.model.common.extension.exists
 import pl.beone.promena.communication.file.model.common.extension.toFile
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
@@ -29,19 +30,19 @@ class FileDescriptorConverterTest {
             every { getInputStream() } returns dataContent.inputStream()
             every { delete() } just Runs
         }
-        val mediaType = MediaTypeConstants.TEXT_PLAIN
+        val mediaType = TEXT_PLAIN
         val metadata = mockk<Metadata>()
 
         val directory = createTempDir().toURI().toFile()
 
         val dataContent2 = "data2".toByteArray()
         val data2 = createFileData(dataContent2, directory)
-        val mediaType2 = MediaTypeConstants.APPLICATION_PDF
+        val mediaType2 = APPLICATION_PDF
         val metadata2 = mockk<Metadata>()
 
         val dataContent3 = "data3".toByteArray()
         val data3 = createFileData(dataContent3)
-        val mediaType3 = MediaTypeConstants.APPLICATION_PDF
+        val mediaType3 = APPLICATION_PDF
         val metadata3 = mockk<Metadata>()
 
         FileDescriptorConverter(directory).convert(

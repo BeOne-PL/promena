@@ -17,7 +17,6 @@ sealed class TransformedDataDescriptor {
     ) : TransformedDataDescriptor() {
 
         companion object {
-
             @JvmStatic
             fun of(data: Data, metadata: Metadata): Single =
                 Single(data, metadata)
@@ -30,7 +29,6 @@ sealed class TransformedDataDescriptor {
     data class Multi internal constructor(override val descriptors: List<Single>) : TransformedDataDescriptor() {
 
         companion object {
-
             @JvmStatic
             fun of(descriptors: List<Single>): Multi =
                 Multi(descriptors)

@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.server.ResponseStatusException
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
+import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
@@ -38,7 +39,7 @@ class TransformerHandler(
 
     private fun createInternalServerErrorResponse(exception: Throwable): Mono<ServerResponse> =
         ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(PromenaHttpHeaders.SERIALIZATION_CLASS, exception.javaClass.name)
+            .header(SERIALIZATION_CLASS, exception.javaClass.name)
             .body(Mono.just(exception).map(serializationService::serialize), ByteArray::class.java)
 
 }

@@ -17,6 +17,7 @@ import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
+import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.connector.http.configuration.HttpConnectorModuleConfig
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
@@ -101,10 +102,7 @@ class TransformerHandlerTestIT {
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
             .expectHeader()
-            .valueEquals(
-                PromenaHttpHeaders.SERIALIZATION_CLASS,
-                "pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException"
-            )
+            .valueEquals(SERIALIZATION_CLASS, "pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException")
             .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
             .expectBody<ByteArray>().isEqualTo(messageByteArray)
     }

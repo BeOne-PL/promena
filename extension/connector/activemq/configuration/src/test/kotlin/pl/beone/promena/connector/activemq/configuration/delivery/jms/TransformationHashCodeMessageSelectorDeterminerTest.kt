@@ -4,7 +4,7 @@ import io.kotlintest.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
@@ -39,6 +39,6 @@ class TransformationHashCodeMessageSelectorDeterminerTest {
             listOf(converterTransformer, barcodeTransformer),
             transformationHashFunctionDeterminer
         ) shouldBe
-                "${PromenaJmsHeaders.TRANSFORMATION_HASH_CODE} IN ('1', '2', '3')"
+                "$TRANSFORMATION_HASH_CODE IN ('1', '2', '3')"
     }
 }

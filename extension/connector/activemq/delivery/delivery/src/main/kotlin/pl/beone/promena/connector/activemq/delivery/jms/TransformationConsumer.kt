@@ -3,11 +3,13 @@ package pl.beone.promena.connector.activemq.delivery.jms
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.jms.support.JmsHeaders
+import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
@@ -30,8 +32,8 @@ class TransformationConsumer(
         selector = "\${promena.connector.activemq.consumer.queue.request.message-selector}"
     )
     fun receiveQueue(
-        @Header(JmsHeaders.CORRELATION_ID) correlationId: String,
-        @Header(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE) transformationHashCode: String,
+        @Header(CORRELATION_ID) correlationId: String,
+        @Header(TRANSFORMATION_HASH_CODE) transformationHashCode: String,
         @Headers headers: Map<String, Any>,
         @Payload transformationDescriptor: TransformationDescriptor
     ) {
@@ -49,7 +51,7 @@ class TransformationConsumer(
         }
 
         val headersToSend = headersToSentBackDeterminer.determine(headers) +
-                (PromenaJmsHeaders.TRANSFORMATION_HASH_CODE to transformationHashCode) +
+                (TRANSFORMATION_HASH_CODE to transformationHashCode) +
                 determineTimestampHeaders(startTimestamp, getTimestamp())
 
         transformerProducer.send(queue, correlationId, headersToSend, payload)
@@ -57,8 +59,8 @@ class TransformationConsumer(
 
     private fun determineTimestampHeaders(startTimestamp: Long, endTimestamp: Long): Map<String, Long> =
         mapOf(
-            PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP to startTimestamp,
-            PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP to endTimestamp
+            TRANSFORMATION_START_TIMESTAMP to startTimestamp,
+            TRANSFORMATION_END_TIMESTAMP to endTimestamp
         )
 
     private fun getTimestamp(): Long =

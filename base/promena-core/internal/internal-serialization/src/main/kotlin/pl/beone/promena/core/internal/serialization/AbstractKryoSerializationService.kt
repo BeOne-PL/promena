@@ -25,7 +25,7 @@ abstract class AbstractKryoSerializationService(
         try {
             @Suppress("UNCHECKED_CAST")
             getKryo().readClassAndObject(ByteBufferInput(bytes)) as T
-        } catch (e: Exception) {
+        } catch  (e: Exception) {
             throw DeserializationException("Couldn't deserialize", e)
         }
 

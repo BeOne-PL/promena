@@ -17,12 +17,14 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.jms.support.JmsHeaders
+import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
-import pl.beone.promena.connector.activemq.delivery.jms.message.converter.KryoMessageConverter
+import pl.beone.promena.connector.activemq.delivery.jms.message.converter.KryoMessageConverter.Companion.PROPERTY_SERIALIZATION_CLASS
 import pl.beone.promena.connector.activemq.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
 import pl.beone.promena.connector.activemq.integrationtest.test.TestTransformerMockContext
@@ -106,17 +108,16 @@ class TransformationCorrectFlowTestIT {
 
         headers.let {
             it shouldContainAll mapOf(
-                JmsHeaders.CORRELATION_ID to correlationId,
-                KryoMessageConverter.PROPERTY_SERIALIZATION_CLASS to
-                        "pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor",
-                PromenaJmsHeaders.TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds)
+                CORRELATION_ID to correlationId,
+                PROPERTY_SERIALIZATION_CLASS to "pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor",
+                TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds)
             )
-            it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
-            it shouldContainKey PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
+            it shouldContainKey TRANSFORMATION_START_TIMESTAMP
+            it shouldContainKey TRANSFORMATION_END_TIMESTAMP
         }
 
-        val transformationStartTimestamp = headers[PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP] as Long
-        val transformationEndTimestamp = headers[PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP] as Long
+        val transformationStartTimestamp = headers[TRANSFORMATION_START_TIMESTAMP] as Long
+        val transformationEndTimestamp = headers[TRANSFORMATION_END_TIMESTAMP] as Long
         validateTimestamps(transformationStartTimestamp, transformationEndTimestamp, startTimestamp, endTimestamp)
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
@@ -137,7 +138,7 @@ class TransformationCorrectFlowTestIT {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), transformationDescriptor) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
+                setStringProperty(TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
             }
         }
     }

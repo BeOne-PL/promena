@@ -12,8 +12,8 @@ import pl.beone.promena.core.contract.communication.external.OutgoingExternalCom
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 import pl.beone.promena.core.contract.transformation.TransformationService
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_JSON
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.emptyDataDescriptor
 import pl.beone.promena.transformer.contract.data.emptyTransformedDataDescriptor
@@ -31,7 +31,7 @@ import java.net.URI
 class DefaultTransformationUseCaseTest {
 
     companion object {
-        private val targetMediaType = MediaTypeConstants.APPLICATION_PDF
+        private val targetMediaType = APPLICATION_PDF
         private val parameters = emptyParameters() + ("key" to "value")
 
         private val transformation = singleTransformation("test", targetMediaType, parameters)
