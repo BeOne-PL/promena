@@ -8,15 +8,19 @@ import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.maps.shouldNotContainKey
 import io.kotlintest.shouldBe
 import io.mockk.*
-import org.alfresco.model.ContentModel
-import org.alfresco.model.RenditionModel
+import org.alfresco.model.ContentModel.*
+import org.alfresco.model.RenditionModel.*
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_ID
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
@@ -74,7 +78,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         )
             )
             .let { nodes ->
-                integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
+                integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
 
                 nodes shouldHaveSize 2
                 val (node, node2) = nodes
@@ -89,21 +93,21 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 )
                 val name = "transformer, transformer2"
 
-                node.getType() shouldBe ContentModel.TYPE_THUMBNAIL
-                node.getAspects() shouldNotContainAll listOf(RenditionModel.ASPECT_RENDITION2, RenditionModel.ASPECT_HIDDEN_RENDITION)
+                node.getType() shouldBe TYPE_THUMBNAIL
+                node.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
                 node.getProperties().let { properties ->
                     properties shouldContainAll mapOf(
-                        ContentModel.PROP_CREATOR to currentUserName,
-                        ContentModel.PROP_MODIFIER to currentUserName,
-                        ContentModel.PROP_NAME to name,
-                        ContentModel.PROP_IS_INDEXED to false,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION to transformationString,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to transformationIdString,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 2
+                        PROP_CREATOR to currentUserName,
+                        PROP_MODIFIER to currentUserName,
+                        PROP_NAME to name,
+                        PROP_IS_INDEXED to false,
+                        PROP_TRANSFORMATION to transformationString,
+                        PROP_TRANSFORMATION_ID to transformationIdString,
+                        PROP_TRANSFORMATION_DATA_INDEX to 0,
+                        PROP_TRANSFORMATION_DATA_SIZE to 2
 //                        PromenaTransformationContentModel.PROP_RENDITION to false // Alfresco test doesn't support defaults in model
                     )
-                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
+                    properties shouldContainKey PROP_ID
                     properties shouldNotContainKey QName.createQName("string")
                     properties shouldNotContainKey QName.createQName("int")
                     properties shouldNotContainKey QName.createQName("long")
@@ -112,18 +116,18 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                     properties shouldNotContainKey QName.createQName("boolean")
                 }
 
-                node2.getType() shouldBe ContentModel.TYPE_THUMBNAIL
-                node2.getAspects() shouldNotContainAll listOf(RenditionModel.ASPECT_RENDITION2, RenditionModel.ASPECT_HIDDEN_RENDITION)
+                node2.getType() shouldBe TYPE_THUMBNAIL
+                node2.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
                 node2.getProperties().let { properties ->
                     properties shouldContainAll mapOf(
-                        ContentModel.PROP_CREATOR to currentUserName,
-                        ContentModel.PROP_MODIFIER to currentUserName,
-                        ContentModel.PROP_NAME to name,
-                        ContentModel.PROP_IS_INDEXED to false,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION to transformationString,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to transformationIdString,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 1,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 2,
+                        PROP_CREATOR to currentUserName,
+                        PROP_MODIFIER to currentUserName,
+                        PROP_NAME to name,
+                        PROP_IS_INDEXED to false,
+                        PROP_TRANSFORMATION to transformationString,
+                        PROP_TRANSFORMATION_ID to transformationIdString,
+                        PROP_TRANSFORMATION_DATA_INDEX to 1,
+                        PROP_TRANSFORMATION_DATA_SIZE to 2,
 //                        PromenaTransformationContentModel.PROP_RENDITION to false, // Alfresco test doesn't support defaults in model
                         QName.createQName("string") to "string",
                         QName.createQName("int") to 10,
@@ -132,10 +136,10 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         QName.createQName("double") to 40.0,
                         QName.createQName("boolean") to true
                     )
-                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
+                    properties shouldContainKey PROP_ID
                 }
 
-                node.getProperty(PromenaTransformationContentModel.PROP_ID) shouldBe node2.getProperty(PromenaTransformationContentModel.PROP_ID)
+                node.getProperty(PROP_ID) shouldBe node2.getProperty(PROP_ID)
 
                 nodes shouldBe
                         integrationNode.getRenditionAssociations().map { it.childRef }
@@ -178,29 +182,29 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 )
             )
             .let { nodes ->
-                integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
+                integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
 
                 nodes shouldHaveSize 1
                 val (node) = nodes
 
                 val name = "transformer"
 
-                node.getType() shouldBe ContentModel.TYPE_THUMBNAIL
-                node.getAspects() shouldNotContainAll listOf(RenditionModel.ASPECT_RENDITION2, RenditionModel.ASPECT_HIDDEN_RENDITION)
+                node.getType() shouldBe TYPE_THUMBNAIL
+                node.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
                 node.getProperties().let { properties ->
                     properties shouldContainAll mapOf(
-                        ContentModel.PROP_CREATOR to currentUserName,
-                        ContentModel.PROP_MODIFIER to currentUserName,
-                        ContentModel.PROP_NAME to name,
-                        ContentModel.PROP_IS_INDEXED to false,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to listOf("transformer"),
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 1,
+                        PROP_CREATOR to currentUserName,
+                        PROP_MODIFIER to currentUserName,
+                        PROP_NAME to name,
+                        PROP_IS_INDEXED to false,
+                        PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
+                        PROP_TRANSFORMATION_ID to listOf("transformer"),
+                        PROP_TRANSFORMATION_DATA_INDEX to 0,
+                        PROP_TRANSFORMATION_DATA_SIZE to 1,
 //                        PromenaTransformationContentModel.PROP_RENDITION to true, // Alfresco test doesn't support defaults in model
                         QName.createQName("string") to "string"
                     )
-                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
+                    properties shouldContainKey PROP_ID
                 }
 
                 nodes shouldBe
@@ -231,29 +235,29 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 listOf(integrationNode),
                 emptyTransformedDataDescriptor()
             ).let { nodes ->
-                integrationNode.getAspects() shouldContain RenditionModel.ASPECT_RENDITIONED
+                integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
 
                 nodes shouldHaveSize 1
                 val (node) = nodes
 
                 val name = "transformer"
 
-                node.getType() shouldBe ContentModel.TYPE_THUMBNAIL
-                node.getAspects() shouldNotContainAll listOf(RenditionModel.ASPECT_RENDITION2, RenditionModel.ASPECT_HIDDEN_RENDITION)
+                node.getType() shouldBe TYPE_THUMBNAIL
+                node.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
                 node.getProperties().let { properties ->
                     properties shouldContainAll mapOf(
-                        ContentModel.PROP_CREATOR to currentUserName,
-                        ContentModel.PROP_MODIFIER to currentUserName,
-                        ContentModel.PROP_NAME to name,
-                        ContentModel.PROP_IS_INDEXED to false,
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION to
+                        PROP_CREATOR to currentUserName,
+                        PROP_MODIFIER to currentUserName,
+                        PROP_NAME to name,
+                        PROP_IS_INDEXED to false,
+                        PROP_TRANSFORMATION to
                                 listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to listOf("transformer")
+                        PROP_TRANSFORMATION_ID to listOf("transformer")
 //                        PromenaTransformationContentModel.PROP_RENDITION to false // Alfresco test doesn't support defaults in model
                     )
-                    properties shouldContainKey PromenaTransformationContentModel.PROP_ID
-                    properties shouldNotContainKey PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
-                    properties shouldNotContainKey PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE
+                    properties shouldContainKey PROP_ID
+                    properties shouldNotContainKey PROP_TRANSFORMATION_DATA_INDEX
+                    properties shouldNotContainKey PROP_TRANSFORMATION_DATA_SIZE
                 }
 
                 nodes shouldBe

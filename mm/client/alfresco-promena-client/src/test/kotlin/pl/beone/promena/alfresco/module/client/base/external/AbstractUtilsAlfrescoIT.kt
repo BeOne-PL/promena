@@ -1,6 +1,7 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
 import org.alfresco.model.ContentModel
+import org.alfresco.model.ContentModel.TYPE_FOLDER
 import org.alfresco.model.RenditionModel
 import org.alfresco.rad.test.AbstractAlfrescoIT
 import org.alfresco.repo.nodelocator.CompanyHomeNodeLocator
@@ -58,7 +59,7 @@ abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
 
     protected fun createOrGetIntegrationTestsFolder(): NodeRef =
         try {
-            serviceRegistry.fileFolderService.create(getCompanyHomeNodeRef(), "Integration test", ContentModel.TYPE_FOLDER)
+            serviceRegistry.fileFolderService.create(getCompanyHomeNodeRef(), "Integration test", TYPE_FOLDER)
                 .nodeRef
         } catch (e: FileExistsException) {
             serviceRegistry.fileFolderService.searchSimple(getCompanyHomeNodeRef(), "Integration test")
