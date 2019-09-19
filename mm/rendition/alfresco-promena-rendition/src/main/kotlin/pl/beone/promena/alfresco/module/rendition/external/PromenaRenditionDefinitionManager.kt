@@ -1,9 +1,9 @@
 package pl.beone.promena.alfresco.module.rendition.external
 
 import mu.KotlinLogging
-import pl.beone.promena.alfresco.module.client.base.util.createNodeName
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.extension.getTransformationNodeName
 
 class PromenaRenditionDefinitionManager(
     private val promenaAlfrescoRenditionDefinitions: List<PromenaAlfrescoRenditionDefinition>
@@ -32,7 +32,7 @@ class PromenaRenditionDefinitionManager(
         promenaAlfrescoRenditionDefinitions.map { it.getRenditionName() to it }.toMap()
 
     private val nodeNameToDefinitionMap =
-        promenaAlfrescoRenditionDefinitions.map { it.getTransformation().createNodeName() to it }.toMap()
+        promenaAlfrescoRenditionDefinitions.map { it.getTransformationNodeName() to it }.toMap()
 
     fun getAll(): List<PromenaAlfrescoRenditionDefinition> =
         promenaAlfrescoRenditionDefinitions
@@ -40,15 +40,15 @@ class PromenaRenditionDefinitionManager(
     fun getByRenditionName(renditionName: String): PromenaAlfrescoRenditionDefinition =
         renditionNameToDefinitionMap[renditionName]
             ?: throw PromenaNoSuchRenditionDefinitionException(
-                "Definition for rendition name <$renditionName> isn't available. Available renditions: <[${createExceptionString { it.getRenditionName() }}]>",
+                "Definition for <$renditionName> rendition isn't available. Available renditions: <[${createExceptionString { it.getRenditionName() }}]>",
                 promenaAlfrescoRenditionDefinitions
             )
 
     fun getByNodeName(nodeName: String): PromenaAlfrescoRenditionDefinition =
         nodeNameToDefinitionMap[nodeName]
             ?: throw PromenaNoSuchRenditionDefinitionException(
-                "Definition for node name <$nodeName> isn't available. " +
-                        "Available renditions: <[${createExceptionString { it.getTransformation().createNodeName() }}]>",
+                "Definition for <$nodeName> node name isn't available. " +
+                        "Available renditions: <[${createExceptionString(PromenaAlfrescoRenditionDefinition::getTransformationNodeName)}]>",
                 promenaAlfrescoRenditionDefinitions
             )
 
