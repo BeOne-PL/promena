@@ -1,14 +1,19 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
-import org.alfresco.model.ContentModel
-import org.alfresco.model.RenditionModel
+import org.alfresco.model.ContentModel.*
+import org.alfresco.model.RenditionModel.ASSOC_RENDITION
 import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.namespace.NamespaceService
+import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.transaction.TransactionService
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_ID
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.base.util.createNodeName
@@ -83,8 +88,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
     private fun createGeneralAndThumbnailProperties(nodeName: String): Map<QName, Serializable?> =
         mapOf(
-            ContentModel.PROP_NAME to nodeName,
-            ContentModel.PROP_IS_INDEXED to false
+            PROP_NAME to nodeName,
+            PROP_IS_INDEXED to false
         )
 
     private fun determinePromenaProperties(
@@ -94,11 +99,11 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
         transformationDataSize: Int? = null
     ): Map<QName, Serializable?> =
         mapOf(
-            PromenaTransformationContentModel.PROP_ID to id,
-            PromenaTransformationContentModel.PROP_TRANSFORMATION to ArrayList(convertToStringifiedTransformation(transformation)), // must be mutable because Alfresco operates on original List
-            PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to ArrayList(convertToStringifiedTransformationId(transformation)), // must be mutable because Alfresco operates on original List
-            PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to transformationDataIndex,
-            PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to transformationDataSize
+            PROP_ID to id,
+            PROP_TRANSFORMATION to ArrayList(convertToStringifiedTransformation(transformation)), // must be mutable because Alfresco operates on original List
+            PROP_TRANSFORMATION_ID to ArrayList(convertToStringifiedTransformationId(transformation)), // must be mutable because Alfresco operates on original List
+            PROP_TRANSFORMATION_DATA_INDEX to transformationDataIndex,
+            PROP_TRANSFORMATION_DATA_SIZE to transformationDataSize
         ).filterNotNullValues()
 
     private fun convertToStringifiedTransformation(transformation: Transformation): List<String> =
@@ -123,14 +128,14 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =
         nodeService.createNode(
             sourceNodeRef,
-            RenditionModel.ASSOC_RENDITION,
-            QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name),
-            ContentModel.TYPE_THUMBNAIL,
+            ASSOC_RENDITION,
+            QName.createQName(CONTENT_MODEL_1_0_URI, name),
+            TYPE_THUMBNAIL,
             properties
         ).childRef
 
     private fun NodeRef.saveContent(targetMediaType: MediaType, data: Data) {
-        contentService.getWriter(this, ContentModel.PROP_CONTENT, true).apply {
+        contentService.getWriter(this, PROP_CONTENT, true).apply {
             mimetype = targetMediaType.mimeType
             alfrescoDataConverter.saveDataInContentWriter(data, this)
         }

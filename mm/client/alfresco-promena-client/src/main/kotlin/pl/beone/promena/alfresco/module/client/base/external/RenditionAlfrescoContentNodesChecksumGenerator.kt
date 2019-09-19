@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
-import org.alfresco.model.ContentModel
-import org.alfresco.repo.rendition2.RenditionService2Impl
+import org.alfresco.model.ContentModel.PROP_CONTENT
+import org.alfresco.repo.rendition2.RenditionService2Impl.SOURCE_HAS_NO_CONTENT
 import org.alfresco.service.cmr.repository.ContentData
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
@@ -22,14 +22,14 @@ class RenditionAlfrescoContentNodesChecksumGenerator(
     private fun getSourceContentHashCode(nodeRef: NodeRef): Int {
         val contentData = DefaultTypeConverter.INSTANCE.convert(
             ContentData::class.java,
-            nodeService.getProperty(nodeRef, ContentModel.PROP_CONTENT)
+            nodeService.getProperty(nodeRef, PROP_CONTENT)
         )
 
         return if (contentData != null) {
             // Originally we used the contentData URL, but that is not enough if the MimeType changes.
             (contentData.contentUrl + contentData.mimetype).hashCode()
         } else {
-            RenditionService2Impl.SOURCE_HAS_NO_CONTENT
+            SOURCE_HAS_NO_CONTENT
         }
     }
 }
