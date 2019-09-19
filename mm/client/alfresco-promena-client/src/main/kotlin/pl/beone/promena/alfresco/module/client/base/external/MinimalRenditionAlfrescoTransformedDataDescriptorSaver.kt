@@ -115,9 +115,9 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
     private fun determineAlfrescoProperties(metadata: Metadata): Map<QName, Serializable?> =
         metadata.getAll()
-            .filter { it.key.startsWith("alf_") }
-            .map { it.key.removePrefix("alf_") to it.value }
-            .map { QName.createQName(it.first, namespaceService) to it.second as Serializable? }
+            .filter { (key) -> key.startsWith("alf_") }
+            .map { (key, value) -> key.removePrefix("alf_") to value }
+            .map { (key, value) -> QName.createQName(key, namespaceService) to value as Serializable? }
             .toMap()
 
     private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =

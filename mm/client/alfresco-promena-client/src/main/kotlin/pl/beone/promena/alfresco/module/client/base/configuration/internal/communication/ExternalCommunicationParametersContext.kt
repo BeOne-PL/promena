@@ -30,13 +30,13 @@ class ExternalCommunicationParametersContext {
                 logger.info { "Promena external communication: <${MemoryCommunicationParameters.ID}>" }
                 memoryCommunicationParameters()
             }
-            FileCommunicationParameters.ID   -> {
+            FileCommunicationParameters.ID -> {
                 val directory =
                     determineDirectory(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.file.directory.path"))
                 logger.info { "Promena external communication: <${FileCommunicationParameters.ID}, ${DefaultFileCommunicationParameters.DIRECTORY}: ${directory}>" }
                 fileCommunicationParameters(directory)
             }
-            else                             ->
+            else ->
                 throw IllegalStateException("External communication must be <${MemoryCommunicationParameters.ID}> or <${FileCommunicationParameters.ID}>")
         }
 

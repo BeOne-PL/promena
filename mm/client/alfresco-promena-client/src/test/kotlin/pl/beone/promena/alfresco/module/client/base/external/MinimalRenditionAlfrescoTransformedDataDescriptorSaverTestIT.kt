@@ -101,7 +101,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to transformationIdString,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 2
-//                        PromenaTransformationContentModel.PROP_RENDITION to false
+//                        PromenaTransformationContentModel.PROP_RENDITION to false // Alfresco test doesn't support defaults in model
                     )
                     properties shouldContainKey PromenaTransformationContentModel.PROP_ID
                     properties shouldNotContainKey QName.createQName("string")
@@ -124,7 +124,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to transformationIdString,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 1,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 2,
-//                        PromenaTransformationContentModel.PROP_RENDITION to false,
+//                        PromenaTransformationContentModel.PROP_RENDITION to false, // Alfresco test doesn't support defaults in model
                         QName.createQName("string") to "string",
                         QName.createQName("int") to 10,
                         QName.createQName("long") to 20L,
@@ -173,7 +173,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 singleTransformedDataDescriptor(
                     data,
                     emptyMetadata() +
-//                            ("alf_promena:rendition" to true) +
+//                            ("alf_promena:rendition" to true) + // Alfresco test doesn't resolve namespaces
                             ("alf_string" to "string")
                 )
             )
@@ -197,7 +197,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to listOf("transformer"),
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE to 1,
-//                        PromenaTransformationContentModel.PROP_RENDITION to true,
+//                        PromenaTransformationContentModel.PROP_RENDITION to true, // Alfresco test doesn't support defaults in model
                         QName.createQName("string") to "string"
                     )
                     properties shouldContainKey PromenaTransformationContentModel.PROP_ID
@@ -249,7 +249,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PromenaTransformationContentModel.PROP_TRANSFORMATION to
                                 listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
                         PromenaTransformationContentModel.PROP_TRANSFORMATION_ID to listOf("transformer")
-//                        PromenaTransformationContentModel.PROP_RENDITION to false
+//                        PromenaTransformationContentModel.PROP_RENDITION to false // Alfresco test doesn't support defaults in model
                     )
                     properties shouldContainKey PromenaTransformationContentModel.PROP_ID
                     properties shouldNotContainKey PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
