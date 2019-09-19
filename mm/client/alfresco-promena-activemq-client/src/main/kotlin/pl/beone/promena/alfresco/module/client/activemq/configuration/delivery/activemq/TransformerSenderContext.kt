@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.TransformerSender
+import pl.beone.promena.alfresco.module.client.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
-import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.util.*
 
 @Configuration
@@ -20,11 +20,13 @@ class TransformerSenderContext {
         @Qualifier("global-properties") properties: Properties,
         transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
         alfrescoAuthenticationService: AlfrescoAuthenticationService,
+        transformationParametersSerializationService: TransformationParametersSerializationService,
         jmsTemplate: JmsTemplate
     ) =
         TransformerSender(
             transformationHashFunctionDeterminer,
             alfrescoAuthenticationService,
+            transformationParametersSerializationService,
             ActiveMQQueue(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.activemq.consumer.queue.request")),
             jmsTemplate
         )

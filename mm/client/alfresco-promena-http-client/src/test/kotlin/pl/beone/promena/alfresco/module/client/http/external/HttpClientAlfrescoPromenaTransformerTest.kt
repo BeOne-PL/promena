@@ -15,6 +15,7 @@ import org.reactivestreams.Publisher
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
@@ -22,7 +23,7 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescrip
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
-import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
+import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
@@ -50,6 +51,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
 
     companion object {
         private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
+        private val nodeDescriptors = nodeRefs.map { it.toNodeDescriptor(emptyMetadata() + ("key" to "value")) }
         private val transformation = singleTransformation("transformer", TEXT_PLAIN, emptyParameters() + ("key" to "value"))
         private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
         private val communicationParameters = memoryCommunicationParameters()
@@ -68,7 +70,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
     @Before
     fun setUp() {
         alfrescoDataDescriptorGetter = mockk {
-            every { get(nodeRefs) } returns dataDescriptor
+            every { get(nodeDescriptors) } returns dataDescriptor
         }
         alfrescoAuthenticationService = mockk {
             every { getCurrentUser() } returns userName
@@ -117,7 +119,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
             alfrescoAuthenticationService,
             httpServer.createHttpClient()
         )
-            .transform(transformation, nodeRefs) shouldBe transformedNodeRefs
+            .transform(transformation, nodeDescriptors) shouldBe transformedNodeRefs
     }
 
     @Test
@@ -157,7 +159,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transform(transformation, nodeRefs, Duration.ofMillis(0))
+                .transform(transformation, nodeDescriptors, Duration.ofMillis(0))
         }
 
         Thread.sleep(500)
@@ -202,7 +204,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs)
+                .transformAsync(transformation, nodeDescriptors)
         )
             .expectNext(transformedNodeRefs)
             .expectComplete()
@@ -221,7 +223,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .asByteArray()
                     .map { it shouldBe serializedTransformationDescriptor }
                     .doOnNext {
-                        response.header(PromenaHttpHeaders.SERIALIZATION_CLASS, "java.lang.RuntimeException")
+                        response.header(SERIALIZATION_CLASS, "java.lang.RuntimeException")
                             .status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                     }
                     .then(Mono.just(serializedServerException)))
@@ -249,7 +251,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs)
+                .transformAsync(transformation, nodeDescriptors)
         )
             .expectErrorSatisfies {
                 it shouldBeSameInstanceAs serverException
@@ -295,7 +297,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs)
+                .transformAsync(transformation, nodeDescriptors)
         )
             .expectError(AnotherTransformationIsInProgressException::class)
             .verify()
@@ -338,7 +340,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs)
+                .transformAsync(transformation, nodeDescriptors)
         )
             .expectError(AnotherTransformationIsInProgressException::class)
             .verify()
@@ -356,7 +358,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                     .asByteArray()
                     .map { it shouldBe serializedTransformationDescriptor }
                     .doOnNext {
-                        response.header(PromenaHttpHeaders.SERIALIZATION_CLASS, "java.lang.RuntimeException")
+                        response.header(SERIALIZATION_CLASS, "java.lang.RuntimeException")
                             .status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                     }
                     .then(Mono.just(serializedServerException)))
@@ -384,7 +386,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs)
+                .transformAsync(transformation, nodeDescriptors)
         )
             .expectSubscription()
             .expectNoEvent(Duration.ofMillis(600))
@@ -405,7 +407,7 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoAuthenticationService,
                 httpServer.createHttpClient()
             )
-                .transformAsync(transformation, nodeRefs, customRetry(3, Duration.ofMillis(300)))
+                .transformAsync(transformation, nodeDescriptors, customRetry(3, Duration.ofMillis(300)))
         )
             .expectSubscription()
             .expectNoEvent(Duration.ofMillis(600))

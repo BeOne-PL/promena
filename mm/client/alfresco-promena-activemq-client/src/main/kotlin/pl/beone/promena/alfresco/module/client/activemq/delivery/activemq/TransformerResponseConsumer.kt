@@ -2,45 +2,45 @@ package pl.beone.promena.alfresco.module.client.activemq.delivery.activemq
 
 import mu.KotlinLogging
 import org.springframework.jms.annotation.JmsListener
-import org.springframework.jms.support.JmsHeaders
+import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
-import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
-import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.convert.NodeRefsConverter
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
+import pl.beone.promena.alfresco.module.client.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.AnotherTransformationIsInProgressException
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.client.base.extension.skippedSavingResult
 import pl.beone.promena.alfresco.module.client.base.extension.transformedSuccessfully
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 
 class TransformerResponseConsumer(
     private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
     private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
     private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
-    private val reactiveTransformationManager: ReactiveTransformationManager
+    private val reactiveTransformationManager: ReactiveTransformationManager,
+    private val transformationParametersSerializationService: TransformationParametersSerializationService
 ) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
-
-        private val nodeRefsConverter = NodeRefsConverter()
     }
 
     @JmsListener(destination = "\${promena.client.activemq.consumer.queue.response}")
     fun receiveQueue(
-        @Header(JmsHeaders.CORRELATION_ID) correlationId: String,
-        @Header(PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP) startTimestamp: Long,
-        @Header(PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP) endTimestamp: Long,
-        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS) rawNodeRefs: List<String>,
-        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM) nodesChecksum: String,
-        @Header(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME) userName: String,
+        @Header(CORRELATION_ID) correlationId: String,
+        @Header(TRANSFORMATION_START_TIMESTAMP) startTimestamp: Long,
+        @Header(TRANSFORMATION_END_TIMESTAMP) endTimestamp: Long,
+        @Header(SEND_BACK_TRANSFORMATION_PARAMETERS) transformationParameters: String,
         @Payload performedTransformationDescriptor: PerformedTransformationDescriptor
     ) {
-        val nodeRefs = nodeRefsConverter.convert(rawNodeRefs)
+        val (nodeDescriptors, nodesChecksum, _, _, userName) = transformationParametersSerializationService.deserialize(transformationParameters)
+        val nodeRefs = nodeDescriptors.toNodeRefs()
 
         val (transformation, transformedDataDescriptors) = performedTransformationDescriptor
 
@@ -48,18 +48,17 @@ class TransformerResponseConsumer(
         if (nodesChecksum != currentNodesChecksum) {
             reactiveTransformationManager.completeErrorTransformation(
                 correlationId,
-                AnotherTransformationIsInProgressException(transformation, nodeRefs, nodesChecksum, currentNodesChecksum)
+                AnotherTransformationIsInProgressException(transformation, nodeDescriptors, nodesChecksum, currentNodesChecksum)
             )
 
-            logger.skippedSavingResult(transformation, nodeRefs, nodesChecksum, currentNodesChecksum)
+            logger.skippedSavingResult(transformation, nodeDescriptors, nodesChecksum, currentNodesChecksum)
         } else {
             val targetNodeRefs = alfrescoAuthenticationService.runAs(userName) {
                 alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
             }
             reactiveTransformationManager.completeTransformation(correlationId, targetNodeRefs)
 
-            logger.transformedSuccessfully(transformation, nodeRefs, targetNodeRefs, startTimestamp, endTimestamp)
+            logger.transformedSuccessfully(transformation, nodeDescriptors, targetNodeRefs, startTimestamp, endTimestamp)
         }
     }
-
 }

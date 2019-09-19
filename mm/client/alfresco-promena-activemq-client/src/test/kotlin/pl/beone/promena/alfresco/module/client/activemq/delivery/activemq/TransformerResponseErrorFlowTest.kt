@@ -6,36 +6,34 @@ import io.kotlintest.shouldThrow
 import io.mockk.clearMocks
 import io.mockk.every
 import org.alfresco.service.cmr.repository.NodeRef
-import org.apache.activemq.command.ActiveMQQueue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.jms.core.JmsTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.client.activemq.GlobalPropertiesContext
-import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.TransformationParameters
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
+import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import reactor.core.publisher.Mono
 import java.time.Duration
 import java.util.*
-import javax.jms.Message
 
 @RunWith(SpringRunner::class)
 @TestPropertySource(locations = ["classpath:alfresco-global-test.properties"])
@@ -46,13 +44,7 @@ import javax.jms.Message
 class TransformerResponseErrorFlowTest {
 
     @Autowired
-    private lateinit var jmsTemplate: JmsTemplate
-
-    @Autowired
-    private lateinit var jmsQueueUtils: JmsQueueUtils
-
-    @Value("\${promena.client.activemq.consumer.queue.response.error}")
-    private lateinit var queueResponseError: String
+    private lateinit var jmsUtils: JmsUtils
 
     @Autowired
     private lateinit var alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator
@@ -61,11 +53,13 @@ class TransformerResponseErrorFlowTest {
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
     companion object {
-        private val nodeRefs = listOf(
-            NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f"),
-            NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c")
+        private val nodeDescriptors = listOf(
+            NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toNodeDescriptor(emptyMetadata()),
+            NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c").toNodeDescriptor(emptyMetadata() + ("key" to "value"))
         )
+        private val nodeRefs = nodeDescriptors.toNodeRefs()
         private const val nodesChecksum = "123456789"
+        private const val attempt: Long = 0
         private const val userName = "admin"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
         private val exception = TransformationException(transformation, "Exception")
@@ -82,13 +76,12 @@ class TransformerResponseErrorFlowTest {
 
     @After
     fun tearDown() {
-        jmsQueueUtils.dequeueQueue(queueResponseError)
+        jmsUtils.dequeueQueues()
     }
 
     @Test
     fun `should receive exception and try to retry again _ first attempt`() {
         val id = UUID.randomUUID().toString()
-        val retry = customRetry(1, Duration.ofMillis(0))
 
         every {
             alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
@@ -99,7 +92,11 @@ class TransformerResponseErrorFlowTest {
         } returns Mono.error(exception)
 
         val transformation = reactiveTransformationManager.startTransformation(id)
-        sendResponseErrorMessage(id, retry)
+        jmsUtils.sendResponseErrorMessage(
+            id,
+            exception,
+            TransformationParameters(nodeDescriptors, nodesChecksum, customRetry(1, Duration.ofMillis(0)), attempt, userName)
+        )
 
         shouldThrow<IllegalStateException> {
             transformation.block(Duration.ofSeconds(2))
@@ -115,34 +112,14 @@ class TransformerResponseErrorFlowTest {
         } returns nodesChecksum
 
         val transformation = reactiveTransformationManager.startTransformation(id)
-        sendResponseErrorMessage(id, noRetry())
+        jmsUtils.sendResponseErrorMessage(
+            id,
+            exception,
+            TransformationParameters(nodeDescriptors, nodesChecksum, customRetry(0, Duration.ZERO), attempt, userName)
+        )
 
         shouldThrow<TransformationException> {
             transformation.block(Duration.ofSeconds(1))
         }.message shouldBe exception.message
-    }
-
-    private fun sendResponseErrorMessage(correlationId: String, retry: Retry) {
-        jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) { message ->
-            message.apply {
-                jmsCorrelationID = correlationId
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, userName)
-
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, 0)
-                setRetryHeaders(retry)
-            }
-        }
-    }
-
-    private fun Message.setRetryHeaders(retry: Retry) {
-        if (retry != noRetry()) {
-            setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS, retry.maxAttempts)
-            setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY, retry.nextAttemptDelay.toString())
-        } else {
-            setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS, 0)
-            setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY, Duration.ZERO.toString())
-        }
     }
 }

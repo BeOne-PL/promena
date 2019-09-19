@@ -20,11 +20,16 @@ import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.client.activemq.GlobalPropertiesContext
-import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS_STRING
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.TransformationParameters
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.context.SetupContext
+import pl.beone.promena.alfresco.module.client.activemq.internal.TransformationParametersSerializationService
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
@@ -53,7 +58,7 @@ class TransformerSenderTest {
     private lateinit var jmsTemplate: JmsTemplate
 
     @Autowired
-    private lateinit var jmsQueueUtils: JmsQueueUtils
+    private lateinit var jmsUtils: JmsUtils
 
     @Value("\${promena.client.activemq.consumer.queue.request}")
     private lateinit var queueRequest: String
@@ -63,17 +68,27 @@ class TransformerSenderTest {
 
     companion object {
         private val id = UUID.randomUUID().toString()
-        private val nodeRefs = listOf(NodeRef("workspace://SpacesStore/f0ee3818-9cc3-4e4d-b20b-1b5d8820e133"))
+        private val nodeDescriptors = listOf(
+            NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toNodeDescriptor(emptyMetadata()),
+            NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c").toNodeDescriptor(emptyMetadata() + ("key" to "value"))
+        )
         private const val nodesChecksum = "123456789"
+        private val retry = customRetry(3, Duration.ofMillis(1000))
+        private const val attempt: Long = 0
         private const val userName = "admin"
-        private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
-        private val dataDescriptors = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
-        private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptors, memoryCommunicationParameters())
-        private const val attempt = 1L
+        private val transformationParameters = TransformationParameters(nodeDescriptors, nodesChecksum, retry, attempt, userName)
+        private val transformationDescriptor = transformationDescriptor(
+            singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value")),
+            singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value")),
+            memoryCommunicationParameters()
+        )
     }
 
     @Autowired
     private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+
+    @Autowired
+    private lateinit var transformationParametersSerializationService: TransformationParametersSerializationService
 
     @Before
     fun setUp() {
@@ -83,50 +98,19 @@ class TransformerSenderTest {
 
     @After
     fun tearDown() {
-        jmsQueueUtils.dequeueQueue(queueRequest)
+        jmsUtils.dequeueQueues()
     }
 
     @Test
-    fun `should send message with no retry policy to queue`() {
-        transformerSender.send(id, transformationDescriptor, nodeRefs, nodesChecksum, noRetry(), 1)
+    fun `should send message to queue`() {
+        transformerSender.send(id, transformationDescriptor, nodeDescriptors, nodesChecksum, retry, attempt)
 
         validateHeaders(
             mapOf(
-                PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
-                PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
-                PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
-
-                PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT to attempt,
-                PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS to 0L,
-                PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY to Duration.ZERO.toString().toUTF8Buffer()
-            )
-        )
-        validateContent()
-    }
-
-    @Test
-    fun `should send message with custom retry policy to queue`() {
-        val retryMaxAttempts = 3L
-        val retryNextAttemptDelay = Duration.ofMillis(1500)
-
-        transformerSender.send(
-            id,
-            transformationDescriptor,
-            nodeRefs,
-            nodesChecksum,
-            customRetry(retryMaxAttempts, retryNextAttemptDelay),
-            attempt
-        )
-
-        validateHeaders(
-            mapOf(
-                PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS to nodeRefs.map { it.toString() },
-                PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM to nodesChecksum.toUTF8Buffer(),
-                PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME to userName.toUTF8Buffer(),
-
-                PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT to attempt,
-                PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS to retryMaxAttempts,
-                PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY to retryNextAttemptDelay.toString().toUTF8Buffer()
+                SEND_BACK_TRANSFORMATION_PARAMETERS to transformationParametersSerializationService.serialize(transformationParameters).toUTF8Buffer(),
+                SEND_BACK_TRANSFORMATION_PARAMETERS_STRING to transformationParameters.toString().toUTF8Buffer(),
+                SEND_BACK_ATTEMPT to attempt,
+                SEND_BACK_RETRY_MAX_ATTEMPTS to retry.maxAttempts
             )
         )
         validateContent()

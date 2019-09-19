@@ -9,11 +9,13 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.NodeDoesNotExist
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.metadata.plus
 import java.util.*
 
 @RunWith(AlfrescoTestRunner::class)
@@ -23,6 +25,7 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
     fun get_shouldDetermineDataDescriptor() {
         val data = "test".toMemoryData()
         val mediaType = TEXT_PLAIN
+        val metadata = emptyMetadata() + ("key" to "value")
         val node = with(createOrGetIntegrationTestsFolder()) {
             createNode().apply { saveContent(mediaType, "no matter") }
         }
@@ -32,8 +35,8 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
         }
 
         ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, alfrescoDataConverter)
-            .get(listOf(node)).let {
-                it shouldBe singleDataDescriptor(data, mediaType, emptyMetadata())
+            .get(listOf(node.toNodeDescriptor(metadata))).let {
+                it shouldBe singleDataDescriptor(data, mediaType, metadata)
             }
     }
 
@@ -41,7 +44,7 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
     fun get_shouldThrowNodeDoesNotExist() {
         shouldThrow<NodeDoesNotExist> {
             ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, mockk())
-                .get(listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}")))
+                .get(listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}").toNodeDescriptor()))
         }
     }
 }

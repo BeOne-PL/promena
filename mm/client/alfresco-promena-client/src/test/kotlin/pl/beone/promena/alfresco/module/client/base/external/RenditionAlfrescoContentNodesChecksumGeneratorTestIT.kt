@@ -6,7 +6,7 @@ import io.kotlintest.shouldThrow
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 
 @RunWith(AlfrescoTestRunner::class)
 class RenditionAlfrescoContentNodesChecksumGeneratorTestIT : AbstractUtilsAlfrescoIT() {
@@ -15,7 +15,7 @@ class RenditionAlfrescoContentNodesChecksumGeneratorTestIT : AbstractUtilsAlfres
     fun generateChecksum() {
         val nodeRefs = (0..1).map { index ->
             createOrGetIntegrationTestsFolder().createNode().apply {
-                saveContent(MediaTypeConstants.TEXT_PLAIN, index.toString())
+                saveContent(TEXT_PLAIN, index.toString())
             }
         }
 

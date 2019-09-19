@@ -12,7 +12,7 @@ sealed class Retry {
             get() = throw throwUnsupportedException()
 
         private fun throwUnsupportedException(): UnsupportedOperationException =
-            UnsupportedOperationException("You can't get this value for <Retry.No> policy")
+            UnsupportedOperationException("You can't get this value of <Retry.No> policy")
     }
 
     data class Custom internal constructor(

@@ -8,7 +8,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
 import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.internal.model.data.FileData
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 
@@ -18,7 +18,7 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
     @Test
     fun createData_withoutLocationMemoryData() {
         val node = createOrGetIntegrationTestsFolder().createNode().apply {
-            saveContent(MediaTypeConstants.TEXT_PLAIN, "test")
+            saveContent(TEXT_PLAIN, "test")
         }
 
         MemoryOrFileAlfrescoDataConverter(MemoryCommunicationParameters.ID).createData(node.getContentReader()).let {
@@ -35,7 +35,7 @@ class MemoryOrFileAlfrescoDataConverterTestIT : AbstractUtilsAlfrescoIT() {
 
         try {
             val node = createOrGetIntegrationTestsFolder().createNode().apply {
-                saveContent(MediaTypeConstants.TEXT_PLAIN, "test")
+                saveContent(TEXT_PLAIN, "test")
             }
 
             MemoryOrFileAlfrescoDataConverter(FileCommunicationParameters.ID, tmpDir)

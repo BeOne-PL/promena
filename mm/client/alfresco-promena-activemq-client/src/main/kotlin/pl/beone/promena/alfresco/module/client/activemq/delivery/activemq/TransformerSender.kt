@@ -1,21 +1,26 @@
 package pl.beone.promena.alfresco.module.client.activemq.delivery.activemq
 
-import org.alfresco.service.cmr.repository.NodeRef
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
-import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS_STRING
+import pl.beone.promena.alfresco.module.client.activemq.applicationmodel.TransformationParameters
+import pl.beone.promena.alfresco.module.client.activemq.internal.TransformationParametersSerializationService
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoAuthenticationService
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders
+import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
-import java.time.Duration
-import javax.jms.Message
+import pl.beone.promena.transformer.contract.transformation.Transformation
+import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 class TransformerSender(
     private val transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer,
     private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
+    private val transformationParametersSerializationService: TransformationParametersSerializationService,
     private val queueRequest: ActiveMQQueue,
     private val jmsTemplate: JmsTemplate
 ) {
@@ -23,7 +28,7 @@ class TransformerSender(
     fun send(
         id: String,
         transformationDescriptor: TransformationDescriptor,
-        nodeRefs: List<NodeRef>,
+        nodeDescriptors: List<NodeDescriptor>,
         nodesChecksum: String,
         retry: Retry,
         attempt: Long
@@ -32,26 +37,22 @@ class TransformerSender(
             message.apply {
                 jmsCorrelationID = id
 
-                val transformerIds = transformationDescriptor.transformation.transformers.map { it.transformerId }
-                setStringProperty(PromenaJmsHeaders.TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
+                setStringProperty(
+                    TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(getTransformationIds(transformationDescriptor))
+                )
 
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODE_REFS, nodeRefs.map { it.toString() })
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_NODES_CHECKSUM, nodesChecksum)
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_USER_NAME, alfrescoAuthenticationService.getCurrentUser())
+                val transformationParameters =
+                    TransformationParameters(nodeDescriptors, nodesChecksum, retry, attempt, alfrescoAuthenticationService.getCurrentUser())
+                setStringProperty(SEND_BACK_TRANSFORMATION_PARAMETERS, transformationParametersSerializationService.serialize(transformationParameters))
+                setStringProperty(SEND_BACK_TRANSFORMATION_PARAMETERS_STRING, transformationParameters.toString())
 
-                setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT, attempt)
-                if (retry == noRetry()) {
-                    setRetryHeaders(0, Duration.ZERO)
-                } else {
-                    setRetryHeaders(retry.maxAttempts, retry.nextAttemptDelay)
-                }
+                setLongProperty(SEND_BACK_ATTEMPT, attempt)
+                setLongProperty(SEND_BACK_RETRY_MAX_ATTEMPTS, retry.maxAttempts)
             }
         }
     }
 
-    private fun Message.setRetryHeaders(maxAttempts: Long, nextAttemptDelay: Duration?) {
-        setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS, maxAttempts)
-        setObjectProperty(PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_NEXT_ATTEMPT_DELAY, nextAttemptDelay.toString())
-    }
-
+    private fun getTransformationIds(transformationDescriptor: TransformationDescriptor): List<TransformerId> =
+        transformationDescriptor.transformation.transformers
+            .map(Transformation.Single::transformerId)
 }

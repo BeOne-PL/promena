@@ -8,7 +8,7 @@
     <version>0.9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>[MM] alfresco-promena-http-client</name>
+    <name>[MM][CLIENT] alfresco-promena-http-client</name>
 
     <properties>
         <!--        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>-->

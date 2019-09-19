@@ -2,47 +2,53 @@ package pl.beone.promena.alfresco.module.client.base.extension
 
 import org.alfresco.service.cmr.repository.NodeRef
 import org.slf4j.Logger
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.time.Duration
 
-fun Logger.startSync(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?) {
+fun Logger.startSync(transformation: Transformation, nodeDescriptors: List<NodeDescriptor>, waitMax: Duration?) {
     info(
-        "Transforming <{}> nodes <{}>. Waiting <{}> for response...",
+        "Transforming <{}> using <{}>. Waiting <{}> for response...",
+        nodeDescriptors,
         transformation,
-        nodeRefs,
         waitMax.toPrettyString()
     )
 }
 
-fun Logger.startAsync(transformation: Transformation, nodeRefs: List<NodeRef>) {
+fun Logger.startAsync(transformation: Transformation, nodeDescriptors: List<NodeDescriptor>) {
     info(
-        "Transforming <{}> nodes <{}>...",
-        transformation,
-        nodeRefs
+        "Transforming <{}> using <{}>...",
+        nodeDescriptors,
+        transformation
     )
 }
 
 fun Logger.transformedSuccessfully(
     transformation: Transformation,
-    nodeRefs: List<NodeRef>,
+    nodeDescriptors: List<NodeDescriptor>,
     targetNodeRefs: List<NodeRef>,
     startTimestamp: Long,
     endTimestamp: Long
 ) {
     info(
-        "Transformed <{}> nodes <{}> to <{}> in <{} s>",
+        "Transformed <{}> using <{}> to <{}> in <{} s>",
+        nodeDescriptors,
         transformation,
-        nodeRefs,
         targetNodeRefs,
         calculateExecutionTimeInSeconds(startTimestamp, endTimestamp)
     )
 }
 
-fun Logger.skippedSavingResult(transformation: Transformation, nodeRefs: List<NodeRef>, oldNodesChecksum: String, currentNodesChecksum: String) {
+fun Logger.skippedSavingResult(
+    transformation: Transformation,
+    nodeDescriptors: List<NodeDescriptor>,
+    oldNodesChecksum: String,
+    currentNodesChecksum: String
+) {
     warn(
-        "Skipped saving result <{}> nodes <{}> because nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+        "Skipped saving result <{}> from <{}> because nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+        nodeDescriptors,
         transformation,
-        nodeRefs,
         oldNodesChecksum,
         currentNodesChecksum
     )
@@ -50,25 +56,25 @@ fun Logger.skippedSavingResult(transformation: Transformation, nodeRefs: List<No
 
 fun Logger.couldNotTransformButChecksumsAreDifferent(
     transformation: Transformation,
-    nodeRefs: List<NodeRef>,
+    nodeDescriptors: List<NodeDescriptor>,
     oldNodesChecksum: String,
     currentNodesChecksum: String,
     exception: Throwable
 ) {
     if (exception.cause != null) {
         warn(
-            "Couldn't transform <{}> nodes <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+            "Couldn't transform <{}> using <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+            nodeDescriptors,
             transformation,
-            nodeRefs,
             oldNodesChecksum,
             currentNodesChecksum,
             exception
         )
     } else {
         warn(
-            "Couldn't transform <{}> nodes <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...\n> {}",
+            "Couldn't transform <{}> using <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...\n> {}",
+            nodeDescriptors,
             transformation,
-            nodeRefs,
             oldNodesChecksum,
             currentNodesChecksum,
             exception.toString()
@@ -76,31 +82,37 @@ fun Logger.couldNotTransformButChecksumsAreDifferent(
     }
 }
 
-fun Logger.couldNotTransform(transformation: Transformation, nodeRefs: List<NodeRef>, exception: Throwable) {
+fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptors: List<NodeDescriptor>, exception: Throwable) {
     if (exception.cause != null) {
         error(
-            "Couldn't transform <{}> nodes <{}>",
+            "Couldn't transform <{}> using <{}>",
+            nodeDescriptors,
             transformation,
-            nodeRefs,
             exception
         )
     } else {
         error(
-            "Couldn't transform <{}> nodes <{}>\n> {}",
+            "Couldn't transform <{}> using <{}>\n> {}",
+            nodeDescriptors,
             transformation,
-            nodeRefs,
             exception.toString()
         )
     }
 }
 
-fun Logger.logOnRetry(transformation: Transformation, nodeRefs: List<NodeRef>, attempt: Long, maxAttempts: Long, nextAttemptDelay: Duration) {
+fun Logger.logOnRetry(
+    transformation: Transformation,
+    nodeDescriptors: List<NodeDescriptor>,
+    attempt: Long,
+    maxAttempts: Long,
+    nextAttemptDelay: Duration
+) {
     warn(
-        "Attempt ({}/{}). Transformation <{}> nodes <{}> will be run after <{}>",
+        "Attempt ({}/{}). Transformation <{}> using <{}> will be run after <{}>",
         attempt,
         maxAttempts,
+        nodeDescriptors,
         transformation,
-        nodeRefs,
         nextAttemptDelay.toPrettyString()
     )
 }

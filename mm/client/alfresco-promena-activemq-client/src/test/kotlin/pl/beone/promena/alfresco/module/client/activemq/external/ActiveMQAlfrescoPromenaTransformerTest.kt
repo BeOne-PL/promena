@@ -11,6 +11,8 @@ import org.junit.Test
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
@@ -31,10 +33,11 @@ import java.time.Duration
 class ActiveMQAlfrescoPromenaTransformerTest {
 
     companion object {
-        private val nodeRefs = listOf(
-            NodeRef("workspace://SpacesStore/68462d80-70d4-4b02-bda2-be5660b2413e"),
-            NodeRef("workspace://SpacesStore/a36d5c1a-e32c-478b-ad8b-14b2882115d1")
+        private val nodeDescriptors = listOf(
+            NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toNodeDescriptor(emptyMetadata()),
+            NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c").toNodeDescriptor(emptyMetadata() + ("key" to "value"))
         )
+        private val nodeRefs = nodeDescriptors.toNodeRefs()
         private const val nodesChecksum = "123456789"
         private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
         private val dataDescriptors = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
@@ -58,11 +61,11 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         }
 
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
-            every { get(nodeRefs) } returns dataDescriptors
+            every { get(nodeDescriptors) } returns dataDescriptors
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
+            every { send(any(), transformationDescriptor, nodeDescriptors, nodesChecksum, retry, 0) } just Runs
         }
 
         ActiveMQAlfrescoPromenaTransformer(
@@ -72,7 +75,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
             alfrescoDataDescriptorGetter,
             reactiveTransformationManager,
             transformerSender
-        ).transform(transformation, nodeRefs, Duration.ofSeconds(5)) shouldBe
+        ).transform(transformation, nodeDescriptors, Duration.ofSeconds(5)) shouldBe
                 resultNodeRefs
     }
 
@@ -86,15 +89,15 @@ class ActiveMQAlfrescoPromenaTransformerTest {
 
         val reactiveTransformationManager = mockk<ReactiveTransformationManager> {
             every { startTransformation(any()) } returns
-                    Mono.error(TransformationSynchronizationException(transformation, nodeRefs, duration))
+                    Mono.error(TransformationSynchronizationException(transformation, nodeDescriptors, duration))
         }
 
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
-            every { get(nodeRefs) } returns dataDescriptors
+            every { get(nodeDescriptors) } returns dataDescriptors
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
+            every { send(any(), transformationDescriptor, nodeDescriptors, nodesChecksum, retry, 0) } just Runs
         }
 
         shouldThrow<TransformationSynchronizationException> {
@@ -105,7 +108,7 @@ class ActiveMQAlfrescoPromenaTransformerTest {
                 alfrescoDataDescriptorGetter,
                 reactiveTransformationManager,
                 transformerSender
-            ).transform(transformation, nodeRefs, duration)
+            ).transform(transformation, nodeDescriptors, duration)
         }
     }
 
@@ -120,11 +123,11 @@ class ActiveMQAlfrescoPromenaTransformerTest {
         }
 
         val alfrescoDataDescriptorGetter = mockk<AlfrescoDataDescriptorGetter> {
-            every { get(nodeRefs) } returns dataDescriptors
+            every { get(nodeDescriptors) } returns dataDescriptors
         }
 
         val transformerSender = mockk<TransformerSender> {
-            every { send(any(), transformationDescriptor, nodeRefs, nodesChecksum, retry, 0) } just Runs
+            every { send(any(), transformationDescriptor, nodeDescriptors, nodesChecksum, retry, 0) } just Runs
         }
 
         ActiveMQAlfrescoPromenaTransformer(
@@ -134,6 +137,6 @@ class ActiveMQAlfrescoPromenaTransformerTest {
             alfrescoDataDescriptorGetter,
             reactiveTransformationManager,
             transformerSender
-        ).transformAsync(transformation, nodeRefs)
+        ).transformAsync(transformation, nodeDescriptors)
     }
 }

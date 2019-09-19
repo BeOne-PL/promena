@@ -5,6 +5,8 @@ import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.client.activemq.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.client.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.TransformationSynchronizationException
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoNodesChecksumGenerator
@@ -31,13 +33,13 @@ class ActiveMQAlfrescoPromenaTransformer(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun transform(transformation: Transformation, nodeRefs: List<NodeRef>, waitMax: Duration?, retry: Retry?): List<NodeRef> {
-        logger.startSync(transformation, nodeRefs, waitMax)
+    override fun transform(transformation: Transformation, nodeDescriptors: List<NodeDescriptor>, waitMax: Duration?, retry: Retry?): List<NodeRef> {
+        logger.startSync(transformation, nodeDescriptors, waitMax)
 
         return try {
-            transform(generateId(), transformation, nodeRefs, determineRetry(retry), 0).get(waitMax)
+            transform(generateId(), transformation, nodeDescriptors, determineRetry(retry), 0).get(waitMax)
         } catch (e: IllegalStateException) {
-            throw TransformationSynchronizationException(transformation, nodeRefs, waitMax)
+            throw TransformationSynchronizationException(transformation, nodeDescriptors, waitMax)
         }
     }
 
@@ -48,27 +50,39 @@ class ActiveMQAlfrescoPromenaTransformer(
             block()!!
         }
 
-    override fun transformAsync(transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry?): Mono<List<NodeRef>> =
-        transformAsync(generateId(), transformation, nodeRefs, determineRetry(retry), 0)
+    override fun transformAsync(transformation: Transformation, nodeDescriptors: List<NodeDescriptor>, retry: Retry?): Mono<List<NodeRef>> =
+        transformAsync(generateId(), transformation, nodeDescriptors, determineRetry(retry), 0)
 
     private fun determineRetry(retry: Retry?): Retry =
         retry ?: this.retry
 
-    internal fun transformAsync(id: String, transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry, attempt: Long): Mono<List<NodeRef>> {
-        logger.startAsync(transformation, nodeRefs)
+    internal fun transformAsync(
+        id: String,
+        transformation: Transformation,
+        nodeDescriptors: List<NodeDescriptor>,
+        retry: Retry,
+        attempt: Long
+    ): Mono<List<NodeRef>> {
+        logger.startAsync(transformation, nodeDescriptors)
 
-        return transform(id, transformation, nodeRefs, retry, attempt)
+        return transform(id, transformation, nodeDescriptors, retry, attempt)
     }
 
-    private fun transform(id: String, transformation: Transformation, nodeRefs: List<NodeRef>, retry: Retry, attempt: Long): Mono<List<NodeRef>> {
-        val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeRefs)
+    private fun transform(
+        id: String,
+        transformation: Transformation,
+        nodeDescriptors: List<NodeDescriptor>,
+        retry: Retry,
+        attempt: Long
+    ): Mono<List<NodeRef>> {
+        val dataDescriptors = alfrescoDataDescriptorGetter.get(nodeDescriptors)
 
-        val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
+        val nodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeDescriptors.toNodeRefs())
         val reactiveTransformation = reactiveTransformationManager.startTransformation(id)
         transformerSender.send(
             id,
             transformationDescriptor(transformation, dataDescriptors, externalCommunicationParameters),
-            nodeRefs,
+            nodeDescriptors,
             nodesChecksum,
             retry,
             attempt
