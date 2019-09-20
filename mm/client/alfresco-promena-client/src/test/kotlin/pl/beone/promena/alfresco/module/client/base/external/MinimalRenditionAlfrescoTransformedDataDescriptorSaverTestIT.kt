@@ -16,7 +16,9 @@ import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_ID
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_RENDITION
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE
@@ -104,8 +106,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_TRANSFORMATION to transformationString,
                         PROP_TRANSFORMATION_ID to transformationIdString,
                         PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PROP_TRANSFORMATION_DATA_SIZE to 2
-//                        PromenaTransformationContentModel.PROP_RENDITION to false // Alfresco test doesn't support defaults in model
+                        PROP_TRANSFORMATION_DATA_SIZE to 2,
+                        PROP_RENDITION to false
                     )
                     properties shouldContainKey PROP_ID
                     properties shouldNotContainKey QName.createQName("string")
@@ -128,7 +130,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_TRANSFORMATION_ID to transformationIdString,
                         PROP_TRANSFORMATION_DATA_INDEX to 1,
                         PROP_TRANSFORMATION_DATA_SIZE to 2,
-//                        PromenaTransformationContentModel.PROP_RENDITION to false, // Alfresco test doesn't support defaults in model
+                        PROP_RENDITION to false,
                         QName.createQName("string") to "string",
                         QName.createQName("int") to 10,
                         QName.createQName("long") to 20L,
@@ -177,7 +179,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 singleTransformedDataDescriptor(
                     data,
                     emptyMetadata() +
-//                            ("alf_promena:rendition" to true) + // Alfresco test doesn't resolve namespaces
+                            ("alf_promena:rendition" to true) +
                             ("alf_string" to "string")
                 )
             )
@@ -201,7 +203,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_TRANSFORMATION_ID to listOf("transformer"),
                         PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PROP_TRANSFORMATION_DATA_SIZE to 1,
-//                        PromenaTransformationContentModel.PROP_RENDITION to true, // Alfresco test doesn't support defaults in model
+                        PROP_RENDITION to true,
                         QName.createQName("string") to "string"
                     )
                     properties shouldContainKey PROP_ID
@@ -252,8 +254,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_IS_INDEXED to false,
                         PROP_TRANSFORMATION to
                                 listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PROP_TRANSFORMATION_ID to listOf("transformer")
-//                        PromenaTransformationContentModel.PROP_RENDITION to false // Alfresco test doesn't support defaults in model
+                        PROP_TRANSFORMATION_ID to listOf("transformer"),
+                        PROP_RENDITION to false
                     )
                     properties shouldContainKey PROP_ID
                     properties shouldNotContainKey PROP_TRANSFORMATION_DATA_INDEX

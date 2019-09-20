@@ -24,4 +24,6 @@
 
     <context:component-scan base-package="pl.beone.promena.alfresco.module.client.base.configuration"/>
 
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/bootstrap-context.xml" />
+
 </beans>
