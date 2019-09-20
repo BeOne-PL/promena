@@ -39,9 +39,7 @@
         <jrebel.version>1.1.8</jrebel.version>
 
         <mockk.version>1.9.3</mockk.version>
-        <junit-jupiter.version>5.5.1</junit-jupiter.version>
-        <kotlintest-runner-junit5.version>3.4.0</kotlintest-runner-junit5.version>
-        <logback-classic.version>1.2.3</logback-classic.version>
+        <kotlintest-runner-junit4.version>3.3.3</kotlintest-runner-junit4.version>
 
         <!-- Environment configuration properties -->
         <share.port>8180</share.port>
@@ -98,29 +96,16 @@
             <artifactId>kotlin-logging</artifactId>
             <version>${kotlin-logging.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
             <version>${mockk.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.kotlintest</groupId>
-            <artifactId>kotlintest-runner-junit5</artifactId>
-            <version>${kotlintest-runner-junit5.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -128,9 +113,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback-classic.version}</version>
+            <groupId>io.kotlintest</groupId>
+            <artifactId>kotlintest-runner-junit4</artifactId>
+            <version>${kotlintest-runner-junit4.version}</version>
             <scope>test</scope>
         </dependency>
 

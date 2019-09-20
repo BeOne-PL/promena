@@ -8,7 +8,7 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.namespace.RegexQNamePattern.MATCH_ALL
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_RENDITION_NAME
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
+import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchAlfrescoPromenaRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -32,7 +32,7 @@ class PromenaAlfrescoRenditionGetter(
                 .map { childAssociationRef -> childAssociationRef to getPropertyModifiedDate(childAssociationRef.childRef) }
                 .maxBy { (_, date) -> getOrMinDate(date) }
                 ?.first
-        } catch (e: PromenaNoSuchRenditionDefinitionException) {
+        } catch (e: NoSuchAlfrescoPromenaRenditionDefinitionException) {
             logger.warn(e) { "Couldn't get <$renditionName> rendition node of <$nodeRef>. Skipped" }
             null
         } catch (e: Exception) {

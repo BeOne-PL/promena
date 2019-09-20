@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.rendition.external
 
 import mu.KotlinLogging
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
+import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchAlfrescoPromenaRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
 
@@ -35,5 +35,5 @@ class MemoryAlfrescoPromenaRenditionDefinitionGetter(
         alfrescoPromenaRenditionDefinitions
 
     override fun getByRenditionName(renditionName: String): AlfrescoPromenaRenditionDefinition =
-        renditionNameToDefinitionMap[renditionName] ?: throw PromenaNoSuchRenditionDefinitionException(renditionName, alfrescoPromenaRenditionDefinitions)
+        renditionNameToDefinitionMap[renditionName] ?: throw NoSuchAlfrescoPromenaRenditionDefinitionException(renditionName, alfrescoPromenaRenditionDefinitions)
 }

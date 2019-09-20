@@ -13,7 +13,7 @@ import org.alfresco.service.transaction.TransactionService
 import org.alfresco.transform.client.model.config.TransformServiceRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.event.ApplicationContextEvent
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
+import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchAlfrescoPromenaRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
 
@@ -49,7 +49,7 @@ internal class PromenaThumbnailRegistry(
         try {
             alfrescoPromenaRenditionDefinitionGetter.getByRenditionName(thumbnailDefinition.name)
             true
-        } catch (e: PromenaNoSuchRenditionDefinitionException) {
+        } catch (e: NoSuchAlfrescoPromenaRenditionDefinitionException) {
             false
         }
 
