@@ -42,7 +42,7 @@ class PromenaRenditionService(
         true
 
     override fun saveRenditionDefinition(renditionDefinition: RenditionDefinition?) {
-
+        // deliberately omitted
     }
 
     override fun createRenditionDefinition(renditionName: QName?, renderingEngineName: String?): RenditionDefinition =
@@ -75,8 +75,10 @@ class PromenaRenditionService(
         emptyList()
 
     override fun cancelRenditions(sourceNode: NodeRef?) {
+        // deliberately omitted
     }
 
     override fun cancelRenditions(sourceNode: NodeRef?, type: String?) {
+        // deliberately omitted
     }
 }

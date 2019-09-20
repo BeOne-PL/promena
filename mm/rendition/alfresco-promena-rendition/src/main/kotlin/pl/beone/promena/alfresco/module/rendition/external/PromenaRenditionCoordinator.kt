@@ -16,7 +16,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDe
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionManager
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.extension.getTransformationNodeName
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
@@ -28,7 +28,7 @@ import java.util.*
 
 class PromenaRenditionCoordinator(
     private val nodeService: NodeService,
-    private val promenaRenditionDefinitionManager: PromenaRenditionDefinitionManager,
+    private val promenaAlfrescoRenditionDefinitionGetter: PromenaAlfrescoRenditionDefinitionGetter,
     private val alfrescoPromenaTransformer: AlfrescoPromenaTransformer,
     private val timeout: Duration
 ) {
@@ -47,7 +47,7 @@ class PromenaRenditionCoordinator(
         try {
             val nodeNameQName = QName.createQName(
                 CONTENT_MODEL_1_0_URI,
-                promenaRenditionDefinitionManager.getByRenditionName(renditionName).getTransformationNodeName()
+                promenaAlfrescoRenditionDefinitionGetter.getByRenditionName(renditionName).getTransformationNodeName()
             )
 
             nodeService.getChildAssocs(node, ASSOC_RENDITION, nodeNameQName)
@@ -99,7 +99,7 @@ class PromenaRenditionCoordinator(
 
     private fun isRendition(nodeRef: NodeRef): Boolean =
         try {
-            promenaRenditionDefinitionManager.getByNodeName(nodeService.getProperty(nodeRef, PROP_NAME) as String)
+            promenaAlfrescoRenditionDefinitionGetter.getByNodeName(nodeService.getProperty(nodeRef, PROP_NAME) as String)
             nodeService.getProperty(nodeRef, PROP_RENDITION) as Boolean
         } catch (e: PromenaNoSuchRenditionDefinitionException) {
             false
@@ -115,7 +115,7 @@ class PromenaRenditionCoordinator(
         date ?: LocalDateTime.MIN
 
     private fun getTransformation(renditionName: String): Transformation =
-        promenaRenditionDefinitionManager.getByRenditionName(renditionName).getTransformation()
+        promenaAlfrescoRenditionDefinitionGetter.getByRenditionName(renditionName).getTransformation()
 
     private fun createNodeRefWithMetadataRenditionProperty(nodeRef: NodeRef): List<NodeDescriptor> =
         listOf(

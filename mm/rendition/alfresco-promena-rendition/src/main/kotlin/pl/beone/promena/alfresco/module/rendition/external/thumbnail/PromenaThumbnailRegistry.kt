@@ -15,14 +15,14 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.event.ApplicationContextEvent
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionManager
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinitionGetter
 
 internal class PromenaThumbnailRegistry(
-    private val promenaRenditionDefinitionManager: PromenaRenditionDefinitionManager
+    private val promenaAlfrescoRenditionDefinitionGetter: PromenaAlfrescoRenditionDefinitionGetter
 ) : ThumbnailRegistry() {
 
     private val thumbnailDefinitions =
-        promenaRenditionDefinitionManager.getAll()
+        promenaAlfrescoRenditionDefinitionGetter.getAll()
             .map(::createThumbnailDefinition)
 
     private val renditionNameToThumbnailDefinitionMap =
@@ -36,6 +36,7 @@ internal class PromenaThumbnailRegistry(
         renditionNameToThumbnailDefinitionMap[thumbnailName]
 
     override fun setRenditionService(renditionService: RenditionService?) {
+        // deliberately omitted
     }
 
     override fun isThumbnailDefinitionAvailable(
@@ -46,7 +47,7 @@ internal class PromenaThumbnailRegistry(
         thumbnailDefinition: ThumbnailDefinition
     ): Boolean =
         try {
-            promenaRenditionDefinitionManager.getByRenditionName(thumbnailDefinition.name)
+            promenaAlfrescoRenditionDefinitionGetter.getByRenditionName(thumbnailDefinition.name)
             true
         } catch (e: PromenaNoSuchRenditionDefinitionException) {
             false
@@ -61,9 +62,11 @@ internal class PromenaThumbnailRegistry(
         isThumbnailDefinitionAvailable(sourceUrl, sourceMimeType, sourceSize, null, thumbnailDefinition)
 
     override fun onApplicationEvent(event: ApplicationContextEvent) {
+        // deliberately omitted
     }
 
     override fun setJobLockService(jobLockService: JobLockService?) {
+        // deliberately omitted
     }
 
     override fun getThumbnailRenditionConvertor(): ThumbnailRenditionConvertor {
@@ -74,21 +77,27 @@ internal class PromenaThumbnailRegistry(
         false
 
     override fun setTransformServiceRegistry(transformServiceRegistry: TransformServiceRegistry?) {
+        // deliberately omitted
     }
 
     override fun setThumbnailRenditionConvertor(thumbnailRenditionConvertor: ThumbnailRenditionConvertor?) {
+        // deliberately omitted
     }
 
     override fun initThumbnailDefinitions() {
+        // deliberately omitted
     }
 
     override fun setRedeployStaticDefsOnStartup(redeployStaticDefsOnStartup: Boolean) {
+        // deliberately omitted
     }
 
     override fun setContentService(contentService: ContentService?) {
+        // deliberately omitted
     }
 
     override fun setRenditionDefinitionRegistry2(renditionDefinitionRegistry2: RenditionDefinitionRegistry2?) {
+        // deliberately omitted
     }
 
     override fun getMaxSourceSizeBytes(sourceMimetype: String?, thumbnailDefinition: ThumbnailDefinition?): Long =
@@ -98,18 +107,23 @@ internal class PromenaThumbnailRegistry(
         thumbnailDefinitions
 
     override fun setTransactionService(transactionService: TransactionService?) {
+        // deliberately omitted
     }
 
     override fun setTenantAdminService(tenantAdminService: TenantAdminService?) {
+        // deliberately omitted
     }
 
     override fun setApplicationContext(applicationContext: ApplicationContext) {
+        // deliberately omitted
     }
 
     override fun setThumbnailDefinitions(thumbnailDefinitions: MutableList<ThumbnailDefinition>?) {
+        // deliberately omitted
     }
 
     override fun addThumbnailDefinition(thumbnailDetails: ThumbnailDefinition?) {
+        // deliberately omitted
     }
 
     override fun getThumbnailDefinitions(): List<ThumbnailDefinition> =

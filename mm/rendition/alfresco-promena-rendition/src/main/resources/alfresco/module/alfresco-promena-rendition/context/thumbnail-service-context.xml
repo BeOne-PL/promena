@@ -11,7 +11,7 @@
     </bean>
 
     <bean id="thumbnailRegistry" class="pl.beone.promena.alfresco.module.rendition.external.thumbnail.PromenaThumbnailRegistry">
-        <constructor-arg index="0" ref="promenaRenditionDefinitionManager"/>
+        <constructor-arg index="0" ref="promenaAlfrescoRenditionDefinitionGetter"/>
     </bean>
 
     <!-- *** -->

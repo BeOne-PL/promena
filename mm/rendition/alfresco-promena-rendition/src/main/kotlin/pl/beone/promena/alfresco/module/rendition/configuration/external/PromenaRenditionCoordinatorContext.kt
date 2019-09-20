@@ -9,7 +9,7 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTran
 import pl.beone.promena.alfresco.module.client.base.extension.getPropertyWithEmptySupport
 import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.base.extension.toDuration
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionManager
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionCoordinator
 import java.util.*
 
@@ -21,11 +21,11 @@ class PromenaRenditionCoordinatorContext {
         applicationContext: ApplicationContext,
         @Qualifier("global-properties") properties: Properties,
         nodeService: NodeService,
-        promenaRenditionDefinitionManager: PromenaRenditionDefinitionManager
+        promenaAlfrescoRenditionDefinitionGetter: PromenaAlfrescoRenditionDefinitionGetter
     ) =
         PromenaRenditionCoordinator(
             nodeService,
-            promenaRenditionDefinitionManager,
+            promenaAlfrescoRenditionDefinitionGetter,
             applicationContext.getAlfrescoPromenaTransformer(properties.getPropertyWithEmptySupport("promena.rendition.transformer.bean.name")),
             properties.getRequiredPropertyWithResolvedPlaceholders("promena.rendition.transformation.timeout").toDuration()
         )

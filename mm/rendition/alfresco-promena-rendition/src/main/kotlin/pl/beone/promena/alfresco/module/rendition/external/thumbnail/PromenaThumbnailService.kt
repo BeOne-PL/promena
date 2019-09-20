@@ -34,7 +34,7 @@ class PromenaThumbnailService(
     }
 
     override fun setThumbnailsEnabled(thumbnailsEnabled: Boolean) {
-
+        // deliberately omitted
     }
 
     override fun getThumbnailsEnabled(): Boolean =

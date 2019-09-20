@@ -10,7 +10,7 @@
     </bean>
 
     <bean id="renditionDefinitionRegistry2" class="pl.beone.promena.alfresco.module.rendition.external.rendition2.PromenaRenditionDefinitionRegistry2">
-        <constructor-arg index="0" ref="promenaRenditionDefinitionManager"/>
+        <constructor-arg index="0" ref="promenaAlfrescoRenditionDefinitionGetter"/>
     </bean>
 
     <!-- *** -->

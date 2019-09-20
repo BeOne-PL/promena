@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.rendition.contract
 
-interface PromenaRenditionDefinitionManager {
+interface PromenaAlfrescoRenditionDefinitionGetter {
 
     fun getAll(): List<PromenaAlfrescoRenditionDefinition>
 
