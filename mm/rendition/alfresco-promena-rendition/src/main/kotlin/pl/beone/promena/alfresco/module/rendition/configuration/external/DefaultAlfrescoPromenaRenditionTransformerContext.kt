@@ -9,7 +9,7 @@ import pl.beone.promena.alfresco.module.client.base.extension.getPropertyWithEmp
 import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.base.extension.toDuration
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressManager
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter
 import pl.beone.promena.alfresco.module.rendition.external.DefaultAlfrescoPromenaRenditionTransformer
 import java.util.*
@@ -22,13 +22,13 @@ class DefaultAlfrescoPromenaRenditionTransformerContext {
         applicationContext: ApplicationContext,
         @Qualifier("global-properties") properties: Properties,
         alfrescoRenditionGetter: AlfrescoRenditionGetter,
-        alfrescoPromenaRenditionInProgressManager: AlfrescoPromenaRenditionInProgressManager,
+        alfrescoPromenaRenditionInProgressSynchronizer: AlfrescoPromenaRenditionInProgressSynchronizer,
         alfrescoPromenaRenditionDefinitionGetter: AlfrescoPromenaRenditionDefinitionGetter
     ) =
         DefaultAlfrescoPromenaRenditionTransformer(
             alfrescoRenditionGetter,
             alfrescoPromenaRenditionDefinitionGetter,
-            alfrescoPromenaRenditionInProgressManager,
+            alfrescoPromenaRenditionInProgressSynchronizer,
             applicationContext.getAlfrescoPromenaTransformer(properties.getPropertyWithEmptySupport("promena.rendition.transformer.bean.name")),
             properties.getRequiredPropertyWithResolvedPlaceholders("promena.rendition.transformation.timeout").toDuration()
         )

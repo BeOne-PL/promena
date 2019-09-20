@@ -2,10 +2,9 @@ package pl.beone.promena.alfresco.module.rendition.internal
 
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionInProgressException
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaAlfrescoRenditionValidationException
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressManager
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressSynchronizer
 
-class MemoryAlfrescoPromenaRenditionInProgressManager : AlfrescoPromenaRenditionInProgressManager {
+class MemoryAlfrescoPromenaRenditionInProgressSynchronizer : AlfrescoPromenaRenditionInProgressSynchronizer {
 
     private data class RenditionDescription(
         val nodeRef: NodeRef,

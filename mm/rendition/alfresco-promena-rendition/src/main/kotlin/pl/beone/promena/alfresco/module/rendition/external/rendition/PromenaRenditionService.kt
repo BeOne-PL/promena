@@ -56,14 +56,14 @@ class PromenaRenditionService(
     override fun getSourceNode(renditionNode: NodeRef?): ChildAssociationRef =
         TODO("not implemented")
 
-    override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition): ChildAssociationRef? =
+    override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition): ChildAssociationRef =
         alfrescoPromenaRenditionTransformer.transform(sourceNode, renditionDefinition.renditionName.localName)
 
     override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition, callback: RenderCallback?) {
         alfrescoPromenaRenditionTransformer.transformAsync(sourceNode, renditionDefinition.renditionName.localName)
     }
 
-    override fun render(sourceNode: NodeRef, renditionDefinitionQName: QName): ChildAssociationRef? =
+    override fun render(sourceNode: NodeRef, renditionDefinitionQName: QName): ChildAssociationRef =
         alfrescoPromenaRenditionTransformer.transform(sourceNode, renditionDefinitionQName.localName)
 
     override fun render(sourceNode: NodeRef, renditionDefinitionQName: QName, callback: RenderCallback?) {

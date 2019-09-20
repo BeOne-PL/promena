@@ -8,13 +8,13 @@ import org.junit.Before
 import org.junit.Test
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionInProgressException
 
-class MemoryAlfrescoPromenaRenditionInProgressManagerTest {
+class MemoryAlfrescoPromenaRenditionInProgressSynchronizerTest {
 
-    private lateinit var memoryAlfrescoPromenaRenditionInProgressManager: MemoryAlfrescoPromenaRenditionInProgressManager
+    private lateinit var memoryAlfrescoPromenaRenditionInProgressManager: MemoryAlfrescoPromenaRenditionInProgressSynchronizer
 
     @Before
     fun setUp() {
-        memoryAlfrescoPromenaRenditionInProgressManager = MemoryAlfrescoPromenaRenditionInProgressManager()
+        memoryAlfrescoPromenaRenditionInProgressManager = MemoryAlfrescoPromenaRenditionInProgressSynchronizer()
     }
 
     @Test
@@ -34,7 +34,7 @@ class MemoryAlfrescoPromenaRenditionInProgressManagerTest {
         memoryAlfrescoPromenaRenditionInProgressManager.start(nodeRef2, renditionName2)
         shouldThrow<AlfrescoPromenaRenditionInProgressException> {
             memoryAlfrescoPromenaRenditionInProgressManager.isInProgress(nodeRef2, renditionName2)
-        }.message shouldBe "Rendition <pdf> of <workspace:/workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f> is in progress..."
+        }.message shouldBe "Creating rendition <pdf> of <workspace:/workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f> is in progress..."
 
         memoryAlfrescoPromenaRenditionInProgressManager.finish(nodeRef2, renditionName2)
         shouldNotThrow<AlfrescoPromenaRenditionInProgressException> {

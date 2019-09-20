@@ -6,7 +6,7 @@ class NoSuchAlfrescoPromenaRenditionDefinitionException(
     val renditionName: String,
     val alfrescoPromenaRenditionDefinitions: List<AlfrescoPromenaRenditionDefinition>
 ) : NoSuchElementException(
-    "Definition for <$renditionName> rendition isn't available. " +
+    "There is no <$renditionName> Promena rendition definition. " +
             "Available renditions: <[${createDescription(alfrescoPromenaRenditionDefinitions)}]>"
 )
 

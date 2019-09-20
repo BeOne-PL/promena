@@ -8,9 +8,8 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.Prome
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchAlfrescoPromenaRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressManager
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionTransformer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter
 import pl.beone.promena.transformer.contract.transformation.Transformation
@@ -21,7 +20,7 @@ import java.time.Duration
 class DefaultAlfrescoPromenaRenditionTransformer(
     private val alfrescoRenditionGetter: AlfrescoRenditionGetter,
     private val alfrescoPromenaRenditionDefinitionGetter: AlfrescoPromenaRenditionDefinitionGetter,
-    private val alfrescoPromenaRenditionInProgressManager: AlfrescoPromenaRenditionInProgressManager,
+    private val alfrescoPromenaRenditionInProgressSynchronizer: AlfrescoPromenaRenditionInProgressSynchronizer,
     private val alfrescoPromenaTransformer: AlfrescoPromenaTransformer,
     private val timeout: Duration
 ) : AlfrescoPromenaRenditionTransformer {
@@ -32,48 +31,45 @@ class DefaultAlfrescoPromenaRenditionTransformer(
         private val metadataRenditionNameProperty = "alf_$PROMENA_MODEL_1_0_PREFIX:${PROP_RENDITION_NAME.localName}"
     }
 
-    override fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef? {
+    override fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef {
         logger.debug { "Performing <$renditionName> rendition sync transformation of <$nodeRef>..." }
 
-        return try {
-            alfrescoPromenaRenditionInProgressManager.isInProgress(nodeRef, renditionName)
-            alfrescoPromenaRenditionInProgressManager.start(nodeRef, renditionName)
+        alfrescoPromenaRenditionInProgressSynchronizer.isInProgress(nodeRef, renditionName)
+        val transformation = getTransformation(renditionName)
+        try {
+            alfrescoPromenaRenditionInProgressSynchronizer.start(nodeRef, renditionName)
 
-            alfrescoPromenaTransformer.transform(
-                getTransformation(renditionName),
-                createNodeRefWithMetadataRenditionProperty(nodeRef, renditionName),
-                timeout
-            )
+            alfrescoPromenaTransformer.transform(transformation, createNodeRefWithMetadataRenditionProperty(nodeRef, renditionName), timeout)
 
             logger.debug { "Finished performing <$renditionName> rendition sync transformation of <$nodeRef>" }
-
-            alfrescoRenditionGetter.getRendition(nodeRef, renditionName)
-        } catch (e: NoSuchAlfrescoPromenaRenditionDefinitionException) {
-            logger.warn(e) { "Couldn't perform <$renditionName> rendition sync transformation of <$nodeRef>. Skipped" }
-            null
         } catch (e: Exception) {
             logger.error(e) { "Couldn't perform <$renditionName> rendition sync transformation of <$nodeRef>" }
-            null
+            throw e
         } finally {
-            alfrescoPromenaRenditionInProgressManager.finish(nodeRef, renditionName)
+            alfrescoPromenaRenditionInProgressSynchronizer.finish(nodeRef, renditionName)
         }
+
+        return alfrescoRenditionGetter.getRendition(nodeRef, renditionName)
+            ?: throw NoSuchElementException("There is no <$renditionName> rendition of <$nodeRef>")
     }
 
     override fun transformAsync(nodeRef: NodeRef, renditionName: String) {
         logger.debug { "Performing <$renditionName> rendition async transformation of <$nodeRef>..." }
 
+        alfrescoPromenaRenditionInProgressSynchronizer.isInProgress(nodeRef, renditionName)
+        val transformation = getTransformation(renditionName)
         try {
-            alfrescoPromenaRenditionInProgressManager.isInProgress(nodeRef, renditionName)
-            alfrescoPromenaRenditionInProgressManager.start(nodeRef, renditionName)
+            alfrescoPromenaRenditionInProgressSynchronizer.start(nodeRef, renditionName)
 
-            alfrescoPromenaTransformer.transformAsync(getTransformation(renditionName), createNodeRefWithMetadataRenditionProperty(nodeRef, renditionName))
+            alfrescoPromenaTransformer.transformAsync(transformation, createNodeRefWithMetadataRenditionProperty(nodeRef, renditionName))
                 .subscribe(
                     { logger.debug { "Finished performing <$renditionName> rendition async transformation of <$nodeRef>" } },
-                    { exception -> logger.error(exception) { "Couldn't perform <$renditionName> rendition async transformation of <$nodeRef>" } },
-                    { alfrescoPromenaRenditionInProgressManager.finish(nodeRef, renditionName) }
+                    { e -> logger.error(e) { "Couldn't perform <$renditionName> rendition async transformation of <$nodeRef>" } },
+                    { alfrescoPromenaRenditionInProgressSynchronizer.finish(nodeRef, renditionName) }
                 )
-        } catch (e: NoSuchAlfrescoPromenaRenditionDefinitionException) {
-            logger.warn(e) { "Couldn't perform <$renditionName> rendition async transformation of <$nodeRef>. Skipped" }
+        } catch (e: Exception) {
+            logger.warn(e) { "Couldn't perform <$renditionName> rendition async transformation of <$nodeRef>" }
+            throw e
         }
     }
 

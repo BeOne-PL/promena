@@ -3,7 +3,7 @@ package pl.beone.promena.alfresco.module.rendition.contract
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionInProgressException
 
-interface AlfrescoPromenaRenditionInProgressManager {
+interface AlfrescoPromenaRenditionInProgressSynchronizer {
 
     fun start(nodeRef: NodeRef, renditionName: String)
 
