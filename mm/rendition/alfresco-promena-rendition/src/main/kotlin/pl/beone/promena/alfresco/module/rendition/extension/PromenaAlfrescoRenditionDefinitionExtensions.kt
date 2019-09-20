@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.rendition.extension
 
 import pl.beone.promena.alfresco.module.client.base.util.createNodeName
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 
-fun PromenaAlfrescoRenditionDefinition.getTransformationNodeName(): String =
+fun AlfrescoPromenaRenditionDefinition.getTransformationNodeName(): String =
     getTransformation().createNodeName()

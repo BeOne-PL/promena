@@ -1,16 +1,16 @@
 package pl.beone.promena.alfresco.module.rendition.internal
 
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaAlfrescoRenditionValidationException
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 import javax.annotation.PostConstruct
 
-class PromenaAlfrescoRenditionDefinitionValidator(
-    private val promenaAlfrescoRenditionDefinitions: List<PromenaAlfrescoRenditionDefinition>
+class AlfrescoPromenaRenditionDefinitionValidator(
+    private val alfrescoPromenaRenditionDefinitions: List<AlfrescoPromenaRenditionDefinition>
 ) {
 
     @PostConstruct
     fun validateUniqueDefinitions() {
-        val notUniqueDefinitions = promenaAlfrescoRenditionDefinitions.groupBy { it.getRenditionName() }
+        val notUniqueDefinitions = alfrescoPromenaRenditionDefinitions.groupBy { it.getRenditionName() }
             .filter { (_, definitions) -> definitions.size >= 2 }
             .toList()
 

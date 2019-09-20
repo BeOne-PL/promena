@@ -6,7 +6,8 @@
 
     <bean id="renditionService" class="pl.beone.promena.alfresco.module.rendition.external.rendition.PromenaRenditionService">
         <constructor-arg index="0" ref="nodeService"/>
-        <constructor-arg index="1" ref="promenaRenditionCoordinator"/>
+        <constructor-arg index="1" ref="promenaAlfrescoRenditionGetter"/>
+        <constructor-arg index="2" ref="defaultAlfrescoPromenaRenditionTransformer"/>
     </bean>
 
     <!-- *** -->

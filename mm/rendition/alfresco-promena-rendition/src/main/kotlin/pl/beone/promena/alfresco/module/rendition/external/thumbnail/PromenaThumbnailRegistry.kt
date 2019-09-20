@@ -14,22 +14,22 @@ import org.alfresco.transform.client.model.config.TransformServiceRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.event.ApplicationContextEvent
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinitionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
 
 internal class PromenaThumbnailRegistry(
-    private val promenaAlfrescoRenditionDefinitionGetter: PromenaAlfrescoRenditionDefinitionGetter
+    private val alfrescoPromenaRenditionDefinitionGetter: AlfrescoPromenaRenditionDefinitionGetter
 ) : ThumbnailRegistry() {
 
     private val thumbnailDefinitions =
-        promenaAlfrescoRenditionDefinitionGetter.getAll()
+        alfrescoPromenaRenditionDefinitionGetter.getAll()
             .map(::createThumbnailDefinition)
 
     private val renditionNameToThumbnailDefinitionMap =
         thumbnailDefinitions.map { it.name to it }
             .toMap()
 
-    private fun createThumbnailDefinition(renditionName: PromenaAlfrescoRenditionDefinition) =
+    private fun createThumbnailDefinition(renditionName: AlfrescoPromenaRenditionDefinition) =
         PromenaThumbnailDefinition(renditionName.getRenditionName())
 
     override fun getThumbnailDefinition(thumbnailName: String): ThumbnailDefinition? =
@@ -47,7 +47,7 @@ internal class PromenaThumbnailRegistry(
         thumbnailDefinition: ThumbnailDefinition
     ): Boolean =
         try {
-            promenaAlfrescoRenditionDefinitionGetter.getByRenditionName(thumbnailDefinition.name)
+            alfrescoPromenaRenditionDefinitionGetter.getByRenditionName(thumbnailDefinition.name)
             true
         } catch (e: PromenaNoSuchRenditionDefinitionException) {
             false
