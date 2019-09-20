@@ -12,6 +12,6 @@ object PromenaTransformationContentModel {
     val PROP_TRANSFORMATION_DATA_INDEX = QName.createQName(PROMENA_MODEL_1_0_URI, "transformationDataIndex")!!
     val PROP_TRANSFORMATION_DATA_SIZE = QName.createQName(PROMENA_MODEL_1_0_URI, "transformationDataSize")!!
     val PROP_ID = QName.createQName(PROMENA_MODEL_1_0_URI, "id")!!
-    val PROP_RENDITION = QName.createQName(PROMENA_MODEL_1_0_URI, "rendition")!!
+    val PROP_RENDITION_NAME = QName.createQName(PROMENA_MODEL_1_0_URI, "renditionName")!!
 
 }

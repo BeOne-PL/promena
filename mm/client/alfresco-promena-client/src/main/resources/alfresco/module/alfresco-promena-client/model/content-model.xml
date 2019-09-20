@@ -58,10 +58,9 @@
                         <tokenised>false</tokenised>
                     </index>
                 </property>
-                <property name="promena:rendition">
-                    <type>d:boolean</type>
+                <property name="promena:renditionName">
+                    <type>d:text</type>
                     <multiple>false</multiple>
-                    <default>false</default>
                     <index enabled="true">
                         <atomic>true</atomic>
                         <stored>false</stored>

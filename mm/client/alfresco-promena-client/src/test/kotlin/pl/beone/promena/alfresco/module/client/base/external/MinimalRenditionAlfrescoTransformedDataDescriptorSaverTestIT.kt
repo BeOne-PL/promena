@@ -16,9 +16,8 @@ import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_ID
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_RENDITION
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_RENDITION_NAME
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE
@@ -93,7 +92,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                     "transformer",
                     "transformer2-sub"
                 )
-                val name = "transformer, transformer2"
+                val name = "transformer, transformer2-sub"
 
                 node.getType() shouldBe TYPE_THUMBNAIL
                 node.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
@@ -106,10 +105,10 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_TRANSFORMATION to transformationString,
                         PROP_TRANSFORMATION_ID to transformationIdString,
                         PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PROP_TRANSFORMATION_DATA_SIZE to 2,
-                        PROP_RENDITION to false
+                        PROP_TRANSFORMATION_DATA_SIZE to 2
                     )
                     properties shouldContainKey PROP_ID
+                    properties shouldNotContainKey PROP_RENDITION_NAME
                     properties shouldNotContainKey QName.createQName("string")
                     properties shouldNotContainKey QName.createQName("int")
                     properties shouldNotContainKey QName.createQName("long")
@@ -130,7 +129,6 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_TRANSFORMATION_ID to transformationIdString,
                         PROP_TRANSFORMATION_DATA_INDEX to 1,
                         PROP_TRANSFORMATION_DATA_SIZE to 2,
-                        PROP_RENDITION to false,
                         QName.createQName("string") to "string",
                         QName.createQName("int") to 10,
                         QName.createQName("long") to 20L,
@@ -139,6 +137,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         QName.createQName("boolean") to true
                     )
                     properties shouldContainKey PROP_ID
+                    properties shouldNotContainKey PROP_RENDITION_NAME
                 }
 
                 node.getProperty(PROP_ID) shouldBe node2.getProperty(PROP_ID)
@@ -179,7 +178,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                 singleTransformedDataDescriptor(
                     data,
                     emptyMetadata() +
-                            ("alf_promena:rendition" to true) +
+                            ("alf_promena:renditionName" to "doclib") +
                             ("alf_string" to "string")
                 )
             )
@@ -203,7 +202,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_TRANSFORMATION_ID to listOf("transformer"),
                         PROP_TRANSFORMATION_DATA_INDEX to 0,
                         PROP_TRANSFORMATION_DATA_SIZE to 1,
-                        PROP_RENDITION to true,
+                        PROP_RENDITION_NAME to "doclib",
                         QName.createQName("string") to "string"
                     )
                     properties shouldContainKey PROP_ID
@@ -254,10 +253,10 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverTestIT : AbstractUti
                         PROP_IS_INDEXED to false,
                         PROP_TRANSFORMATION to
                                 listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PROP_TRANSFORMATION_ID to listOf("transformer"),
-                        PROP_RENDITION to false
+                        PROP_TRANSFORMATION_ID to listOf("transformer")
                     )
                     properties shouldContainKey PROP_ID
+                    properties shouldNotContainKey PROP_RENDITION_NAME
                     properties shouldNotContainKey PROP_TRANSFORMATION_DATA_INDEX
                     properties shouldNotContainKey PROP_TRANSFORMATION_DATA_SIZE
                 }

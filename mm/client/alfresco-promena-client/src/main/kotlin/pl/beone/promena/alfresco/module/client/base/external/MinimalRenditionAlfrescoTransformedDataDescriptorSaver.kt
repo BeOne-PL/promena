@@ -16,7 +16,6 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.Prome
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
-import pl.beone.promena.alfresco.module.client.base.util.createNodeName
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
@@ -62,11 +61,11 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
         return transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
             val dataSize = transformedDataDescriptors.size
-            val properties = createGeneralAndThumbnailProperties(transformation.createNodeName()) +
+            val properties = createGeneralAndThumbnailProperties(transformation.getTransformerIdsDescription()) +
                     determinePromenaProperties(id, transformation, index, dataSize) +
                     determineAlfrescoProperties(transformedDataDescriptor.metadata)
 
-            createRenditionNode(sourceNodeRef, transformation.createNodeName(), properties).apply {
+            createRenditionNode(sourceNodeRef, transformation.getTransformerIdsDescription(), properties).apply {
                 if (transformedDataDescriptor.hasContent()) {
                     saveContent(transformation.determineDestinationMediaType(), transformedDataDescriptor.data)
                 }
@@ -75,13 +74,20 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     }
 
     private fun handleZero(sourceNodeRef: NodeRef, transformation: Transformation): List<NodeRef> {
-        val name = transformation.createNodeName()
+        val name = transformation.getTransformerIdsDescription()
 
         val properties = createGeneralAndThumbnailProperties(name) +
                 determinePromenaProperties(generateId(), transformation)
 
         return listOf(createRenditionNode(sourceNodeRef, name, properties))
     }
+
+    private fun generateId(): String =
+        UUID.randomUUID().toString()
+
+    private fun Transformation.getTransformerIdsDescription(): String =
+        convertToStringifiedTransformationId(this)
+            .joinToString(", ") { it }
 
     private fun Transformation.determineDestinationMediaType(): MediaType =
         transformers.last().targetMediaType
@@ -143,7 +149,4 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
     private fun TransformedDataDescriptor.Single.hasContent(): Boolean =
         data !is NoData
-
-    private fun generateId(): String =
-        UUID.randomUUID().toString()
 }

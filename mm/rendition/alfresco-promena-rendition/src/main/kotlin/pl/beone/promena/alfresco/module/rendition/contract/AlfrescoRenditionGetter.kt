@@ -5,7 +5,7 @@ import org.alfresco.service.cmr.repository.NodeRef
 
 interface AlfrescoRenditionGetter {
 
-    fun getRenditions(node: NodeRef): List<ChildAssociationRef>
+    fun getRenditions(nodeRef: NodeRef): List<ChildAssociationRef>
 
-    fun getRendition(node: NodeRef, renditionName: String): ChildAssociationRef?
+    fun getRendition(nodeRef: NodeRef, renditionName: String): ChildAssociationRef?
 }
