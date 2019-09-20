@@ -15,8 +15,8 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.Prome
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
-import pl.beone.promena.alfresco.module.client.base.util.createNodeName
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionManager
 import pl.beone.promena.alfresco.module.rendition.extension.getTransformationNodeName
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
@@ -109,7 +109,7 @@ class PromenaRenditionCoordinator(
         (nodeService.getProperty(nodeRef, PROP_MODIFIED) as Date?)?.toLocalDateTime()
 
     private fun Date.toLocalDateTime(): LocalDateTime =
-        LocalDateTime.ofInstant(toInstant(), ZoneId.systemDefault());
+        LocalDateTime.ofInstant(toInstant(), ZoneId.systemDefault())
 
     private fun getOrMinDate(date: LocalDateTime?): LocalDateTime =
         date ?: LocalDateTime.MIN

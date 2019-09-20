@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.event.ApplicationContextEvent
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
-import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionDefinitionManager
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionManager
 
 internal class PromenaThumbnailRegistry(
     private val promenaRenditionDefinitionManager: PromenaRenditionDefinitionManager

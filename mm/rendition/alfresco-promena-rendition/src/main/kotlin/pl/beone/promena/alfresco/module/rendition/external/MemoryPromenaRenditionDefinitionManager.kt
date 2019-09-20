@@ -3,11 +3,12 @@ package pl.beone.promena.alfresco.module.rendition.external
 import mu.KotlinLogging
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaNoSuchRenditionDefinitionException
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaAlfrescoRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionManager
 import pl.beone.promena.alfresco.module.rendition.extension.getTransformationNodeName
 
-class PromenaRenditionDefinitionManager(
+class MemoryPromenaRenditionDefinitionManager(
     private val promenaAlfrescoRenditionDefinitions: List<PromenaAlfrescoRenditionDefinition>
-) {
+) : PromenaRenditionDefinitionManager {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -34,17 +35,18 @@ class PromenaRenditionDefinitionManager(
     private val nodeNameToDefinitionMap =
         promenaAlfrescoRenditionDefinitions.map { it.getTransformationNodeName() to it }.toMap()
 
-    fun getAll(): List<PromenaAlfrescoRenditionDefinition> =
+    override fun getAll(): List<PromenaAlfrescoRenditionDefinition> =
         promenaAlfrescoRenditionDefinitions
 
-    fun getByRenditionName(renditionName: String): PromenaAlfrescoRenditionDefinition =
+    override fun getByRenditionName(renditionName: String): PromenaAlfrescoRenditionDefinition =
         renditionNameToDefinitionMap[renditionName]
             ?: throw PromenaNoSuchRenditionDefinitionException(
-                "Definition for <$renditionName> rendition isn't available. Available renditions: <[${createExceptionString { it.getRenditionName() }}]>",
+                "Definition for <$renditionName> rendition isn't available. " +
+                        "Available renditions: <[${createExceptionString(PromenaAlfrescoRenditionDefinition::getRenditionName)}]>",
                 promenaAlfrescoRenditionDefinitions
             )
 
-    fun getByNodeName(nodeName: String): PromenaAlfrescoRenditionDefinition =
+    override fun getByNodeName(nodeName: String): PromenaAlfrescoRenditionDefinition =
         nodeNameToDefinitionMap[nodeName]
             ?: throw PromenaNoSuchRenditionDefinitionException(
                 "Definition for <$nodeName> node name isn't available. " +

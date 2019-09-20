@@ -9,8 +9,8 @@ import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTran
 import pl.beone.promena.alfresco.module.client.base.extension.getPropertyWithEmptySupport
 import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.client.base.extension.toDuration
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionManager
 import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionCoordinator
-import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionDefinitionManager
 import java.util.*
 
 @Configuration

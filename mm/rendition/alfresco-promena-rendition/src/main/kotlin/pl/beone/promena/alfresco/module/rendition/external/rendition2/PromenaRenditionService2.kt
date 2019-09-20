@@ -5,7 +5,6 @@ import org.alfresco.repo.rendition2.RenditionService2
 import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionCoordinator
-import pl.beone.promena.alfresco.module.rendition.external.PromenaRenditionDefinitionManager
 
 class PromenaRenditionService2(
     private val promenaRenditionCoordinator: PromenaRenditionCoordinator,
