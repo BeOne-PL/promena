@@ -77,15 +77,15 @@ class AkkaTransformationService(
     }
 
     private fun logBeforeTransformation(transformation: Transformation, dataDescriptor: DataDescriptor) {
-        logger.debug {
+        val message = if (logger.isDebugEnabled) {
             "Transforming <$transformation> <${dataDescriptor.descriptors.size} source(s)>: " +
-                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}>" }}]..."
+                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}, ${it.metadata}>" }}]..."
+        } else {
+            "Transforming <$transformation> <${dataDescriptor.descriptors.size} source(s)>: " +
+                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.mediaType}, ${it.metadata}>" }}]..."
         }
 
-        logger.info {
-            "Transforming <$transformation> <${dataDescriptor.descriptors.size} source(s)>: " +
-                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.mediaType}>" }}]..."
-        }
+        logger.info { message }
     }
 
     private fun getActorTransformerDescriptors(transformation: Transformation): List<ActorTransformerDescriptor> =
@@ -139,15 +139,17 @@ class AkkaTransformationService(
         measuredTimeMs: Long,
         transformedDataDescriptor: TransformedDataDescriptor
     ) {
-        logger.debug {
+        val message = if (logger.isDebugEnabled) {
             "Finished transforming <$transformation> <${transformedDataDescriptor.descriptors.size} result(s)> in <${measuredTimeMs.toSeconds()} s>: " +
                     "[${transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" }}]"
-        }
 
-        logger.info {
+        } else {
             "Finished transforming <$transformation> <${transformedDataDescriptor.descriptors.size} result(s)> in <${measuredTimeMs.toSeconds()} s>: " +
                     "[${transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.metadata}>" }}]"
+
         }
+
+        logger.info { message }
     }
 
     private fun convertException(transformation: Transformation, exception: Exception): Exception =
