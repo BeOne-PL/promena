@@ -1,5 +1,6 @@
 package pl.beone.promena.alfresco.module.rendition.configuration.external
 
+import org.alfresco.service.cmr.repository.ContentService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
@@ -21,11 +22,13 @@ class DefaultAlfrescoPromenaRenditionTransformerContext {
     fun defaultAlfrescoPromenaRenditionTransformer(
         applicationContext: ApplicationContext,
         @Qualifier("global-properties") properties: Properties,
+        contentService: ContentService,
         alfrescoRenditionGetter: AlfrescoRenditionGetter,
         alfrescoPromenaRenditionInProgressSynchronizer: AlfrescoPromenaRenditionInProgressSynchronizer,
         alfrescoPromenaRenditionDefinitionGetter: AlfrescoPromenaRenditionDefinitionGetter
     ) =
         DefaultAlfrescoPromenaRenditionTransformer(
+            contentService,
             alfrescoRenditionGetter,
             alfrescoPromenaRenditionDefinitionGetter,
             alfrescoPromenaRenditionInProgressSynchronizer,

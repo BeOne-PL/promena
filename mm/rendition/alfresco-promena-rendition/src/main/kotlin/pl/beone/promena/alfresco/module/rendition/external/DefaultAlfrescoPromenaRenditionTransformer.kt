@@ -2,6 +2,7 @@ package pl.beone.promena.alfresco.module.rendition.external
 
 import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.ChildAssociationRef
+import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaNamespace.PROMENA_MODEL_1_0_PREFIX
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_RENDITION_NAME
@@ -12,12 +13,14 @@ import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRendit
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionTransformer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter
+import pl.beone.promena.alfresco.module.rendition.extension.getMediaType
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
 import java.time.Duration
 
 class DefaultAlfrescoPromenaRenditionTransformer(
+    private val contentService: ContentService,
     private val alfrescoRenditionGetter: AlfrescoRenditionGetter,
     private val alfrescoPromenaRenditionDefinitionGetter: AlfrescoPromenaRenditionDefinitionGetter,
     private val alfrescoPromenaRenditionInProgressSynchronizer: AlfrescoPromenaRenditionInProgressSynchronizer,
@@ -35,7 +38,7 @@ class DefaultAlfrescoPromenaRenditionTransformer(
         logger.debug { "Performing <$renditionName> rendition sync transformation of <$nodeRef>..." }
 
         alfrescoPromenaRenditionInProgressSynchronizer.isInProgress(nodeRef, renditionName)
-        val transformation = getTransformation(renditionName)
+        val transformation = getTransformation(nodeRef, renditionName)
         try {
             alfrescoPromenaRenditionInProgressSynchronizer.start(nodeRef, renditionName)
 
@@ -57,7 +60,7 @@ class DefaultAlfrescoPromenaRenditionTransformer(
         logger.debug { "Performing <$renditionName> rendition async transformation of <$nodeRef>..." }
 
         alfrescoPromenaRenditionInProgressSynchronizer.isInProgress(nodeRef, renditionName)
-        val transformation = getTransformation(renditionName)
+        val transformation = getTransformation(nodeRef, renditionName)
         try {
             alfrescoPromenaRenditionInProgressSynchronizer.start(nodeRef, renditionName)
 
@@ -73,8 +76,8 @@ class DefaultAlfrescoPromenaRenditionTransformer(
         }
     }
 
-    private fun getTransformation(renditionName: String): Transformation =
-        alfrescoPromenaRenditionDefinitionGetter.getByRenditionName(renditionName).getTransformation()
+    private fun getTransformation(nodeRef: NodeRef, renditionName: String): Transformation =
+        alfrescoPromenaRenditionDefinitionGetter.getByRenditionName(renditionName).getTransformation(nodeRef, contentService.getMediaType(nodeRef))
 
     private fun createNodeRefWithMetadataRenditionProperty(nodeRef: NodeRef, renditionName: String): List<NodeDescriptor> =
         listOf(

@@ -16,14 +16,8 @@ class MemoryAlfrescoPromenaRenditionDefinitionGetter(
     init {
         logger.info { "Found <${alfrescoPromenaRenditionDefinitions.size}> rendition definitions" }
         alfrescoPromenaRenditionDefinitions.forEach {
-            if (logger.isDebugEnabled) {
-                logger.debug {
-                    "> Registered rendition definition <${it::class.java.canonicalName} (${it.getRenditionName()}) [${it.getTransformation()}]>"
-                }
-            } else {
-                logger.info {
-                    "> Registered rendition definition <${it::class.java.canonicalName} (${it.getRenditionName()})>"
-                }
+            logger.info {
+                "> Registered rendition definition <${it::class.java.canonicalName} (${it.getRenditionName()})>"
             }
         }
     }

@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
-import org.alfresco.model.ContentModel
+import org.alfresco.model.ContentModel.PROP_CONTENT
 import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
@@ -8,7 +8,7 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.exception.N
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataDescriptorGetter
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
+import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
@@ -32,8 +32,8 @@ class ContentPropertyAlfrescoDataDescriptorGetter(
     }
 
     private fun convertToSingleDataDescriptor(nodeDescriptor: NodeDescriptor): DataDescriptor.Single {
-        val contentReader = contentService.getReader(nodeDescriptor.nodeRef, ContentModel.PROP_CONTENT)
-        val mediaType = MediaType.of(contentReader.mimetype, Charset.forName(contentReader.encoding))
+        val contentReader = contentService.getReader(nodeDescriptor.nodeRef, PROP_CONTENT)
+        val mediaType = mediaType(contentReader.mimetype, Charset.forName(contentReader.encoding))
 
         return singleDataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType, nodeDescriptor.metadata)
     }
