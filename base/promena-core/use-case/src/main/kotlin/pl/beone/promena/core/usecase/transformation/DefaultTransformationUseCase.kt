@@ -34,12 +34,13 @@ class DefaultTransformationUseCase(
                     outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters)
                 }
         } catch (e: Exception) {
-            val exceptionMessage = "Couldn't perform the transformation ${generateTransformationExceptionDescription(transformation, dataDescriptor)} " +
+            val processedException = e.toString().addHashAtTheBeggingOfEachLine()
+            val exceptionMessage = "Couldn't perform given transformation ${generateTransformationExceptionDescription(transformation, dataDescriptor)} " +
                     "<$externalCommunicationParameters>"
 
             // unwrap expected exception to not show user unnecessary information
             if (e is TransformationException) {
-                logger.error { exceptionMessage + "\n" + e.toString().addHashAtTheBeggingOfEachLine() }
+                logger.error { exceptionMessage + "\n" + processedException }
 
                 throw TransformationException(transformation, e.message!!)
             } else {
@@ -47,7 +48,8 @@ class DefaultTransformationUseCase(
 
                 throw TransformationException(
                     transformation,
-                    "Couldn't perform the transformation because an error occurred. Check Promena logs for more details. Exception message: <${e.message}>"
+                    "Couldn't perform given transformation because an error occurred. Check Promena logs for more details\n" +
+                            processedException
                 )
             }
         }

@@ -80,7 +80,10 @@ class DefaultTransformationUseCaseTest {
             DefaultTransformationUseCase(externalCommunicationManager, mockk())
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
-            it.message shouldBe "Couldn't perform the transformation because an error occurred. Check Promena logs for more details. Exception message: <Exception occurred>"
+            it.message!!.split("\n").let { messages ->
+                messages[0] shouldBe "Couldn't perform given transformation because an error occurred. Check Promena logs for more details"
+                messages[1] shouldBe "# pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerValidationException: Exception occurred"
+            }
             it.cause shouldBe null
         }
     }
