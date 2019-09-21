@@ -24,6 +24,7 @@ import pl.beone.promena.core.external.akka.extension.toMB
 import pl.beone.promena.core.external.akka.extension.toSeconds
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
 import pl.beone.promena.core.external.akka.util.unwrapExecutionException
+import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
@@ -155,11 +156,13 @@ class AkkaTransformationService(
     private fun convertException(transformation: Transformation, exception: Exception): Exception =
         when (exception) {
             is TransformerException ->
-                TransformationException(transformation, "Couldn't perform the transformation | ${exception.message}", exception)
+                TransformationException(transformation, "Couldn't transform | ${exception.message}", exception)
+            is TransformationNotSupportedException ->
+                TransformationException(transformation, "Couldn't transform because given transformation isn't supported | ${exception.message}", exception)
             is AskTimeoutException ->
-                TransformationException(transformation, "Couldn't perform the transformation because the timeout has been reached", exception)
+                TransformationException(transformation, "Couldn't transform because given timeout has been reached", exception)
             is AbruptStageTerminationException ->
-                TransformationTerminationException(transformation, "Could not perform the transformation because it was abruptly terminated", exception)
+                TransformationTerminationException(transformation, "Couldn't transform because it was abruptly terminated", exception)
             else ->
                 exception
         }

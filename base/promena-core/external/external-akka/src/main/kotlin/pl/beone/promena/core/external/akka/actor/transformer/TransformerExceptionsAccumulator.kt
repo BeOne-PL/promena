@@ -16,6 +16,6 @@ internal class TransformerExceptionsAccumulator {
     }
 
     fun generateDescription(): String =
-        "[" + transformerAndReasonList.joinToString(", ")
-        { (transformerDescriptor, reason) -> "<${transformerDescriptor.transformer.javaClass.canonicalName}(${transformerDescriptor.transformerId.subName}); $reason>" } + "]"
+        transformerAndReasonList.joinToString("\n")
+        { (transformerDescriptor, reason) -> "> ${transformerDescriptor.transformer.javaClass.canonicalName}(${transformerDescriptor.transformerId.name}, ${transformerDescriptor.transformerId.subName}): $reason" }
 }

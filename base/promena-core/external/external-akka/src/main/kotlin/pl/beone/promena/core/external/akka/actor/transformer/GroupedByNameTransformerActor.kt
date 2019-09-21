@@ -3,7 +3,6 @@ package pl.beone.promena.core.external.akka.actor.transformer
 import akka.actor.AbstractLoggingActor
 import akka.actor.Status
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
-import pl.beone.promena.core.applicationmodel.exception.transformer.NoTransformerCouldTransformException
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationCleaner
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
@@ -96,8 +95,9 @@ class GroupedByNameTransformerActor(
             transformer
                 .also { transformer.isSupported(dataDescriptor, targetMediaType, parameters) }
         } catch (e: TransformationNotSupportedException) {
-            throw NoTransformerCouldTransformException(
-                "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) can't transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${e.message}"
+            throw TransformationNotSupportedException(
+                "Transformer doesn't support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>:\n" +
+                        "> ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}): ${e.message}"
             )
         }
     }
@@ -126,9 +126,10 @@ class GroupedByNameTransformerActor(
         targetMediaType: MediaType,
         parameters: Parameters,
         transformerExceptionsAccumulator: TransformerExceptionsAccumulator
-    ): NoTransformerCouldTransformException =
-        NoTransformerCouldTransformException(
-            "There is no transformer in group <$transformerName> that can transform data descriptors [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>: ${transformerExceptionsAccumulator.generateDescription()}"
+    ): TransformationNotSupportedException =
+        TransformationNotSupportedException(
+            "There is no transformer in group <$transformerName> that support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>:\n" +
+                    transformerExceptionsAccumulator.generateDescription()
         )
 
     private fun List<TransformerDescriptor>.get(transformerId: TransformerId): TransformerDescriptor =
@@ -139,7 +140,7 @@ class GroupedByNameTransformerActor(
             try {
                 "<${it.data.getLocation()}, ${it.mediaType}, ${it.metadata}>"
             } catch (e: UnsupportedOperationException) {
-                "<no location, ${it.mediaType}>"
+                "<no location, ${it.mediaType}, ${it.metadata}>"
             }
         }
 
