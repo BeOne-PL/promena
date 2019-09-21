@@ -14,9 +14,9 @@ class Avatar32PromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefin
     override fun getRenditionName(): String =
         "avatar32"
 
-    override fun getTransformation(): Transformation =
-        imageMagickConverterTransformation(
-            IMAGE_PNG,
-            imageMagickConverterParameters(width = 32, height = 32, allowEnlargement = false)
-        )
+    override fun getTransformation(nodeRef: NodeRef, mediaType: MediaType): Transformation =
+        getTransformation(
+            mediaType,
+            imageMagickConverterTransformation(IMAGE_PNG, imageMagickConverterParameters(width = 32, height = 32, allowEnlargement = false))
+        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
 }
