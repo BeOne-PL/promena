@@ -175,7 +175,7 @@ class AkkaTransformationServiceTestIT {
         }.let {
             it.transformation shouldBe transformation
             it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Couldn't transform because given transformation isn't supported | There is no transformer in group <text-appender> that support transforming [<no location, MediaType(mimeType=text/plain, charset=UTF-8), MapMetadata(metadata={})>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>:"
+                messages[0] shouldBe "Couldn't transform because given transformation isn't supported | There is no transformer in group <text-appender> that support transforming [<no location, MediaType(mimeType=text/plain, charset=UTF-8), MapMetadata(metadata={})>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>"
                 messages[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text-appender, kotlin): Only the transformation from text/plain to text/plain is supported"
                 messages[2] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer(text-appender, kotlin-useless): I can't transform nothing. I'm useless"
                 messages[3] shouldBe "> pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(text-appender, java): Only the transformation from text/plain to text/plain is supported"
@@ -197,7 +197,7 @@ class AkkaTransformationServiceTestIT {
         }.let {
             it.transformation shouldBe transformation
             it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Couldn't transform because given transformation isn't supported | Transformer doesn't support transforming [<no location, MediaType(mimeType=text/plain, charset=UTF-8), MapMetadata(metadata={})>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>:"
+                messages[0] shouldBe "Couldn't transform because given transformation isn't supported | Transformer doesn't support transforming [<no location, MediaType(mimeType=text/plain, charset=UTF-8), MapMetadata(metadata={})>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>"
                 messages[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text-appender, kotlin): Only the transformation from text/plain to text/plain is supported"
             }
             it.getStringStackTrace() shouldContain "TransformationNotSupportedException"

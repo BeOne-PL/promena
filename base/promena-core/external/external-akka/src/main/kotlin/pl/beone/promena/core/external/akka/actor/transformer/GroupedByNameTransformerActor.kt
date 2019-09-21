@@ -96,7 +96,7 @@ class GroupedByNameTransformerActor(
                 .also { transformer.isSupported(dataDescriptor, targetMediaType, parameters) }
         } catch (e: TransformationNotSupportedException) {
             throw TransformationNotSupportedException(
-                "Transformer doesn't support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>:\n" +
+                "Transformer doesn't support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>\n" +
                         "> ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}): ${e.message}"
             )
         }
@@ -128,7 +128,7 @@ class GroupedByNameTransformerActor(
         transformerExceptionsAccumulator: TransformerExceptionsAccumulator
     ): TransformationNotSupportedException =
         TransformationNotSupportedException(
-            "There is no transformer in group <$transformerName> that support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>:\n" +
+            "There is no transformer in group <$transformerName> that support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>\n" +
                     transformerExceptionsAccumulator.generateDescription()
         )
 

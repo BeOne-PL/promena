@@ -92,13 +92,17 @@ fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptors: Li
         )
     } else {
         error(
-            "Couldn't transform <{}> using <{}>\n> {}",
+            "Couldn't transform <{}> using <{}>\n{}",
             nodeDescriptors,
             transformation,
-            exception.toString()
+            exception.toString().addHashAtTheBeggingOfEachLine()
         )
     }
 }
+
+private fun String.addHashAtTheBeggingOfEachLine(): String =
+    this.split("\n")
+        .joinToString("\n") { "# $it" }
 
 fun Logger.logOnRetry(
     transformation: Transformation,
