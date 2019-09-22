@@ -79,7 +79,7 @@ class DefaultAlfrescoPromenaRenditionTransformer(
     }
 
     private fun getTransformation(nodeRef: NodeRef, renditionName: String): Transformation =
-        alfrescoPromenaRenditionDefinitionGetter.getByRenditionName(renditionName).getTransformation(nodeRef, contentService.getMediaType(nodeRef))
+        alfrescoPromenaRenditionDefinitionGetter.getByRenditionName(renditionName).getTransformation(contentService.getMediaType(nodeRef))
 
     private fun createNodeRefWithMetadataRenditionProperty(nodeRef: NodeRef, renditionName: String): List<NodeDescriptor> =
         listOf(nodeRef.toNodeDescriptor(createMetadata(renditionName)))

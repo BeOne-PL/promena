@@ -1,6 +1,5 @@
 package pl.beone.promena.alfresco.module.rendition.predefined.internal.image
 
-import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionTransformationNotSupportedException
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -14,11 +13,14 @@ class Avatar32PromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefin
     override fun getRenditionName(): String =
         "avatar32"
 
-    override fun getTransformation(nodeRef: NodeRef, mediaType: MediaType): Transformation =
-        getTransformation(
+    override fun getTargetMediaType(): MediaType =
+        IMAGE_PNG
+
+    override fun getTransformation(mediaType: MediaType): Transformation =
+        determineTransformation(
             mediaType,
-            imageMagickConverterTransformation(IMAGE_PNG, imageMagickConverterParameters(width = 32, height = 32, allowEnlargement = false))
-        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
+            imageMagickConverterTransformation(getTargetMediaType(), imageMagickConverterParameters(width = 32, height = 32, allowEnlargement = false))
+        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(getRenditionName(), mediaType, getTargetMediaType())
 
     override fun getPlaceHolderResourcePath(): String? =
         "alfresco/thumbnail/thumbnail_placeholder_avatar32.png"

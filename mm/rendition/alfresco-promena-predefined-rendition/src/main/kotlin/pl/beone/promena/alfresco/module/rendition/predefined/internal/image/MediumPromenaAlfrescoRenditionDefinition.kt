@@ -1,6 +1,5 @@
 package pl.beone.promena.alfresco.module.rendition.predefined.internal.image
 
-import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionTransformationNotSupportedException
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -14,11 +13,14 @@ class MediumPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
     override fun getRenditionName(): String =
         "medium"
 
-    override fun getTransformation(nodeRef: NodeRef, mediaType: MediaType): Transformation =
-        getTransformation(
+    override fun getTargetMediaType(): MediaType =
+        IMAGE_JPEG
+
+    override fun getTransformation(mediaType: MediaType): Transformation =
+        determineTransformation(
             mediaType,
-            imageMagickConverterTransformation(IMAGE_JPEG, imageMagickConverterParameters(width = 100, height = 100))
-        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_JPEG)
+            imageMagickConverterTransformation(getTargetMediaType(), imageMagickConverterParameters(width = 100, height = 100))
+        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(getRenditionName(), mediaType, getTargetMediaType())
 
     override fun getPlaceHolderResourcePath(): String? =
         "alfresco/thumbnail/thumbnail_placeholder_medium.jpg"

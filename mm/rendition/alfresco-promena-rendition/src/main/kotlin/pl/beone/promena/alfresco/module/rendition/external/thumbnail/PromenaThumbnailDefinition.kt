@@ -5,14 +5,14 @@ import org.alfresco.service.cmr.repository.TransformationOptions
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 
 internal class PromenaThumbnailDefinition(
-    private val renditionDefinition: AlfrescoPromenaRenditionDefinition
+    internal val renditionDefinition: AlfrescoPromenaRenditionDefinition
 ) : ThumbnailDefinition() {
 
     override fun getName(): String =
         renditionDefinition.getRenditionName()
 
     override fun getMimetype(): String? =
-        null
+        renditionDefinition.getTargetMediaType().mimeType
 
     override fun getTransformationOptions(): TransformationOptions? =
         null

@@ -16,9 +16,9 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.event.ApplicationContextEvent
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionTransformationNotSupportedException
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchAlfrescoPromenaRenditionDefinitionException
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.extension.getMediaType
+import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
 
 internal class PromenaThumbnailRegistry(
     private val contentService: ContentService,
@@ -29,19 +29,12 @@ internal class PromenaThumbnailRegistry(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val thumbnailDefinitions =
+    private val definitions =
         alfrescoPromenaRenditionDefinitionGetter.getAll()
-            .map(::createThumbnailDefinition)
-
-    private val renditionNameToThumbnailDefinitionMap =
-        thumbnailDefinitions.map { it.name to it }
-            .toMap()
-
-    private fun createThumbnailDefinition(renditionDefinition: AlfrescoPromenaRenditionDefinition) =
-        PromenaThumbnailDefinition(renditionDefinition)
+            .map(::PromenaThumbnailDefinition)
 
     override fun getThumbnailDefinition(thumbnailName: String): ThumbnailDefinition? =
-        renditionNameToThumbnailDefinitionMap[thumbnailName]
+        definitions.firstOrNull { it.name == thumbnailName }
 
     override fun setRenditionService(renditionService: RenditionService?) {
         // deliberately omitted
@@ -57,7 +50,7 @@ internal class PromenaThumbnailRegistry(
         try {
             alfrescoPromenaRenditionDefinitionGetter
                 .getByRenditionName(thumbnailDefinition.name)
-                .getTransformation(sourceNodeRef, contentService.getMediaType(sourceNodeRef))
+                .getTransformation(contentService.getMediaType(sourceNodeRef))
             true
         } catch (e: NoSuchAlfrescoPromenaRenditionDefinitionException) {
             logger.debug { "Couldn't get rendition for <$sourceNodeRef> | ${e.message}" }
@@ -125,7 +118,7 @@ internal class PromenaThumbnailRegistry(
         Long.MAX_VALUE
 
     override fun getThumnailDefintions(mimetype: String?): List<ThumbnailDefinition> =
-        thumbnailDefinitions
+        getThumbnailDefinitions(mimetype)
 
     override fun setTransactionService(transactionService: TransactionService?) {
         // deliberately omitted
@@ -147,15 +140,23 @@ internal class PromenaThumbnailRegistry(
         // deliberately omitted
     }
 
-    override fun getThumbnailDefinitions(): List<ThumbnailDefinition> =
-        thumbnailDefinitions
-
     override fun getThumbnailDefinitions(mimetype: String?): List<ThumbnailDefinition> =
-        thumbnailDefinitions
+        if (mimetype != null) {
+            definitions.filter {
+                try {
+                    it.renditionDefinition.getTransformation(mediaType(mimetype))
+                    true
+                } catch (e: AlfrescoPromenaRenditionTransformationNotSupportedException) {
+                    false
+                }
+            }
+        } else {
+            definitions
+        }
 
     override fun getThumbnailDefinitions(mimetype: String?, sourceSize: Long): List<ThumbnailDefinition> =
-        thumbnailDefinitions
+        getThumbnailDefinitions(mimetype)
 
     override fun getThumbnailDefinitions(sourceUrl: String?, mimetype: String?, sourceSize: Long): List<ThumbnailDefinition> =
-        thumbnailDefinitions
+        getThumbnailDefinitions(mimetype)
 }

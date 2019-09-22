@@ -1,6 +1,5 @@
 package pl.beone.promena.alfresco.module.rendition.predefined.internal.image
 
-import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionTransformationNotSupportedException
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -14,11 +13,14 @@ class DocLibPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
     override fun getRenditionName(): String =
         "doclib"
 
-    override fun getTransformation(nodeRef: NodeRef, mediaType: MediaType): Transformation =
-        getTransformation(
+    override fun getTargetMediaType(): MediaType =
+        IMAGE_PNG
+
+    override fun getTransformation(mediaType: MediaType): Transformation =
+        determineTransformation(
             mediaType,
-            imageMagickConverterTransformation(IMAGE_PNG, imageMagickConverterParameters(width = 100, height = 100, allowEnlargement = false))
-        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
+            imageMagickConverterTransformation(getTargetMediaType(), imageMagickConverterParameters(width = 100, height = 100, allowEnlargement = false))
+        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(getRenditionName(), mediaType, getTargetMediaType())
 
     override fun getPlaceHolderResourcePath(): String? =
         "alfresco/thumbnail/thumbnail_placeholder_doclib.png"

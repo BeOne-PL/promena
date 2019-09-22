@@ -72,7 +72,7 @@ private val supportedImageMagickConverterMediaTypes = listOf<(MediaType) -> Bool
     { it == IMAGE_TIFF }
 )
 
-internal fun getTransformation(mediaType: MediaType): Transformation? =
+internal fun determineTransformation(mediaType: MediaType): Transformation? =
     when {
         supportedLibreOfficeConverterMediaTypes.any { it(mediaType) } ->
             libreOfficeConverterTransformation(APPLICATION_PDF, libreOfficeConverterParameters())
