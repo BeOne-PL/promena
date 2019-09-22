@@ -3,7 +3,7 @@ package pl.beone.promena.alfresco.module.client.base.applicationmodel.model
 import org.alfresco.service.namespace.QName
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaNamespace.PROMENA_MODEL_1_0_URI
 
-object PromenaTransformationContentModel {
+object PromenaTransformationModel {
 
     val ASPECT_TRANSFORMATION = QName.createQName(PROMENA_MODEL_1_0_URI, "transformation")!!
 

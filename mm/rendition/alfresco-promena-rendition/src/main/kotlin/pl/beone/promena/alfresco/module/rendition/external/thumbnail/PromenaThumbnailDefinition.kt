@@ -15,4 +15,10 @@ internal class PromenaThumbnailDefinition(
 
     override fun getTransformationOptions(): TransformationOptions? =
         null
+
+    override fun getPlaceHolderResourcePath(): String =
+        "alfresco/thumbnail/thumbnail_placeholder_$renditionName.png"
+
+    override fun getMimeAwarePlaceHolderResourcePath(): String =
+        "alfresco/thumbnail/thumbnail_placeholder_$renditionName{0}.png"
 }

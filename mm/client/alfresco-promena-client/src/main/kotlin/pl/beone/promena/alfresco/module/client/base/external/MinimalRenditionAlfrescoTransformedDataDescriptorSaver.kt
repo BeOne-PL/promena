@@ -9,11 +9,11 @@ import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.transaction.TransactionService
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_ID
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_INDEX
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_DATA_SIZE
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_TRANSFORMATION_ID
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_ID
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoDataConverter
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType

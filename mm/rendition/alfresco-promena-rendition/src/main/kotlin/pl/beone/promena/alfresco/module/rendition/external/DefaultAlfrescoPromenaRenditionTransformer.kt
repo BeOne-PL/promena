@@ -5,7 +5,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaNamespace.PROMENA_MODEL_1_0_PREFIX
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationContentModel.PROP_RENDITION_NAME
+import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
