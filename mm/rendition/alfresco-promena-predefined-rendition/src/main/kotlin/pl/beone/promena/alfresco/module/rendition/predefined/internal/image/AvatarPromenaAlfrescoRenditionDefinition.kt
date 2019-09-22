@@ -18,5 +18,5 @@ class AvatarPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
         getTransformation(
             mediaType,
             imageMagickConverterTransformation(IMAGE_PNG, imageMagickConverterParameters(width = 64, height = 64, allowEnlargement = false))
-        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
+        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
 }

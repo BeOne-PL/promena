@@ -3,17 +3,26 @@ package pl.beone.promena.alfresco.module.rendition.applicationmodel.exception
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 
-class AlfrescoPromenaRenditionTransformationNotSupportedException(
+class AlfrescoPromenaRenditionTransformationNotSupportedException internal constructor(
     reason: String
 ) : IllegalArgumentException(reason) {
 
-    constructor(
-        nodeRef: NodeRef,
-        renditionName: String,
-        mediaType: MediaType,
-        targetMediaType: MediaType
-    ) : this("Rendition <$renditionName> transformation ${mediaType.createDescription()} -> ${targetMediaType.createDescription()} for <$nodeRef> isn't supported")
-}
+    companion object {
+        @JvmStatic
+        fun unsupportedMediaType(
+            nodeRef: NodeRef,
+            renditionName: String,
+            mediaType: MediaType,
+            targetMediaType: MediaType
+        ): AlfrescoPromenaRenditionTransformationNotSupportedException =
+            AlfrescoPromenaRenditionTransformationNotSupportedException("Rendition <$renditionName> transformation ${mediaType.createDescription()} -> ${targetMediaType.createDescription()} for <$nodeRef> isn't supported")
 
-private fun MediaType.createDescription(): String =
-    "(${mimeType}, ${charset.name()})"
+        @JvmStatic
+        fun custom(reason: String): AlfrescoPromenaRenditionTransformationNotSupportedException =
+            AlfrescoPromenaRenditionTransformationNotSupportedException(reason)
+
+
+        private fun MediaType.createDescription(): String =
+            "(${mimeType}, ${charset.name()})"
+    }
+}

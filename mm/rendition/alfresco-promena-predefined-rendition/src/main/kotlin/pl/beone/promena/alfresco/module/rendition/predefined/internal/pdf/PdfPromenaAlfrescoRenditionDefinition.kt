@@ -14,5 +14,5 @@ class PdfPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinition
 
     override fun getTransformation(nodeRef: NodeRef, mediaType: MediaType): Transformation =
         getTransformation(mediaType)
-            ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException(nodeRef, getRenditionName(), mediaType, APPLICATION_PDF)
+            ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, APPLICATION_PDF)
 }

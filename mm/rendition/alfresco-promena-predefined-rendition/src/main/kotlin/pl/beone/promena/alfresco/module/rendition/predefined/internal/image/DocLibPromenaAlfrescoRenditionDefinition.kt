@@ -18,5 +18,5 @@ class DocLibPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
         getTransformation(
             mediaType,
             imageMagickConverterTransformation(IMAGE_PNG, imageMagickConverterParameters(width = 100, height = 100, allowEnlargement = false))
-        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
+        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
 }

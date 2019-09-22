@@ -18,5 +18,5 @@ class MediumPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
         getTransformation(
             mediaType,
             imageMagickConverterTransformation(IMAGE_JPEG, imageMagickConverterParameters(width = 100, height = 100))
-        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException(nodeRef, getRenditionName(), mediaType, IMAGE_JPEG)
+        ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_JPEG)
 }
