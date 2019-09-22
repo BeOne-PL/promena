@@ -35,6 +35,10 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
     private val alfrescoDataConverter: AlfrescoDataConverter
 ) : AlfrescoTransformedDataDescriptorSaver {
 
+    companion object {
+        const val METADATA_ALF_PREFIX = "alf_"
+    }
+
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
         transactionService.retryingTransactionHelper.doInTransaction {
             val sourceNodeRef = nodeRefs.first()
@@ -126,8 +130,8 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
 
     private fun determineAlfrescoProperties(metadata: Metadata): Map<QName, Serializable?> =
         metadata.getAll()
-            .filter { (key) -> key.startsWith("alf_") }
-            .map { (key, value) -> key.removePrefix("alf_") to value }
+            .filter { (key) -> key.startsWith(METADATA_ALF_PREFIX) }
+            .map { (key, value) -> key.removePrefix(METADATA_ALF_PREFIX) to value }
             .map { (key, value) -> QName.createQName(key, namespaceService) to value as Serializable? }
             .toMap()
 

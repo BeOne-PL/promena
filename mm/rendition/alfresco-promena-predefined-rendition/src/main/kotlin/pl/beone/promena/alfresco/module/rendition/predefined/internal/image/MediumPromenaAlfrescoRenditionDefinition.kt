@@ -19,4 +19,7 @@ class MediumPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
             mediaType,
             imageMagickConverterTransformation(IMAGE_JPEG, imageMagickConverterParameters(width = 100, height = 100))
         ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_JPEG)
+
+    override fun getPlaceHolderResourcePath(): String? =
+        "alfresco/thumbnail/thumbnail_placeholder_medium.jpg"
 }

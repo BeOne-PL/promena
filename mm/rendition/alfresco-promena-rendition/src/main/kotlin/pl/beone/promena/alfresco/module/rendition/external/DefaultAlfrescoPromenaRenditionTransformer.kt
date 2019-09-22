@@ -9,12 +9,14 @@ import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.Prome
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
+import pl.beone.promena.alfresco.module.client.base.external.MinimalRenditionAlfrescoTransformedDataDescriptorSaver.Companion.METADATA_ALF_PREFIX
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionTransformer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter
 import pl.beone.promena.alfresco.module.rendition.extension.getMediaType
 import pl.beone.promena.transformer.contract.transformation.Transformation
+import pl.beone.promena.transformer.internal.model.metadata.MapMetadata
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
 import java.time.Duration
@@ -31,7 +33,7 @@ class DefaultAlfrescoPromenaRenditionTransformer(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        private val metadataRenditionNameProperty = "alf_$PROMENA_MODEL_1_0_PREFIX:${PROP_RENDITION_NAME.localName}"
+        private val METADATA_RENDITION_NAME_PROPERTY = METADATA_ALF_PREFIX + PROMENA_MODEL_1_0_PREFIX + ":" + PROP_RENDITION_NAME.localName
     }
 
     override fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef {
@@ -80,7 +82,9 @@ class DefaultAlfrescoPromenaRenditionTransformer(
         alfrescoPromenaRenditionDefinitionGetter.getByRenditionName(renditionName).getTransformation(nodeRef, contentService.getMediaType(nodeRef))
 
     private fun createNodeRefWithMetadataRenditionProperty(nodeRef: NodeRef, renditionName: String): List<NodeDescriptor> =
-        listOf(
-            nodeRef.toNodeDescriptor(emptyMetadata() + (metadataRenditionNameProperty to renditionName))
-        )
+        listOf(nodeRef.toNodeDescriptor(createMetadata(renditionName)))
+
+    private fun createMetadata(renditionName: String): MapMetadata =
+        emptyMetadata() +
+                (METADATA_RENDITION_NAME_PROPERTY to renditionName)
 }

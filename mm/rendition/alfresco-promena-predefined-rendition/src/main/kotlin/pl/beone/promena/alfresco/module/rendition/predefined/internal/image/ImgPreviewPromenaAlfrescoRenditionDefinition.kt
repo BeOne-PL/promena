@@ -19,4 +19,10 @@ class ImgPreviewPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDef
             mediaType,
             imageMagickConverterTransformation(IMAGE_JPEG, imageMagickConverterParameters(width = 960, height = 960, allowEnlargement = false))
         ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_JPEG)
+
+    override fun getPlaceHolderResourcePath(): String? =
+        "alfresco/thumbnail/thumbnail_placeholder_256.png"
+
+    override fun getMimeAwarePlaceHolderResourcePath(): String? =
+        "alfresco/thumbnail/thumbnail_placeholder_256{0}.png"
 }

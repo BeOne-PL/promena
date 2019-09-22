@@ -19,4 +19,7 @@ class AvatarPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
             mediaType,
             imageMagickConverterTransformation(IMAGE_PNG, imageMagickConverterParameters(width = 64, height = 64, allowEnlargement = false))
         ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
+
+    override fun getPlaceHolderResourcePath(): String? =
+        "alfresco/thumbnail/thumbnail_placeholder_avatar.png"
 }

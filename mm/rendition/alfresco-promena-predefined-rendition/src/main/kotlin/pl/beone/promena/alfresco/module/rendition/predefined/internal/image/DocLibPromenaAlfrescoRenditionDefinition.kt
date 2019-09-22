@@ -19,4 +19,10 @@ class DocLibPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinit
             mediaType,
             imageMagickConverterTransformation(IMAGE_PNG, imageMagickConverterParameters(width = 100, height = 100, allowEnlargement = false))
         ) ?: throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(nodeRef, getRenditionName(), mediaType, IMAGE_PNG)
+
+    override fun getPlaceHolderResourcePath(): String? =
+        "alfresco/thumbnail/thumbnail_placeholder_doclib.png"
+
+    override fun getMimeAwarePlaceHolderResourcePath(): String? =
+        "alfresco/thumbnail/thumbnail_placeholder_doclib{0}.png"
 }

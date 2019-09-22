@@ -11,4 +11,8 @@ interface AlfrescoPromenaRenditionDefinition {
 
     @Throws(AlfrescoPromenaRenditionTransformationNotSupportedException::class)
     fun getTransformation(nodeRef: NodeRef, mediaType: MediaType): Transformation
+
+    fun getPlaceHolderResourcePath(): String? = null
+
+    fun getMimeAwarePlaceHolderResourcePath(): String? = null
 }

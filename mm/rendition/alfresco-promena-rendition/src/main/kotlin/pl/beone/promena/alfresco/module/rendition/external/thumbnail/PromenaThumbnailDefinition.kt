@@ -2,13 +2,14 @@ package pl.beone.promena.alfresco.module.rendition.external.thumbnail
 
 import org.alfresco.repo.thumbnail.ThumbnailDefinition
 import org.alfresco.service.cmr.repository.TransformationOptions
+import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
 
 internal class PromenaThumbnailDefinition(
-    private val renditionName: String
+    private val renditionDefinition: AlfrescoPromenaRenditionDefinition
 ) : ThumbnailDefinition() {
 
     override fun getName(): String =
-        renditionName
+        renditionDefinition.getRenditionName()
 
     override fun getMimetype(): String? =
         null
@@ -16,9 +17,9 @@ internal class PromenaThumbnailDefinition(
     override fun getTransformationOptions(): TransformationOptions? =
         null
 
-    override fun getPlaceHolderResourcePath(): String =
-        "alfresco/thumbnail/thumbnail_placeholder_$renditionName.png"
+    override fun getPlaceHolderResourcePath(): String? =
+        renditionDefinition.getPlaceHolderResourcePath()
 
-    override fun getMimeAwarePlaceHolderResourcePath(): String =
-        "alfresco/thumbnail/thumbnail_placeholder_$renditionName{0}.png"
+    override fun getMimeAwarePlaceHolderResourcePath(): String? =
+        renditionDefinition.getMimeAwarePlaceHolderResourcePath()
 }

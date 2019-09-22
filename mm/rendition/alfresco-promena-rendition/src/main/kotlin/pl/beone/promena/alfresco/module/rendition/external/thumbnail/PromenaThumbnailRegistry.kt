@@ -37,8 +37,8 @@ internal class PromenaThumbnailRegistry(
         thumbnailDefinitions.map { it.name to it }
             .toMap()
 
-    private fun createThumbnailDefinition(renditionName: AlfrescoPromenaRenditionDefinition) =
-        PromenaThumbnailDefinition(renditionName.getRenditionName())
+    private fun createThumbnailDefinition(renditionDefinition: AlfrescoPromenaRenditionDefinition) =
+        PromenaThumbnailDefinition(renditionDefinition)
 
     override fun getThumbnailDefinition(thumbnailName: String): ThumbnailDefinition? =
         renditionNameToThumbnailDefinitionMap[thumbnailName]
