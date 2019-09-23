@@ -33,7 +33,7 @@ class DefaultAlfrescoPromenaRenditionTransformer(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        private val METADATA_RENDITION_NAME_PROPERTY = METADATA_ALF_PREFIX + PROMENA_MODEL_1_0_PREFIX + ":" + PROP_RENDITION_NAME.localName
+        val METADATA_RENDITION_NAME_PROPERTY = METADATA_ALF_PREFIX + PROMENA_MODEL_1_0_PREFIX + ":" + PROP_RENDITION_NAME.localName
     }
 
     override fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef {
@@ -73,6 +73,8 @@ class DefaultAlfrescoPromenaRenditionTransformer(
                     { alfrescoPromenaRenditionInProgressSynchronizer.finish(nodeRef, renditionName) }
                 )
         } catch (e: Exception) {
+            alfrescoPromenaRenditionInProgressSynchronizer.finish(nodeRef, renditionName)
+
             logger.warn(e) { "Couldn't perform <$renditionName> rendition async transformation of <$nodeRef>" }
             throw e
         }

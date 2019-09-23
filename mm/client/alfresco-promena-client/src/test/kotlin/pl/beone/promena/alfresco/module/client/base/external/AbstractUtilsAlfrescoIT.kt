@@ -1,8 +1,7 @@
 package pl.beone.promena.alfresco.module.client.base.external
 
-import org.alfresco.model.ContentModel
-import org.alfresco.model.ContentModel.TYPE_FOLDER
-import org.alfresco.model.RenditionModel
+import org.alfresco.model.ContentModel.*
+import org.alfresco.model.RenditionModel.ASSOC_RENDITION
 import org.alfresco.rad.test.AbstractAlfrescoIT
 import org.alfresco.repo.nodelocator.CompanyHomeNodeLocator
 import org.alfresco.service.cmr.model.FileExistsException
@@ -17,7 +16,7 @@ import java.time.LocalDateTime
 
 abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
 
-    protected fun NodeRef.createNode(targetType: QName = ContentModel.TYPE_CONTENT, name: String? = null): NodeRef {
+    protected fun NodeRef.createNode(targetType: QName = TYPE_CONTENT, name: String? = null): NodeRef {
         val determinedNamePattern = name ?: LocalDateTime.now().toString().replace(":", "_")
 
         return serviceRegistry.fileFolderService.create(this, determinedNamePattern, targetType).nodeRef
@@ -26,20 +25,20 @@ abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
     protected fun NodeRef.getType(): QName =
         serviceRegistry.nodeService.getType(this)
 
-    protected fun NodeRef.getContentWriter(contentProperty: QName = ContentModel.PROP_CONTENT): ContentWriter =
+    protected fun NodeRef.getContentWriter(contentProperty: QName = PROP_CONTENT): ContentWriter =
         serviceRegistry.contentService.getWriter(this, contentProperty, true)
 
-    protected fun NodeRef.saveContent(mediaType: MediaType, content: String, contentProperty: QName = ContentModel.PROP_CONTENT) {
+    protected fun NodeRef.saveContent(mediaType: MediaType, content: String, contentProperty: QName = PROP_CONTENT) {
         serviceRegistry.contentService.getWriter(this, contentProperty, true).apply {
             mimetype = mediaType.mimeType
             encoding = mediaType.charset.name()
         }.putContent(content)
     }
 
-    protected fun NodeRef.getContentReader(contentProperty: QName = ContentModel.PROP_CONTENT): ContentReader =
+    protected fun NodeRef.getContentReader(contentProperty: QName = PROP_CONTENT): ContentReader =
         serviceRegistry.contentService.getReader(this, contentProperty)
 
-    protected fun NodeRef.readContent(contentProperty: QName = ContentModel.PROP_CONTENT): ByteArray =
+    protected fun NodeRef.readContent(contentProperty: QName = PROP_CONTENT): ByteArray =
         serviceRegistry.contentService.getReader(this, contentProperty)
             .contentInputStream.readBytes()
 
@@ -54,7 +53,7 @@ abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
 
     protected fun NodeRef.getRenditionAssociations(): List<ChildAssociationRef> =
         serviceRegistry.nodeService.getChildAssocs(this)
-            .filter { it.typeQName == RenditionModel.ASSOC_RENDITION }
+            .filter { it.typeQName == ASSOC_RENDITION }
             .toList()
 
     protected fun createOrGetIntegrationTestsFolder(): NodeRef =
@@ -65,6 +64,6 @@ abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
             serviceRegistry.fileFolderService.searchSimple(getCompanyHomeNodeRef(), "Integration test")
         }
 
-    protected fun getCompanyHomeNodeRef(): NodeRef =
+    private fun getCompanyHomeNodeRef(): NodeRef =
         serviceRegistry.nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null)
 }
