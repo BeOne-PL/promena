@@ -43,7 +43,7 @@ class TextAppenderTransformer : Transformer {
     }
 
     private fun throwException() {
-        throw TransformationNotSupportedException("Only the transformation from text/plain to text/plain is supported")
+        throw TransformationNotSupportedException.custom("Only the transformation from text/plain to text/plain is supported")
     }
 
 }

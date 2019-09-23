@@ -1,5 +1,29 @@
 package pl.beone.promena.transformer.applicationmodel.exception.transformer
 
-class TransformationNotSupportedException(
+import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
+
+class TransformationNotSupportedException internal constructor(
     reason: String
-) : IllegalArgumentException(reason)
+) : IllegalArgumentException(reason) {
+
+    companion object {
+        @JvmStatic
+        fun unsupportedMediaType(mediaType: MediaType, targetMediaType: MediaType): TransformationNotSupportedException =
+            TransformationNotSupportedException("Transformation (${mediaType.createDescription()}) -> (${targetMediaType.createDescription()}) isn't supported")
+
+        @JvmStatic
+        fun mandatoryParameter(name: String): TransformationNotSupportedException =
+            TransformationNotSupportedException("Parameter <$name> is mandatory")
+
+        @JvmStatic
+        fun unsupportedParameterType(name: String, clazz: Class<*>): TransformationNotSupportedException =
+            TransformationNotSupportedException("Parameter <$name> isn't type of <${clazz.canonicalName}>")
+
+        @JvmStatic
+        fun custom(reason: String): TransformationNotSupportedException =
+            TransformationNotSupportedException(reason)
+
+        private fun MediaType.createDescription(): String =
+            "${mimeType}, ${charset.name()}"
+    }
+}

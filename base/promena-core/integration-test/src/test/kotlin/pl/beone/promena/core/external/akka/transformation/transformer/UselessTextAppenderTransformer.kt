@@ -14,6 +14,6 @@ class UselessTextAppenderTransformer : Transformer {
     }
 
     override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
-        throw TransformationNotSupportedException("I can't transform nothing. I'm useless")
+        throw TransformationNotSupportedException.custom("I can't transform nothing. I'm useless")
     }
 }
