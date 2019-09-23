@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.rendition.external.rendition
 
-import org.alfresco.model.RenditionModel
+import org.alfresco.model.RenditionModel.ASPECT_RENDITION
 import org.alfresco.repo.rendition.CompositeRenditionDefinitionImpl
 import org.alfresco.repo.rendition.RenderingEngineDefinitionImpl
 import org.alfresco.repo.rendition.RenditionDefinitionImpl
@@ -26,7 +26,7 @@ class PromenaRenditionService(
         RenderingEngineDefinitionImpl(name)
 
     override fun isRendition(node: NodeRef): Boolean =
-        nodeService.hasAspect(node, RenditionModel.ASPECT_RENDITION)
+        nodeService.hasAspect(node, ASPECT_RENDITION)
 
     override fun getRenderingEngineDefinitions(): List<RenderingEngineDefinition> =
         emptyList()

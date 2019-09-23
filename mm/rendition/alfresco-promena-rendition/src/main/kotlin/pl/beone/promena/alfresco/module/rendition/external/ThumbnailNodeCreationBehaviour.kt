@@ -15,7 +15,7 @@ import java.io.Serializable
 import javax.annotation.PostConstruct
 
 
-class ThumbnailModificationBehaviour(
+class ThumbnailNodeCreationBehaviour(
     private val policyComponent: PolicyComponent,
     private val nodeService: NodeService
 ) {
@@ -36,7 +36,7 @@ class ThumbnailModificationBehaviour(
     fun onCreateNode(childAssociationRef: ChildAssociationRef) {
         val nodeRef = childAssociationRef.childRef
         if (nodeRef != null && nodeService.exists(nodeRef)) {
-            val renditionName = nodeService.getProperty(nodeRef, PROP_RENDITION_NAME)?.toString()
+            val renditionName = nodeService.getProperty(nodeRef, PROP_RENDITION_NAME) as String?
             if (renditionName != null) {
                 val parentNodeRef = childAssociationRef.parentRef
                 val lastThumbnailModificationData = determineLastThumbnailModificationData(parentNodeRef, renditionName) as Serializable
@@ -46,6 +46,7 @@ class ThumbnailModificationBehaviour(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun determineLastThumbnailModificationData(nodeRef: NodeRef, renditionName: String): List<String> =
         ((nodeService.getProperty(nodeRef, PROP_LAST_THUMBNAIL_MODIFICATION_DATA) ?: listOf<String>()) as List<String>)
             .filterNot { it.startsWith(renditionName) } +

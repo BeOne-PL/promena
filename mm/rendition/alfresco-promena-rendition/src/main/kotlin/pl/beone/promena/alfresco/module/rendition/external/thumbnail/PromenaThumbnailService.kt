@@ -1,6 +1,7 @@
 package pl.beone.promena.alfresco.module.rendition.external.thumbnail
 
-import org.alfresco.model.ContentModel
+import org.alfresco.model.ContentModel.PROP_CONTENT
+import org.alfresco.model.ContentModel.PROP_NAME
 import org.alfresco.repo.thumbnail.ThumbnailRegistry
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
@@ -26,7 +27,7 @@ class PromenaThumbnailService(
         thumbnailRegistry
 
     override fun updateThumbnail(thumbnail: NodeRef, transformationOptions: TransformationOptions?) {
-        alfrescoPromenaRenditionTransformer.transform(thumbnail, nodeService.getProperty(thumbnail, ContentModel.PROP_NAME) as String)
+        alfrescoPromenaRenditionTransformer.transform(thumbnail, nodeService.getProperty(thumbnail, PROP_NAME) as String)
     }
 
     override fun getThumbnails(node: NodeRef, contentProperty: QName, mimetype: String?, options: TransformationOptions?): List<NodeRef> {
@@ -61,7 +62,7 @@ class PromenaThumbnailService(
     ): NodeRef? {
         validateContentProperty(contentProperty)
 
-        return alfrescoPromenaRenditionTransformer.transform(node, name)?.childRef
+        return alfrescoPromenaRenditionTransformer.transform(node, name).childRef
     }
 
     override fun getThumbnailByName(node: NodeRef, contentProperty: QName?, thumbnailName: String): NodeRef? {
@@ -71,6 +72,6 @@ class PromenaThumbnailService(
     }
 
     private fun validateContentProperty(contentProperty: QName?) {
-        contentProperty?.let { require(contentProperty == ContentModel.PROP_CONTENT) { "Promena supports only <${ContentModel.PROP_CONTENT}> property" } }
+        contentProperty?.let { require(contentProperty == PROP_CONTENT) { "Promena supports only <$PROP_CONTENT> property" } }
     }
 }

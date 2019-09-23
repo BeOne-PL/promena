@@ -29,8 +29,6 @@ class MemoryAlfrescoPromenaRenditionDefinitionGetter(
         alfrescoPromenaRenditionDefinitions
 
     override fun getByRenditionName(renditionName: String): AlfrescoPromenaRenditionDefinition =
-        renditionNameToDefinitionMap[renditionName] ?: throw NoSuchAlfrescoPromenaRenditionDefinitionException(
-            renditionName,
-            alfrescoPromenaRenditionDefinitions
-        )
+        renditionNameToDefinitionMap[renditionName]
+            ?: throw NoSuchAlfrescoPromenaRenditionDefinitionException(renditionName, alfrescoPromenaRenditionDefinitions)
 }

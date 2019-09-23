@@ -4,17 +4,17 @@ import org.alfresco.repo.policy.PolicyComponent
 import org.alfresco.service.cmr.repository.NodeService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.rendition.external.ThumbnailModificationBehaviour
+import pl.beone.promena.alfresco.module.rendition.external.ThumbnailNodeCreationBehaviour
 
 @Configuration
-class ThumbnailModificationBehaviourContext {
+class ThumbnailNodeCreationBehaviourContext {
 
     @Bean
-    fun thumbnailModificationBehaviour(
+    fun thumbnailNodeCreationBehaviour(
         policyComponent: PolicyComponent,
         nodeService: NodeService
     ) =
-        ThumbnailModificationBehaviour(
+        ThumbnailNodeCreationBehaviour(
             policyComponent,
             nodeService
         )
