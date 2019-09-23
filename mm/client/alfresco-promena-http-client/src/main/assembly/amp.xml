@@ -68,6 +68,10 @@
                 <exclude>pl.beone.promena.core:promena-core-application-model</exclude>
                 <exclude>pl.beone.promena.core:promena-core-contract</exclude>
                 <exclude>pl.beone.promena.core:promena-core-internal-serialization</exclude>
+                <exclude>pl.beone.promena.communication.file.model:promena-communication-file-model-contract</exclude>
+                <exclude>pl.beone.promena.communication.file.model:promena-communication-file-model-internal</exclude>
+                <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-contract</exclude>
+                <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-internal</exclude>
                 <exclude>pl.beone.lib:type-converter</exclude>
 
                 <exclude>org.jetbrains:annotations</exclude>

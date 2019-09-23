@@ -468,7 +468,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                            <includeScope>runtime</includeScope>
+                            <includeScope>provided</includeScope>
                             <!-- IMPORTANT: if using amp dependencies only, add <includeTypes>amp</includeTypes> -->
                         </configuration>
                     </execution>

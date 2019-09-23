@@ -87,21 +87,21 @@
             <artifactId>alfresco-promena-client</artifactId>
             <version>${alfresco-promena-client.version}</version>
             <type>amp</type>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.alfresco.module</groupId>
             <artifactId>alfresco-promena-http-client</artifactId>
             <version>${alfresco-promena-http-client.version}</version>
             <type>amp</type>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.alfresco.module</groupId>
             <artifactId>alfresco-promena-rendition</artifactId>
             <version>${alfresco-promena-rendition.version}</version>
             <type>amp</type>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -493,7 +493,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                            <includeScope>runtime</includeScope>
+                            <includeScope>provided</includeScope>
                             <includeTypes>amp</includeTypes>
                         </configuration>
                     </execution>
