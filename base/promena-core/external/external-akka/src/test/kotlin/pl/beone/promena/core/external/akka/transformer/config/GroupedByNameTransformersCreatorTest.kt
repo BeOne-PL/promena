@@ -8,7 +8,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
-import pl.beone.promena.core.applicationmodel.akka.exception.actor.TransformersCreatorValidationException
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
@@ -75,7 +74,7 @@ class GroupedByNameTransformersCreatorTest {
             every { getTransformerId(dssDocumentSigner2Transformer) } returns ("document-signer" to "dss").toTransformerId()
         }
 
-        shouldThrow<TransformersCreatorValidationException> {
+        shouldThrow<IllegalStateException> {
             GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
                 .create(
                     listOf(
@@ -88,19 +87,19 @@ class GroupedByNameTransformersCreatorTest {
                     )
                 )
         }.let {
-            it.message shouldContain "Detected <2> transformers with duplicated id:"
-            it.message shouldContain "> TransformerId(name=converter, subName=libre-office): "
-            it.message shouldContain "> TransformerId(name=document-signer, subName=dss): "
+            it.message!!.split("\n").let { messages ->
+                messages[0] shouldContain "Detected <2> transformers with duplicated id:"
+                messages[1] shouldContain "> TransformerId(name=converter, subName=libre-office): "
+                messages[2] shouldContain "> TransformerId(name=document-signer, subName=dss): "
+            }
         }
     }
 
     @Test
     fun `create _ no transformer _ should throw TransformersCreatorValidationException`() {
-        shouldThrow<TransformersCreatorValidationException> {
+        shouldThrow<IllegalStateException> {
             GroupedByNameTransformersCreator(mockk(), mockk(), mockk(), mockk())
                 .create(emptyList())
-        }.let {
-            it.message shouldContain "No transformer was found. You must add at least <1> transformer"
-        }
+        }.message shouldContain "No transformer was found. You must add at least <1> transformer"
     }
 }

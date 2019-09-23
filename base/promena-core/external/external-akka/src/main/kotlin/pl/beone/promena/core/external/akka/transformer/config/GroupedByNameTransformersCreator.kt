@@ -4,7 +4,6 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import mu.KotlinLogging
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
-import pl.beone.promena.core.applicationmodel.akka.exception.actor.TransformersCreatorValidationException
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationCleaner
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
@@ -49,8 +48,8 @@ class GroupedByNameTransformersCreator(
     }
 
     private fun validateNumberOfTransformers(transformers: List<Transformer>) {
-        if (transformers.isEmpty()) {
-            throw TransformersCreatorValidationException("No transformer was found. You must add at least <1> transformer")
+        check(transformers.isNotEmpty()) {
+            "No transformer was found. You must add at least <1> transformer"
         }
     }
 
@@ -59,13 +58,11 @@ class GroupedByNameTransformersCreator(
             .filter { (_, transformers) -> transformers.size >= 2 }
             .toList()
 
-        if (notUniqueTransforms.isNotEmpty()) {
-            throw TransformersCreatorValidationException(
-                "Detected <${notUniqueTransforms.size}> transformers with duplicated id:\n" +
-                        notUniqueTransforms.joinToString("\n") { (transformerId, transformers) ->
-                            "> $transformerId: <${transformers.joinToString(", ") { it::class.java.canonicalName }}>"
-                        }
-            )
+        check(notUniqueTransforms.isEmpty()) {
+            "Detected <${notUniqueTransforms.size}> transformers with duplicated id:\n" +
+                    notUniqueTransforms.joinToString("\n") { (transformerId, transformers) ->
+                        "> $transformerId: <${transformers.joinToString(", ") { it::class.java.canonicalName }}>"
+                    }
         }
     }
 
