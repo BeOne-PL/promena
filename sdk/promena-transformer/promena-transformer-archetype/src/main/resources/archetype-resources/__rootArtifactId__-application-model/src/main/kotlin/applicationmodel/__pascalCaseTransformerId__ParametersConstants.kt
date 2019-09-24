@@ -2,7 +2,13 @@ package ${package}.applicationmodel
 
 object ${pascalCaseTransformerId}ParametersConstants {
 
-    const val EXAMPLE = "example"
+    object Example {
+        const val NAME = "example"
+        val CLASS = String::class.java
+    }
 
-    const val EXAMPLE2 = "example2"
+    object Example2 {
+        const val NAME = "example2"
+        val CLASS = String::class.java
+    }
 }
