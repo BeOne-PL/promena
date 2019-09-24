@@ -1,5 +1,8 @@
 package pl.beone.promena.intellij.plugin.linemarker
 
+import com.intellij.execution.RunManager
+import com.intellij.execution.configurations.RuntimeConfigurationException
+import com.intellij.execution.impl.RunDialog
 import com.intellij.openapi.compiler.CompilerManager
 import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
@@ -8,13 +11,10 @@ import pl.beone.promena.core.applicationmodel.transformation.transformationDescr
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.internal.serialization.ThreadUnsafeKryoSerializationService
 import pl.beone.promena.intellij.plugin.classloader.createClassLoaderBasedOnFoldersWithCompiledFiles
-import pl.beone.promena.intellij.plugin.common.getExistingOutputFolders
-import pl.beone.promena.intellij.plugin.common.invokeLater
-import pl.beone.promena.intellij.plugin.common.invokePromenaMethod
-import pl.beone.promena.intellij.plugin.parser.HttpConnectorParser
+import pl.beone.promena.intellij.plugin.common.*
+import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfiguration
 import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorParser
 import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorWithFile
-import pl.beone.promena.intellij.plugin.parser.parameter.ParametersParser
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
 import pl.beone.promena.intellij.plugin.toolwindow.*
 import pl.beone.promena.intellij.plugin.transformer.HttpTransformer
@@ -29,11 +29,8 @@ abstract class AbstractRelatedItemLineMarkerProvider {
 
     companion object {
         private val dataDescriptorWithFileParser = DataDescriptorParser()
-        private val parametersParser = ParametersParser()
 
         private val transformedDataDescriptorSaver = TransformedDataDescriptorSaver()
-
-        private val httpConnectorParser = HttpConnectorParser()
     }
 
     protected fun createOnClickHandler(
@@ -43,60 +40,73 @@ abstract class AbstractRelatedItemLineMarkerProvider {
         getComments: () -> List<String>
     ): () -> Unit =
         {
-            val qualifiedClassName = getQualifiedClassName()
-            val methodName = getMethodName()
-            val comments = getComments()
+            val runManager = RunManager.getInstance(project)
+            val runnerAndConfigurationSettings =
+                runManager.getSelectedPromenaRunnerAndConfigurationSettings() ?: runManager.createPromenaRunnerAndConfigurationSettings()
+            runManager.selectedConfiguration = runnerAndConfigurationSettings
 
-            CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
-                if (successfulCompilation(aborted, errors)) {
-                    val startTimestamp = currentTimeMillis()
+            try {
+                runnerAndConfigurationSettings.checkSettings()
 
-                    val parameters = parametersParser.parse(comments)
+                val qualifiedClassName = getQualifiedClassName()
+                val methodName = getMethodName()
+                val comments = getComments()
 
-                    val httpAddress = httpConnectorParser.parseAddress(comments)
+                val promenaRunConfiguration = runnerAndConfigurationSettings.configuration as PromenaRunConfiguration
+                val repeat = promenaRunConfiguration.repeat
+                val concurrency = promenaRunConfiguration.concurrency
+                val httpAddress = promenaRunConfiguration.host + ":" + promenaRunConfiguration.port
 
-                    val runToolWindowTabs = createRunToolWindowTabs(project, parameters.repeat).apply {
-                        logStart(createTabName(qualifiedClassName, methodName))
-                        logParameters(parameters)
-                    }
+                CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
+                    if (successfulCompilation(aborted, errors)) {
+                        val startTimestamp = currentTimeMillis()
 
-                    try {
-                        val classLoader = createClassLoaderBasedOnFoldersWithCompiledFiles(this.javaClass.classLoader, project.getExistingOutputFolders())
-
-                        val promenaClass = classLoader
-                            .loadClass(qualifiedClassName)
-
-                        val kryoSerializationService = ThreadUnsafeKryoSerializationService(classLoader)
-
-                        val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
-                            .also(runToolWindowTabs::logData)
-                            .also { runToolWindowTabs.newLine() }
-                            .map(DataDescriptorWithFile::dataDescriptor)
-                            .let(::dataDescriptor)
-
-                        val transformation = promenaClass.invokePromenaMethod(methodName)
-
-                        val executors = Executors.newFixedThreadPool(parameters.concurrency)
-                        try {
-                            runToolWindowTabs.map { runToolWindowTab ->
-                                executors.submit {
-                                    transformUsingHttp(
-                                        kryoSerializationService,
-                                        runToolWindowTab,
-                                        transformation,
-                                        dataDescriptor,
-                                        httpAddress,
-                                        startTimestamp
-                                    )
-                                }
-                            }
-                        } finally {
-                            executors.shutdown()
+                        val runToolWindowTabs = createRunToolWindowTabs(project, repeat).apply {
+                            logStart(createTabName(qualifiedClassName, methodName))
+                            logParameters(repeat, concurrency)
                         }
-                    } catch (e: Throwable) {
-                        runToolWindowTabs.logFailureThrowable(e)
+
+                        try {
+                            val classLoader =
+                                createClassLoaderBasedOnFoldersWithCompiledFiles(this.javaClass.classLoader, project.getExistingOutputFolders())
+
+                            val promenaClass = classLoader
+                                .loadClass(qualifiedClassName)
+
+                            val kryoSerializationService = ThreadUnsafeKryoSerializationService(classLoader)
+
+                            val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
+                                .also(runToolWindowTabs::logData)
+                                .also { runToolWindowTabs.newLine() }
+                                .map(DataDescriptorWithFile::dataDescriptor)
+                                .let(::dataDescriptor)
+
+                            val transformation = promenaClass.invokePromenaMethod(methodName)
+
+                            val executors = Executors.newFixedThreadPool(concurrency)
+                            try {
+                                runToolWindowTabs.map { runToolWindowTab ->
+                                    executors.submit {
+                                        transformUsingHttp(
+                                            kryoSerializationService,
+                                            runToolWindowTab,
+                                            transformation,
+                                            dataDescriptor,
+                                            httpAddress,
+                                            startTimestamp
+                                        )
+                                    }
+                                }
+                            } finally {
+                                executors.shutdown()
+                            }
+                        } catch (e: Throwable) {
+                            runToolWindowTabs.logFailureThrowable(e)
+                        }
                     }
                 }
+            } catch (e: RuntimeConfigurationException) {
+                RunDialog.editConfiguration(project, runnerAndConfigurationSettings, "Edit configuration")
             }
         }
 

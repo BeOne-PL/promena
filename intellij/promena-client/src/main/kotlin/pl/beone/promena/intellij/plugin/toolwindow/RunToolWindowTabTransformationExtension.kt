@@ -3,7 +3,6 @@ package pl.beone.promena.intellij.plugin.toolwindow
 import com.intellij.icons.AllIcons
 import org.apache.commons.lang3.exception.ExceptionUtils
 import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorWithFile
-import pl.beone.promena.intellij.plugin.parser.parameter.Parameters
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
@@ -20,9 +19,9 @@ internal fun List<RunToolWindowTab>.logStart(tabName: String) {
     }
 }
 
-internal fun List<RunToolWindowTab>.logParameters(parameters: Parameters) {
+internal fun List<RunToolWindowTab>.logParameters(repeat: Int, concurrency: Int) {
     all {
-        println("Parameters: <repeat: ${parameters.repeat}>, <concurrency: ${parameters.concurrency}>")
+        println("Parameters: <repeat: ${repeat}>, <concurrency: ${concurrency}>")
         scrollToTheBeginning()
     }
 }
