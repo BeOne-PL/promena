@@ -46,8 +46,8 @@ abstract class AbstractRelatedItemLineMarkerProvider {
         {
             val runManager = RunManager.getInstance(project)
             val runnerAndConfigurationSettings =
-                runManager.getSelectedPromenaRunnerAndConfigurationSettings() ?: runManager.createPromenaRunnerAndConfigurationSettings()
-            runManager.selectedConfiguration = runnerAndConfigurationSettings
+                (runManager.getSelectedPromenaRunnerAndConfigurationSettings() ?: runManager.createPromenaRunnerAndConfigurationSettings())
+                    .also { runManager.selectedConfiguration = it }
 
             try {
                 runnerAndConfigurationSettings.checkSettings()
@@ -63,56 +63,61 @@ abstract class AbstractRelatedItemLineMarkerProvider {
 
                 CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
                     if (successfulCompilation(aborted, errors)) {
-                        val startTimestamp = currentTimeMillis()
-
-                        val runToolWindowTabs = createRunToolWindowTabs(project, repeat).apply {
-                            logStart(createTabName(qualifiedClassName, methodName))
-                            logParameters(repeat, concurrency)
-                        }
-
-                        try {
-                            val classLoader =
-                                createClassLoaderBasedOnFoldersWithCompiledFiles(this.javaClass.classLoader, project.getExistingOutputFolders())
-
-                            val promenaClass = classLoader
-                                .loadClass(qualifiedClassName)
-
-                            val kryoSerializationService = ThreadUnsafeKryoSerializationService(classLoader)
-
-                            val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
-                                .also(runToolWindowTabs::logData)
-                                .also { runToolWindowTabs.newLine() }
-                                .map(DataDescriptorWithFile::dataDescriptor)
-                                .let(::dataDescriptor)
-
-                            val transformation = promenaClass.invokePromenaMethod(methodName)
-
-                            val executors = Executors.newFixedThreadPool(concurrency)
-                            try {
-                                runToolWindowTabs.map { runToolWindowTab ->
-                                    executors.submit {
-                                        transformUsingHttp(
-                                            kryoSerializationService,
-                                            runToolWindowTab,
-                                            transformation,
-                                            dataDescriptor,
-                                            httpAddress,
-                                            startTimestamp
-                                        )
-                                    }
-                                }
-                            } finally {
-                                executors.shutdown()
-                            }
-                        } catch (e: Throwable) {
-                            runToolWindowTabs.logFailureThrowable(e)
-                        }
+                        transform(project, comments, qualifiedClassName, methodName, httpAddress, repeat, concurrency)
                     }
                 }
             } catch (e: RuntimeConfigurationException) {
                 RunDialog.editConfiguration(project, runnerAndConfigurationSettings, "Edit configuration")
             }
         }
+
+    private fun transform(
+        project: Project,
+        comments: List<String>,
+        qualifiedClassName: String,
+        methodName: String,
+        httpAddress: String,
+        repeat: Int,
+        concurrency: Int
+    ) {
+        val startTimestamp = currentTimeMillis()
+
+        val runToolWindowTabs = createRunToolWindowTabs(project, repeat).apply {
+            logStart(createTabName(qualifiedClassName, methodName), httpAddress)
+            logParameters(repeat, concurrency)
+        }
+
+        try {
+            val classLoader =
+                createClassLoaderBasedOnFoldersWithCompiledFiles(this.javaClass.classLoader, project.getExistingOutputFolders())
+
+            val promenaClass = classLoader
+                .loadClass(qualifiedClassName)
+
+            val kryoSerializationService = ThreadUnsafeKryoSerializationService(classLoader)
+
+            val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
+                .also(runToolWindowTabs::logData)
+                .also { runToolWindowTabs.newLine() }
+                .map(DataDescriptorWithFile::dataDescriptor)
+                .let(::dataDescriptor)
+
+            val transformation = promenaClass.invokePromenaMethod(methodName)
+
+            val executors = Executors.newFixedThreadPool(concurrency)
+            try {
+                runToolWindowTabs.map { runToolWindowTab ->
+                    executors.submit {
+                        transformUsingHttp(kryoSerializationService, runToolWindowTab, transformation, dataDescriptor, httpAddress, startTimestamp)
+                    }
+                }
+            } finally {
+                executors.shutdown()
+            }
+        } catch (e: Throwable) {
+            runToolWindowTabs.logFailureThrowable(e)
+        }
+    }
 
     private fun createRunToolWindowTabs(project: Project, number: Int): List<RunToolWindowTab> =
         (0 until number).map { RunToolWindowTab(project) }

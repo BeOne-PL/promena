@@ -9,13 +9,13 @@ import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import java.io.File
 
-internal fun List<RunToolWindowTab>.logStart(tabName: String) {
+internal fun List<RunToolWindowTab>.logStart(tabName: String, httpAddress: String) {
     forEachIndexed { index, runToolWindowTab ->
         runToolWindowTab.create(tabName + " #${index + 1}")
         runToolWindowTab.setIcon(AllIcons.RunConfigurations.TestState.Run)
         runToolWindowTab.show()
 
-        runToolWindowTab.println("Transforming...")
+        runToolWindowTab.println("Transforming using HTTP <$httpAddress>...")
     }
 }
 
