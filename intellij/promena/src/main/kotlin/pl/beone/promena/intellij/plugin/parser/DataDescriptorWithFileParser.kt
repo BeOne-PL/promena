@@ -62,11 +62,7 @@ internal object DataDescriptorParser {
             DataDescriptorWithFile(
                 singleDataDescriptor(
                     file.readBytes().toMemoryData(),
-                    createMediaType(
-                        file,
-                        commentDataDescriptor.mimeType,
-                        commentDataDescriptor.charset
-                    ),
+                    createMediaType(file, commentDataDescriptor.mimeType, commentDataDescriptor.charset),
                     emptyMetadata()
                 ),
                 file
