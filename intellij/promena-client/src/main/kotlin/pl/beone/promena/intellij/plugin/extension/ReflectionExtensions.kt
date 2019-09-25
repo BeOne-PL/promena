@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.common
+package pl.beone.promena.intellij.plugin.extension
 
 import pl.beone.promena.transformer.contract.transformation.Transformation
 

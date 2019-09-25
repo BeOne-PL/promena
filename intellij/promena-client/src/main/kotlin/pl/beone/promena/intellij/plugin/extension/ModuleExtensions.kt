@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.common
+package pl.beone.promena.intellij.plugin.extension
 
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.roots.CompilerModuleExtension

@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.common
+package pl.beone.promena.intellij.plugin.extension
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunnerAndConfigurationSettings

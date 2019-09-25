@@ -1,7 +1,7 @@
 package pl.beone.promena.intellij.plugin.parser.datadescriptor
 
-import pl.beone.promena.intellij.plugin.common.detectCharset
-import pl.beone.promena.intellij.plugin.common.detectMimeType
+import pl.beone.promena.intellij.plugin.extension.detectCharset
+import pl.beone.promena.intellij.plugin.extension.detectMimeType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor

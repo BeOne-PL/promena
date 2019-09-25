@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.nj2k.postProcessing.type
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
-import pl.beone.promena.intellij.plugin.common.getActiveFile
-import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
+import pl.beone.promena.intellij.plugin.extension.getActiveFile
+import pl.beone.promena.intellij.plugin.extension.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
 class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedItemLineMarkerProvider() {

@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.common
+package pl.beone.promena.intellij.plugin.extension
 
 import org.apache.tika.Tika
 import org.apache.tika.config.TikaConfig

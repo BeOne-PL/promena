@@ -4,8 +4,8 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
-import pl.beone.promena.intellij.plugin.common.getActiveFile
-import pl.beone.promena.intellij.plugin.common.isFileInAnyModule
+import pl.beone.promena.intellij.plugin.extension.getActiveFile
+import pl.beone.promena.intellij.plugin.extension.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
 class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedItemLineMarkerProvider() {

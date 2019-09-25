@@ -44,11 +44,11 @@ internal class HttpTransformer(private val serializationService: SerializationSe
 
     private fun handleTransformationResult(clientResponse: HttpClientResponse, bytes: ByteArray): PerformedTransformationDescriptor =
         when (clientResponse.status()) {
-            HttpResponseStatus.OK                    ->
+            HttpResponseStatus.OK ->
                 serializationService.deserialize(bytes, getClazz())
             HttpResponseStatus.INTERNAL_SERVER_ERROR ->
                 throw serializationService.deserialize(bytes, clientResponse.responseHeaders().getSerializationClass())
-            else                                     ->
+            else ->
                 throw HttpException(clientResponse.status(), bytes)
         }
 

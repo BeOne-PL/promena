@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.common
+package pl.beone.promena.intellij.plugin.util
 
 import com.intellij.openapi.application.ApplicationManager
 
