@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
-import pl.beone.promena.core.internal.serialization.ThreadUnsafeKryoSerializationService
+import pl.beone.promena.core.internal.serialization.ClassLoaderKryoSerializationService
 import pl.beone.promena.intellij.plugin.classloader.createClassLoaderBasedOnFoldersWithCompiledFiles
 import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfiguration
 import pl.beone.promena.intellij.plugin.extension.createPromenaRunnerAndConfigurationSettings
@@ -32,6 +32,8 @@ import java.util.concurrent.Executors
 abstract class AbstractRelatedItemLineMarkerProvider {
 
     companion object {
+        private val kryoLockObject = Object()
+
         private val dataDescriptorWithFileParser = DataDescriptorParser()
 
         private val transformedDataDescriptorSaver = TransformedDataDescriptorSaver()
@@ -94,7 +96,7 @@ abstract class AbstractRelatedItemLineMarkerProvider {
             val promenaClass = classLoader
                 .loadClass(qualifiedClassName)
 
-            val kryoSerializationService = ThreadUnsafeKryoSerializationService(classLoader)
+            val kryoSerializationService = ClassLoaderKryoSerializationService(classLoader, kryoLockObject)
 
             val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
                 .also(runToolWindowTabs::logData)
