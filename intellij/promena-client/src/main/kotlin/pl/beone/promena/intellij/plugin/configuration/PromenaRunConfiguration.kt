@@ -18,17 +18,10 @@ class PromenaRunConfiguration(
     name: String
 ) : RunConfigurationBase<PromenaSettingsEditorForm>(project, factory, name) {
 
-    internal lateinit var host: String
-    internal var port: Int = -1
-    internal var repeat: Int = -1
-    internal var concurrency: Int = -1
-
-    override fun onNewConfigurationCreated() {
-        host = "localhost"
-        port = 8080
-        repeat = 1
-        concurrency = 1
-    }
+    internal var host: String = ""
+    internal var port: Int = 8080
+    internal var repeat: Int = 1
+    internal var concurrency: Int = 1
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> =
         PromenaSettingsEditor()
