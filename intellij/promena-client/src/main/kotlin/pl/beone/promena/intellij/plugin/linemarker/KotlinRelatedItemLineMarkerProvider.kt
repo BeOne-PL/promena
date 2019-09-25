@@ -23,7 +23,10 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedI
 
             if (
                 project.isFileInAnyModule(project.getActiveFile()) &&
-                isNotInClass(ktNamedFunction) && hasNoParameters(ktNamedFunction) && isTransformationReturnType(ktNamedFunction)
+                startsWithPromena(ktNamedFunction) &&
+                isNotInClass(ktNamedFunction) &&
+                hasNoParameters(ktNamedFunction) &&
+                isTransformationReturnType(ktNamedFunction)
             ) {
                 return PromenaLineMarkerInfo(
                     element,
@@ -46,6 +49,9 @@ class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedI
 
     private fun isKtNamedFunction(element: PsiElement): Boolean =
         element is KtNamedFunction
+
+    private fun startsWithPromena(function: KtNamedFunction): Boolean =
+        function.nameAsSafeName.asString().startsWith("promena", true)
 
     private fun isNotInClass(function: KtNamedFunction): Boolean =
         function.containingClass() == null

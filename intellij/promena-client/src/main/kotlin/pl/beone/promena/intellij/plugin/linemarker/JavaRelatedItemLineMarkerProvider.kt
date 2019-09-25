@@ -19,7 +19,11 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedIte
 
             if (
                 project.isFileInAnyModule(activeFile) &&
-                isNotInInnerClass(psiMethod) && isPublicStatic(psiMethod) && hasNoParameters(psiMethod) && isTransformationReturnType(psiMethod)
+                startsWithPromena(psiMethod) &&
+                isNotInInnerClass(psiMethod) &&
+                isPublicStatic(psiMethod) &&
+                hasNoParameters(psiMethod) &&
+                isTransformationReturnType(psiMethod)
             ) {
                 return PromenaLineMarkerInfo(
                     element,
@@ -42,6 +46,9 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedIte
 
     private fun isMethod(element: PsiElement): Boolean =
         element is PsiIdentifier && element.parent is PsiMethod
+
+    private fun startsWithPromena(method: PsiMethod): Boolean =
+        method.name.startsWith("promena", true)
 
     private fun isNotInInnerClass(psiMethod: PsiMethod): Boolean =
         psiMethod.parents
