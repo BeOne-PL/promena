@@ -10,17 +10,17 @@ import pl.beone.promena.communication.memory.model.internal.memoryCommunicationP
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.internal.serialization.ClassLoaderKryoSerializationService
-import pl.beone.promena.intellij.plugin.classloader.createClassLoaderBasedOnFoldersWithCompiledFiles
 import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfiguration
 import pl.beone.promena.intellij.plugin.extension.createPromenaRunnerAndConfigurationSettings
 import pl.beone.promena.intellij.plugin.extension.getExistingOutputFolders
 import pl.beone.promena.intellij.plugin.extension.getSelectedPromenaRunnerAndConfigurationSettings
 import pl.beone.promena.intellij.plugin.extension.invokePromenaMethod
-import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorParser
-import pl.beone.promena.intellij.plugin.parser.datadescriptor.DataDescriptorWithFile
+import pl.beone.promena.intellij.plugin.parser.DataDescriptorParser
+import pl.beone.promena.intellij.plugin.parser.DataDescriptorWithFile
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
 import pl.beone.promena.intellij.plugin.toolwindow.*
 import pl.beone.promena.intellij.plugin.transformer.HttpTransformer
+import pl.beone.promena.intellij.plugin.util.createClassLoaderBasedOnFoldersWithCompiledFiles
 import pl.beone.promena.intellij.plugin.util.invokeLater
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
@@ -33,10 +33,6 @@ abstract class AbstractRelatedItemLineMarkerProvider {
 
     companion object {
         private val kryoLockObject = Object()
-
-        private val dataDescriptorWithFileParser = DataDescriptorParser()
-
-        private val transformedDataDescriptorSaver = TransformedDataDescriptorSaver()
     }
 
     protected fun createOnClickHandler(
@@ -91,14 +87,17 @@ abstract class AbstractRelatedItemLineMarkerProvider {
 
         try {
             val classLoader =
-                createClassLoaderBasedOnFoldersWithCompiledFiles(this.javaClass.classLoader, project.getExistingOutputFolders())
+                createClassLoaderBasedOnFoldersWithCompiledFiles(
+                    this.javaClass.classLoader,
+                    project.getExistingOutputFolders()
+                )
 
             val promenaClass = classLoader
                 .loadClass(qualifiedClassName)
 
             val kryoSerializationService = ClassLoaderKryoSerializationService(classLoader, kryoLockObject)
 
-            val dataDescriptor = dataDescriptorWithFileParser.parse(comments, promenaClass)
+            val dataDescriptor = DataDescriptorParser.parse(comments, promenaClass)
                 .also(runToolWindowTabs::logData)
                 .also { runToolWindowTabs.newLine() }
                 .map(DataDescriptorWithFile::dataDescriptor)
@@ -163,7 +162,7 @@ abstract class AbstractRelatedItemLineMarkerProvider {
     ) {
         val targetMediaType = transformation.transformers.last().targetMediaType
         invokeLater {
-            transformedDataDescriptorSaver.save(transformedDataDescriptor, targetMediaType)
+            TransformedDataDescriptorSaver.save(transformedDataDescriptor, targetMediaType)
                 .also { runToolWindowTab.logSuccess(transformedDataDescriptor, targetMediaType, it, executionTimeMillis) }
         }
     }

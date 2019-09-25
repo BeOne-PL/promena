@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.classloader
+package pl.beone.promena.intellij.plugin.util
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.lang.UrlClassLoader

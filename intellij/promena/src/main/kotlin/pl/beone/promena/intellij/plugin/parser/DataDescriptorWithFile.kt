@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.parser.datadescriptor
+package pl.beone.promena.intellij.plugin.parser
 
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import java.io.File

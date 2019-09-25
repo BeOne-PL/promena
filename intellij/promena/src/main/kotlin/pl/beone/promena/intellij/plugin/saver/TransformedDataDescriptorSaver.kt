@@ -6,7 +6,7 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
 import java.io.File
 
-internal class TransformedDataDescriptorSaver {
+internal object TransformedDataDescriptorSaver {
 
     fun save(transformedDataDescriptor: TransformedDataDescriptor, mediaType: MediaType): List<File> {
         val extension = mediaType.determineExtension()

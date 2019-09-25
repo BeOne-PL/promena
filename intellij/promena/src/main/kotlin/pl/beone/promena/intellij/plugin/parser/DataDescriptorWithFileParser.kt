@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.parser.datadescriptor
+package pl.beone.promena.intellij.plugin.parser
 
 import pl.beone.promena.intellij.plugin.extension.detectCharset
 import pl.beone.promena.intellij.plugin.extension.detectMimeType
@@ -17,26 +17,26 @@ private data class CommentDataDescriptor(
     val charset: String?
 )
 
-internal class DataDescriptorParser {
+internal object DataDescriptorParser {
 
-    companion object {
-        private val dataRegex = "Data:(.*)".toRegex()
-        private val dataWithMediaTypeRegex = "$dataRegex[|][ ]+MediaType:(.*)".toRegex()
-        private val dataWithMediaTypeAndCharsetRegex = "$dataWithMediaTypeRegex;(.*)".toRegex()
-    }
+    private val dataRegex = "Data:(.*)".toRegex()
+    private val dataWithMediaTypeRegex = "$dataRegex[|][ ]+MediaType:(.*)".toRegex()
+    private val dataWithMediaTypeAndCharsetRegex = "$dataWithMediaTypeRegex;(.*)".toRegex()
 
     fun parse(comments: List<String>, clazz: Class<*>): List<DataDescriptorWithFile> =
         comments.filter { it.contains("Data") }
-            .map(::createCommentDataDescriptor)
+            .map(DataDescriptorParser::createCommentDataDescriptor)
             .map { createMemoryDataDescriptor(it, clazz) }
 
     private fun createCommentDataDescriptor(comment: String): CommentDataDescriptor =
-        determineDataDescriptorWithMediaTypeAndCharset(comment) ?: determineDataDescriptorWithMediaType(comment) ?: determineData(comment)
-        ?: throw IllegalArgumentException(
-            "Couldn't parse <$comment>. Correct format: " +
-                    "// Data: <absolute/resource path> [| MediaType: <mime type>; <charset>], " +
-                    "for example: // Data: <absolute/resource path> [| MediaType: <mime type>; <charset>]"
-        )
+        determineDataDescriptorWithMediaTypeAndCharset(comment)
+            ?: determineDataDescriptorWithMediaType(comment)
+            ?: determineData(comment)
+            ?: throw IllegalArgumentException(
+                "Couldn't parse <$comment>. Correct format: " +
+                        "// Data: <absolute/resource path> [| MediaType: <mime type>; <charset>], " +
+                        "for example: // Data: <absolute/resource path> [| MediaType: <mime type>; <charset>]"
+            )
 
     private fun determineDataDescriptorWithMediaTypeAndCharset(comment: String): CommentDataDescriptor? =
         dataWithMediaTypeAndCharsetRegex.find(comment)?.let {
@@ -62,7 +62,11 @@ internal class DataDescriptorParser {
             DataDescriptorWithFile(
                 singleDataDescriptor(
                     file.readBytes().toMemoryData(),
-                    createMediaType(file, commentDataDescriptor.mimeType, commentDataDescriptor.charset),
+                    createMediaType(
+                        file,
+                        commentDataDescriptor.mimeType,
+                        commentDataDescriptor.charset
+                    ),
                     emptyMetadata()
                 ),
                 file
