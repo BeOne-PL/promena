@@ -9,11 +9,6 @@ else
 fi
 
 start() {
-    docker volume create alfresco-promena-rendition-acs-volume
-    docker volume create alfresco-promena-rendition-db-volume
-    docker volume create alfresco-promena-rendition-ass-data-volume
-    docker volume create alfresco-promena-rendition-ass-contentstore-volume
-    docker volume create alfresco-promena-rendition-ass-solrhome-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
@@ -26,8 +21,7 @@ down() {
 purge() {
     docker volume rm -f alfresco-promena-rendition-acs-volume
     docker volume rm -f alfresco-promena-rendition-db-volume
-    docker volume rm -f alfresco-promena-rendition-ass-data-volume
-    docker volume rm -f alfresco-promena-rendition-ass-contentstore-volume
+    docker volume rm -f alfresco-promena-rendition-ass-volume
     docker volume rm -f alfresco-promena-rendition-ass-solrhome-volume
 }
 

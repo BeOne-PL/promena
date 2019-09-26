@@ -46,8 +46,8 @@ services:
     ports:
       - "8983:8983"
     volumes:
-      - alfresco-promena-connector-activemq-ass-data-volume:/opt/alfresco-search-services/data
-      - alfresco-promena-connector-activemq-ass-contentstore-volume:/opt/alfresco-search-services/contentstore
+      - alfresco-promena-connector-activemq-ass-volume:/opt/alfresco-search-services/data
+      - alfresco-promena-connector-activemq-ass-volume:/opt/alfresco-search-services/contentstore
       - alfresco-promena-connector-activemq-ass-solrhome-volume:/opt/alfresco-search-services/solrhome
 
   activemq:
@@ -64,14 +64,7 @@ services:
 
 volumes:
   alfresco-promena-connector-activemq-acs-volume:
-    external: true
   alfresco-promena-connector-activemq-db-volume:
-    external: true
-  alfresco-promena-connector-activemq-ass-data-volume:
-    external: true
-  alfresco-promena-connector-activemq-ass-contentstore-volume:
-    external: true
+  alfresco-promena-connector-activemq-ass-volume:
   alfresco-promena-connector-activemq-ass-solrhome-volume:
-    external: true
   alfresco-promena-connector-activemq-activemq-volume:
-    external: true

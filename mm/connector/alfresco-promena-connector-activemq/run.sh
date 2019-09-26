@@ -9,12 +9,6 @@ else
 fi
 
 start() {
-    docker volume create alfresco-promena-connector-activemq-acs-volume
-    docker volume create alfresco-promena-connector-activemq-db-volume
-    docker volume create alfresco-promena-connector-activemq-ass-data-volume
-    docker volume create alfresco-promena-connector-activemq-ass-contentstore-volume
-    docker volume create alfresco-promena-connector-activemq-ass-solrhome-volume
-    docker volume create alfresco-promena-connector-activemq-activemq-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
@@ -27,8 +21,7 @@ down() {
 purge() {
     docker volume rm -f alfresco-promena-connector-activemq-acs-volume
     docker volume rm -f alfresco-promena-connector-activemq-db-volume
-    docker volume rm -f alfresco-promena-connector-activemq-ass-data-volume
-    docker volume rm -f alfresco-promena-connector-activemq-ass-contentstore-volume
+    docker volume rm -f alfresco-promena-connector-activemq-ass-volume
     docker volume rm -f alfresco-promena-connector-activemq-ass-solrhome-volume
     docker volume rm -f alfresco-promena-connector-activemq-activemq-volume
 }

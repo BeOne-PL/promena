@@ -9,11 +9,6 @@ else
 fi
 
 start() {
-    docker volume create alfresco-promena-predefined-rendition-acs-volume
-    docker volume create alfresco-promena-predefined-rendition-db-volume
-    docker volume create alfresco-promena-predefined-rendition-ass-data-volume
-    docker volume create alfresco-promena-predefined-rendition-ass-contentstore-volume
-    docker volume create alfresco-promena-predefined-rendition-ass-solrhome-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
@@ -26,9 +21,9 @@ down() {
 purge() {
     docker volume rm -f alfresco-promena-predefined-rendition-acs-volume
     docker volume rm -f alfresco-promena-predefined-rendition-db-volume
-    docker volume rm -f alfresco-promena-predefined-rendition-ass-data-volume
-    docker volume rm -f alfresco-promena-predefined-rendition-ass-contentstore-volume
-    docker volume rm -f alfresco-promena-predefined-rendition-ass-solrhome-volume
+    docker volume rm -f alfresco-promena-predefined-rendition-ass-volume
+    docker volume rm -f alfresco-promena-predefined-rendition-ass-home-volume
+    docker volume rm -f alfresco-promena-predefined-rendition-activemq-volume
 }
 
 build() {
