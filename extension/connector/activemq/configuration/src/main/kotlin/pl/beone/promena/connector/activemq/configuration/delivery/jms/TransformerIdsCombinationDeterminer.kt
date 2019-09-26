@@ -4,7 +4,7 @@ import org.apache.commons.math3.util.Combinations
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
-object TransformerIdsCombinationDeterminer {
+internal object TransformerIdsCombinationDeterminer {
 
     fun determine(transformerIds: List<TransformerId>): List<List<TransformerId>> {
         val generalTransformerIds = createGeneralTransformerIds(transformerIds)
