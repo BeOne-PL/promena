@@ -69,7 +69,9 @@ EXIT /B %ERRORLEVEL%
 :start
     docker volume create alfresco-promena-connector-http-acs-volume
     docker volume create alfresco-promena-connector-http-db-volume
-    docker volume create alfresco-promena-connector-http-ass-volume
+    docker volume create alfresco-promena-connector-http-ass-data-volume
+    docker volume create alfresco-promena-connector-http-ass-contentstore-volume
+    docker volume create alfresco-promena-connector-http-ass-solrhome-volume
     docker-compose -f "%COMPOSE_FILE_PATH%" up --build -d
 EXIT /B 0
 :down
@@ -95,5 +97,7 @@ EXIT /B 0
 :purge
     docker volume rm -f alfresco-promena-connector-http-acs-volume
     docker volume rm -f alfresco-promena-connector-http-db-volume
-    docker volume rm -f alfresco-promena-connector-http-ass-volume
+    docker volume rm -f alfresco-promena-connector-http-ass-data-volume
+    docker volume rm -f alfresco-promena-connector-http-ass-contentstore-volume
+    docker volume rm -f alfresco-promena-connector-http-ass-solrhome-volume
 EXIT /B 0

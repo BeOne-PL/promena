@@ -46,14 +46,18 @@ services:
     ports:
       - "8983:8983"
     volumes:
-      - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/contentstore
-      - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/data
-      - alfresco-promena-rendition-ass-volume:/opt/alfresco-search-services/solrhome
+      - alfresco-promena-rendition-ass-data-volume:/opt/alfresco-search-services/data
+      - alfresco-promena-rendition-ass-contentstore-volume:/opt/alfresco-search-services/contentstore
+      - alfresco-promena-rendition-ass-solrhome-volume:/opt/alfresco-search-services/solrhome
 
 volumes:
   alfresco-promena-rendition-acs-volume:
     external: true
   alfresco-promena-rendition-db-volume:
     external: true
-  alfresco-promena-rendition-ass-volume:
+  alfresco-promena-rendition-ass-data-volume:
+    external: true
+  alfresco-promena-rendition-ass-contentstore-volume:
+    external: true
+  alfresco-promena-rendition-ass-solrhome-volume:
     external: true
