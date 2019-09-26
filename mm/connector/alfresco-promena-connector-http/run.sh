@@ -19,10 +19,10 @@ down() {
 }
 
 purge() {
-    docker volume rm -f alfresco-promena-connector-http-acs-volume
-    docker volume rm -f alfresco-promena-connector-http-db-volume
-    docker volume rm -f alfresco-promena-connector-http-ass-volume
-    docker volume rm -f alfresco-promena-connector-http-ass-solrhome-volume
+    docker volume rm -f docker_alfresco-promena-connector-http-acs-volume
+    docker volume rm -f docker_alfresco-promena-connector-http-db-volume
+    docker volume rm -f docker_alfresco-promena-connector-http-ass-volume
+    docker volume rm -f docker_alfresco-promena-connector-http-ass-solrhome-volume
 }
 
 build() {

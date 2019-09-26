@@ -90,9 +90,9 @@ EXIT /B 0
     call %MVN_EXEC% -DskipTests=true verify
 EXIT /B 0
 :purge
-    docker volume rm -f alfresco-promena-connector-activemq-acs-volume
-    docker volume rm -f alfresco-promena-connector-activemq-db-volume
-    docker volume rm -f alfresco-promena-connector-activemq-ass-volume
-    docker volume rm -f alfresco-promena-connector-activemq-ass-solrhome-volume
-    docker volume rm -f  alfresco-promena-connector-activemq-activemq-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-acs-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-db-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-ass-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-ass-solrhome-volume
+    docker volume rm -f docker_ alfresco-promena-connector-activemq-activemq-volume
 EXIT /B 0

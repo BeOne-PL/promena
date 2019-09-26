@@ -19,11 +19,11 @@ down() {
 }
 
 purge() {
-    docker volume rm -f alfresco-promena-connector-activemq-acs-volume
-    docker volume rm -f alfresco-promena-connector-activemq-db-volume
-    docker volume rm -f alfresco-promena-connector-activemq-ass-volume
-    docker volume rm -f alfresco-promena-connector-activemq-ass-solrhome-volume
-    docker volume rm -f alfresco-promena-connector-activemq-activemq-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-acs-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-db-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-ass-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-ass-solrhome-volume
+    docker volume rm -f docker_alfresco-promena-connector-activemq-activemq-volume
 }
 
 build() {

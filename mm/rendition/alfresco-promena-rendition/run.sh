@@ -19,10 +19,10 @@ down() {
 }
 
 purge() {
-    docker volume rm -f alfresco-promena-rendition-acs-volume
-    docker volume rm -f alfresco-promena-rendition-db-volume
-    docker volume rm -f alfresco-promena-rendition-ass-volume
-    docker volume rm -f alfresco-promena-rendition-ass-solrhome-volume
+    docker volume rm -f docker_alfresco-promena-rendition-acs-volume
+    docker volume rm -f docker_alfresco-promena-rendition-db-volume
+    docker volume rm -f docker_alfresco-promena-rendition-ass-volume
+    docker volume rm -f docker_alfresco-promena-rendition-ass-solrhome-volume
 }
 
 build() {
