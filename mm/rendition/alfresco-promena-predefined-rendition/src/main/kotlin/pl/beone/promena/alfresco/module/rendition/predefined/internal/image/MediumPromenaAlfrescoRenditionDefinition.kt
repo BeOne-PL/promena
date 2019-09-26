@@ -9,7 +9,7 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.converter.imagemagick.applicationmodel.imageMagickConverterParameters
 import pl.beone.promena.transformer.converter.imagemagick.applicationmodel.imageMagickConverterTransformation
 
-class MediumPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinition {
+object MediumPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinition {
 
     override fun getRenditionName(): String =
         "medium"

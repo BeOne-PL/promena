@@ -3,7 +3,7 @@ package pl.beone.promena.connector.activemq.internal
 import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 
-class HashCodeTransformationHashFunctionDeterminer : TransformationHashFunctionDeterminer {
+object HashCodeTransformationHashFunctionDeterminer : TransformationHashFunctionDeterminer {
 
     override fun determine(transformerIds: List<TransformerId>): String =
         transformerIds

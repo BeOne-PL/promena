@@ -19,8 +19,6 @@ class TransformationConsumerContext {
 
     companion object {
         private val logger = KotlinLogging.logger {}
-
-        private val transformationHashCodeMessageSelectorDeterminer = TransformationHashCodeMessageSelectorDeterminer()
     }
 
     @Bean
@@ -33,7 +31,7 @@ class TransformationConsumerContext {
         transformationUseCase: TransformationUseCase
     ): TransformationConsumer {
         val messageSelector =
-            transformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
+            TransformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
 
         logger.debug { "Set message selector for TransformationConsumer on <$TRANSFORMATION_HASH_CODE>: <$messageSelector>" }
 

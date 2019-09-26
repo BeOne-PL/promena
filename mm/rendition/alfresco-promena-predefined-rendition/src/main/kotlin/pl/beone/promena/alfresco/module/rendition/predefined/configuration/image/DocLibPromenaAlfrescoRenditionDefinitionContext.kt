@@ -9,5 +9,5 @@ class DocLibPromenaAlfrescoRenditionDefinitionContext {
 
     @Bean
     fun docLibPromenaAlfrescoRenditionDefinition() =
-        DocLibPromenaAlfrescoRenditionDefinition()
+        DocLibPromenaAlfrescoRenditionDefinition
 }

@@ -9,5 +9,5 @@ class PdfPromenaAlfrescoRenditionDefinitionContext {
 
     @Bean
     fun pdfPromenaAlfrescoRenditionDefinition() =
-        PdfPromenaAlfrescoRenditionDefinition()
+        PdfPromenaAlfrescoRenditionDefinition
 }

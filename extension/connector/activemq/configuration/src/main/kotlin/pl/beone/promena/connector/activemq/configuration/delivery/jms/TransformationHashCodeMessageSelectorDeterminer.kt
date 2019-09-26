@@ -6,18 +6,14 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 
-internal class TransformationHashCodeMessageSelectorDeterminer {
-
-    companion object {
-        private val transformerIdsCombinationDeterminer = TransformerIdsCombinationDeterminer()
-    }
+object TransformationHashCodeMessageSelectorDeterminer {
 
     fun determine(
         transformerConfig: TransformerConfig,
         transformers: List<Transformer>,
         transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer
     ): String =
-        transformerIdsCombinationDeterminer.determine(getTransformerIds(transformers, transformerConfig))
+        TransformerIdsCombinationDeterminer.determine(getTransformerIds(transformers, transformerConfig))
             .map(transformationHashFunctionDeterminer::determine)
             .let(::createMessageSelector)
 

@@ -50,8 +50,8 @@ import java.time.Duration
 class AkkaTransformationServiceTestIT {
 
     companion object {
-        private val internalCommunicationConverter = MirrorInternalCommunicationConverter()
-        private val internalCommunicationCleaner = NothingInternalCommunicationCleaner()
+        private val internalCommunicationConverter = MirrorInternalCommunicationConverter
+        private val internalCommunicationCleaner = NothingInternalCommunicationCleaner
 
         private const val textAppenderTransformerName = "text-appender"
         private const val kotlinTextAppenderTransformerSubName = "kotlin"
@@ -287,8 +287,8 @@ class AkkaTransformationServiceTestIT {
                 GroupedByNameTransformerActor(
                     textAppenderTransformerName,
                     listOf(
-                        TransformerDescriptor(textAppenderTransformerId, TextAppenderTransformer()),
-                        TransformerDescriptor(uselessTextAppenderTransformerId, UselessTextAppenderTransformer()),
+                        TransformerDescriptor(textAppenderTransformerId, TextAppenderTransformer),
+                        TransformerDescriptor(uselessTextAppenderTransformerId, UselessTextAppenderTransformer),
                         TransformerDescriptor(javaTextAppenderTransformerId, JavaTextAppenderTransformer())
                     ),
                     internalCommunicationConverter,
@@ -301,7 +301,7 @@ class AkkaTransformationServiceTestIT {
             Props.create(GroupedByNameTransformerActor::class.java) {
                 GroupedByNameTransformerActor(
                     fromTextToXmlAppenderTransformerName,
-                    listOf(TransformerDescriptor(fromTextToXmlAppenderTransformerId, FromTextToXmlAppenderTransformer())),
+                    listOf(TransformerDescriptor(fromTextToXmlAppenderTransformerId, FromTextToXmlAppenderTransformer)),
                     internalCommunicationConverter,
                     internalCommunicationCleaner
                 )
@@ -312,7 +312,7 @@ class AkkaTransformationServiceTestIT {
             Props.create(GroupedByNameTransformerActor::class.java) {
                 GroupedByNameTransformerActor(
                     timeoutTransformerName,
-                    listOf(TransformerDescriptor(timeoutTransformerId, TimeoutTransformer())),
+                    listOf(TransformerDescriptor(timeoutTransformerId, TimeoutTransformer)),
                     internalCommunicationConverter,
                     internalCommunicationCleaner
                 )

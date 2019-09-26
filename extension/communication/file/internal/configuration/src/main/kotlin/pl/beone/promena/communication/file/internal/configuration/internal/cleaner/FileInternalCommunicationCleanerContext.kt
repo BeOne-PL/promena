@@ -9,5 +9,5 @@ class FileInternalCommunicationCleanerContext {
 
     @Bean
     fun fileInternalCommunicationCleaner() =
-        FileInternalCommunicationCleaner()
+        FileInternalCommunicationCleaner
 }

@@ -21,10 +21,6 @@ class TransformationConsumer(
     private val transformationUseCase: TransformationUseCase
 ) {
 
-    companion object {
-        private val headersToSentBackDeterminer = HeadersToSentBackDeterminer()
-    }
-
     private val transformerProducer = TransformationProducer(jmsTemplate)
 
     @JmsListener(
@@ -50,7 +46,7 @@ class TransformationConsumer(
             errorResponseQueue to e
         }
 
-        val headersToSend = headersToSentBackDeterminer.determine(headers) +
+        val headersToSend = HeadersToSentBackDeterminer.determine(headers) +
                 (TRANSFORMATION_HASH_CODE to transformationHashCode) +
                 determineTimestampHeaders(startTimestamp, getTimestamp())
 

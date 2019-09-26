@@ -9,5 +9,5 @@ class HashCodeTransformationHashFunctionDeterminerContext {
 
     @Bean
     fun hashCodeTransformationHashFunctionDeterminer() =
-        HashCodeTransformationHashFunctionDeterminer()
+        HashCodeTransformationHashFunctionDeterminer
 }

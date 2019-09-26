@@ -7,7 +7,7 @@ import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 
-class UselessTextAppenderTransformer : Transformer {
+object UselessTextAppenderTransformer : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor {
         throw IllegalStateException("It shouldn't be invoked")

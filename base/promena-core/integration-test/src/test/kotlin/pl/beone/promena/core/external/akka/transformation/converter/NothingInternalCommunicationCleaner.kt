@@ -4,7 +4,7 @@ import pl.beone.promena.core.contract.communication.internal.InternalCommunicati
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
-class NothingInternalCommunicationCleaner : InternalCommunicationCleaner {
+object NothingInternalCommunicationCleaner : InternalCommunicationCleaner {
 
     override fun clean(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor) {
     }

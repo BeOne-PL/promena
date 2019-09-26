@@ -12,10 +12,6 @@ import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class TransformationHashCodeMessageSelectorDeterminerTest {
 
-    companion object {
-        private val transformationHashCodeMessageSelectorDeterminer = TransformationHashCodeMessageSelectorDeterminer()
-    }
-
     @Test
     fun determine() {
         val converterTransformerId = "converter".toTransformerId()
@@ -34,7 +30,7 @@ class TransformationHashCodeMessageSelectorDeterminerTest {
             every { determine(listOf(converterTransformerId, barcodeTransformerId)) } returns "3"
         }
 
-        transformationHashCodeMessageSelectorDeterminer.determine(
+        TransformationHashCodeMessageSelectorDeterminer.determine(
             transformerConfig,
             listOf(converterTransformer, barcodeTransformer),
             transformationHashFunctionDeterminer

@@ -7,7 +7,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
-class PdfPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinition {
+object PdfPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinition {
 
     override fun getRenditionName(): String =
         "pdf"

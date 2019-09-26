@@ -9,5 +9,5 @@ class AvatarPromenaAlfrescoRenditionDefinitionContext {
 
     @Bean
     fun avatarPromenaAlfrescoRenditionDefinition() =
-        AvatarPromenaAlfrescoRenditionDefinition()
+        AvatarPromenaAlfrescoRenditionDefinition
 }

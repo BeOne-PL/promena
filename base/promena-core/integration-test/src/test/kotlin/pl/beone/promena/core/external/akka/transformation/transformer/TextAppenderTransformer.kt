@@ -14,7 +14,7 @@ import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.plus
 
-class TextAppenderTransformer : Transformer {
+object TextAppenderTransformer : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor =
         dataDescriptor.descriptors.map { (data, _, metadata) ->

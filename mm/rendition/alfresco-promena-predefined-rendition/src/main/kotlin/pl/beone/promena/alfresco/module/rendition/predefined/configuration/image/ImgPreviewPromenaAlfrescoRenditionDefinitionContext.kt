@@ -9,5 +9,5 @@ class ImgPreviewPromenaAlfrescoRenditionDefinitionContext {
 
     @Bean
     fun imgPreviewPromenaAlfrescoRenditionDefinition() =
-        ImgPreviewPromenaAlfrescoRenditionDefinition()
+        ImgPreviewPromenaAlfrescoRenditionDefinition
 }

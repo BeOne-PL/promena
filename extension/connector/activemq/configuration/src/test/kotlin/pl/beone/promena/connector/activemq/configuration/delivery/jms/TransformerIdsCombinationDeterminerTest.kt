@@ -7,13 +7,9 @@ import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class TransformerIdsCombinationDeterminerTest {
 
-    companion object {
-        private val transformerIdsCombinationDeterminer = TransformerIdsCombinationDeterminer()
-    }
-
     @Test
     fun determine() {
-        transformerIdsCombinationDeterminer.determine(
+        TransformerIdsCombinationDeterminer.determine(
             listOf(
                 ("barcode" to "zxing").toTransformerId(),
                 ("converter" to "libreoffice").toTransformerId(),

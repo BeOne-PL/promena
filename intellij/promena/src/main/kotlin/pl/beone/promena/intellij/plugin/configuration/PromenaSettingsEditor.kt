@@ -6,7 +6,6 @@ import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfigurationVal
 import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfigurationValidator.Repeat
 import javax.swing.*
 
-
 class PromenaSettingsEditor : SettingsEditor<PromenaRunConfiguration>() {
 
     internal lateinit var panel: JPanel

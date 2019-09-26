@@ -9,5 +9,5 @@ class FileOutgoingExternalCommunicationConverterContext {
 
     @Bean
     fun fileOutgoingExternalCommunicationConverter() =
-        FileOutgoingExternalCommunicationConverter()
+        FileOutgoingExternalCommunicationConverter
 }

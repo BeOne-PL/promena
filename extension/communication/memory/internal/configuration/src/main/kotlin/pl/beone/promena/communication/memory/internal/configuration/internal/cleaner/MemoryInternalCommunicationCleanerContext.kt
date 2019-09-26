@@ -9,5 +9,5 @@ class MemoryInternalCommunicationCleanerContext {
 
     @Bean
     fun memoryInternalCommunicationCleaner() =
-        MemoryInternalCommunicationCleaner()
+        MemoryInternalCommunicationCleaner
 }

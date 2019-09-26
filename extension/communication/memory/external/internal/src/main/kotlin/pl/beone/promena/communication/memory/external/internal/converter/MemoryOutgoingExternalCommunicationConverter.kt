@@ -5,7 +5,7 @@ import pl.beone.promena.core.contract.communication.external.OutgoingExternalCom
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
-class MemoryOutgoingExternalCommunicationConverter : OutgoingExternalCommunicationConverter {
+object MemoryOutgoingExternalCommunicationConverter : OutgoingExternalCommunicationConverter {
 
     override fun convert(
         transformedDataDescriptor: TransformedDataDescriptor,

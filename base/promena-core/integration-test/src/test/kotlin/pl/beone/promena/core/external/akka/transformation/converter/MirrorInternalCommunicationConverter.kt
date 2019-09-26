@@ -4,7 +4,7 @@ import pl.beone.promena.core.contract.communication.internal.InternalCommunicati
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
-class MirrorInternalCommunicationConverter : InternalCommunicationConverter {
+object MirrorInternalCommunicationConverter : InternalCommunicationConverter {
 
     override fun convert(dataDescriptor: DataDescriptor): DataDescriptor =
         dataDescriptor

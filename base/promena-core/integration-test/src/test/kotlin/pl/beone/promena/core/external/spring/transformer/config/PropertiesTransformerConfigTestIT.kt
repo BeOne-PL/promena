@@ -24,8 +24,8 @@ private abstract class AbstractTransformer : Transformer {
 
 }
 
-private class TransformerWithProperties : AbstractTransformer()
-private class TransformerWithoutProperties : AbstractTransformer()
+private object TransformerWithProperties : AbstractTransformer()
+private object TransformerWithoutProperties : AbstractTransformer()
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(
@@ -46,7 +46,7 @@ class PropertiesTransformerConfigTestIT {
 
     @Test
     fun getTransformationId() {
-        propertiesTransformerConfig.getTransformerId(TransformerWithProperties()).let {
+        propertiesTransformerConfig.getTransformerId(TransformerWithProperties).let {
             it.name shouldBe "transformer-name"
             it.subName shouldBe "transformer-sub-name"
         }
@@ -54,29 +54,29 @@ class PropertiesTransformerConfigTestIT {
 
     @Test
     fun getActors() {
-        propertiesTransformerConfig.getActors(TransformerWithProperties()) shouldBe 3
+        propertiesTransformerConfig.getActors(TransformerWithProperties) shouldBe 3
     }
 
     @Test
     fun getPriority() {
-        propertiesTransformerConfig.getPriority(TransformerWithProperties()) shouldBe 2
+        propertiesTransformerConfig.getPriority(TransformerWithProperties) shouldBe 2
     }
 
     @Test
     fun `getTransformationId _ no property _ should throw IllegalStateException`() {
         shouldThrow<IllegalStateException> {
-            propertiesTransformerConfig.getTransformerId(TransformerWithoutProperties())
+            propertiesTransformerConfig.getTransformerId(TransformerWithoutProperties)
         }.message shouldBe "There is no <transformer.pl.beone.promena.core.external.spring.transformer.config.TransformerWithoutProperties.id.name> property"
     }
 
     @Test
     fun `getActors _ no property _ should use default 1`() {
-        propertiesTransformerConfig.getActors(TransformerWithoutProperties()) shouldBe 1
+        propertiesTransformerConfig.getActors(TransformerWithoutProperties) shouldBe 1
     }
 
     @Test
     fun `getPriority _ no property _ should use default 0`() {
-        propertiesTransformerConfig.getPriority(TransformerWithoutProperties()) shouldBe 0
+        propertiesTransformerConfig.getPriority(TransformerWithoutProperties) shouldBe 0
     }
 
 }

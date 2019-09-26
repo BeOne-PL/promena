@@ -7,7 +7,7 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import java.util.concurrent.TimeoutException
 
-class TimeoutTransformer : Transformer {
+object TimeoutTransformer : Transformer {
 
     override fun transform(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters): TransformedDataDescriptor {
         Thread.sleep(parameters.getTimeout().toMillis())

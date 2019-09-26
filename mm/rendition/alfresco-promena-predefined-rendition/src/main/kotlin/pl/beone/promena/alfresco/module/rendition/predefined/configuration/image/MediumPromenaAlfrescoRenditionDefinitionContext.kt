@@ -9,5 +9,5 @@ class MediumPromenaAlfrescoRenditionDefinitionContext {
 
     @Bean
     fun mediumPromenaAlfrescoRenditionDefinition() =
-        MediumPromenaAlfrescoRenditionDefinition()
+        MediumPromenaAlfrescoRenditionDefinition
 }

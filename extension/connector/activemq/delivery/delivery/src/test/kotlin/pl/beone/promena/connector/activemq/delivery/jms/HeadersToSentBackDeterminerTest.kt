@@ -7,7 +7,7 @@ class HeadersToSentBackDeterminerTest {
 
     @Test
     fun determine() {
-        HeadersToSentBackDeterminer().determine(
+        HeadersToSentBackDeterminer.determine(
             mapOf(
                 "key" to "value",
                 "send_back_key" to "send_back_value"
