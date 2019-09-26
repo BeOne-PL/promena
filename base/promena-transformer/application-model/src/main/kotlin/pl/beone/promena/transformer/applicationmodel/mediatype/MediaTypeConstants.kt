@@ -35,7 +35,7 @@ object MediaTypeConstants {
     @JvmField
     val APPLICATION_VND_MS_EXCEL = mediaType("application/vnd.ms-excel")
     @JvmField
-    val APPLICATION_VND_MS_EXCEL_SHEET_MACROENABLED_12 = mediaType("application/application/vnd.ms-excel.sheet.macroEnabled.12")
+    val APPLICATION_VND_MS_EXCEL_SHEET_MACROENABLED_12 = mediaType("application/vnd.ms-excel.sheet.macroEnabled.12")
     @JvmField
     val APPLICATION_VND_MS_EXCEL_TEMPLATE_MACROENABLED_12 = mediaType("application/vnd.ms-excel.template.macroEnabled.12")
     @JvmField
