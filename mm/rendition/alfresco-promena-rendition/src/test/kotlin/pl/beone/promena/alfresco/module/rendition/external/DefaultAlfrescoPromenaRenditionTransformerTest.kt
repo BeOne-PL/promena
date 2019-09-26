@@ -9,8 +9,8 @@ import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Before
 import org.junit.Test
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.node.NodeDescriptor
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
+import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
+import pl.beone.promena.alfresco.module.core.contract.AlfrescoPromenaTransformer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter

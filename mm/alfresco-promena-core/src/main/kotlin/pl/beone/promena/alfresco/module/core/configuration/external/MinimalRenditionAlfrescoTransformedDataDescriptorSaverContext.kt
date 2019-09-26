@@ -25,7 +25,7 @@ class MinimalRenditionAlfrescoTransformedDataDescriptorSaverContext {
         alfrescoDataConverter: AlfrescoDataConverter
     ) =
         MinimalRenditionAlfrescoTransformedDataDescriptorSaver(
-            properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.save-if-zero").toBoolean(),
+            properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.transformation.save-if-zero").toBoolean(),
             nodeService,
             contentService,
             namespaceService,

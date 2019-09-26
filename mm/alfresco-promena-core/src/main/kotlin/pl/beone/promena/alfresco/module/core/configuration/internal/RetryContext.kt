@@ -14,10 +14,10 @@ class RetryContext {
 
     @Bean
     fun retry(@Qualifier("global-properties") properties: Properties) =
-        if (properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.enabled").toBoolean()) {
+        if (properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.transformation.error.retry.enabled").toBoolean()) {
             customRetry(
-                properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.max-attempts").toLong(),
-                properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.transformation.error.retry.next-attempt-delay").toDuration()
+                properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.transformation.error.retry.max-attempts").toLong(),
+                properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.transformation.error.retry.next-attempt-delay").toDuration()
             )
         } else {
             noRetry()

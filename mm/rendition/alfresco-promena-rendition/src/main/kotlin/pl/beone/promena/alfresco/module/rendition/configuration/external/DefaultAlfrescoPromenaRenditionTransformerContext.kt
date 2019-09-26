@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.client.base.contract.AlfrescoPromenaTransformer
-import pl.beone.promena.alfresco.module.client.base.extension.getPropertyWithEmptySupport
-import pl.beone.promena.alfresco.module.client.base.extension.getRequiredPropertyWithResolvedPlaceholders
-import pl.beone.promena.alfresco.module.client.base.extension.toDuration
+import pl.beone.promena.alfresco.module.core.contract.AlfrescoPromenaTransformer
+import pl.beone.promena.alfresco.module.core.extension.getPropertyWithEmptySupport
+import pl.beone.promena.alfresco.module.core.extension.getRequiredPropertyWithResolvedPlaceholders
+import pl.beone.promena.alfresco.module.core.extension.toDuration
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter

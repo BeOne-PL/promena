@@ -9,7 +9,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
 import java.time.LocalDateTime
 
 abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {

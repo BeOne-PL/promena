@@ -61,7 +61,7 @@
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
             <excludes>
-                <exclude>pl.beone.promena.alfresco.module:alfresco-promena-client</exclude>
+                <exclude>pl.beone.promena.alfresco.module:alfresco-promena-core</exclude>
                 <exclude>pl.beone.promena.transformer:promena-transformer-application-model</exclude>
                 <exclude>pl.beone.promena.transformer:promena-transformer-contract</exclude>
                 <exclude>pl.beone.promena.transformer:promena-transformer-internal</exclude>
@@ -88,20 +88,11 @@
                 <exclude>com.esotericsoftware:reflectasm</exclude>
                 <exclude>de.javakaffee:kryo-serializers</exclude>
                 <exclude>org.objenesis:objenesis</exclude>
-                <exclude>net.bytebuddy:byte-buddy</exclude>
-                <exclude>net.bytebuddy:byte-buddy-agent</exclude>
 
                 <exclude>io.github.microutils:kotlin-logging</exclude>
                 <exclude>org.slf4j:slf4j-api</exclude>
                 <exclude>io.projectreactor:reactor-core</exclude>
                 <exclude>org.reactivestreams:reactive-streams</exclude>
-
-                <exclude>io.mockk:mockk-agent-api</exclude>
-                <exclude>io.mockk:mockk-agent-common</exclude>
-                <exclude>io.mockk:mockk-agent-jvm</exclude>
-                <exclude>io.mockk:mockk-common</exclude>
-                <exclude>io.mockk:mockk-dsl</exclude>
-                <exclude>io.mockk:mockk-dsl-jvm</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

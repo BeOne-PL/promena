@@ -29,6 +29,7 @@ purge() {
 
 build() {
     $MVN_EXEC -DskipTests=true clean package
+    $MVN_EXEC -DskipTests=true -f docker-img/promena-predefined-rendition-executable/pom.xml clean package
 }
 
 tail() {

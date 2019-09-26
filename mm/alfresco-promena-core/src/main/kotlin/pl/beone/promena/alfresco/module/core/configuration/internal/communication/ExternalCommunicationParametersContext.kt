@@ -25,14 +25,14 @@ class ExternalCommunicationParametersContext {
     fun externalCommunicationParameters(
         @Qualifier("global-properties") properties: Properties
     ): CommunicationParameters =
-        when (properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.id")) {
+        when (properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.communication.external.id")) {
             MemoryCommunicationParameters.ID -> {
                 logger.info { "Promena external communication: <${MemoryCommunicationParameters.ID}>" }
                 memoryCommunicationParameters()
             }
             FileCommunicationParameters.ID -> {
                 val directory =
-                    determineDirectory(properties.getRequiredPropertyWithResolvedPlaceholders("promena.client.communication.external.file.directory.path"))
+                    determineDirectory(properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.communication.external.file.directory.path"))
                 logger.info { "Promena external communication: <${FileCommunicationParameters.ID}, ${DefaultFileCommunicationParameters.DIRECTORY}: ${directory}>" }
                 fileCommunicationParameters(directory)
             }

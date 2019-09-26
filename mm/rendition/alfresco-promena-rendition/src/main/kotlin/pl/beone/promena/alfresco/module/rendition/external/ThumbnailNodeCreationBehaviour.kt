@@ -10,7 +10,7 @@ import org.alfresco.repo.policy.PolicyComponent
 import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
-import pl.beone.promena.alfresco.module.client.base.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
 import java.io.Serializable
 import javax.annotation.PostConstruct
 

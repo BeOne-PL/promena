@@ -78,7 +78,8 @@ EXIT /B 0
     )
 EXIT /B 0
 :build
-	call %MVN_EXEC% clean package
+	call %MVN_EXEC% -DskipTests=true clean package
+	call %MVN_EXEC% -DskipTests=true -f docker-img/promena-predefined-rendition-executable/pom.xml clean package
 EXIT /B 0
 :tail
     docker-compose -f "%COMPOSE_FILE_PATH%" logs -f
