@@ -20,9 +20,5 @@ fun Properties.getRequiredPropertyWithResolvedPlaceholders(key: String): String 
 
 fun Properties.getPropertyWithEmptySupport(key: String): String? =
     getProperty(key).let {
-        if (it == null || it.isEmpty()) {
-            null
-        } else {
-            it
-        }
+        if (it != null && it.isNotEmpty()) it else null
     }

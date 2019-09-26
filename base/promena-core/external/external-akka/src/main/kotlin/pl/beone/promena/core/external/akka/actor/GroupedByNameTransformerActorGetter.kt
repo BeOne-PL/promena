@@ -22,9 +22,5 @@ class GroupedByNameTransformerActorGetter(
         }
 
     private fun TransformerId.toDescription(): String =
-        if (isSubNameSet()) {
-            "($name, $subName)"
-        } else {
-            name
-        }
+        if (isSubNameSet()) "($name, $subName)" else name
 }

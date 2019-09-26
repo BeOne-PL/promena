@@ -66,11 +66,7 @@ class HttpClientAlfrescoPromenaTransformer(
     }
 
     private fun <T> Mono<T>.get(waitMax: Duration?): T =
-        if (waitMax != null) {
-            block(waitMax)!!
-        } else {
-            block()!!
-        }
+        if (waitMax != null) block(waitMax)!! else block()!!
 
     override fun transformAsync(transformation: Transformation, nodeDescriptors: List<NodeDescriptor>, retry: Retry?): Mono<List<NodeRef>> {
         logger.startAsync(transformation, nodeDescriptors)

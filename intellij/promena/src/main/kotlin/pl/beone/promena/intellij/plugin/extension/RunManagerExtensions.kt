@@ -8,11 +8,7 @@ import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfigurationTyp
 
 internal fun RunManager.getSelectedPromenaRunnerAndConfigurationSettings(): RunnerAndConfigurationSettings? {
     val selectedConfiguration = selectedConfiguration
-    return if (selectedConfiguration != null && selectedConfiguration.configuration is PromenaRunConfiguration) {
-        selectedConfiguration
-    } else {
-        null
-    }
+    return if (selectedConfiguration != null && selectedConfiguration.configuration is PromenaRunConfiguration) selectedConfiguration else null
 }
 
 internal fun RunManager.createPromenaRunnerAndConfigurationSettings(): RunnerAndConfigurationSettings {

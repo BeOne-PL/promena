@@ -72,11 +72,7 @@ internal object DataDescriptorParser {
         }
 
     private fun determineFile(dataPath: String, clazz: Class<*>): File =
-        if (dataPath.isAbsolutePath()) {
-            File(dataPath)
-        } else {
-            File(getResourceUrl(dataPath, clazz).toURI())
-        }
+        if (dataPath.isAbsolutePath()) File(dataPath) else File(getResourceUrl(dataPath, clazz).toURI())
 
     private fun String.isAbsolutePath(): Boolean =
         this.startsWith("/")

@@ -29,12 +29,7 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
 
     private fun getSelectorInstance(environment: Environment): MetricsSelector {
         val property = environment.getRequiredProperty("actor-creator.adaptive-load-balancing.metrics-selector")
-
-        return if (property.contains("::")) {
-            createUsingStaticMethod(property)
-        } else {
-            createUsingConstructor(property)
-        }
+        return if (property.contains("::")) createUsingStaticMethod(property) else createUsingConstructor(property)
     }
 
     private fun createUsingStaticMethod(property: String): MetricsSelector {

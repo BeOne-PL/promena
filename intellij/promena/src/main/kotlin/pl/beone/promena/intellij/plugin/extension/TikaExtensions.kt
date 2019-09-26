@@ -17,9 +17,5 @@ fun File.detectCharset(): Charset =
 
 fun MediaType.determineExtension(): String? =
     tikaConfig.mimeRepository.forName(mimeType).extension.let {
-        if (!it.isBlank()) {
-            it
-        } else {
-            null
-        }
+        if (!it.isBlank()) it else null
     }

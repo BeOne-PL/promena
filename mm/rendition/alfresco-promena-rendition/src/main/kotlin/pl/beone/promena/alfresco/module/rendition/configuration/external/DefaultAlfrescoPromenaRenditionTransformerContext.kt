@@ -37,9 +37,5 @@ class DefaultAlfrescoPromenaRenditionTransformerContext {
         )
 
     private fun ApplicationContext.getAlfrescoPromenaTransformer(beanName: String?): AlfrescoPromenaTransformer =
-        if (beanName != null) {
-            getBean(beanName, AlfrescoPromenaTransformer::class.java)
-        } else {
-            getBean(AlfrescoPromenaTransformer::class.java)
-        }
+        if (beanName != null) getBean(beanName, AlfrescoPromenaTransformer::class.java) else getBean(AlfrescoPromenaTransformer::class.java)
 }

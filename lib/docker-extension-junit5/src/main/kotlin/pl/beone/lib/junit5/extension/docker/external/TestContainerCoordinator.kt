@@ -82,11 +82,7 @@ class TestContainerCoordinator(
     private fun replacePlaceholderInDockerfileByDockerfileFragment(tmpDirectory: File) {
         val dockerfileFragment = File(tmpDirectory, imageCustomDockerModuleDockerfileFragmentName)
 
-        val dockerfileFragmentContent = if (dockerfileFragment.exists()) {
-            dockerfileFragment.readText()
-        } else {
-            ""
-        }
+        val dockerfileFragmentContent = if (dockerfileFragment.exists()) dockerfileFragment.readText() else ""
 
         val dockerfileFile = File(tmpDirectory, imageCustomDockerDockerfileName)
         val dockerfile = dockerfileFile.readText()

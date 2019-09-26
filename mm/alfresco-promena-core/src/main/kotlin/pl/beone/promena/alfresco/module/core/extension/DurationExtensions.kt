@@ -30,11 +30,7 @@ private val propertiesFormatter = PeriodFormatterBuilder()
     .toFormatter()
 
 fun Duration?.toPrettyString(): String =
-    if (this != null) {
-        prettyFormatter.print(org.joda.time.Duration.millis(this.toMillis()).toPeriod())
-    } else {
-        "infinite"
-    }
+    if (this != null) prettyFormatter.print(org.joda.time.Duration.millis(this.toMillis()).toPeriod()) else "infinite"
 
 fun String.toDuration(): Duration =
     Duration.ofMillis(propertiesFormatter.parsePeriod(this).toStandardDuration().millis)
