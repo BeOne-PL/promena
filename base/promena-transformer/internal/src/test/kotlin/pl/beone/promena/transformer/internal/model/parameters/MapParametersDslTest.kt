@@ -3,6 +3,7 @@ package pl.beone.promena.transformer.internal.model.parameters
 import io.kotlintest.shouldBe
 import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.model.Parameters.Companion.TIMEOUT
 import java.time.Duration
 
 class MapParametersDslTest {
@@ -26,7 +27,7 @@ class MapParametersDslTest {
                 ("key2" to "value2") addTimeout
                 Duration.ofMillis(100))
             .getAll() shouldBe
-                mapOf("key" to "value", "key2" to "value2", Parameters.TIMEOUT to Duration.ofMillis(100))
+                mapOf("key" to "value", "key2" to "value2", TIMEOUT to Duration.ofMillis(100))
     }
 
     @Test

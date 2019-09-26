@@ -6,6 +6,7 @@ import io.kotlintest.shouldThrow
 import org.junit.jupiter.api.Test
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
 import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.model.Parameters.Companion.TIMEOUT
 import java.time.Duration
 
 class MapParametersTest {
@@ -52,7 +53,7 @@ class MapParametersTest {
     fun `of _ timeout specified`() {
         val duration = Duration.ofSeconds(3)
         MapParameters.of(mapOf("test" to "value"), duration).getAll() shouldBe
-                mapOf("test" to "value", Parameters.TIMEOUT to duration)
+                mapOf("test" to "value", TIMEOUT to duration)
     }
 
     @Test
@@ -114,7 +115,7 @@ class MapParametersTest {
 
         shouldThrow<NoSuchElementException> {
             emptyParameters().getTimeout()
-        }.message shouldBe "There is no <${Parameters.TIMEOUT}> element"
+        }.message shouldBe "There is no <$TIMEOUT> element"
     }
 
     @Test

@@ -14,6 +14,7 @@ import java.util.NoSuchElementException;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static pl.beone.promena.transformer.contract.model.Parameters.TIMEOUT;
 
 class MapParametersJavaTest {
 
@@ -65,7 +66,7 @@ class MapParametersJavaTest {
                                     Duration.ofMillis(100))
                                 .getAll())
                 .containsOnly(entry("key", "value"),
-                              entry(Parameters.TIMEOUT, Duration.ofMillis(100)));
+                              entry(TIMEOUT, Duration.ofMillis(100)));
     }
 
     @Test

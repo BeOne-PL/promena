@@ -1,6 +1,7 @@
 package pl.beone.promena.transformer.internal.model.parameters
 
 import pl.beone.promena.transformer.contract.model.Parameters
+import pl.beone.promena.transformer.contract.model.Parameters.Companion.TIMEOUT
 import java.time.Duration
 
 class MapParametersBuilder {
@@ -11,7 +12,7 @@ class MapParametersBuilder {
         apply { parameters[key] = value }
 
     fun addTimeout(timeout: Duration): MapParametersBuilder =
-        apply { parameters[Parameters.TIMEOUT] = timeout }
+        apply { parameters[TIMEOUT] = timeout }
 
     fun build(): MapParameters =
         parameters(parameters)
