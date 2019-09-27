@@ -70,12 +70,11 @@ EXIT /B %ERRORLEVEL%
     docker volume create alfresco-promena-core-acs-volume
     docker volume create alfresco-promena-core-db-volume
     docker volume create alfresco-promena-core-ass-volume
-    docker volume create alfresco-promena-core-ass-solrhome-volume
     docker-compose -f "%COMPOSE_FILE_PATH%" up --build -d
 EXIT /B 0
 :down
     if exist "%COMPOSE_FILE_PATH%" (
-        docker-compose -f "%COMPOSE_FILE_PATH%" down
+        docker-compose -f "%COMPOSE_FILE_PATH%" down -v
     )
 EXIT /B 0
 :build
@@ -94,8 +93,7 @@ EXIT /B 0
     call %MVN_EXEC% -DskipTests=true verify
 EXIT /B 0
 :purge
-    docker volume rm -f docker_alfresco-promena-core-acs-volume
-    docker volume rm -f docker_alfresco-promena-core-db-volume
-    docker volume rm -f docker_alfresco-promena-core-ass-volume
-    docker volume rm -f docker_alfresco-promena-core-ass-solrhome-volume
+    docker volume rm -f alfresco-promena-core-acs-volume
+    docker volume rm -f alfresco-promena-core-db-volume
+    docker volume rm -f alfresco-promena-core-ass-volume
 EXIT /B 0

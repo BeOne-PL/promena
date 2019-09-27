@@ -5,7 +5,7 @@
 
     <groupId>pl.beone.promena.alfresco.module.connector</groupId>
     <artifactId>alfresco-promena-connector-activemq</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>[MM][CONNECTOR] ActiveMQ</name>
@@ -17,8 +17,8 @@
 
         <kotlin-logging.version>1.7.3</kotlin-logging.version>
 
-        <alfresco-promena-core.version>0.9.0-SNAPSHOT</alfresco-promena-core.version>
-        <promena-connector-activemq.version>0.9.0-SNAPSHOT</promena-connector-activemq.version>
+        <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
+        <promena-connector-activemq.version>1.0.0</promena-connector-activemq.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>

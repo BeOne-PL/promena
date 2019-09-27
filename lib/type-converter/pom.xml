@@ -6,7 +6,7 @@
 
     <groupId>pl.beone.lib</groupId>
     <artifactId>type-converter</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>[LIB] type-converter</name>
 

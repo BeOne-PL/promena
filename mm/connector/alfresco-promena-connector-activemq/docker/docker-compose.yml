@@ -48,7 +48,6 @@ services:
     volumes:
       - alfresco-promena-connector-activemq-ass-volume:/opt/alfresco-search-services/data
       - alfresco-promena-connector-activemq-ass-volume:/opt/alfresco-search-services/contentstore
-      - alfresco-promena-connector-activemq-ass-solrhome-volume:/opt/alfresco-search-services/solrhome
 
   activemq:
     image: alfresco/alfresco-activemq:5.15.6
@@ -58,13 +57,14 @@ services:
       - 61616:61616 # OpenWire
       - 61613:61613 # STOMP
     volumes:
-      - alfresco-promena-connector-activemq-activemq-volume:/opt/activemq/conf
-      - alfresco-promena-connector-activemq-activemq-volume:/var/log/activemq
       - alfresco-promena-connector-activemq-activemq-volume:/opt/activemq/data
 
 volumes:
   alfresco-promena-connector-activemq-acs-volume:
+    external: true
   alfresco-promena-connector-activemq-db-volume:
+    external: true
   alfresco-promena-connector-activemq-ass-volume:
-  alfresco-promena-connector-activemq-ass-solrhome-volume:
+    external: true
   alfresco-promena-connector-activemq-activemq-volume:
+    external: true

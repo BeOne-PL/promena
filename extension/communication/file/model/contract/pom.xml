@@ -7,7 +7,7 @@
     <parent>
         <groupId>pl.beone.promena.communication.file.model</groupId>
         <artifactId>promena-communication-file-model</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>promena-communication-file-model-contract</artifactId>

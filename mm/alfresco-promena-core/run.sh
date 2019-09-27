@@ -12,21 +12,19 @@ start() {
     docker volume create alfresco-promena-core-acs-volume
     docker volume create alfresco-promena-core-db-volume
     docker volume create alfresco-promena-core-ass-volume
-    docker volume create alfresco-promena-core-ass-solrhome-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
 down() {
     if [ -f $COMPOSE_FILE_PATH ]; then
-        docker-compose -f $COMPOSE_FILE_PATH down
+        docker-compose -f $COMPOSE_FILE_PATH down -v
     fi
 }
 
 purge() {
-    docker volume rm -f docker_alfresco-promena-core-acs-volume
-    docker volume rm -f docker_alfresco-promena-core-db-volume
-    docker volume rm -f docker_alfresco-promena-core-ass-volume
-    docker volume rm -f docker_alfresco-promena-core-ass-solrhome-volume
+    docker volume rm -f alfresco-promena-core-acs-volume
+    docker volume rm -f alfresco-promena-core-db-volume
+    docker volume rm -f alfresco-promena-core-ass-volume
 }
 
 build() {

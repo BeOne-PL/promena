@@ -48,10 +48,11 @@ services:
     volumes:
       - alfresco-promena-connector-http-ass-volume:/opt/alfresco-search-services/data
       - alfresco-promena-connector-http-ass-volume:/opt/alfresco-search-services/contentstore
-      - alfresco-promena-connector-http-ass-solrhome-volume:/opt/alfresco-search-services/solrhome
 
 volumes:
   alfresco-promena-connector-http-acs-volume:
+    external: true
   alfresco-promena-connector-http-db-volume:
+    external: true
   alfresco-promena-connector-http-ass-volume:
-  alfresco-promena-connector-http-ass-solrhome-volume:
+    external: true

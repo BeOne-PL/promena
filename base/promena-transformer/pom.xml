@@ -7,14 +7,14 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-parent</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <name>[BASE] Transformer</name>
 
     <groupId>pl.beone.promena.transformer</groupId>
     <artifactId>promena-transformer</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <packaging>pom</packaging>
     <modules>
@@ -49,9 +49,9 @@
     </pluginRepositories>
 
     <properties>
-        <promena-transformer.version>0.9.0-SNAPSHOT</promena-transformer.version>
+        <promena-transformer.version>1.0.0</promena-transformer.version>
 
-        <type-converter.version>0.9.0-SNAPSHOT</type-converter.version>
+        <type-converter.version>1.0.0</type-converter.version>
     </properties>
 
     <dependencies>

@@ -5,7 +5,7 @@
 
     <groupId>pl.beone.promena.alfresco.module.rendition</groupId>
     <artifactId>alfresco-promena-predefined-rendition</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>[MM][RENDITION] Predefined rendition</name>
@@ -17,13 +17,13 @@
 
         <kotlin-logging.version>1.7.3</kotlin-logging.version>
 
-        <alfresco-promena-core.version>0.9.0-SNAPSHOT</alfresco-promena-core.version>
-        <alfresco-promena-connector-http.version>0.9.0-SNAPSHOT</alfresco-promena-connector-http.version>
-        <alfresco-promena-connector-activemq.version>0.9.0-SNAPSHOT</alfresco-promena-connector-activemq.version>
-        <alfresco-promena-rendition.version>0.9.0-SNAPSHOT</alfresco-promena-rendition.version>
+        <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
+        <alfresco-promena-connector-http.version>1.0.0</alfresco-promena-connector-http.version>
+        <alfresco-promena-connector-activemq.version>1.0.0</alfresco-promena-connector-activemq.version>
+        <alfresco-promena-rendition.version>1.0.0</alfresco-promena-rendition.version>
 
-        <converter-image-magick.version>0.9.0-SNAPSHOT</converter-image-magick.version>
-        <converter-libre-office.version>0.9.0-SNAPSHOT</converter-libre-office.version>
+        <converter-image-magick.version>1.0.0</converter-image-magick.version>
+        <converter-libre-office.version>1.0.0</converter-libre-office.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>

@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-extension-parent</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>pl.beone.promena.cluster.management</groupId>
     <artifactId>promena-cluster-management-kubernetes</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>[EXTENSION][CLUSTER][MANAGEMENT] Kubernetes</name>
 
@@ -52,7 +52,7 @@
     </pluginRepositories>
 
     <properties>
-        <promena-discovery-kubernetes.version>0.9.0-SNAPSHOT</promena-discovery-kubernetes.version>
+        <promena-discovery-kubernetes.version>1.0.0</promena-discovery-kubernetes.version>
 
         <akka-management.version>1.0.2</akka-management.version>
         <akka-discovery-kubernetes-api.version>1.0.2</akka-discovery-kubernetes-api.version>

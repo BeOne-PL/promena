@@ -6,7 +6,7 @@
 
     <groupId>pl.beone.lib</groupId>
     <artifactId>docker-extension-junit5</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>[LIB] docker-extension-junit5</name>
 
@@ -41,7 +41,7 @@
         <kotlin.version>1.3.50</kotlin.version>
         <java.version>11</java.version>
 
-        <type-converter.version>0.9.0-SNAPSHOT</type-converter.version>
+        <type-converter.version>1.0.0</type-converter.version>
 
         <testcontainers.version>1.12.0</testcontainers.version>
         <kotlin-logging.version>1.7.3</kotlin-logging.version>

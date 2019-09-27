@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-extension-parent</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>pl.beone.promena.communication.file.model</groupId>
     <artifactId>promena-communication-file-model</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>[EXTENSION][COMMUNICATION][MODEL] File</name>
 
@@ -49,8 +49,8 @@
     </pluginRepositories>
 
     <properties>
-        <promena-communication-memory-model.version>0.9.0-SNAPSHOT</promena-communication-memory-model.version>
-        <promena-communication-common.version>0.9.0-SNAPSHOT</promena-communication-common.version>
+        <promena-communication-memory-model.version>1.0.0</promena-communication-memory-model.version>
+        <promena-communication-common.version>1.0.0</promena-communication-common.version>
     </properties>
 
     <dependencies>

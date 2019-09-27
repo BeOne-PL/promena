@@ -14,7 +14,7 @@
 
     <groupId>pl.beone.promena.executable</groupId>
     <artifactId>promena-predefined-rendition-executable</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <repositories>
         <repository>
@@ -44,28 +44,28 @@
     <properties>
         <java.version>11</java.version>
 
-        <promena.core.version>0.9.0-SNAPSHOT</promena.core.version>
+        <promena.core.version>1.0.0</promena.core.version>
 
-        <promena.actor-creator.adaptive-load-balancing.version>0.9.0-SNAPSHOT</promena.actor-creator.adaptive-load-balancing.version>
+        <promena.actor-creator.adaptive-load-balancing.version>1.0.0</promena.actor-creator.adaptive-load-balancing.version>
 
-        <promena.communication.memory.external.version>0.9.0-SNAPSHOT</promena.communication.memory.external.version>
-        <promena.communication.file.external.version>0.9.0-SNAPSHOT</promena.communication.file.external.version>
-        <promena.communication.memory.internal.version>0.9.0-SNAPSHOT</promena.communication.memory.internal.version>
-        <promena.communication.file.internal.version>0.9.0-SNAPSHOT</promena.communication.file.internal.version>
+        <promena.communication.memory.external.version>1.0.0</promena.communication.memory.external.version>
+        <promena.communication.file.external.version>1.0.0</promena.communication.file.external.version>
+        <promena.communication.memory.internal.version>1.0.0</promena.communication.memory.internal.version>
+        <promena.communication.file.internal.version>1.0.0</promena.communication.file.internal.version>
 
-        <promena.connector.http.version>0.9.0-SNAPSHOT</promena.connector.http.version>
-        <promena.connector.activemq.version>0.9.0-SNAPSHOT</promena.connector.activemq.version>
+        <promena.connector.http.version>1.0.0</promena.connector.http.version>
+        <promena.connector.activemq.version>1.0.0</promena.connector.activemq.version>
 
-        <promena.cluster.management.kubernetes.version>0.9.0-SNAPSHOT</promena.cluster.management.kubernetes.version>
+        <promena.cluster.management.kubernetes.version>1.0.0</promena.cluster.management.kubernetes.version>
 
         <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
 
         <!-- Put TRANSFORMERS versions here -->
-        <converter-image-magick.version>0.9.0-SNAPSHOT</converter-image-magick.version>
-        <converter-libre-office.version>0.9.0-SNAPSHOT</converter-libre-office.version>
+        <converter-image-magick.version>1.0.0</converter-image-magick.version>
+        <converter-libre-office.version>1.0.0</converter-libre-office.version>
         <!-- /Put -->
 
-        <promena-docker-maven-plugin.version>0.9.0-SNAPSHOT</promena-docker-maven-plugin.version>
+        <promena-docker-maven-plugin.version>1.0.0</promena-docker-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
     </properties>

@@ -67,11 +67,14 @@ echo "Usage: %0 {build_start|start|stop|purge|tail|build_test|test}"
 EXIT /B %ERRORLEVEL%
 
 :start
+    docker volume create alfresco-promena-rendition-acs-volume
+    docker volume create alfresco-promena-rendition-db-volume
+    docker volume create alfresco-promena-rendition-ass-volume
     docker-compose -f "%COMPOSE_FILE_PATH%" up --build -d
 EXIT /B 0
 :down
     if exist "%COMPOSE_FILE_PATH%" (
-        docker-compose -f "%COMPOSE_FILE_PATH%" down
+        docker-compose -f "%COMPOSE_FILE_PATH%" down -v
     )
 EXIT /B 0
 :build
@@ -90,8 +93,8 @@ EXIT /B 0
     call %MVN_EXEC% verify
 EXIT /B 0
 :purge
-    docker volume rm -f docker_alfresco-promena-rendition-acs-volume
-    docker volume rm -f docker_alfresco-promena-rendition-db-volume
-    docker volume rm -f docker_alfresco-promena-rendition-ass-volume
-    docker volume rm -f docker_alfresco-promena-rendition-ass-solrhome-volume
+    docker volume rm -f alfresco-promena-rendition-acs-volume
+    docker volume rm -f alfresco-promena-rendition-db-volume
+    docker volume rm -f alfresco-promena-rendition-ass-volume
+    docker volume rm -f alfresco-promena-rendition-ass-solrhome-volume
 EXIT /B 0

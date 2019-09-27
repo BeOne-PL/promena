@@ -5,7 +5,7 @@
 
     <groupId>pl.beone.promena.alfresco.module.connector</groupId>
     <artifactId>alfresco-promena-connector-http</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>[MM][CONNECTOR] HTTP</name>
@@ -19,8 +19,8 @@
         <reactor-netty.version>0.8.10.RELEASE</reactor-netty.version>
         <reactor-extra.version>3.2.3.RELEASE</reactor-extra.version>
 
-        <alfresco-promena-core.version>0.9.0-SNAPSHOT</alfresco-promena-core.version>
-        <promena-connector-http.version>0.9.0-SNAPSHOT</promena-connector-http.version>
+        <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
+        <promena-connector-http.version>1.0.0</promena-connector-http.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
