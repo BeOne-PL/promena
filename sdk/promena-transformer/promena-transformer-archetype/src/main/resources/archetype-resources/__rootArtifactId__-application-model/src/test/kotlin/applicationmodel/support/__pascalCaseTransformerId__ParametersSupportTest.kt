@@ -11,14 +11,14 @@ class ${pascalCaseTransformerId}ParametersSupportTest {
     @Test
     fun `isSupported _ default parameters`() {
         shouldNotThrow<TransformationNotSupportedException> {
-            isSupported(testConverterParameters(example = "test"))
+            isSupported(${camelCaseTransformerId}Parameters(example = "test"))
         }
     }
 
     @Test
     fun `isSupported _ all parameters`() {
         shouldNotThrow<TransformationNotSupportedException> {
-            isSupported(testConverterParameters(example = "test", example2 = "test2"))
+            isSupported(${camelCaseTransformerId}Parameters(example = "test", example2 = "test2"))
         }
     }
 }

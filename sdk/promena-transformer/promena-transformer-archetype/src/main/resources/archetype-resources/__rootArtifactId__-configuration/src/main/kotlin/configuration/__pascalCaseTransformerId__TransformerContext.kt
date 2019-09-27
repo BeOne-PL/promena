@@ -9,6 +9,10 @@ import ${package}.${pascalCaseTransformerId}Transformer
 class ${pascalCaseTransformerId}TransformerContext {
 
     @Bean
-    fun ${camelCaseTransformerId}Transformer(internalCommunicationParameters: CommunicationParameters) =
-        ${pascalCaseTransformerId}Transformer(internalCommunicationParameters)
+    fun ${camelCaseTransformerId}Transformer(
+        internalCommunicationParameters: CommunicationParameters
+    ) =
+        ${pascalCaseTransformerId}Transformer(
+            internalCommunicationParameters
+        )
 }

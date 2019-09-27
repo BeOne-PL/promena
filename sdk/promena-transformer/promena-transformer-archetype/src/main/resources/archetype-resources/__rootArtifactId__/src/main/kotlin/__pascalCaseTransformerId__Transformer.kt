@@ -20,6 +20,6 @@ class ${pascalCaseTransformerId}Transformer(
             .toTransformedDataDescriptor()
 
     override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
-        TestConverterSupport.isSupported(dataDescriptor, targetMediaType, parameters)
+        ${pascalCaseTransformerId}Support.isSupported(dataDescriptor, targetMediaType, parameters)
     }
 }

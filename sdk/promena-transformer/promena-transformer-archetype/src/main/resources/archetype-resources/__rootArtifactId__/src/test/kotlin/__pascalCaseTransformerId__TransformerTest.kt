@@ -22,18 +22,18 @@ class ${pascalCaseTransformerId}TransformerTest {
         val mediaType = TEXT_PLAIN
         val metadata = emptyMetadata()
 
-        TestConverterTransformer(mockk())
+        ${pascalCaseTransformerId}Transformer(mockk())
             .transform(
                 singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
                 TEXT_PLAIN,
-                testConverterParameters(example = "test")
+                ${camelCaseTransformerId}Parameters(example = "test")
             ).let { transformedDataDescriptor ->
                 val descriptors = transformedDataDescriptor.descriptors
                 withClue("Transformed data should contain only <1> element") { descriptors shouldHaveSize 1 }
 
-                descriptors[0].let { singleDataDescriptor ->
-                    singleDataDescriptor.data.getBytes() shouldBe dataContent.toByteArray()
-                    singleDataDescriptor.metadata shouldBe metadata
+                descriptors[0].let {
+                    it.data.getBytes() shouldBe dataContent.toByteArray()
+                    it.metadata shouldBe metadata
                 }
             }
     }

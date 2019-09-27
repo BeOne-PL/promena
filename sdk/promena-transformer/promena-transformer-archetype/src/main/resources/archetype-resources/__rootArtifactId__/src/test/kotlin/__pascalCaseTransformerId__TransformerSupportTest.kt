@@ -12,7 +12,7 @@ import pl.beone.promena.transformer.contract.model.Parameters
 import ${package}.applicationmodel.${pascalCaseTransformerId}Support
 
 @ExtendWith(DockerExtension::class)
-class ${pascalCaseTransformerId}SupportTest {
+class ${pascalCaseTransformerId}TransformerSupportTest {
 
     @BeforeEach
     fun setUp() {

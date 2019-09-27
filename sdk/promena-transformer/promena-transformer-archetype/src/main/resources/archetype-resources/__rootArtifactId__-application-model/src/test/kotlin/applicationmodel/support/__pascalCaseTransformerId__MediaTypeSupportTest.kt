@@ -1,4 +1,4 @@
-package pl.beone.promena.transformer.converter.test.applicationmodel.support
+package ${package}.applicationmodel.support
 
 import io.kotlintest.shouldNotThrow
 import io.kotlintest.shouldThrow
