@@ -7,14 +7,12 @@ import com.intellij.openapi.compiler.CompilerManager
 import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
+import pl.beone.promena.core.applicationmodel.exception.serializer.DeserializationException
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.internal.serialization.ClassLoaderKryoSerializationService
 import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfiguration
-import pl.beone.promena.intellij.plugin.extension.createPromenaRunnerAndConfigurationSettings
-import pl.beone.promena.intellij.plugin.extension.getExistingOutputFolders
-import pl.beone.promena.intellij.plugin.extension.getSelectedPromenaRunnerAndConfigurationSettings
-import pl.beone.promena.intellij.plugin.extension.invokePromenaMethod
+import pl.beone.promena.intellij.plugin.extension.*
 import pl.beone.promena.intellij.plugin.parser.DataDescriptorParser
 import pl.beone.promena.intellij.plugin.parser.DataDescriptorWithFile
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
@@ -116,7 +114,7 @@ abstract class AbstractRelatedItemLineMarkerProvider {
                 executors.shutdown()
             }
         } catch (e: Throwable) {
-            runToolWindowTabs.logFailureThrowable(e)
+            runToolWindowTabs.logFailureThrowable(determineExceptionString(e))
         }
     }
 
@@ -169,7 +167,17 @@ abstract class AbstractRelatedItemLineMarkerProvider {
 
     private fun handleFailedTransformation(runToolWindowTab: RunToolWindowTab, exception: Throwable) {
         invokeLater {
-            runToolWindowTab.logFailureThrowable(exception)
+            runToolWindowTab.logFailureThrowable(determineExceptionString(exception))
+        }
+    }
+
+    private fun determineExceptionString(e: Throwable): String {
+        val exceptionString = e.toFullString()
+        return if (exceptionString.contains(DeserializationException::class.java.canonicalName)) {
+            "> It's highly likely that <application-model> module isn't available in Promena" +
+                    "\n" + exceptionString
+        } else {
+            exceptionString
         }
     }
 }

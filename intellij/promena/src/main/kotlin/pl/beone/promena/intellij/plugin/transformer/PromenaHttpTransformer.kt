@@ -9,7 +9,11 @@ import reactor.netty.http.client.HttpClient
 
 internal class PromenaHttpTransformer(
     serializationService: SerializationService
-) : AbstractPromenaHttpTransformer(serializationService, HttpClient.create()) {
+) : AbstractPromenaHttpTransformer(serializationService, httpClient) {
+
+    companion object {
+        private val httpClient = HttpClient.create()
+    }
 
     fun transform(httpAddress: String, transformationDescriptor: TransformationDescriptor): Mono<PerformedTransformationDescriptor> =
         transform(transformationDescriptor, httpAddress)

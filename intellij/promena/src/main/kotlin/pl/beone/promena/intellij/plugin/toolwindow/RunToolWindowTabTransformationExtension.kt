@@ -1,7 +1,6 @@
 package pl.beone.promena.intellij.plugin.toolwindow
 
 import com.intellij.icons.AllIcons
-import org.apache.commons.lang3.exception.ExceptionUtils
 import pl.beone.promena.intellij.plugin.parser.DataDescriptorWithFile
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
@@ -68,18 +67,18 @@ internal fun RunToolWindowTab.logSuccess(
     scrollToTheBeginning()
 }
 
-internal fun List<RunToolWindowTab>.logFailureThrowable(exception: Throwable) {
+internal fun List<RunToolWindowTab>.logFailureThrowable(exceptionString: String) {
     all {
-        logFailureThrowable(exception)
+        logFailureThrowable(exceptionString)
     }
 }
 
-internal fun RunToolWindowTab.logFailureThrowable(exception: Throwable) {
+internal fun RunToolWindowTab.logFailureThrowable(exceptionString: String) {
     setIcon(AllIcons.RunConfigurations.TestError)
     if (notEndsWithDoubleNewLine()) {
         println()
     }
-    printlnError(exception.toFullString())
+    printlnError(exceptionString)
     scrollToTheBeginning()
 }
 
@@ -87,9 +86,6 @@ private fun RunToolWindowTab.notEndsWithDoubleNewLine(): Boolean {
     flush()
     return !getText().endsWith("\n\n")
 }
-
-private fun Throwable.toFullString(): String =
-    ExceptionUtils.getStackTrace(this)
 
 private fun Data.calculateSizeInMB(): String =
     getBytes().toMB().format(2)
