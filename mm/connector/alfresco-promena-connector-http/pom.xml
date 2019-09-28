@@ -15,11 +15,9 @@
         <java.version>11</java.version>
 
         <kotlin-logging.version>1.7.3</kotlin-logging.version>
-        <reactor-netty.version>0.8.10.RELEASE</reactor-netty.version>
-        <reactor-extra.version>3.2.3.RELEASE</reactor-extra.version>
 
         <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
-        <promena-connector-http.version>1.0.0</promena-connector-http.version>
+        <lib-promena-connector-http.version>1.0.0</lib-promena-connector-http.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
@@ -82,11 +80,6 @@
             <artifactId>alfresco-promena-core</artifactId>
             <version>${alfresco-promena-core.version}</version>
         </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-http-application-model</artifactId>
-            <version>${promena-connector-http.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>pl.beone.promena.alfresco.module</groupId>
@@ -102,14 +95,9 @@
             <version>${kotlin-logging.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
-            <version>${reactor-netty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor.addons</groupId>
-            <artifactId>reactor-extra</artifactId>
-            <version>${reactor-extra.version}</version>
+            <groupId>pl.beone.lib.promena.connector</groupId>
+            <artifactId>lib-promena-connector-http</artifactId>
+            <version>${lib-promena-connector-http.version}</version>
         </dependency>
 
         <dependency>

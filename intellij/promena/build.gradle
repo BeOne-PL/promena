@@ -20,12 +20,11 @@ ext {
     promenaTransformerVersion = '1.0.0'
     promenaCoreVersion = '1.0.0'
     promenaCommunicationMemoryVersion = '1.0.0'
-    promenaConnectorHttpVersion = '1.0.0'
+    libPromenaConnectorHttpVersion = '1.0.0'
 
     kryoVersion = '4.0.2'
 
     tikaCoreVersion = '1.22'
-    reactorNettyVersion = '0.8.10.RELEASE'
 
     junitVersion = '4.12'
 }
@@ -37,10 +36,9 @@ dependencies {
     compile "pl.beone.promena.core:promena-core-application-model:$promenaCoreVersion"
     compile "pl.beone.promena.core:promena-core-internal-serialization:$promenaCoreVersion"
     compile "pl.beone.promena.communication.memory.model:promena-communication-memory-model-internal:$promenaCommunicationMemoryVersion"
-    compile "pl.beone.promena.connector:promena-connector-http-application-model:$promenaConnectorHttpVersion"
+    compile "pl.beone.lib.promena.connector:lib-promena-connector-http:$libPromenaConnectorHttpVersion"
 
     compile "org.apache.tika:tika-core:$tikaCoreVersion"
-    compile "io.projectreactor.netty:reactor-netty:$reactorNettyVersion"
 
     testCompile "junit:junit:$junitVersion"
 }

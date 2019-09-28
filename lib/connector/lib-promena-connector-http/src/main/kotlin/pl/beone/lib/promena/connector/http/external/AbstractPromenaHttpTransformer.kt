@@ -1,13 +1,14 @@
-package pl.beone.promena.intellij.plugin.transformer
+package pl.beone.lib.promena.connector.http.external
 
-import io.netty.handler.codec.http.HttpHeaderNames
+import io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE
+import io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_OCTET_STREAM
 import io.netty.handler.codec.http.HttpHeaders
-import io.netty.handler.codec.http.HttpResponseStatus
-import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
+import io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR
+import io.netty.handler.codec.http.HttpResponseStatus.OK
+import pl.beone.lib.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
+import pl.beone.lib.promena.connector.http.applicationmodel.exception.HttpException
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
-import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 import reactor.netty.ByteBufFlux
@@ -16,27 +17,29 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.http.client.HttpClientResponse
 import reactor.util.function.Tuple2
 
-internal class HttpTransformer(private val serializationService: SerializationService) {
+abstract class AbstractPromenaHttpTransformer(
+    private val serializationService: SerializationService,
+    private val httpClient: HttpClient
+) {
 
-    companion object {
-        private val httpClient = HttpClient.create()
-    }
-
-    fun transform(address: String, transformationDescriptor: TransformationDescriptor): Mono<PerformedTransformationDescriptor> {
-        val serializedTransformationDescriptor = Mono.just(transformationDescriptor)
+    fun <I> transform(data: I, httpAddress: String? = null): Mono<PerformedTransformationDescriptor> {
+        val serializedInput = Mono.just(data)
             .map(serializationService::serialize)
 
         return httpClient
             .setContentTypeHeader()
             .post()
-            .uri("http://$address/transform")
-            .send(ByteBufFlux.fromInbound(serializedTransformationDescriptor))
+            .setUri(httpAddress)
+            .send(ByteBufFlux.fromInbound(serializedInput))
             .responseSingle { response, bytes -> zipBytesWithResponse(bytes, response) }
             .map { byteArrayAndClientResponse -> handleTransformationResult(byteArrayAndClientResponse.t2, byteArrayAndClientResponse.t1) }
     }
 
     private fun HttpClient.setContentTypeHeader(): HttpClient =
-        headers { it.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeConstants.APPLICATION_OCTET_STREAM.mimeType) }
+        headers { it.set(CONTENT_TYPE, APPLICATION_OCTET_STREAM) }
+
+    private fun HttpClient.RequestSender.setUri(httpAddress: String?): HttpClient.RequestSender =
+        uri(if (httpAddress != null) "http://$httpAddress/transform" else "/transform")
 
     // defaultIfEmpty is necessary. In other case complete event is emitted if content is null
     private fun zipBytesWithResponse(byte: ByteBufMono, response: HttpClientResponse): Mono<Tuple2<ByteArray, HttpClientResponse>> =
@@ -44,9 +47,9 @@ internal class HttpTransformer(private val serializationService: SerializationSe
 
     private fun handleTransformationResult(clientResponse: HttpClientResponse, bytes: ByteArray): PerformedTransformationDescriptor =
         when (clientResponse.status()) {
-            HttpResponseStatus.OK ->
+            OK ->
                 serializationService.deserialize(bytes, getClazz())
-            HttpResponseStatus.INTERNAL_SERVER_ERROR ->
+            INTERNAL_SERVER_ERROR ->
                 throw serializationService.deserialize(bytes, clientResponse.responseHeaders().getSerializationClass())
             else ->
                 throw HttpException(clientResponse.status(), bytes)
@@ -59,10 +62,10 @@ internal class HttpTransformer(private val serializationService: SerializationSe
     private fun <T> HttpHeaders.getSerializationClass(): Class<T> =
         try {
             Class.forName(
-                get(PromenaHttpHeaders.SERIALIZATION_CLASS)
-                    ?: throw NoSuchElementException("Headers don't contain <${PromenaHttpHeaders.SERIALIZATION_CLASS}> entry. An unknown error occurred on Promena.")
+                get(SERIALIZATION_CLASS)
+                    ?: throw NoSuchElementException("Headers don't contain <$SERIALIZATION_CLASS> entry. An unknown error occurred")
             ) as Class<T>
         } catch (e: ClassNotFoundException) {
-            throw IllegalArgumentException("Class indicated in <${PromenaHttpHeaders.SERIALIZATION_CLASS}> header isn't available", e)
+            throw IllegalArgumentException("Class indicated in <$SERIALIZATION_CLASS> header isn't available", e)
         }
 }

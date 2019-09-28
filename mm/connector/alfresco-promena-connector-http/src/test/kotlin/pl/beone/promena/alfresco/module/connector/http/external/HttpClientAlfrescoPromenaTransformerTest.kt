@@ -12,6 +12,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.reactivestreams.Publisher
+import pl.beone.lib.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.TransformationSynchronizationException
@@ -23,7 +24,6 @@ import pl.beone.promena.alfresco.module.core.contract.AlfrescoDataDescriptorGett
 import pl.beone.promena.alfresco.module.core.contract.AlfrescoNodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.AlfrescoTransformedDataDescriptorSaver
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
-import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
@@ -122,8 +122,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,
             alfrescoTransformedDataDescriptorSaver,
-            serializationService,
             alfrescoAuthenticationService,
+            serializationService,
             httpServer.createHttpClient()
         )
             .transform(
@@ -165,8 +165,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
                 alfrescoTransformedDataDescriptorSaver,
-                serializationService,
                 alfrescoAuthenticationService,
+                serializationService,
                 httpServer.createHttpClient()
             )
                 .transform(
@@ -217,8 +217,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
                 alfrescoTransformedDataDescriptorSaver,
-                serializationService,
                 alfrescoAuthenticationService,
+                serializationService,
                 httpServer.createHttpClient()
             )
                 .transformAsync(
@@ -267,8 +267,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
                 alfrescoTransformedDataDescriptorSaver,
-                serializationService,
                 alfrescoAuthenticationService,
+                serializationService,
                 httpServer.createHttpClient()
             )
                 .transformAsync(
@@ -316,8 +316,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
                 alfrescoTransformedDataDescriptorSaver,
-                serializationService,
                 alfrescoAuthenticationService,
+                serializationService,
                 httpServer.createHttpClient()
             )
                 .transformAsync(
@@ -362,8 +362,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
                 alfrescoTransformedDataDescriptorSaver,
-                serializationService,
                 alfrescoAuthenticationService,
+                serializationService,
                 httpServer.createHttpClient()
             )
                 .transformAsync(
@@ -411,8 +411,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
                 alfrescoTransformedDataDescriptorSaver,
-                serializationService,
                 alfrescoAuthenticationService,
+                serializationService,
                 httpServer.createHttpClient()
             )
                 .transformAsync(
@@ -435,8 +435,8 @@ class HttpClientAlfrescoPromenaTransformerTest {
                 alfrescoNodesChecksumGenerator,
                 alfrescoDataDescriptorGetter,
                 alfrescoTransformedDataDescriptorSaver,
-                serializationService,
                 alfrescoAuthenticationService,
+                serializationService,
                 httpServer.createHttpClient()
             )
                 .transformAsync(

@@ -19,7 +19,7 @@ import pl.beone.promena.intellij.plugin.parser.DataDescriptorParser
 import pl.beone.promena.intellij.plugin.parser.DataDescriptorWithFile
 import pl.beone.promena.intellij.plugin.saver.TransformedDataDescriptorSaver
 import pl.beone.promena.intellij.plugin.toolwindow.*
-import pl.beone.promena.intellij.plugin.transformer.HttpTransformer
+import pl.beone.promena.intellij.plugin.transformer.PromenaHttpTransformer
 import pl.beone.promena.intellij.plugin.util.createClassLoaderBasedOnFoldersWithCompiledFiles
 import pl.beone.promena.intellij.plugin.util.invokeLater
 import pl.beone.promena.transformer.contract.data.DataDescriptor
@@ -137,7 +137,7 @@ abstract class AbstractRelatedItemLineMarkerProvider {
         httpAddress: String,
         startTimestamp: Long
     ) {
-        HttpTransformer(serializationService).transform(
+        PromenaHttpTransformer(serializationService).transform(
             httpAddress,
             transformationDescriptor(transformation, dataDescriptor, memoryCommunicationParameters())
         )

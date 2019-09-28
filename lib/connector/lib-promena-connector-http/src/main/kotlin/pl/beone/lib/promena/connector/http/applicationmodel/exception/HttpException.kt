@@ -1,4 +1,4 @@
-package pl.beone.promena.intellij.plugin.transformer
+package pl.beone.lib.promena.connector.http.applicationmodel.exception
 
 import io.netty.handler.codec.http.HttpResponseStatus
 

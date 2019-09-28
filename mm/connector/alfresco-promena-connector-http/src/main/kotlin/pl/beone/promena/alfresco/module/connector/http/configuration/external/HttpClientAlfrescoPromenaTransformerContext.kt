@@ -23,8 +23,8 @@ class HttpClientAlfrescoPromenaTransformerContext {
         alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
         alfrescoDataDescriptorGetter: AlfrescoDataDescriptorGetter,
         alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
-        kryoSerializationService: KryoSerializationService,
         alfrescoAuthenticationService: AlfrescoAuthenticationService,
+        kryoSerializationService: KryoSerializationService,
         httpClient: HttpClient
     ) =
         HttpClientAlfrescoPromenaTransformer(
@@ -33,8 +33,8 @@ class HttpClientAlfrescoPromenaTransformerContext {
             alfrescoNodesChecksumGenerator,
             alfrescoDataDescriptorGetter,
             alfrescoTransformedDataDescriptorSaver,
-            kryoSerializationService,
             alfrescoAuthenticationService,
+            kryoSerializationService,
             httpClient
         )
 }

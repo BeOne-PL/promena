@@ -51,6 +51,7 @@
 
     <properties>
         <promena-connector-http.version>1.0.0</promena-connector-http.version>
+        <lib-promena-connector-http.version>1.0.0</lib-promena-connector-http.version>
     </properties>
 
     <dependencies>
@@ -61,6 +62,23 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.lib.promena.connector</groupId>
+            <artifactId>lib-promena-connector-http</artifactId>
+            <version>${lib-promena-connector-http.version}</version>
+            <exclusions>
+                <!-- it's controlled by Spring Boot dependencies -->
+                <exclusion>
+                    <groupId>io.projectreactor.netty</groupId>
+                    <artifactId>reactor-netty</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.projectreactor.addons</groupId>
+                    <artifactId>reactor-extra</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
