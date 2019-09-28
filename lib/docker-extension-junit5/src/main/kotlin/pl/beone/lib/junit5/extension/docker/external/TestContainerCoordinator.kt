@@ -80,22 +80,30 @@ class TestContainerCoordinator(
         }
 
     private fun replacePlaceholderInDockerfileByDockerfileFragment(tmpDirectory: File) {
-        val dockerfileFragment = File(tmpDirectory, imageCustomDockerModuleDockerfileFragmentName)
-
-        val dockerfileFragmentContent = if (dockerfileFragment.exists()) dockerfileFragment.readText() else ""
-
         val dockerfileFile = File(tmpDirectory, imageCustomDockerDockerfileName)
         val dockerfile = dockerfileFile.readText()
 
         dockerfileFile.writeText(
-            dockerfile.replace("\${DOCKERFILE-FRAGMENT}", dockerfileFragmentContent)
+            dockerfile.replace("\${DOCKERFILE-FRAGMENT}", getDockerfileFragment(tmpDirectory))
         )
     }
 
     private fun copyDockerDirectories(tmpDirectory: File) {
         File(imageCustomDockerDirectoryPath).copyRecursively(tmpDirectory)
-        File(imageCustomDockerModuleDirectoryPath).copyRecursively(tmpDirectory)
+        try {
+            File(imageCustomDockerModuleDirectoryPath).copyRecursively(tmpDirectory)
+        } catch (e: NoSuchFileException) {
+            // deliberately omitted. If there is no given folder, don't try to copy it
+        }
     }
+
+    private fun getDockerfileFragment(tmpDirectory: File): String =
+        try {
+            val dockerfileFragment = File(tmpDirectory, imageCustomDockerModuleDockerfileFragmentName)
+            if (dockerfileFragment.exists()) dockerfileFragment.readText() else ""
+        } catch (e: NoSuchFileException) {
+            ""
+        }
 
     fun start() {
         verifyIfContainerWasInitialized()
