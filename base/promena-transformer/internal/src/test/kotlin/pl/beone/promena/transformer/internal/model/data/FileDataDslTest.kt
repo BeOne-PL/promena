@@ -21,4 +21,11 @@ class FileDataDslTest {
         fileData(fileString.byteInputStream(), createTempDir()).getBytes() shouldBe
                 fileBytes
     }
+
+    @Test
+    fun getFile() {
+        val file = fileString.createTmpFile()
+        fileData(file).getFile() shouldBe
+                file
+    }
 }

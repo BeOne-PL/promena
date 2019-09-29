@@ -16,3 +16,6 @@ fun File.toFileData(): FileData =
 
 fun InputStream.toFileData(directory: File): FileData =
     FileData.of(this, directory)
+
+fun FileData.getFile(): File =
+    File(getLocation())
