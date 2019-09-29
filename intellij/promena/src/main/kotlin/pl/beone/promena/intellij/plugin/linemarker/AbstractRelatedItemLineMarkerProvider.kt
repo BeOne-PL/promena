@@ -108,7 +108,7 @@ abstract class AbstractRelatedItemLineMarkerProvider {
                 runToolWindowTabs.map { runToolWindowTab ->
                     executors.submit {
                         transformUsingHttp(kryoSerializationService, runToolWindowTab, transformation, dataDescriptor, httpAddress, startTimestamp)
-                    }
+                    }.also { future -> runToolWindowTab.onClose { future.cancel(true) } }
                 }
             } finally {
                 executors.shutdown()
@@ -135,21 +135,16 @@ abstract class AbstractRelatedItemLineMarkerProvider {
         httpAddress: String,
         startTimestamp: Long
     ) {
-        PromenaHttpTransformer(serializationService).transform(
-            httpAddress,
-            transformationDescriptor(transformation, dataDescriptor, memoryCommunicationParameters())
-        )
-            .subscribe(
-                { (_, transformedDataDescriptor) ->
-                    handleSuccessfulTransformation(
-                        runToolWindowTab,
-                        transformation,
-                        transformedDataDescriptor,
-                        currentTimeMillis() - startTimestamp
-                    )
-                },
-                { exception -> handleFailedTransformation(runToolWindowTab, exception) }
-            )
+        try {
+            val (_, transformedDataDescriptor) = PromenaHttpTransformer(serializationService).transform(
+                httpAddress,
+                transformationDescriptor(transformation, dataDescriptor, memoryCommunicationParameters())
+            ).block()!!
+
+            handleSuccessfulTransformation(runToolWindowTab, transformation, transformedDataDescriptor, currentTimeMillis() - startTimestamp)
+        } catch (e: Exception) {
+            handleFailedTransformation(runToolWindowTab, e)
+        }
     }
 
     private fun handleSuccessfulTransformation(

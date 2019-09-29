@@ -72,6 +72,10 @@ internal class RunToolWindowTab(private val project: Project) {
         (consoleView as ConsoleViewImpl).flushDeferredText()
     }
 
+    fun onClose(toRun: () -> Unit) {
+        content.setDisposer(toRun)
+    }
+
     private fun initRunToolWindow() {
         ServiceManager.getService(project, RunContentManager::class.java)
     }
