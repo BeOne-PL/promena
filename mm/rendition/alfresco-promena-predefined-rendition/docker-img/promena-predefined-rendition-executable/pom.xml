@@ -61,8 +61,8 @@
         <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
 
         <!-- Put TRANSFORMERS versions here -->
-        <converter-image-magick.version>1.0.0</converter-image-magick.version>
-        <converter-libre-office.version>1.0.0</converter-libre-office.version>
+        <transformer.converter-image-magick.version>1.0.0</transformer.converter-image-magick.version>
+        <transformer.converter-libre-office.version>1.0.0</transformer.converter-libre-office.version>
         <!-- /Put -->
 
         <promena-docker-maven-plugin.version>1.0.0</promena-docker-maven-plugin.version>
