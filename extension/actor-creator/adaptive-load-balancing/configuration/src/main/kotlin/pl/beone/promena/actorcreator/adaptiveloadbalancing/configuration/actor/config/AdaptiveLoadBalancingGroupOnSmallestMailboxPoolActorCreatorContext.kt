@@ -38,7 +38,7 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
         return try {
             Class.forName(className)
                 .methods
-                .firstOrNull { it.name == methodName }
+                .firstOrNull { it.name == methodName && it.parameterCount == 0 }
                 ?.let { it.invoke(null) as MetricsSelector }
                 ?: throw IllegalStateException("Class <$className> doesn't contain <$methodName> method")
         } catch (e: Exception) {
