@@ -27,7 +27,7 @@ class ${pascalCaseTransformerId}TransformerSupportTest {
 
         every { ${pascalCaseTransformerId}Support.isSupported(dataDescriptor, targetMediaType, parameters) } just Runs
 
-        ${pascalCaseTransformerId}Transformer(mockk())
+        ${pascalCaseTransformerId}Transformer(mockk(), mockk())
             .isSupported(dataDescriptor, targetMediaType, parameters)
 
         verify(exactly = 1) { ${pascalCaseTransformerId}Support.isSupported(dataDescriptor, targetMediaType, parameters) }

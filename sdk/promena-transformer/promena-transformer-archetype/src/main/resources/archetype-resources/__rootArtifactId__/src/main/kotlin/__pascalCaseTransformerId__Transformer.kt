@@ -11,6 +11,7 @@ import pl.beone.promena.transformer.contract.model.Parameters
 import ${package}.applicationmodel.${pascalCaseTransformerId}Support
 
 class ${pascalCaseTransformerId}Transformer(
+    private val defaultParameters: ${pascalCaseTransformerId}TransformerDefaultParameters,
     private val internalCommunicationParameters: CommunicationParameters
 ) : Transformer {
 

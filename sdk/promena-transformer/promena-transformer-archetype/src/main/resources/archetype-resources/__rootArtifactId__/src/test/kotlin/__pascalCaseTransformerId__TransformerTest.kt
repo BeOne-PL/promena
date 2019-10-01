@@ -22,7 +22,7 @@ class ${pascalCaseTransformerId}TransformerTest {
         val mediaType = TEXT_PLAIN
         val metadata = emptyMetadata()
 
-        ${pascalCaseTransformerId}Transformer(mockk())
+        ${pascalCaseTransformerId}Transformer(mockk(), mockk())
             .transform(
                 singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
                 TEXT_PLAIN,

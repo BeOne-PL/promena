@@ -20,3 +20,9 @@ fun Parameters.getExample(): String =
 
 fun Parameters.getExample2(): String =
     get(Example2.NAME, Example2.CLASS)
+
+fun Parameters.getExample2OrNull(): String? =
+    getOrNull(Example2.NAME, Example2.CLASS)
+
+fun Parameters.getExample2OrDefault(default: String): String =
+    getOrDefault(Example2.NAME, Example2.CLASS, default)
