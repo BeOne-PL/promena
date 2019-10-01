@@ -9,19 +9,33 @@ import pl.beone.lib.typeconverter.internal.getClazz
 internal fun Map<String, Any>._get(key: String): Any =
     this[key] ?: throw NoSuchElementException("There is no <$key> element")
 
-internal fun <T> Map<String, Any>.get(key: String, clazz: Class<T>): T {
-    val element = this._get(key)
+internal fun Map<String, Any>.getOrNull(key: String): Any? =
+    this[key]
 
-    return element.castOrConvert(clazz)
-}
+internal fun <T> Map<String, Any>.get(key: String, clazz: Class<T>): T =
+    _get(key).castOrConvert(clazz)
+
+internal fun <T> Map<String, Any>.getOrNull(key: String, clazz: Class<T>): T? =
+    try {
+        _get(key).castOrConvert(clazz)
+    } catch (e: NoSuchElementException) {
+        null
+    }
+
+internal fun <T> Map<String, Any>.getOrDefault(key: String, clazz: Class<T>, default: T): T =
+    try {
+        _get(key).castOrConvert(clazz)
+    } catch (e: NoSuchElementException) {
+        default
+    }
 
 internal fun Map<String, Any>.getListWithoutType(key: String): List<Any> =
-    this.get(key, getClazz())
+    get(key, getClazz())
 
 internal fun <T> Map<String, Any>.getList(key: String, clazz: Class<T>): List<T> {
-    val list = this.getListWithoutType(key)
+    val list = getListWithoutType(key)
 
-    return list.map {
+    return getListWithoutType(key).map {
         try {
             it.castOrConvert(clazz)
         } catch (e: TypeConversionException) {

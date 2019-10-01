@@ -1,10 +1,7 @@
 package pl.beone.promena.transformer.internal.model.metadata
 
 import pl.beone.promena.transformer.contract.model.Metadata
-import pl.beone.promena.transformer.internal.model.extensions._get
-import pl.beone.promena.transformer.internal.model.extensions.get
-import pl.beone.promena.transformer.internal.model.extensions.getList
-import pl.beone.promena.transformer.internal.model.extensions.getListWithoutType
+import pl.beone.promena.transformer.internal.model.extensions.*
 
 data class MapMetadata internal constructor(
     private val metadata: Map<String, Any>
@@ -25,6 +22,12 @@ data class MapMetadata internal constructor(
 
     override fun <T> get(key: String, clazz: Class<T>): T =
         metadata.get(key, clazz)
+
+    override fun <T> getOrNull(key: String, clazz: Class<T>): T? =
+        metadata.getOrNull(key, clazz)
+
+    override fun <T> getOrDefault(key: String, clazz: Class<T>, default: T): T =
+        metadata.getOrDefault(key, clazz, default)
 
     override fun getMetadata(key: String): Metadata =
         metadata.get(key, Metadata::class.java)

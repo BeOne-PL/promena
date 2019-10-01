@@ -3,6 +3,8 @@ package pl.beone.promena.transformer.internal.communication
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.internal.model.extensions._get
 import pl.beone.promena.transformer.internal.model.extensions.get
+import pl.beone.promena.transformer.internal.model.extensions.getOrDefault
+import pl.beone.promena.transformer.internal.model.extensions.getOrNull
 
 data class MapCommunicationParameters internal constructor(
     private val parameters: Map<String, Any>
@@ -20,6 +22,12 @@ data class MapCommunicationParameters internal constructor(
 
     override fun <T> get(key: String, clazz: Class<T>): T =
         parameters.get(key, clazz)
+
+    override fun <T> getOrNull(key: String, clazz: Class<T>): T? =
+        parameters.getOrNull(key, clazz)
+
+    override fun <T> getOrDefault(key: String, clazz: Class<T>, default: T): T =
+        parameters.getOrDefault(key, clazz, default)
 
     override fun getId(): String =
         parameters.get(CommunicationParameters.ID, String::class.java)

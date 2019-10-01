@@ -5,7 +5,6 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.jupiter.api.Test
 import pl.beone.lib.typeconverter.applicationmodel.exception.TypeConversionException
-import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.contract.model.Parameters.Companion.TIMEOUT
 import java.time.Duration
 
@@ -34,6 +33,8 @@ class MapParametersTest {
                 ("intList" to listOf(1, 2, 3)) +
                 ("mixList" to listOf(1, "string", true)) +
                 ("stringList" to listOf("1", "2", "3"))
+
+        private const val absentNoSuchElementExceptionMessage = "There is no <absent> element"
     }
 
     @Test
@@ -68,7 +69,7 @@ class MapParametersTest {
 
         shouldThrow<NoSuchElementException> {
             parameters.get("absent")
-        }.message shouldBe "There is no <absent> element"
+        }.message shouldBe absentNoSuchElementExceptionMessage
     }
 
     @Test
@@ -104,7 +105,17 @@ class MapParametersTest {
 
         shouldThrow<NoSuchElementException> {
             parameters.get("absent", String::class.java)
-        }.message shouldBe "There is no <absent> element"
+        }.message shouldBe absentNoSuchElementExceptionMessage
+    }
+
+    @Test
+    fun `getOrNull with class`() {
+        parameters.getOrNull("absent", Int::class.java) shouldBe null
+    }
+
+    @Test
+    fun `getOrDefault with class`() {
+        parameters.getOrDefault("absent", Int::class.java, 5) shouldBe 5
     }
 
     @Test
@@ -132,7 +143,7 @@ class MapParametersTest {
 
         shouldThrow<NoSuchElementException> {
             parameters.getParameters("absent")
-        }.message shouldBe "There is no <absent> element"
+        }.message shouldBe absentNoSuchElementExceptionMessage
     }
 
     @Test
@@ -147,7 +158,7 @@ class MapParametersTest {
 
         shouldThrow<NoSuchElementException> {
             parameters.getList("absent")
-        }.message shouldBe "There is no <absent> element"
+        }.message shouldBe absentNoSuchElementExceptionMessage
     }
 
     @Test
@@ -162,7 +173,7 @@ class MapParametersTest {
 
         shouldThrow<NoSuchElementException> {
             parameters.getList("absent")
-        }.message shouldBe "There is no <absent> element"
+        }.message shouldBe absentNoSuchElementExceptionMessage
     }
 
     @Test

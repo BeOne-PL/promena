@@ -49,6 +49,16 @@ class MapMetadataTest {
     }
 
     @Test
+    fun `getOrNull with class`() {
+        metadata.getOrNull("absent", Int::class.java) shouldBe null
+    }
+
+    @Test
+    fun `getOrDefault with class`() {
+        metadata.getOrDefault("absent", Int::class.java, 5) shouldBe 5
+    }
+
+    @Test
     fun getMetadata() {
         metadata.getMetadata("metadata") shouldBe
                 (emptyMetadata() + ("key" to "value"))

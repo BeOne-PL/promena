@@ -38,6 +38,16 @@ class MapCommunicationParametersTest {
     }
 
     @Test
+    fun `getOrNull with class`() {
+        communicationParameters.getOrNull("absent", Int::class.java) shouldBe null
+    }
+
+    @Test
+    fun `getOrDefault with class`() {
+        communicationParameters.getOrDefault("absent", Int::class.java, 5) shouldBe 5
+    }
+
+    @Test
     fun getId() {
         communicationParameters.getId() shouldBe "memory"
     }
