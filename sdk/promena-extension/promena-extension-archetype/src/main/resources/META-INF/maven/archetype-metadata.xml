@@ -34,7 +34,7 @@ under the License.
 
     <modules>
         <module id="${rootArtifactId}-configuration"
-                dir="__rootArtifactId__-configuration"
+                dir="configuration"
                 name="${rootArtifactId}-configuration">
             <fileSets>
                 <fileSet filtered="true">
@@ -55,9 +55,9 @@ under the License.
             </fileSets>
         </module>
 
-        <module id="${rootArtifactId}"
-                dir="__rootArtifactId__"
-                name="${rootArtifactId}">
+        <module id="${rootArtifactId}-internal"
+                dir="internal"
+                name="${rootArtifactId}-internal">
             <fileSets>
                 <fileSet filtered="true" packaged="true">
                     <directory>src/main/kotlin</directory>

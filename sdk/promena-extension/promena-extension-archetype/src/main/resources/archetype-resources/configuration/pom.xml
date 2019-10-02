@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>${groupId}</groupId>
-        <artifactId>${rootArtifactId}-root</artifactId>
+        <artifactId>${rootArtifactId}</artifactId>
         <version>${version}</version>
     </parent>
 
@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>${groupId}</groupId>
-            <artifactId>${rootArtifactId}</artifactId>
+            <artifactId>${rootArtifactId}-internal</artifactId>
             <version>${${rootArtifactId}.version}</version>
         </dependency>
 
