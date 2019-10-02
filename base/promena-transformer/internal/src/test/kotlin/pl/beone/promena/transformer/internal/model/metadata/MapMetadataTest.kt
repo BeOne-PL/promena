@@ -65,15 +65,55 @@ class MapMetadataTest {
     }
 
     @Test
+    fun getMetadataOrNull() {
+        metadata.getMetadataOrNull("metadata") shouldBe
+                emptyMetadata() + ("key" to "value")
+        metadata.getMetadataOrNull("absent") shouldBe null
+    }
+
+    @Test
+    fun getMetadataOrDefault() {
+        val assertMetadata = emptyMetadata() + ("key" to "value")
+        metadata.getMetadataOrDefault("metadata", emptyMetadata()) shouldBe assertMetadata
+        metadata.getMetadataOrDefault("absent", assertMetadata) shouldBe assertMetadata
+    }
+
+    @Test
     fun getList() {
         metadata.getList("intList") shouldBe
                 listOf(1, 2, 3)
     }
 
     @Test
+    fun getListOrNull() {
+        metadata.getListOrNull("intList") shouldBe listOf(1, 2, 3)
+        metadata.getListOrNull("absent") shouldBe null
+    }
+
+    @Test
+    fun getListOrDefault() {
+        val list = listOf(1, 2, 3)
+        metadata.getListOrDefault("intList", emptyList()) shouldBe list
+        metadata.getListOrDefault("absent", list) shouldBe list
+    }
+
+    @Test
     fun `getList with class`() {
         metadata.getList("intList", Int::class.java) shouldBe listOf(1, 2, 3)
         metadata.getList("stringList", Long::class.java) shouldBe listOf(1L, 2L, 3L)
+    }
+
+    @Test
+    fun `getListOrNull with class`() {
+        metadata.getListOrNull("intList", Int::class.java) shouldBe listOf(1, 2, 3)
+        metadata.getListOrNull("absent") shouldBe null
+    }
+
+    @Test
+    fun `getListOrDefault with class`() {
+        val list = listOf(1, 2, 3)
+        metadata.getListOrDefault("intList", Int::class.java, emptyList()) shouldBe list
+        metadata.getListOrDefault("absent", list) shouldBe list
     }
 
     @Test

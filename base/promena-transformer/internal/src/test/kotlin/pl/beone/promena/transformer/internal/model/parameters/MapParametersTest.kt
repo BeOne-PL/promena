@@ -121,8 +121,7 @@ class MapParametersTest {
     @Test
     fun getTimeout() {
         val timeout = Duration.ofMillis(10)
-        (emptyParameters() addTimeout timeout).getTimeout() shouldBe
-                timeout
+        (emptyParameters() addTimeout timeout).getTimeout() shouldBe timeout
 
         shouldThrow<NoSuchElementException> {
             emptyParameters().getTimeout()
@@ -130,10 +129,17 @@ class MapParametersTest {
     }
 
     @Test
+    fun getTimeoutOrNull() {
+        val timeout = Duration.ofMillis(10)
+        (emptyParameters() addTimeout timeout).getTimeoutOrNull() shouldBe timeout
+        (emptyParameters()).getTimeoutOrNull() shouldBe null
+    }
+
+    @Test
     fun getTimeoutOrDefault() {
         val timeout = Duration.ofMillis(10)
-        (emptyParameters()).getTimeoutOrDefault(timeout) shouldBe
-                timeout
+        (emptyParameters() addTimeout timeout).getTimeoutOrDefault(Duration.ofSeconds(1)) shouldBe timeout
+        (emptyParameters()).getTimeoutOrDefault(timeout) shouldBe timeout
     }
 
     @Test
@@ -154,6 +160,20 @@ class MapParametersTest {
     }
 
     @Test
+    fun getParametersOrNull() {
+        parameters.getParametersOrNull("parameter") shouldBe
+                emptyParameters() + ("key" to "value")
+        parameters.getParametersOrNull("absent") shouldBe null
+    }
+
+    @Test
+    fun getParametersOrDefault() {
+        val assertParameters = emptyParameters() + ("key" to "value")
+        parameters.getParametersOrDefault("parameter", emptyParameters()) shouldBe assertParameters
+        parameters.getParametersOrDefault("absent", assertParameters) shouldBe assertParameters
+    }
+
+    @Test
     fun getList() {
         parameters.getList("intList") shouldBe listOf(1, 2, 3)
         parameters.getList("mixList") shouldBe listOf(1, "string", true)
@@ -169,6 +189,19 @@ class MapParametersTest {
     }
 
     @Test
+    fun getListOrNull() {
+        parameters.getListOrNull("intList") shouldBe listOf(1, 2, 3)
+        parameters.getListOrNull("absent") shouldBe null
+    }
+
+    @Test
+    fun getListOrDefault() {
+        val list = listOf(1, 2, 3)
+        parameters.getListOrDefault("intList", emptyList()) shouldBe list
+        parameters.getListOrDefault("absent", list) shouldBe list
+    }
+
+    @Test
     fun `getList with class`() {
         parameters.getList("intList", Int::class.java) shouldBe listOf(1, 2, 3)
         parameters.getList("stringList", String::class.java) shouldBe listOf("1", "2", "3")
@@ -181,6 +214,19 @@ class MapParametersTest {
         shouldThrow<NoSuchElementException> {
             parameters.getList("absent")
         }.message shouldBe absentNoSuchElementExceptionMessage
+    }
+
+    @Test
+    fun `getListOrNull with class`() {
+        parameters.getListOrNull("intList", Int::class.java) shouldBe listOf(1, 2, 3)
+        parameters.getListOrNull("absent") shouldBe null
+    }
+
+    @Test
+    fun `getListOrDefault with class`() {
+        val list = listOf(1, 2, 3)
+        parameters.getListOrDefault("intList", Int::class.java, emptyList()) shouldBe list
+        parameters.getListOrDefault("absent", list) shouldBe list
     }
 
     @Test

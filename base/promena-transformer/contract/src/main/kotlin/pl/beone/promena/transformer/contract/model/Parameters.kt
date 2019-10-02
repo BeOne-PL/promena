@@ -23,16 +23,30 @@ interface Parameters {
     @Throws(NoSuchElementException::class)
     fun getTimeout(): Duration
 
+    fun getTimeoutOrNull(): Duration?
+
     fun getTimeoutOrDefault(default: Duration): Duration
 
     @Throws(NoSuchElementException::class)
     fun getParameters(key: String): Parameters
 
+    fun getParametersOrNull(key: String): Parameters?
+
+    fun getParametersOrDefault(key: String, default: Parameters): Parameters
+
     @Throws(NoSuchElementException::class)
     fun getList(key: String): List<Any>
 
+    fun getListOrNull(key: String): List<Any>?
+
+    fun getListOrDefault(key: String, default: List<Any>): List<Any>
+
     @Throws(NoSuchElementException::class)
     fun <T> getList(key: String, clazz: Class<T>): List<T>
+
+    fun <T> getListOrNull(key: String, clazz: Class<T>): List<T>?
+
+    fun <T> getListOrDefault(key: String, clazz: Class<T>, default: List<T>): List<T>
 
     fun getAll(): Map<String, Any>
 }

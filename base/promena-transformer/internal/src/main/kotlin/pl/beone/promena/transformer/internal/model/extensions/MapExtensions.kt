@@ -32,6 +32,12 @@ internal fun <T> Map<String, Any>.getOrDefault(key: String, clazz: Class<T>, def
 internal fun Map<String, Any>.getListWithoutType(key: String): List<Any> =
     get(key, getClazz())
 
+internal fun Map<String, Any>.getListWithoutTypeOrNull(key: String): List<Any>? =
+    getListOrNull(key, getClazz())
+
+internal fun Map<String, Any>.getListWithoutTypeOrDefault(key: String, default: List<Any>): List<Any> =
+    getListOrDefault(key, getClazz(), default)
+
 internal fun <T> Map<String, Any>.getList(key: String, clazz: Class<T>): List<T> {
     val list = getListWithoutType(key)
 
@@ -43,3 +49,17 @@ internal fun <T> Map<String, Any>.getList(key: String, clazz: Class<T>): List<T>
         }
     }
 }
+
+internal fun <T> Map<String, Any>.getListOrNull(key: String, clazz: Class<T>): List<T>? =
+    try {
+        getList(key, clazz)
+    } catch (e: NoSuchElementException) {
+        null
+    }
+
+internal fun <T> Map<String, Any>.getListOrDefault(key: String, clazz: Class<T>, default: List<T>): List<T> =
+    try {
+        getList(key, clazz)
+    } catch (e: NoSuchElementException) {
+        default
+    }
