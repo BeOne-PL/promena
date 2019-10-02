@@ -1,11 +1,11 @@
 package pl.beone.promena.connector.http.delivery.http
 
 import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.server.HandlerFunction
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.server.ResponseStatusException
 import pl.beone.lib.typeconverter.internal.getClazz
-import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
@@ -16,9 +16,9 @@ import reactor.core.publisher.Mono
 class TransformerHandler(
     private val serializationService: SerializationService,
     private val transformationUseCase: TransformationUseCase
-) {
+) : HandlerFunction<ServerResponse> {
 
-    fun transform(serverRequest: ServerRequest): Mono<ServerResponse> =
+    override fun handle(serverRequest: ServerRequest): Mono<ServerResponse> =
         serverRequest.bodyToMono(ByteArray::class.java)
             .map(::deserializeTransformationDescriptor)
             .map { (transformation, dataDescriptor, communicationParameters) ->

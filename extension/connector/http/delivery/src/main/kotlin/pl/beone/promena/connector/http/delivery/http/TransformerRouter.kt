@@ -4,7 +4,7 @@ import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.RouterFunctions
 import org.springframework.web.reactive.function.server.ServerResponse
 
-fun route(transformerHandler: TransformerHandler): RouterFunction<ServerResponse> =
+fun route(handler: TransformerHandler): RouterFunction<ServerResponse> =
     RouterFunctions.route()
-        .POST("/transform", transformerHandler::transform)
+        .POST("/transform", handler)
         .build()
