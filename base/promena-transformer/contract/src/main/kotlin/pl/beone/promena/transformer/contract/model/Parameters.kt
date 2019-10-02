@@ -23,6 +23,8 @@ interface Parameters {
     @Throws(NoSuchElementException::class)
     fun getTimeout(): Duration
 
+    fun getTimeoutOrDefault(default: Duration): Duration
+
     @Throws(NoSuchElementException::class)
     fun getParameters(key: String): Parameters
 

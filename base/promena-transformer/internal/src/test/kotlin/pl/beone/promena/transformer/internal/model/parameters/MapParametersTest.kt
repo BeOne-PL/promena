@@ -130,6 +130,13 @@ class MapParametersTest {
     }
 
     @Test
+    fun getTimeoutOrDefault() {
+        val timeout = Duration.ofMillis(10)
+        (emptyParameters()).getTimeoutOrDefault(timeout) shouldBe
+                timeout
+    }
+
+    @Test
     fun getParameters() {
         parameters.getParameters("parameter") shouldBe
                 emptyParameters() + ("key" to "value")

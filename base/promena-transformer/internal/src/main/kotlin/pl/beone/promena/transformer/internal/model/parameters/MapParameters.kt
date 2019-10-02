@@ -41,6 +41,9 @@ data class MapParameters internal constructor(
     override fun getTimeout(): Duration =
         parameters.get(TIMEOUT, Duration::class.java)
 
+    override fun getTimeoutOrDefault(default: Duration): Duration =
+        parameters.getOrDefault(TIMEOUT, Duration::class.java, default)
+
     override fun getParameters(key: String): Parameters =
         parameters.get(key, Parameters::class.java)
 
