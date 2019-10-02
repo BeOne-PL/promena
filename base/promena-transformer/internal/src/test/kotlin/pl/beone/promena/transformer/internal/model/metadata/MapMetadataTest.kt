@@ -23,15 +23,13 @@ class MapMetadataTest {
 
     @Test
     fun empty() {
-        MapMetadata.empty().getAll().size shouldBe
-                0
+        MapMetadata.empty().getAll().size shouldBe 0
     }
 
     @Test
     fun of() {
         val metadata = mapOf("test" to "value")
-        MapMetadata.of(metadata).getAll() shouldBe
-                metadata
+        MapMetadata.of(metadata).getAll() shouldBe metadata
     }
 
     @Test
@@ -80,8 +78,7 @@ class MapMetadataTest {
 
     @Test
     fun getList() {
-        metadata.getList("intList") shouldBe
-                listOf(1, 2, 3)
+        metadata.getList("intList") shouldBe listOf(1, 2, 3)
     }
 
     @Test
