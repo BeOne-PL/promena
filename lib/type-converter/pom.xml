@@ -8,7 +8,7 @@
     <artifactId>type-converter</artifactId>
     <version>1.0.0</version>
 
-    <name>[LIB] type-converter</name>
+    <name>[LIB] Type converter</name>
 
     <repositories>
         <repository>

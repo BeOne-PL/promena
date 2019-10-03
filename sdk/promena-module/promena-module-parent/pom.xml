@@ -14,7 +14,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>[SDK][POM] Promena module</name>
+    <name>[SDK][POM] Parent - module</name>
 
     <repositories>
         <repository>
