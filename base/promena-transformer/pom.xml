@@ -12,7 +12,7 @@
 
     <name>[BASE] Transformer</name>
 
-    <groupId>pl.beone.promena.transformer</groupId>
+    <groupId>pl.beone.promena.base</groupId>
     <artifactId>promena-transformer</artifactId>
     <version>1.0.0</version>
 
@@ -84,17 +84,17 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>pl.beone.promena.transformer</groupId>
+                <groupId>pl.beone.promena.base</groupId>
                 <artifactId>promena-transformer-application-model</artifactId>
                 <version>${promena-transformer.version}</version>
             </dependency>
             <dependency>
-                <groupId>pl.beone.promena.transformer</groupId>
+                <groupId>pl.beone.promena.base</groupId>
                 <artifactId>promena-transformer-contract</artifactId>
                 <version>${promena-transformer.version}</version>
             </dependency>
             <dependency>
-                <groupId>pl.beone.promena.transformer</groupId>
+                <groupId>pl.beone.promena.base</groupId>
                 <artifactId>promena-transformer-internal</artifactId>
                 <version>${promena-transformer.version}</version>
             </dependency>

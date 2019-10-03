@@ -12,7 +12,7 @@
 
     <name>[BASE] Core</name>
 
-    <groupId>pl.beone.promena.core</groupId>
+    <groupId>pl.beone.promena.base</groupId>
     <artifactId>promena-core</artifactId>
     <version>1.0.0</version>
 

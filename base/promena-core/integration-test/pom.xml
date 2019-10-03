@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>promena-core</artifactId>
-        <groupId>pl.beone.promena.core</groupId>
+        <groupId>pl.beone.promena.base</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>pl.beone.promena.core</groupId>
+            <groupId>pl.beone.promena.base</groupId>
             <artifactId>promena-core-configuration</artifactId>
             <version>${promena-core.version}</version>
             <scope>test</scope>

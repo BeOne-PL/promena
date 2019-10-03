@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>promena-core</artifactId>
-        <groupId>pl.beone.promena.core</groupId>
+        <groupId>pl.beone.promena.base</groupId>
         <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -14,7 +14,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
+            <groupId>pl.beone.promena.base</groupId>
             <artifactId>promena-transformer-contract</artifactId>
             <version>${promena-transformer.version}</version>
         </dependency>

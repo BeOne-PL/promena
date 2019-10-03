@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>pl.beone.promena.sdk.maven.parent</groupId>
+        <artifactId>promena-module-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>pl.beone.promena.cluster.management</groupId>
+    <artifactId>promena-cluster-management-kubernetes</artifactId>
+    <version>1.0.0</version>
+
+    <name>[MODULE][CLUSTER][MANAGEMENT] Kubernetes</name>
+
+    <packaging>pom</packaging>
+    <modules>
+        <module>configuration</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>beone-releases</id>
+            <url>http://nexus.office.beone.pl/repository/releases</url>
+        </repository>
+
+        <repository>
+            <id>mulesoft</id>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>beone-releases</id>
+            <url>http://nexus.office.beone.pl/repository/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>beone-snapshots</id>
+            <url>http://nexus.office.beone.pl/repository/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>beone-releases</id>
+            <url>http://nexus.office.beone.pl/repository/releases</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <properties>
+        <promena-discovery-kubernetes.version>1.0.0</promena-discovery-kubernetes.version>
+
+        <akka-management.version>1.0.2</akka-management.version>
+        <akka-discovery-kubernetes-api.version>1.0.2</akka-discovery-kubernetes-api.version>
+        <akka-cluster-custom-downing.version>0.0.12</akka-cluster-custom-downing.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

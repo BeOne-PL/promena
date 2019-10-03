@@ -32,11 +32,11 @@ ext {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    compile "pl.beone.promena.transformer:promena-transformer-internal:$promenaTransformerVersion"
-    compile "pl.beone.promena.core:promena-core-application-model:$promenaCoreVersion"
-    compile "pl.beone.promena.core:promena-core-internal-serialization:$promenaCoreVersion"
+    compile "pl.beone.promena.base:promena-transformer-internal:$promenaTransformerVersion"
+    compile "pl.beone.promena.base:promena-core-application-model:$promenaCoreVersion"
+    compile "pl.beone.promena.base:promena-core-internal-serialization:$promenaCoreVersion"
     compile "pl.beone.promena.communication.memory.model:promena-communication-memory-model-internal:$promenaCommunicationMemoryVersion"
-    compile "pl.beone.lib.promena.connector:lib-promena-connector-http:$libPromenaConnectorHttpVersion"
+    compile "pl.beone.promena.lib.connector:promena-lib-connector-http:$libPromenaConnectorHttpVersion"
 
     compile "org.apache.tika:tika-core:$tikaCoreVersion"
 

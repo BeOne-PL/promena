@@ -1,6 +1,6 @@
 package pl.beone.promena.intellij.plugin.transformer
 
-import pl.beone.lib.promena.connector.http.external.AbstractPromenaHttpTransformer
+import pl.beone.promena.lib.connector.http.external.AbstractPromenaHttpTransformer
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService

@@ -1,0 +1,100 @@
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+
+    <!--
+    Note that the Module dependency specified in the configuration section for the Alfresco Maven Plugin
+    needs to be set to amp if any 3rd party libs should be applied by MMT:
+`
+    <platformModules>
+        <moduleDependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>some-platform-jar</artifactId>
+            <version>${project.version}</version>
+            <type>amp</type>
+        </moduleDependency>
+    -->
+
+    <id>build-amp-file</id>
+
+    <formats>
+        <format>amp</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <files>
+        <!-- Filter module.properties and put at top level in the AMP -->
+        <file>
+            <source>src/main/resources/alfresco/module/${project.artifactId}/module.properties</source>
+            <filtered>true</filtered>
+        </file>
+        <!-- Include AMP -> WAR mapping file (needed for custom mappings) -->
+        <file>
+            <source>src/main/assembly/file-mapping.properties</source>
+            <filtered>false</filtered>
+        </file>
+        <!-- Add module-specific log4j.properties configuration at top level in the AMP -->
+        <file>
+            <source>src/main/resources/alfresco/module/${project.artifactId}/log4j.properties</source>
+            <filtered>false</filtered>
+        </file>
+    </files>
+
+    <fileSets>
+        <!-- Anything in the assembly/web directory will end up in the /web directory in the AMP -->
+        <fileSet>
+            <directory>src/main/assembly/web</directory>
+            <outputDirectory>web</outputDirectory>
+            <filtered>true</filtered> <!-- Will filter files and substitute POM props such as for example ${project.name} -->
+            <excludes>
+                <exclude>README.md</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+
+    <!-- Include the project artifact (JAR) in the /lib directory in the AMP, and any 3rd party libraries (JARs)
+         used by the customization.
+    -->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <excludes>
+                <exclude>pl.beone.promena.alfresco.module:alfresco-promena-core</exclude>
+                <exclude>pl.beone.promena.base:promena-transformer-application-model</exclude>
+                <exclude>pl.beone.promena.base:promena-transformer-contract</exclude>
+                <exclude>pl.beone.promena.base:promena-transformer-internal</exclude>
+                <exclude>pl.beone.promena.base:promena-core-application-model</exclude>
+                <exclude>pl.beone.promena.base:promena-core-contract</exclude>
+                <exclude>pl.beone.promena.base:promena-core-internal-serialization</exclude>
+                <exclude>pl.beone.promena.communication.file.model:promena-communication-file-model-contract</exclude>
+                <exclude>pl.beone.promena.communication.file.model:promena-communication-file-model-internal</exclude>
+                <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-contract</exclude>
+                <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-internal</exclude>
+                <exclude>pl.beone.lib:type-converter</exclude>
+                <exclude>pl.beone.promena.alfresco.module:alfresco-promena-rendition</exclude>
+
+                <exclude>org.jetbrains:annotations</exclude>
+                <exclude>org.jetbrains.kotlin:kotlin-reflect</exclude>
+                <exclude>org.jetbrains.kotlin:kotlin-stdlib</exclude>
+                <exclude>org.jetbrains.kotlin:kotlin-stdlib-common</exclude>
+                <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk7</exclude>
+                <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk8</exclude>
+
+                <exclude>org.ow2.asm:asm</exclude>
+                <exclude>com.esotericsoftware:kryo</exclude>
+                <exclude>com.esotericsoftware:minlog</exclude>
+                <exclude>com.esotericsoftware:reflectasm</exclude>
+                <exclude>de.javakaffee:kryo-serializers</exclude>
+                <exclude>org.objenesis:objenesis</exclude>
+
+                <exclude>io.github.microutils:kotlin-logging</exclude>
+                <exclude>org.slf4j:slf4j-api</exclude>
+                <exclude>io.projectreactor:reactor-core</exclude>
+                <exclude>org.reactivestreams:reactive-streams</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>

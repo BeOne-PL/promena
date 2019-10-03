@@ -8,7 +8,7 @@
     <artifactId>docker-extension-junit5</artifactId>
     <version>1.0.0</version>
 
-    <name>[LIB] docker-extension-junit5</name>
+    <name>[LIB] DockerExtension JUnit5</name>
 
     <repositories>
         <repository>

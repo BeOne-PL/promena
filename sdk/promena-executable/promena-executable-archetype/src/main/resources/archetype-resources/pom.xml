@@ -77,7 +77,7 @@
 
         <!-- Core -->
         <dependency>
-            <groupId>pl.beone.promena.core</groupId>
+            <groupId>pl.beone.promena.base</groupId>
             <artifactId>promena-core-configuration</artifactId>
             <version>${promena.core.version}</version>
         </dependency>
