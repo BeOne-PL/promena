@@ -6,7 +6,7 @@ import io.kotlintest.shouldBe
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import pl.beone.lib.junit5.extension.docker.external.DockerExtension
+import pl.beone.lib.junit.jupiter.external.DockerExtension
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
