@@ -30,7 +30,7 @@ object ${pascalCaseTransformerId}Support {
 
     object ParametersSupport {
         fun isSupported(parameters: Parameters) {
-            parameters.validate(Example.NAME, Example.CLASS, false)
+            parameters.validate(Example.NAME, Example.CLASS, true)
             parameters.validate(Example2.NAME, Example2.CLASS, false)
         }
 

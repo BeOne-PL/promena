@@ -24,19 +24,25 @@ class ${pascalCaseTransformerId}TransformerConfigurationContext {
     @Bean
     fun ${camelCaseTransformerId}TransformerDefaultParameters(environment: Environment): ${pascalCaseTransformerId}TransformerDefaultParameters =
         ${pascalCaseTransformerId}TransformerDefaultParameters(
-            environment.getRequiredProperty("$PROPERTY_PREFIX.default.parameters.timeout").let { if (it.isNotBlank()) it.toDuration() else null },
-            environment.getRequiredProperty("$PROPERTY_PREFIX.default.parameters.example2", String::class.java)
+            environment.getRequiredProperty("$PROPERTY_PREFIX.default.parameters.example2"),
+            environment.getProperty("$PROPERTY_PREFIX.default.parameters.timeout").ifSet { it.toDuration() }
         )
 
-    private fun String.toDuration(): Duration {
-        val formatter = PeriodFormatterBuilder()
-            .appendDays().appendSuffix("d ")
-            .appendHours().appendSuffix("h ")
-            .appendMinutes().appendSuffix("m")
-            .appendSeconds().appendSuffix("s")
-            .appendMillis().appendSuffix("ms")
-            .toFormatter()
+    private fun <T> String?.ifSet(toRun: (String) -> T): T? =
+        when {
+            this == null || isBlank() -> null
+            else -> toRun(this)
+        }
 
-        return Duration.ofMillis(formatter.parsePeriod(this).toStandardDuration().millis)
-    }
+    private fun String.toDuration(): Duration =
+        Duration.ofMillis(
+            PeriodFormatterBuilder()
+                .appendDays().appendSuffix("d")
+                .appendHours().appendSuffix("h")
+                .appendMinutes().appendSuffix("m")
+                .appendSeconds().appendSuffix("s")
+                .appendMillis().appendSuffix("ms")
+                .toFormatter()
+                .parsePeriod(this).toStandardDuration().millis
+        )
 }

@@ -3,6 +3,6 @@ package ${package}
 import java.time.Duration
 
 data class ${pascalCaseTransformerId}TransformerDefaultParameters(
-    val timeout: Duration?,
-    val example2: String
+    val example2: String = "value2",
+    val timeout: Duration? = null
 )

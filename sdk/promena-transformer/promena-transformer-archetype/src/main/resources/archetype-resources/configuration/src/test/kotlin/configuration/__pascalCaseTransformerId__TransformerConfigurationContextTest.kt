@@ -17,18 +17,18 @@ class ${pascalCaseTransformerId}TransformerConfigurationContextTest {
             mapOf(
                 "transformer.${package}.settings.example" to "value",
 
-                "transformer.${package}.default.parameters.timeout" to "5m",
-                "transformer.${package}.default.parameters.example2" to "value2"
+                "transformer.${package}.default.parameters.example2" to "value2",
+                "transformer.${package}.default.parameters.timeout" to "5m"
             )
         )
 
-        val applicationContext = createConfigApplicationContext(environment, LibreOfficeTestConverterTestTransformerConfigurationContext::class.java)
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
-            it.timeout shouldBe Duration.ofMinutes(5)
-            it.example2 shouldBe "value2"
-        }
+        val applicationContext = createConfigApplicationContext(environment, ${pascalCaseTransformerId}TransformerConfigurationContext::class.java)
         applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java).let {
             it.example shouldBe "value"
+        }
+        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
+            it.example2 shouldBe "value2"
+            it.timeout shouldBe Duration.ofMinutes(5)
         }
     }
 
@@ -38,18 +38,18 @@ class ${pascalCaseTransformerId}TransformerConfigurationContextTest {
             mapOf(
                 "transformer.${package}.settings.example" to "value",
 
-                "transformer.${package}.default.parameters.timeout" to "",
-                "transformer.${package}.default.parameters.example2" to "value2"
+                "transformer.${package}.default.parameters.example2" to "value2",
+                "transformer.${package}.default.parameters.timeout" to ""
             )
         )
 
         val applicationContext = createConfigApplicationContext(environment, ${pascalCaseTransformerId}TransformerConfigurationContext::class.java)
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
-            it.timeout shouldBe null
-            it.example2 shouldBe "value2"
-        }
         applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java).let {
             it.example shouldBe "value"
+        }
+        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
+            it.example2 shouldBe "value2"
+            it.timeout shouldBe null
         }
     }
 

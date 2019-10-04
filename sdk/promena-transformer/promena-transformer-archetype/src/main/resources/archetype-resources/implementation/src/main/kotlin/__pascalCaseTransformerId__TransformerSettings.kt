@@ -1,5 +1,5 @@
 package ${package}
 
 data class ${pascalCaseTransformerId}TransformerSettings(
-    val example: String
+    val example: String = "value"
 )
