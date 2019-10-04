@@ -18,15 +18,15 @@ class ${pascalCaseTransformerId}TransformerTest {
 
     @Test
     fun transform() {
-        val dataContent = "test"
+        val dataContent = "content"
         val mediaType = TEXT_PLAIN
         val metadata = emptyMetadata()
 
-        ${pascalCaseTransformerId}Transformer(mockk(), mockk())
+        ${pascalCaseTransformerId}Transformer(mockk(), mockk(), mockk())
             .transform(
                 singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
                 TEXT_PLAIN,
-                ${camelCaseTransformerId}Parameters(example = "test")
+                ${camelCaseTransformerId}Parameters(example = "value")
             ).let { transformedDataDescriptor ->
                 val descriptors = transformedDataDescriptor.descriptors
                 withClue("Transformed data should contain only <1> element") { descriptors shouldHaveSize 1 }

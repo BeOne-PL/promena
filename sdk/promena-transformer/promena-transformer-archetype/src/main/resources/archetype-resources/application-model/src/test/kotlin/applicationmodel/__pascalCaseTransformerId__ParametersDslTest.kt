@@ -8,10 +8,10 @@ class ${pascalCaseTransformerId}ParametersDslTest {
 
     @Test
     fun `${camelCaseTransformerId}Parameters _ default parameters`() {
-        val example = "test"
+        val example = "value"
 
         ${camelCaseTransformerId}Parameters(example = example).let {
-            it.getExample() shouldBe "test"
+            it.getExample() shouldBe "value"
             shouldThrow<NoSuchElementException> {
                 it.getExample2()
             }
@@ -22,8 +22,8 @@ class ${pascalCaseTransformerId}ParametersDslTest {
 
     @Test
     fun `${camelCaseTransformerId}Parameters _ all parameters`() {
-        val example = "test"
-        val example2 = "test2"
+        val example = "value"
+        val example2 = "value2"
 
         ${camelCaseTransformerId}Parameters(example = example, example2 = example2).let {
             it.getExample() shouldBe example
