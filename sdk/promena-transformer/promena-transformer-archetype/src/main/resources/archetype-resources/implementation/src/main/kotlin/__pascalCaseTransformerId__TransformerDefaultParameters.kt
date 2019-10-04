@@ -1,5 +1,8 @@
 package ${package}
 
+import java.time.Duration
+
 data class ${pascalCaseTransformerId}TransformerDefaultParameters(
-    private val example2: String
+    val timeout: Duration?,
+    val example2: String
 )
