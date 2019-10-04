@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.beone.promena.sdk.maven.archetype</groupId>
-    <artifactId>promena-extension-archetype</artifactId>
+    <artifactId>promena-module-archetype</artifactId>
     <version>1.0.0</version>
     <packaging>maven-archetype</packaging>
 
-    <name>[SDK][ARCHETYPE] Promena extension</name>
+    <name>[SDK][ARCHETYPE] Promena module</name>
 
     <repositories>
         <repository>

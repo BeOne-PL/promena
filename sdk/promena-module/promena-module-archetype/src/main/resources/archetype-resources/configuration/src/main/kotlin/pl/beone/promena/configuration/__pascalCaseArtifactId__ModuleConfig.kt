@@ -6,5 +6,5 @@ import org.springframework.context.annotation.PropertySource
 
 @Configuration
 @ComponentScan(basePackages = ["${package}.configuration"])
-@PropertySource("classpath:extension-${rootArtifactId}.properties")
+@PropertySource("classpath:module-${rootArtifactId}.properties")
 class ${pascalCaseArtifactId}ModuleConfig
