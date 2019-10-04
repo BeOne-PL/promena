@@ -6,5 +6,5 @@ import org.springframework.context.annotation.PropertySource
 
 @Configuration
 @ComponentScan(basePackages = ["${package}.configuration"])
-@PropertySource("classpath:transformer-${transformerId}.properties")
+@PropertySource("classpath:transformer-${artifactId}.properties")
 class ${pascalCaseTransformerId}TransformerModuleContext

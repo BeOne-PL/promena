@@ -28,16 +28,12 @@ under the License.
         <requiredProperty key="transformerName"/>
         <requiredProperty key="transformerSubName"/>
 
-        <requiredProperty key="transformerId">
-            <defaultValue>${transformerName}-${transformerSubName}</defaultValue>
-        </requiredProperty>
-
         <requiredProperty key="transformerNameDirect">
             <defaultValue>${transformerName}</defaultValue>
         </requiredProperty>
         <requiredProperty key="pascalCaseTransformerName">
             <defaultValue>
-                ${transformerNameDirect.replaceAll("^a|-a", "A").replaceAll("^b|-b", "B").replaceAll("^c|-c", "C").replaceAll("^d|-d", "D").replaceAll("^e|-e", "E").replaceAll("^f|-f", "F").replaceAll("^g|-g", "G").replaceAll("^h|-h", "H").replaceAll("^i|-i", "I").replaceAll("^j|-j", "J").replaceAll("^k|-k", "K").replaceAll("^l|-l", "L").replaceAll("^m|-m", "M").replaceAll("^n|-n", "N").replaceAll("^o|-o", "O").replaceAll("^p|-p", "P").replaceAll("^q|-q", "Q").replaceAll("^r|-r", "R").replaceAll("^s|-s", "S").replaceAll("^t|-t", "T").replaceAll("^u|-u", "U").replaceAll("^v|-v", "V").replaceAll("^w|-w", "W").replaceAll("^x|-x", "X").replaceAll("^y|-y", "Y").replaceAll("^z|-z", "Z")}
+                ${transformerNameDirect.replaceAll("^a|[^a-zA-Z0-9]a", "A").replaceAll("^b|[^a-zA-Z0-9]b", "B").replaceAll("^c|[^a-zA-Z0-9]c", "C").replaceAll("^d|[^a-zA-Z0-9]d", "D").replaceAll("^e|[^a-zA-Z0-9]e", "E").replaceAll("^f|[^a-zA-Z0-9]f", "F").replaceAll("^g|[^a-zA-Z0-9]g", "G").replaceAll("^h|[^a-zA-Z0-9]h", "H").replaceAll("^i|[^a-zA-Z0-9]i", "I").replaceAll("^j|[^a-zA-Z0-9]j", "J").replaceAll("^k|[^a-zA-Z0-9]k", "K").replaceAll("^l|[^a-zA-Z0-9]l", "L").replaceAll("^m|[^a-zA-Z0-9]m", "M").replaceAll("^n|[^a-zA-Z0-9]n", "N").replaceAll("^o|[^a-zA-Z0-9]o", "O").replaceAll("^p|[^a-zA-Z0-9]p", "P").replaceAll("^q|[^a-zA-Z0-9]q", "Q").replaceAll("^r|[^a-zA-Z0-9]r", "R").replaceAll("^s|[^a-zA-Z0-9]s", "S").replaceAll("^t|[^a-zA-Z0-9]t", "T").replaceAll("^u|[^a-zA-Z0-9]u", "U").replaceAll("^v|[^a-zA-Z0-9]v", "V").replaceAll("^w|[^a-zA-Z0-9]w", "W").replaceAll("^x|[^a-zA-Z0-9]x", "X").replaceAll("^y|[^a-zA-Z0-9]y", "Y").replaceAll("^z|[^a-zA-Z0-9]z", "Z")}
             </defaultValue>
         </requiredProperty>
         <requiredProperty key="camelCaseTransformerName">
@@ -49,7 +45,7 @@ under the License.
         </requiredProperty>
         <requiredProperty key="pascalCaseTransformerSubName">
             <defaultValue>
-                ${transformerSubNameDirect.replaceAll("^a|-a", "A").replaceAll("^b|-b", "B").replaceAll("^c|-c", "C").replaceAll("^d|-d", "D").replaceAll("^e|-e", "E").replaceAll("^f|-f", "F").replaceAll("^g|-g", "G").replaceAll("^h|-h", "H").replaceAll("^i|-i", "I").replaceAll("^j|-j", "J").replaceAll("^k|-k", "K").replaceAll("^l|-l", "L").replaceAll("^m|-m", "M").replaceAll("^n|-n", "N").replaceAll("^o|-o", "O").replaceAll("^p|-p", "P").replaceAll("^q|-q", "Q").replaceAll("^r|-r", "R").replaceAll("^s|-s", "S").replaceAll("^t|-t", "T").replaceAll("^u|-u", "U").replaceAll("^v|-v", "V").replaceAll("^w|-w", "W").replaceAll("^x|-x", "X").replaceAll("^y|-y", "Y").replaceAll("^z|-z", "Z")}
+                ${transformerSubNameDirect.replaceAll("^a|[^a-zA-Z0-9]a", "A").replaceAll("^b|[^a-zA-Z0-9]b", "B").replaceAll("^c|[^a-zA-Z0-9]c", "C").replaceAll("^d|[^a-zA-Z0-9]d", "D").replaceAll("^e|[^a-zA-Z0-9]e", "E").replaceAll("^f|[^a-zA-Z0-9]f", "F").replaceAll("^g|[^a-zA-Z0-9]g", "G").replaceAll("^h|[^a-zA-Z0-9]h", "H").replaceAll("^i|[^a-zA-Z0-9]i", "I").replaceAll("^j|[^a-zA-Z0-9]j", "J").replaceAll("^k|[^a-zA-Z0-9]k", "K").replaceAll("^l|[^a-zA-Z0-9]l", "L").replaceAll("^m|[^a-zA-Z0-9]m", "M").replaceAll("^n|[^a-zA-Z0-9]n", "N").replaceAll("^o|[^a-zA-Z0-9]o", "O").replaceAll("^p|[^a-zA-Z0-9]p", "P").replaceAll("^q|[^a-zA-Z0-9]q", "Q").replaceAll("^r|[^a-zA-Z0-9]r", "R").replaceAll("^s|[^a-zA-Z0-9]s", "S").replaceAll("^t|[^a-zA-Z0-9]t", "T").replaceAll("^u|[^a-zA-Z0-9]u", "U").replaceAll("^v|[^a-zA-Z0-9]v", "V").replaceAll("^w|[^a-zA-Z0-9]w", "W").replaceAll("^x|[^a-zA-Z0-9]x", "X").replaceAll("^y|[^a-zA-Z0-9]y", "Y").replaceAll("^z|[^a-zA-Z0-9]z", "Z")}
             </defaultValue>
         </requiredProperty>
 
@@ -63,7 +59,7 @@ under the License.
 
     <modules>
         <module id="${rootArtifactId}-application-model"
-                dir="__rootArtifactId__-application-model"
+                dir="application-model"
                 name="${rootArtifactId}-application-model">
             <fileSets>
                 <fileSet filtered="true" packaged="true">
@@ -82,7 +78,7 @@ under the License.
         </module>
 
         <module id="${rootArtifactId}"
-                dir="__rootArtifactId__"
+                dir="implementation"
                 name="${rootArtifactId}">
             <fileSets>
                 <fileSet filtered="true" packaged="true">
@@ -110,7 +106,7 @@ under the License.
         </module>
 
         <module id="${rootArtifactId}-configuration"
-                dir="__rootArtifactId__-configuration"
+                dir="configuration"
                 name="${rootArtifactId}-configuration">
             <fileSets>
                 <fileSet filtered="true">
@@ -132,7 +128,7 @@ under the License.
         </module>
 
         <module id="${rootArtifactId}-example"
-                dir="__rootArtifactId__-example"
+                dir="example"
                 name="${rootArtifactId}-example">
             <fileSets>
                 <fileSet filtered="true" packaged="true">

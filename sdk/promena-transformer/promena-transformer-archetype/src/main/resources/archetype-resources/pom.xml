@@ -9,10 +9,10 @@
     <version>${version}</version>
 
     <modules>
-        <module>${rootArtifactId}-application-model</module>
-        <module>${rootArtifactId}</module>
-        <module>${rootArtifactId}-example</module>
-        <module>${rootArtifactId}-configuration</module>
+        <module>application-model</module>
+        <module>implementation</module>
+        <module>example</module>
+        <module>configuration</module>
     </modules>
     <packaging>pom</packaging>
 
