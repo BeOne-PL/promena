@@ -29,7 +29,7 @@ object FromTextToXmlAppenderTransformer : Transformer {
         "<$tag>" + String(getBytes()) + "</$tag>"
 
     private fun Metadata.addTransformerId(): Metadata =
-        this + ("from-text-to-xml-appender-transformer" to true)
+        this + ("from&text*to(xml)appender-transformer" to true)
 
     override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         dataDescriptor.descriptors.forEach {

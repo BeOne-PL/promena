@@ -8,10 +8,7 @@ import pl.beone.promena.core.contract.communication.internal.InternalCommunicati
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
-import pl.beone.promena.core.external.akka.extension.format
-import pl.beone.promena.core.external.akka.extension.getTimeoutOrInfiniteIfNotFound
-import pl.beone.promena.core.external.akka.extension.toMB
-import pl.beone.promena.core.external.akka.extension.toSeconds
+import pl.beone.promena.core.external.akka.extension.*
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -146,7 +143,7 @@ class GroupedByNameTransformerActor(
 
     private fun processException(exception: Exception, parameters: Parameters): Exception =
         if (exception is TimeoutException) {
-            TransformerTimeoutException("Couldn't transform because <$transformerName> transformer timeout <${parameters.getTimeoutOrInfiniteIfNotFound()}> has been reached")
+            TransformerTimeoutException("Transformer <$transformerName> timeout <${parameters.getTimeoutOrInfiniteIfNotFound().toPrettyString()}> has been reached")
         } else {
             exception
         }

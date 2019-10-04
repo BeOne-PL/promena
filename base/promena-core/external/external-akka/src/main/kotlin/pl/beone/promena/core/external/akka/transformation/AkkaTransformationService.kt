@@ -153,17 +153,17 @@ class AkkaTransformationService(
         logger.info { message }
     }
 
-    private fun convertException(transformation: Transformation, exception: Exception): Exception =
-        when (exception) {
+    private fun convertException(transformation: Transformation, e: Exception): Exception =
+        when (e) {
             is TransformerException ->
-                TransformationException(transformation, "Couldn't transform | ${exception.message}", exception)
+                TransformationException(transformation, e.message!!, e.javaClass, e)
             is TransformationNotSupportedException ->
-                TransformationException(transformation, "Couldn't transform because given transformation isn't supported | ${exception.message}", exception)
+                TransformationException(transformation, "Transformation isn't supported | ${e.message}", e.javaClass, e)
             is AskTimeoutException ->
-                TransformationException(transformation, "Couldn't transform because given timeout has been reached", exception)
+                TransformationException(transformation, "Transformation timeout has been reached", e.javaClass, e)
             is AbruptStageTerminationException ->
-                TransformationTerminationException(transformation, "Couldn't transform because it was abruptly terminated", exception)
+                TransformationTerminationException(transformation, "Transformation was abruptly terminated", e.javaClass, e)
             else ->
-                exception
+                e
         }
 }

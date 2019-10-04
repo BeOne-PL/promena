@@ -50,7 +50,7 @@ public class JavaTextAppenderTransformer implements Transformer {
     @NotNull
     private Metadata addTransformerId(Metadata metadata) {
         Map<String, Object> elements = new HashMap<>(metadata.getAll());
-        elements.put("java-text-appender-transformer", true);
+        elements.put("java-text appender-transformer", true);
         return MapMetadata.of(elements);
     }
 

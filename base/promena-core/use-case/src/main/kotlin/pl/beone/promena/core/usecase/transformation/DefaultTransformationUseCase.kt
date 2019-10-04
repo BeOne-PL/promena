@@ -34,25 +34,47 @@ class DefaultTransformationUseCase(
                     outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters)
                 }
         } catch (e: Exception) {
-            val processedException = e.toString().addHashAtTheBeggingOfEachLine()
-            val exceptionMessage = "Couldn't perform given transformation ${generateTransformationExceptionDescription(transformation, dataDescriptor)} " +
-                    "<$externalCommunicationParameters>"
+            val processedException = processExceptionMessage(e)
+            val exceptionMessage = "Couldn't perform transformation " +
+                    "${generateTransformationExceptionDescription(transformation, dataDescriptor)} <$externalCommunicationParameters>"
 
-            // unwrap expected exception to not show user unnecessary information
             if (e is TransformationException) {
-                logger.error { exceptionMessage + "\n" + processedException }
-
-                throw TransformationException(transformation, e.message!!)
+                throw processExpectedException(transformation, exceptionMessage, processedException, e)
             } else {
-                logger.error(e) { exceptionMessage }
-
-                throw TransformationException(
-                    transformation,
-                    "Couldn't perform given transformation because an error occurred. Check Promena logs for more details\n" +
-                            processedException
-                )
+                // unwrap expected exception to hide unnecessary information from user
+                throw processUnexpectedException(transformation, exceptionMessage, processedException, e)
             }
         }
+    }
+
+    private fun processExpectedException(
+        transformation: Transformation,
+        exceptionMessage: String,
+        processedException: String,
+        exception: TransformationException
+    ): TransformationException {
+        logger.error { exceptionMessage + "\n" + processedException }
+
+        return TransformationException(
+            transformation,
+            exceptionMessage + "\n" + processedException,
+            exception.cause?.javaClass
+        )
+    }
+
+    private fun processUnexpectedException(
+        transformation: Transformation,
+        exceptionMessage: String,
+        processedException: String,
+        exception: Exception
+    ): Exception {
+        logger.error(exception) { exceptionMessage }
+
+        return TransformationException(
+            transformation,
+            exceptionMessage + " because an error occurred. Check Promena logs for more details" + "\n" + processedException,
+            exception.javaClass
+        )
     }
 
     private fun generateTransformationExceptionDescription(transformation: Transformation, dataDescriptor: DataDescriptor): String =
@@ -70,7 +92,8 @@ class DefaultTransformationUseCase(
             }
         }
 
-    private fun String.addHashAtTheBeggingOfEachLine(): String =
-        this.split("\n")
+    private fun processExceptionMessage(exception: Exception): String =
+        (exception.message ?: "No exception message available")
+            .split("\n")
             .joinToString("\n") { "# $it" }
 }

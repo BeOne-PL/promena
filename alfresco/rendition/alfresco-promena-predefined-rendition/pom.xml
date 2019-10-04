@@ -21,8 +21,8 @@
         <alfresco-promena-connector-activemq.version>1.0.0</alfresco-promena-connector-activemq.version>
         <alfresco-promena-rendition.version>1.0.0</alfresco-promena-rendition.version>
 
-        <converter-image-magick.version>1.0.0</converter-image-magick.version>
-        <converter-libre-office.version>1.0.0</converter-libre-office.version>
+        <converter-imagemagick.version>1.0.0</converter-imagemagick.version>
+        <converter-libreoffice.version>1.0.0</converter-libreoffice.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
@@ -113,13 +113,13 @@
 
         <dependency>
             <groupId>pl.beone.promena.base</groupId>
-            <artifactId>converter-image-magick-application-model</artifactId>
-            <version>${converter-image-magick.version}</version>
+            <artifactId>converter-imagemagick-application-model</artifactId>
+            <version>${converter-imagemagick.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.base</groupId>
-            <artifactId>converter-libre-office-application-model</artifactId>
-            <version>${converter-libre-office.version}</version>
+            <artifactId>converter-libreoffice-application-model</artifactId>
+            <version>${converter-libreoffice.version}</version>
         </dependency>
 
         <dependency>

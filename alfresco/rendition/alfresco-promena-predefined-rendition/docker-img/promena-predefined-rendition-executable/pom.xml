@@ -61,8 +61,8 @@
         <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
 
         <!-- Put TRANSFORMERS versions here -->
-        <transformer.converter-image-magick.version>1.0.0</transformer.converter-image-magick.version>
-        <transformer.converter-libre-office.version>1.0.0</transformer.converter-libre-office.version>
+        <transformer.converter-imagemagick.version>1.0.0</transformer.converter-imagemagick.version>
+        <transformer.converter-libreoffice.version>1.0.0</transformer.converter-libreoffice.version>
         <!-- /Put -->
 
         <promena-docker-maven-plugin.version>1.0.0</promena-docker-maven-plugin.version>
@@ -136,13 +136,13 @@
         <!-- Put TRANSFORMERS configuration dependencies here -->
         <dependency>
             <groupId>pl.beone.promena.base</groupId>
-            <artifactId>converter-image-magick-configuration</artifactId>
-            <version>${converter-image-magick.version}</version>
+            <artifactId>converter-imagemagick-configuration</artifactId>
+            <version>${converter-imagemagick.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.base</groupId>
-            <artifactId>converter-libre-office-configuration</artifactId>
-            <version>${converter-libre-office.version}</version>
+            <artifactId>converter-libreoffice-configuration</artifactId>
+            <version>${converter-libreoffice.version}</version>
         </dependency>
         <!-- /Put -->
     </dependencies>
@@ -224,13 +224,13 @@
                     <!-- Put TRANSFORMERS dependencies here -->
                     <dependency>
                         <groupId>pl.beone.promena.base</groupId>
-                        <artifactId>converter-image-magick</artifactId>
-                        <version>${converter-image-magick.version}</version>
+                        <artifactId>converter-imagemagick</artifactId>
+                        <version>${converter-imagemagick.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>pl.beone.promena.base</groupId>
-                        <artifactId>converter-libre-office</artifactId>
-                        <version>${converter-libre-office.version}</version>
+                        <artifactId>converter-libreoffice</artifactId>
+                        <version>${converter-libreoffice.version}</version>
                     </dependency>
                     <!-- /Put -->
                 </dependencies>

@@ -11,6 +11,7 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.core.contract.transformer.config.TransformersCreator
 import pl.beone.promena.core.external.akka.actor.transformer.GroupedByNameTransformerActor
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
+import pl.beone.promena.core.external.akka.extension.toCorrectActorName
 import pl.beone.promena.transformer.contract.Transformer
 
 class GroupedByNameTransformersCreator(
@@ -67,7 +68,7 @@ class GroupedByNameTransformersCreator(
     }
 
     private fun List<Transformer>.getMaxActors(): Int =
-        map { transformerConfig.getActors(it) }
+        map(transformerConfig::getActors)
             .max()!!
 
     private fun createTransformerDescriptor(transformer: Transformer): TransformerDescriptor =
@@ -78,7 +79,7 @@ class GroupedByNameTransformersCreator(
 
     private fun createTransformerActor(transformerName: String, transformerDescriptors: List<TransformerDescriptor>, maxActors: Int): ActorRef =
         actorCreator.create(
-            transformerName,
+            transformerName.toCorrectActorName(),
             Props.create(GroupedByNameTransformerActor::class.java) {
                 GroupedByNameTransformerActor(transformerName, transformerDescriptors, internalCommunicationConverter, internalCommunicationCleaner)
             },

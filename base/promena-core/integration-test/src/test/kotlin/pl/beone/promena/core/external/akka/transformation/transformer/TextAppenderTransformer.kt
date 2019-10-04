@@ -28,7 +28,7 @@ object TextAppenderTransformer : Transformer {
         String(getBytes()) + sign
 
     private fun Metadata.addTransformerId(): Metadata =
-        this + ("text-appender-transformer" to true)
+        this + ("text appender-transformer" to true)
 
     override fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         dataDescriptor.descriptors.forEach {
