@@ -43,26 +43,25 @@
 
     <properties>
         <java.version>11</java.version>
-
-        <promena.core.version>1.0.0</promena.core.version>
-
-        <promena.actor-creator.adaptive-load-balancing.version>1.0.0</promena.actor-creator.adaptive-load-balancing.version>
-
-        <promena.communication.memory.external.version>1.0.0</promena.communication.memory.external.version>
-        <promena.communication.file.external.version>1.0.0</promena.communication.file.external.version>
-        <promena.communication.memory.internal.version>1.0.0</promena.communication.memory.internal.version>
-        <promena.communication.file.internal.version>1.0.0</promena.communication.file.internal.version>
-
-        <promena.connector.http.version>1.0.0</promena.connector.http.version>
-        <promena.connector.activemq.version>1.0.0</promena.connector.activemq.version>
-
-        <promena.cluster.management.kubernetes.version>1.0.0</promena.cluster.management.kubernetes.version>
-
         <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
 
+        <promena-core.version>1.0.0</promena-core.version>
+
+        <promena-actor-creator-adaptive-load-balancing.version>1.0.0</promena-actor-creator-adaptive-load-balancing.version>
+
+        <promena-communication-memory-external.version>1.0.0</promena-communication-memory-external.version>
+        <promena-communication-file-external.version>1.0.0</promena-communication-file-external.version>
+        <promena-communication-memory-internal.version>1.0.0</promena-communication-memory-internal.version>
+        <promena-communication-file-internal.version>1.0.0</promena-communication-file-internal.version>
+
+        <promena-connector-http.version>1.0.0</promena-connector-http.version>
+        <promena-connector-activemq.version>1.0.0</promena-connector-activemq.version>
+
+        <promena-cluster-management-kubernetes.version>1.0.0</promena-cluster-management-kubernetes.version>
+
         <!-- Put TRANSFORMERS versions here -->
-        <transformer.converter-imagemagick.version>1.0.0</transformer.converter-imagemagick.version>
-        <transformer.converter-libreoffice.version>1.0.0</transformer.converter-libreoffice.version>
+        <converter-imagemagick.version>1.0.0</converter-imagemagick.version>
+        <converter-libreoffice.version>1.0.0</converter-libreoffice.version>
         <!-- /Put -->
 
         <promena-docker-maven-plugin.version>1.0.0</promena-docker-maven-plugin.version>
@@ -80,57 +79,57 @@
         <dependency>
             <groupId>pl.beone.promena.base</groupId>
             <artifactId>promena-core-configuration</artifactId>
-            <version>${promena.core.version}</version>
+            <version>${promena-core.version}</version>
         </dependency>
 
         <!-- Actor creator -->
         <dependency>
             <groupId>pl.beone.promena.actor-creator</groupId>
             <artifactId>promena-actor-creator-adaptive-load-balancing-configuration</artifactId>
-            <version>${promena.actor-creator.adaptive-load-balancing.version}</version>
+            <version>${promena-actor-creator-adaptive-load-balancing.version}</version>
         </dependency>
 
         <!-- Communication - external -->
         <dependency>
             <groupId>pl.beone.promena.communication.memory.external</groupId>
             <artifactId>promena-communication-memory-external-configuration</artifactId>
-            <version>${promena.communication.memory.external.version}</version>
+            <version>${promena-communication-memory-external.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.communication.file.external</groupId>
             <artifactId>promena-communication-file-external-configuration</artifactId>
-            <version>${promena.communication.file.external.version}</version>
+            <version>${promena-communication-file-external.version}</version>
         </dependency>
 
         <!-- Communication - internal -->
         <dependency>
             <groupId>pl.beone.promena.communication.memory.internal</groupId>
             <artifactId>promena-communication-memory-internal-configuration</artifactId>
-            <version>${promena.communication.memory.internal.version}</version>
+            <version>${promena-communication-memory-internal.version}</version>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>pl.beone.promena.communication.file.internal</groupId>-->
 <!--            <artifactId>promena-communication-file-internal-configuration</artifactId>-->
-<!--            <version>${promena.communication.file.internal.version}</version>-->
+<!--            <version>${promena-communication-file-internal.version}</version>-->
 <!--        </dependency>-->
 
         <!-- Connector -->
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
             <artifactId>promena-connector-http-configuration</artifactId>
-            <version>${promena.connector.http.version}</version>
+            <version>${promena-connector-http.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.connector</groupId>
             <artifactId>promena-connector-activemq-configuration</artifactId>
-            <version>${promena.connector.activemq.version}</version>
+            <version>${promena-connector-activemq.version}</version>
         </dependency>
 
         <!-- Management -->
 <!--        <dependency>-->
 <!--            <groupId>pl.beone.promena.cluster.management</groupId>-->
 <!--            <artifactId>promena-cluster-management-kubernetes-configuration</artifactId>-->
-<!--            <version>${promena.cluster.management.kubernetes.version}</version>-->
+<!--            <version>${promena-cluster-management-kubernetes.version}</version>-->
 <!--        </dependency>-->
 
         <!-- Put TRANSFORMERS configuration dependencies here -->
