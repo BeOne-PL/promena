@@ -20,7 +20,7 @@ ext {
     promenaTransformerVersion = '1.0.0'
     promenaCoreVersion = '1.0.0'
     promenaCommunicationMemoryVersion = '1.0.0'
-    libPromenaConnectorHttpVersion = '1.0.0'
+    promenaLibConnectorHttpVersion = '1.0.0'
 
     kryoVersion = '4.0.2'
 
@@ -36,7 +36,7 @@ dependencies {
     compile "pl.beone.promena.base:promena-core-application-model:$promenaCoreVersion"
     compile "pl.beone.promena.base:promena-core-internal-serialization:$promenaCoreVersion"
     compile "pl.beone.promena.communication.memory.model:promena-communication-memory-model-internal:$promenaCommunicationMemoryVersion"
-    compile "pl.beone.promena.lib.connector:promena-lib-connector-http:$libPromenaConnectorHttpVersion"
+    compile "pl.beone.promena.lib.connector:promena-lib-connector-http:$promenaLibConnectorHttpVersion"
 
     compile "org.apache.tika:tika-core:$tikaCoreVersion"
 
