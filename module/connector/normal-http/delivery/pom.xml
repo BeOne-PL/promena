@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>pl.beone.promena.connector</groupId>
+        <artifactId>promena-connector-normal-http</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>promena-connector-normal-http-delivery</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.base</groupId>
+            <artifactId>promena-transformer-internal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.base</groupId>
+            <artifactId>promena-core-internal</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.connector</groupId>
+            <artifactId>promena-connector-normal-http-application-model</artifactId>
+            <version>${promena-connector-normal-http.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.communication.memory.model</groupId>
+            <artifactId>promena-communication-memory-model-internal</artifactId>
+            <version>${promena-communication-memory-model.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>digital-signature-digiseal-application-model</artifactId>
+            <version>${digital-signature-digiseal.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+    </dependencies>
+</project>
