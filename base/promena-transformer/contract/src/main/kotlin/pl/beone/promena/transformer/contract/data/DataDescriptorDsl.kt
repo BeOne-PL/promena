@@ -26,6 +26,9 @@ fun multiDataDescriptor(descriptor: DataDescriptor.Single, vararg descriptors: D
 operator fun DataDescriptor.Multi.plus(descriptor: DataDescriptor.Single): DataDescriptor.Multi =
     DataDescriptor.Multi.of(descriptors + descriptor)
 
+operator fun DataDescriptor.Multi.plus(descriptor: DataDescriptor.Multi): DataDescriptor.Multi =
+    DataDescriptor.Multi.of(descriptors + descriptor.descriptors)
+
 fun dataDescriptor(descriptors: List<DataDescriptor.Single>): DataDescriptor =
     when (descriptors.size) {
         0 -> DataDescriptor.Empty

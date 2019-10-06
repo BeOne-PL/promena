@@ -32,6 +32,9 @@ fun multiTransformedDataDescriptor(
 operator fun TransformedDataDescriptor.Multi.plus(descriptor: TransformedDataDescriptor.Single): TransformedDataDescriptor.Multi =
     TransformedDataDescriptor.Multi.of(descriptors + descriptor)
 
+operator fun TransformedDataDescriptor.Multi.plus(descriptor: TransformedDataDescriptor.Multi): TransformedDataDescriptor.Multi =
+    TransformedDataDescriptor.Multi.of(descriptors + descriptor.descriptors)
+
 fun transformedDataDescriptor(descriptors: List<TransformedDataDescriptor.Single>): TransformedDataDescriptor =
     when (descriptors.size) {
         0 -> TransformedDataDescriptor.Empty

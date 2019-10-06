@@ -57,9 +57,16 @@ class DataDescriptorDslTest {
     }
 
     @Test
-    fun `plus _ multi data descriptor`() {
+    fun `plus _ multi + single data descriptor`() {
         multiDataDescriptor(singleDataDescriptor, singleDataDescriptor2) + singleDataDescriptor shouldBe
                 DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2, singleDataDescriptor))
+    }
+
+    @Test
+    fun `plus _ multi + multi data descriptor`() {
+        val multiDataDescriptor = multiDataDescriptor(singleDataDescriptor, singleDataDescriptor2)
+        multiDataDescriptor + multiDataDescriptor shouldBe
+                DataDescriptor.Multi.of(listOf(singleDataDescriptor, singleDataDescriptor2, singleDataDescriptor, singleDataDescriptor2))
     }
 
     @Test

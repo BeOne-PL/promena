@@ -27,6 +27,9 @@ fun compositeTransformation(transformer: Transformation.Single, vararg transform
 infix fun Transformation.Composite.next(transformer: Transformation.Single): Transformation.Composite =
     Transformation.Composite.of(transformers + transformer)
 
+infix fun Transformation.Composite.next(transformer: Transformation.Composite): Transformation.Composite =
+    Transformation.Composite.of(transformers + transformer.transformers)
+
 fun transformation(transformers: List<Transformation.Single>): Transformation =
     when (transformers.size) {
         0 -> throw IllegalArgumentException("Transformation must consist of at least one transformation stage")

@@ -62,12 +62,22 @@ class TransformationDslTest {
     }
 
     @Test
-    fun `next _ composite transformation`() {
+    fun `next _ composite and single transformation`() {
         compositeTransformation(
             singleTransformation(transformerName, targetMediaType, parameters),
             singleTransformation(transformerName2, targetMediaType2, parameters2)
         ) next singleTransformation(transformerName, targetMediaType, parameters) shouldBe
                 Transformation.Composite.of(listOf(singleTransformation, singleTransformation2, singleTransformation))
+    }
+
+    @Test
+    fun `next _ composite and composite transformation`() {
+        val compositeTransformation = compositeTransformation(
+            singleTransformation(transformerName, targetMediaType, parameters),
+            singleTransformation(transformerName2, targetMediaType2, parameters2)
+        )
+        compositeTransformation next compositeTransformation shouldBe
+                Transformation.Composite.of(listOf(singleTransformation, singleTransformation2, singleTransformation, singleTransformation2))
     }
 
     @Test

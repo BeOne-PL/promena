@@ -53,13 +53,27 @@ class TransformedDataDescriptorDslTest {
     }
 
     @Test
-    fun `plus _ multi data descriptor`() {
+    fun `plus _ multi + single data descriptor`() {
         multiTransformedDataDescriptor(singleTransformedDataDescriptor, singleTransformedDataDescriptor2) + singleTransformedDataDescriptor shouldBe
                 TransformedDataDescriptor.Multi.of(
                     listOf(
                         singleTransformedDataDescriptor,
                         singleTransformedDataDescriptor2,
                         singleTransformedDataDescriptor
+                    )
+                )
+    }
+
+    @Test
+    fun `plus _ multi + multi data descriptor`() {
+        val multiTransformedDataDescriptor = multiTransformedDataDescriptor(singleTransformedDataDescriptor, singleTransformedDataDescriptor2)
+        multiTransformedDataDescriptor + multiTransformedDataDescriptor shouldBe
+                TransformedDataDescriptor.Multi.of(
+                    listOf(
+                        singleTransformedDataDescriptor,
+                        singleTransformedDataDescriptor2,
+                        singleTransformedDataDescriptor,
+                        singleTransformedDataDescriptor2
                     )
                 )
     }
