@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.connector.normal.http.delivery.determiner.MediaTypeDeterminer
 import pl.beone.promena.connector.normal.http.delivery.determiner.TransformationDeterminer
+import pl.beone.promena.connector.normal.http.delivery.extension.toHttpString
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
@@ -42,8 +43,8 @@ class TransformationNormalController(
     fun transform(@RequestHeader headers: HttpHeaders, @RequestBody parts: Flux<Part>): Mono<ResponseEntity<ByteArray>> =
         parts
             .flatMap { reduceToMono(it.content()).zipWith(MediaTypeDeterminer.determine(it.name(), it.headers()).toMono()) }
-            .map { singleDataDescriptor(readBytes(it.t1).toMemoryData(), it.t2, emptyMetadata()) }
-            .reduce(listOf<DataDescriptor.Single>()) { accumulator, element -> accumulator + element }
+            .map { singleDataDescriptor(it.t1.readBytes().toMemoryData(), it.t2, emptyMetadata()) }
+            .reduce(emptyList<DataDescriptor.Single>()) { accumulator, element -> accumulator + element }
             .map(::dataDescriptor)
             .map { dataDescriptor ->
                 val transformation = TransformationDeterminer.determine(headers)
@@ -60,8 +61,8 @@ class TransformationNormalController(
     private fun reduceToMono(dataBuffer: Flux<DataBuffer>): Mono<DataBuffer> =
         dataBuffer.reduce { accumulator: DataBuffer, element: DataBuffer -> accumulator.write(element) }
 
-    private fun readBytes(dataBuffer: DataBuffer): ByteArray =
-        dataBuffer.asInputStream().readAllBytes()
+    private fun DataBuffer.readBytes(): ByteArray =
+        asInputStream().readAllBytes()
 
     private fun validate(transformedDataDescriptor: TransformedDataDescriptor) {
         check(transformedDataDescriptor.descriptors.size == 1) { "There is more than one transformed data: <${transformedDataDescriptor.descriptors.size}>" }
@@ -72,18 +73,19 @@ class TransformationNormalController(
 
     private fun createResponse(transformedDataDescriptor: TransformedDataDescriptor, targetMediaType: MediaType): ResponseEntity<ByteArray> =
         ResponseEntity.ok()
-            .header(CONTENT_TYPE, targetMediaType.mimeType + "; charset=" + targetMediaType.charset.name())
+            .header(CONTENT_TYPE, targetMediaType.toHttpString())
             .body(getFirstDataInputBytes(transformedDataDescriptor))
 
-    private fun mapException(e: Throwable): Throwable {
-        val status = when {
-            e is IllegalStateException -> BAD_REQUEST
-            e is TransformationException && e.causeClass == TransformationNotSupportedException::class.java -> BAD_REQUEST
-            e is TransformationException && e.causeClass == TransformerNotFoundException::class.java -> BAD_REQUEST
-            e is TransformationException && e.causeClass == TransformerTimeoutException::class.java -> REQUEST_TIMEOUT
-            e is TransformationException && e.causeClass?.kotlin?.isSubclassOf(TimeoutException::class) ?: false -> REQUEST_TIMEOUT
-            else -> INTERNAL_SERVER_ERROR
-        }
-        return ResponseStatusException(status, e.message)
-    }
+    private fun mapException(e: Throwable): Throwable =
+        ResponseStatusException(
+            when {
+                e is IllegalStateException -> BAD_REQUEST
+                e is TransformationException && e.causeClass == TransformationNotSupportedException::class.java -> BAD_REQUEST
+                e is TransformationException && e.causeClass == TransformerNotFoundException::class.java -> BAD_REQUEST
+                e is TransformationException && e.causeClass == TransformerTimeoutException::class.java -> REQUEST_TIMEOUT
+                e is TransformationException && e.causeClass?.kotlin?.isSubclassOf(TimeoutException::class) ?: false -> REQUEST_TIMEOUT
+                else -> INTERNAL_SERVER_ERROR
+            },
+            e.message
+        )
 }

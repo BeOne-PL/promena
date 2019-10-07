@@ -13,19 +13,20 @@ import pl.beone.promena.transformer.contract.transformation.transformation
 import pl.beone.promena.transformer.contract.transformer.transformerId
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.nio.charset.Charset
+import kotlin.text.Charsets.UTF_8
 
 internal object TransformationDeterminer {
 
     private val numberRegEx = """\d+""".toRegex()
 
     fun determine(headers: HttpHeaders): Transformation =
-        headers.map { (key, value) -> key to value.first() }
+        headers.toSingleValueMap().toList()
             .filter { (key) -> TRANSFORMATION_PREFIX_REGEX.containsMatchIn(key) }
             .groupBy { (key) -> TRANSFORMATION_PREFIX_REGEX.find(key)?.value ?: error("Impossible. It's validated earlier") }
             .map { (transformationPrefix, transformationArguments) ->
                 transformationPrefix to removeTransformationPrefix(transformationPrefix, transformationArguments)
             }
-            .also(::validate)
+            .also { transformationHeaders -> validate(transformationHeaders.size) }
             .sortedBy { (transformationPrefix) -> extractTransformationOrdinalNumber(transformationPrefix) }
             .map { (transformationPrefix, arguments) -> determineTransformation(transformationPrefix, arguments) }
             .let(::transformation)
@@ -33,8 +34,8 @@ internal object TransformationDeterminer {
     private fun removeTransformationPrefix(prefix: String, arguments: List<Pair<String, String>>): Map<String, String> =
         arguments.map { (key, value) -> key.removePrefix(prefix) to value }.toMap()
 
-    private fun validate(transformationHeaders: List<Pair<String, Map<String, String>>>) {
-        check(transformationHeaders.isNotEmpty()) { "There are no <transformation> group headers" }
+    private fun validate(transformationHeadersSize: Int) {
+        check(transformationHeadersSize > 0) { "There are no <transformation> group headers" }
     }
 
     private fun extractTransformationOrdinalNumber(key: String): Int =
@@ -47,7 +48,7 @@ internal object TransformationDeterminer {
 
         val mimeType = arguments[TRANSFORMATION_MEDIA_TYPE_MIME_TYPE_SUFFIX]
             ?: throw IllegalStateException("There is no header <$transformationPrefix$TRANSFORMATION_MEDIA_TYPE_MIME_TYPE_SUFFIX>")
-        val charset = arguments[TRANSFORMATION_MEDIA_TYPE_CHARSET_SUFFIX]?.let(Charset::forName) ?: Charsets.UTF_8
+        val charset = arguments[TRANSFORMATION_MEDIA_TYPE_CHARSET_SUFFIX]?.let(Charset::forName) ?: UTF_8
 
         return singleTransformation(transformerId(name, subName), mediaType(mimeType, charset), emptyParameters())
     }

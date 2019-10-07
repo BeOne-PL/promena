@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpHeaders.CONTENT_TYPE
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.REQUEST_TIMEOUT
 import org.springframework.http.MediaType.parseMediaType
@@ -22,6 +23,11 @@ import pl.beone.promena.communication.memory.model.internal.memoryCommunicationP
 import pl.beone.promena.configuration.NormalHttpConnectorModuleConfig
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.DATA_DESCRIPTOR_MEDIA_TYPE_CHARSET
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE
+import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationMediaTypeCharset
+import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationMediaTypeMimeType
+import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationTransformerIdNameHeader
+import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationTransformerIdSubNameHeader
+import pl.beone.promena.connector.normal.http.delivery.extension.toHttpString
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
@@ -56,6 +62,10 @@ class TransformationNormalControllerTestIT {
     private lateinit var transformationUseCase: TransformationUseCase
 
     companion object {
+        private const val jsonMessagePath = "$.message"
+
+        private const val normalTransformEndpoint = "/normal/transform"
+
         private val transformation =
             singleTransformation("transformerName", "transformerSubName", mediaType(TEXT_PLAIN.mimeType, ISO_8859_1), emptyParameters())
         private val dataDescriptor = singleDataDescriptor("1".toMemoryData(), TEXT_PLAIN, emptyMetadata())
@@ -82,25 +92,21 @@ class TransformationNormalControllerTestIT {
         val body = MultipartBodyBuilder().apply {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
             part("2", dataDescriptor2.data.getBytes(), parseMediaType(dataDescriptor2.mediaType.mimeType))
-            part(
-                "3",
-                dataDescriptor3.data.getBytes(),
-                parseMediaType(dataDescriptor3.mediaType.mimeType + "; charset=" + dataDescriptor3.mediaType.charset)
-            )
+            part("3", dataDescriptor3.data.getBytes(), parseMediaType(dataDescriptor3.mediaType.toHttpString()))
             part("4", dataDescriptor4.data.getBytes())
                 .header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor4.mediaType.mimeType)
                 .header(DATA_DESCRIPTOR_MEDIA_TYPE_CHARSET, dataDescriptor4.mediaType.charset.name())
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isOk
-            .expectHeader().contentType(transformation.targetMediaType.mimeType + "; charset=" + transformation.targetMediaType.charset.name())
+            .expectHeader().contentType(transformation.targetMediaType.toHttpString())
             .expectBody<ByteArray>().isEqualTo(transformedDataDescriptor.data.getBytes())
     }
 
@@ -116,17 +122,17 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
-            .header("transformation2-transformerId-name", transformation2.transformerId.name)
-            .header("transformation2-mediaType-mimeType", transformation2.targetMediaType.mimeType)
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(2), transformation2.transformerId.name)
+            .header(createTransformationMediaTypeMimeType(2), transformation2.targetMediaType.mimeType)
             .exchange()
             .expectStatus().isOk
-            .expectHeader().contentType(transformation2.targetMediaType.mimeType + "; charset=" + transformation2.targetMediaType.charset.name())
+            .expectHeader().contentType(transformation2.targetMediaType.toHttpString())
             .expectBody<ByteArray>().isEqualTo(transformedDataDescriptor.data.getBytes())
     }
 
@@ -136,14 +142,14 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
 
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.message").isEqualTo("There is no header <transformation-transformerId-name>")
+            .jsonPath(jsonMessagePath).isEqualTo("There is no header <${createTransformationTransformerIdNameHeader(1)}>")
     }
 
     @Test
@@ -152,14 +158,14 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes())
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Part <1> headers don't contain <dataDescriptor-mediaType-mimeType> or <Content-Type> header")
+            .jsonPath(jsonMessagePath).isEqualTo("Part <1> headers don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header")
     }
 
     @Test
@@ -172,16 +178,16 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.message").isEqualTo("There is more than one transformed data: <2>")
+            .jsonPath(jsonMessagePath).isEqualTo("There is more than one transformed data: <2>")
     }
 
     @Test
@@ -194,16 +200,16 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Exception")
+            .jsonPath(jsonMessagePath).isEqualTo("Exception")
     }
 
     @Test
@@ -216,16 +222,16 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Exception")
+            .jsonPath(jsonMessagePath).isEqualTo("Exception")
     }
 
     @Test
@@ -238,16 +244,16 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isEqualTo(REQUEST_TIMEOUT)
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Exception")
+            .jsonPath(jsonMessagePath).isEqualTo("Exception")
     }
 
     @Test
@@ -260,16 +266,16 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isEqualTo(REQUEST_TIMEOUT)
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Exception")
+            .jsonPath(jsonMessagePath).isEqualTo("Exception")
     }
 
     @Test
@@ -282,16 +288,16 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isEqualTo(INTERNAL_SERVER_ERROR)
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Exception")
+            .jsonPath(jsonMessagePath).isEqualTo("Exception")
     }
 
     @Test
@@ -304,15 +310,15 @@ class TransformationNormalControllerTestIT {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
         }.build()
 
-        webTestClient.post().uri("/normal/transform")
+        webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
-            .header("transformation-transformerId-name", transformation.transformerId.name)
-            .header("transformation-transformerId-subName", transformation.transformerId.subName)
-            .header("transformation-mediaType-mimeType", transformation.targetMediaType.mimeType)
-            .header("transformation-mediaType-charset", transformation.targetMediaType.charset.name())
+            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
+            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
+            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
+            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
             .exchange()
             .expectStatus().isEqualTo(INTERNAL_SERVER_ERROR)
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Exception")
+            .jsonPath(jsonMessagePath).isEqualTo("Exception")
     }
 }
