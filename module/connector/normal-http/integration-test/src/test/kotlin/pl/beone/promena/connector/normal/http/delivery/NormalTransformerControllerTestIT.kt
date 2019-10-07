@@ -20,13 +20,13 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
-import pl.beone.promena.configuration.NormalHttpConnectorModuleConfig
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.DATA_DESCRIPTOR_MEDIA_TYPE_CHARSET
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationMediaTypeCharset
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationMediaTypeMimeType
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationTransformerIdNameHeader
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationTransformerIdSubNameHeader
+import pl.beone.promena.connector.normal.http.configuration.NormalHttpConnectorModuleConfig
 import pl.beone.promena.connector.normal.http.delivery.extension.toHttpString
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
@@ -35,7 +35,6 @@ import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.withCharset
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
@@ -54,7 +53,7 @@ import kotlin.text.Charsets.ISO_8859_1
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = [NormalHttpConnectorModuleConfig::class]
 )
-class TransformationNormalControllerTestIT {
+class NormalTransformerControllerTestIT {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient

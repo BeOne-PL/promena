@@ -1,4 +1,4 @@
-package pl.beone.promena.configuration
+package pl.beone.promena.connector.normal.http.configuration
 
 import mu.KotlinLogging
 import org.springframework.context.annotation.Configuration
@@ -7,7 +7,7 @@ import org.springframework.core.env.Environment
 import javax.annotation.PostConstruct
 
 @Configuration
-@DependsOn("transformationNormalController")
+@DependsOn("normalTransformerController")
 class NormalHttpConnectorModuleLogger(
     private val environment: Environment
 ) {

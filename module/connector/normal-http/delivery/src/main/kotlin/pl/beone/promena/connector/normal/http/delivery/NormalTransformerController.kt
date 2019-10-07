@@ -35,7 +35,7 @@ import java.util.concurrent.TimeoutException
 import kotlin.reflect.full.isSubclassOf
 
 @RestController
-class TransformationNormalController(
+class NormalTransformerController(
     private val transformationUseCase: TransformationUseCase
 ) {
 

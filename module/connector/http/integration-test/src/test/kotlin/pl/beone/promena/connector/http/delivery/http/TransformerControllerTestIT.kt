@@ -40,7 +40,7 @@ import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = [HttpConnectorModuleConfig::class]
 )
-class TransformerHandlerTestIT {
+class TransformerControllerTestIT {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
@@ -52,6 +52,8 @@ class TransformerHandlerTestIT {
     private lateinit var transformationUseCase: TransformationUseCase
 
     companion object {
+        private const val transformEndpoint = "/transform"
+
         private val requestBody = "request body".toByteArray()
         private val transformation = singleTransformation("default", TEXT_PLAIN, emptyParameters())
         private val dataDescriptor = emptyDataDescriptor()
@@ -81,7 +83,7 @@ class TransformerHandlerTestIT {
 
         every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters) } returns transformedDataDescriptor
 
-        webTestClient.post().uri("/transform")
+        webTestClient.post().uri(transformEndpoint)
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
             .expectStatus().isOk
@@ -98,7 +100,7 @@ class TransformerHandlerTestIT {
 
         every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters) } throws exception
 
-        webTestClient.post().uri("/transform")
+        webTestClient.post().uri(transformEndpoint)
             .body(BodyInserters.fromObject(requestBody))
             .exchange()
             .expectHeader()
