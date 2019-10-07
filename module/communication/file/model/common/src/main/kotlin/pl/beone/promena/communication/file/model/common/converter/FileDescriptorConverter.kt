@@ -10,7 +10,9 @@ import pl.beone.promena.transformer.internal.model.data.FileData
 import pl.beone.promena.transformer.internal.model.data.toFileData
 import java.io.File
 
-class FileDescriptorConverter(private val directory: File) : AbstractDescriptorConverter<FileData>() {
+class FileDescriptorConverter(
+    private val directory: File
+) : AbstractDescriptorConverter<FileData>() {
 
     override fun communicationDescriptor(): String =
         "${FileCommunicationParameters.ID} (directory=$directory)"
