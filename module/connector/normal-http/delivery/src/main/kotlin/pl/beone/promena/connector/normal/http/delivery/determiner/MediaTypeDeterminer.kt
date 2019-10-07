@@ -14,7 +14,7 @@ internal object MediaTypeDeterminer {
     private val contentTypeRegEx = """^(\w+/[-+.\w]+);\s*charset=(.*)$""".toRegex()
     private val contentTypeOnlyMimeTypeRegEx = """^(\w+/[-+.\w]+)$""".toRegex()
 
-    fun determine(name: String, headers: HttpHeaders): MediaType {
+    fun determine(fieldName: String?, headers: HttpHeaders): MediaType {
         val flattenedHeaders = headers.map { (key, value) -> key to value.first() }
 
         return when {
@@ -23,7 +23,7 @@ internal object MediaTypeDeterminer {
             flattenedHeaders.containsHeaderCaseInsensitive(CONTENT_TYPE) ->
                 determineBasedOnContentTypeHeader(flattenedHeaders)
             else ->
-                throw IllegalStateException("Part <$name> headers don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header")
+                throw createIllegalStateException(fieldName)
         }
     }
 
@@ -49,4 +49,13 @@ internal object MediaTypeDeterminer {
 
     private fun <T> List<Pair<String, T>>.getValueCaseInsensitive(key: String): T? =
         firstOrNull { (key_) -> key_.compareTo(key, true) == 0 }?.second
+
+    private fun createIllegalStateException(fieldName: String?): IllegalStateException =
+        throw IllegalStateException(
+            if (fieldName != null) {
+                "Part <$fieldName> headers don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
+            } else {
+                "Headers of one of the parts don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
+            }
+        )
 }
