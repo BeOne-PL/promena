@@ -1,4 +1,4 @@
-package pl.beone.promena.connector.http.delivery.http
+package pl.beone.promena.connector.http.delivery
 
 import io.mockk.clearMocks
 import io.mockk.every

@@ -1,4 +1,4 @@
-package pl.beone.promena.connector.http.delivery.http
+package pl.beone.promena.connector.http.delivery
 
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE
