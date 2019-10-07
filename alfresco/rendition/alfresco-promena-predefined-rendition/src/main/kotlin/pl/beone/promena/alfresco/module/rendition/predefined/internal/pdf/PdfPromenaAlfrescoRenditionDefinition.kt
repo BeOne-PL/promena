@@ -7,7 +7,9 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
-object PdfPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinition {
+class PdfPromenaAlfrescoRenditionDefinition(
+    private val notApplyForImages: Boolean
+) : AlfrescoPromenaRenditionDefinition {
 
     override fun getRenditionName(): String =
         "pdf"
@@ -15,10 +17,22 @@ object PdfPromenaAlfrescoRenditionDefinition : AlfrescoPromenaRenditionDefinitio
     override fun getTargetMediaType(): MediaType =
         APPLICATION_PDF
 
-    override fun getTransformation(mediaType: MediaType): Transformation =
-        try {
+    override fun getTransformation(mediaType: MediaType): Transformation {
+        if (notApplyForImages) {
+            throwIfMimeTypePrimaryTypeIsImage(mediaType)
+        }
+
+        return try {
             determineTransformation(mediaType, getTargetMediaType())
         } catch (e: TransformationNotSupportedException) {
             throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(getRenditionName(), mediaType, getTargetMediaType())
         }
+    }
+
+    // imgpreview rendition will be prefer by default
+    private fun throwIfMimeTypePrimaryTypeIsImage(mediaType: MediaType) {
+        if (mediaType.mimeType.startsWith("image")) {
+            throw AlfrescoPromenaRenditionTransformationNotSupportedException.unsupportedMediaType(getRenditionName(), mediaType, getTargetMediaType())
+        }
+    }
 }
