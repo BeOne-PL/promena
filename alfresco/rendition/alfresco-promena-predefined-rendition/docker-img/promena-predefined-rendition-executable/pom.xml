@@ -134,12 +134,12 @@
 
         <!-- Put TRANSFORMERS configuration dependencies here -->
         <dependency>
-            <groupId>pl.beone.promena.base</groupId>
+            <groupId>pl.beone.promena.transformer</groupId>
             <artifactId>converter-imagemagick-configuration</artifactId>
             <version>${converter-imagemagick.version}</version>
         </dependency>
         <dependency>
-            <groupId>pl.beone.promena.base</groupId>
+            <groupId>pl.beone.promena.transformer</groupId>
             <artifactId>converter-libreoffice-configuration</artifactId>
             <version>${converter-libreoffice.version}</version>
         </dependency>
@@ -222,12 +222,12 @@
                 <dependencies>
                     <!-- Put TRANSFORMERS dependencies here -->
                     <dependency>
-                        <groupId>pl.beone.promena.base</groupId>
+                        <groupId>pl.beone.promena.transformer</groupId>
                         <artifactId>converter-imagemagick</artifactId>
                         <version>${converter-imagemagick.version}</version>
                     </dependency>
                     <dependency>
-                        <groupId>pl.beone.promena.base</groupId>
+                        <groupId>pl.beone.promena.transformer</groupId>
                         <artifactId>converter-libreoffice</artifactId>
                         <version>${converter-libreoffice.version}</version>
                     </dependency>
