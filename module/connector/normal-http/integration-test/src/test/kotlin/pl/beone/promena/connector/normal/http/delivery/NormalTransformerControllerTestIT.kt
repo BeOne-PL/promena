@@ -145,7 +145,6 @@ class NormalTransformerControllerTestIT {
         webTestClient.post().uri(normalTransformEndpoint)
             .body(BodyInserters.fromMultipartData(body))
             .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
-
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
