@@ -11,6 +11,7 @@ import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants
 
 object ${pascalCaseTransformerId}Support {
 
+    @JvmStatic
     fun isSupported(dataDescriptor: DataDescriptor, targetMediaType: MediaType, parameters: Parameters) {
         dataDescriptor.descriptors.forEach { (_, mediaType) -> MediaTypeSupport.isSupported(mediaType, targetMediaType) }
         ParametersSupport.isSupported(parameters)
@@ -21,6 +22,7 @@ object ${pascalCaseTransformerId}Support {
             TEXT_PLAIN to TEXT_PLAIN
         )
 
+        @JvmStatic
         fun isSupported(mediaType: MediaType, targetMediaType: MediaType) {
             if (!supportedMediaType.contains(mediaType to targetMediaType)) {
                 throw TransformationNotSupportedException.unsupportedMediaType(mediaType, targetMediaType)
@@ -29,6 +31,7 @@ object ${pascalCaseTransformerId}Support {
     }
 
     object ParametersSupport {
+        @JvmStatic
         fun isSupported(parameters: Parameters) {
             parameters.validate(Example.NAME, Example.CLASS, true)
             parameters.validate(Example2.NAME, Example2.CLASS, false)
