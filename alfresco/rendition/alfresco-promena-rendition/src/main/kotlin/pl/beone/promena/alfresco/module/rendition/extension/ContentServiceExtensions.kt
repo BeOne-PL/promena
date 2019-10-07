@@ -10,5 +10,5 @@ import java.nio.charset.Charset
 
 fun ContentService.getMediaType(nodeRef: NodeRef, propertyQName: QName = PROP_CONTENT): MediaType {
     val contentReader = this.getReader(nodeRef, propertyQName)
-    return mediaType(contentReader.mimetype, Charset.forName(contentReader.encoding))
+    return mediaType(contentReader.mimetype, contentReader.encoding)
 }

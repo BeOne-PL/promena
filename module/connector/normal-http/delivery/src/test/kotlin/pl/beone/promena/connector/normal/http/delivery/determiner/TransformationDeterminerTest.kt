@@ -12,6 +12,7 @@ import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTra
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
+import pl.beone.promena.transformer.applicationmodel.mediatype.withCharset
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.contract.transformer.transformerId
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
@@ -23,13 +24,13 @@ class TransformationDeterminerTest {
     @Test
     fun determine() {
         val transformerId = transformerId("digital signature", "digiSeal")
-        val mediaType = mediaType(APPLICATION_PDF.mimeType, ISO_8859_1)
+        val mediaType = APPLICATION_PDF.withCharset(ISO_8859_1)
 
         val transformerId2 = transformerId("digital signature")
         val mediaType2 = APPLICATION_PDF
 
         val transformerId3 = transformerId("converter")
-        val mediaType3 = mediaType(TEXT_PLAIN.mimeType, UTF_16.name())
+        val mediaType3 = TEXT_PLAIN.withCharset(UTF_16)
 
         TransformationDeterminer.determine(
             createHeaders(1, transformerId.name, transformerId.subName, mediaType.mimeType, mediaType.charset.name()) +

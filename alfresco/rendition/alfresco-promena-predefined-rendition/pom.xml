@@ -112,12 +112,12 @@
         </dependency>
 
         <dependency>
-            <groupId>pl.beone.promena.base</groupId>
+            <groupId>pl.beone.promena.transformer</groupId>
             <artifactId>converter-imagemagick-application-model</artifactId>
             <version>${converter-imagemagick.version}</version>
         </dependency>
         <dependency>
-            <groupId>pl.beone.promena.base</groupId>
+            <groupId>pl.beone.promena.transformer</groupId>
             <artifactId>converter-libreoffice-application-model</artifactId>
             <version>${converter-libreoffice.version}</version>
         </dependency>

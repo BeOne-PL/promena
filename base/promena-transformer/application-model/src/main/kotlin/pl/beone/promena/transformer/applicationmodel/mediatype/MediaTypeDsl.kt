@@ -9,3 +9,9 @@ fun mediaType(mimeType: String, charset: Charset = Charsets.UTF_8): MediaType =
 
 fun mediaType(mimeType: String, charset: String): MediaType =
     MediaType.of(mimeType, Charset.forName(charset))
+
+fun MediaType.withCharset(charset: Charset): MediaType =
+    MediaType.of(mimeType, charset)
+
+fun MediaType.withCharset(charset: String): MediaType =
+    MediaType.of(mimeType, charset)

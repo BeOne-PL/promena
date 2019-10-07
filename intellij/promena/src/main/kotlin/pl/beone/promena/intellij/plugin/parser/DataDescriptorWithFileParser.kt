@@ -79,7 +79,7 @@ internal object DataDescriptorParser {
 
     private fun createMediaType(file: File, mimeType: String?, charset: String?): MediaType =
         when {
-            mimeType != null && charset != null -> mediaType(mimeType, Charset.forName(charset))
+            mimeType != null && charset != null -> mediaType(mimeType, charset)
             mimeType != null -> mediaType(mimeType, file.detectCharset())
             else -> mediaType(file.detectMimeType(), file.detectCharset())
         }

@@ -33,7 +33,7 @@ class ContentPropertyAlfrescoDataDescriptorGetter(
 
     private fun convertToSingleDataDescriptor(nodeDescriptor: NodeDescriptor): DataDescriptor.Single {
         val contentReader = contentService.getReader(nodeDescriptor.nodeRef, PROP_CONTENT)
-        val mediaType = mediaType(contentReader.mimetype, Charset.forName(contentReader.encoding))
+        val mediaType = mediaType(contentReader.mimetype, contentReader.encoding)
 
         return singleDataDescriptor(alfrescoDataConverter.createData(contentReader), mediaType, nodeDescriptor.metadata)
     }

@@ -6,7 +6,6 @@ import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.DATA_DESC
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
-import java.nio.charset.Charset
 import kotlin.text.Charsets.UTF_8
 
 internal object MediaTypeDeterminer {
@@ -32,7 +31,7 @@ internal object MediaTypeDeterminer {
 
     private fun determineBasedOnDataDescriptorHeaders(singleValueHeaders: Map<String, String>): MediaType {
         val mimeType = singleValueHeaders.getValueCaseInsensitive(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE) ?: error("Impossible. It's validated earlier")
-        val charset = singleValueHeaders.getValueCaseInsensitive(DATA_DESCRIPTOR_MEDIA_TYPE_CHARSET)?.let(Charset::forName) ?: UTF_8
+        val charset = singleValueHeaders.getValueCaseInsensitive(DATA_DESCRIPTOR_MEDIA_TYPE_CHARSET) ?: UTF_8.name()
         return mediaType(mimeType, charset)
     }
 
@@ -40,12 +39,9 @@ internal object MediaTypeDeterminer {
         val contentType = singleValueHeaders.getValueCaseInsensitive(CONTENT_TYPE) ?: error("Impossible. It's validated earlier")
 
         return (contentTypeRegEx.find(contentType)?.groupValues ?: contentTypeOnlyMimeTypeRegEx.find(contentType)?.groupValues)
-            ?.let { groupValues -> createMediaType(groupValues[1], groupValues.getOrNull(2)) }
+            ?.let { groupValues -> mediaType(groupValues[1], groupValues.getOrNull(2) ?: UTF_8.name()) }
             ?: throw IllegalStateException("Part header <$CONTENT_TYPE> has incorrect format <$contentType>. Acceptable formats: (<mime type>; charset=<charset>) or (<mime type>)")
     }
-
-    private fun createMediaType(mimeType: String, charsetName: String?): MediaType =
-        mediaType(mimeType, charsetName?.let(Charset::forName) ?: UTF_8)
 
     private fun <T> Map<String, T>.getValueCaseInsensitive(key: String): T? =
         entries.firstOrNull { (key_) -> key_.compareTo(key, true) == 0 }?.value

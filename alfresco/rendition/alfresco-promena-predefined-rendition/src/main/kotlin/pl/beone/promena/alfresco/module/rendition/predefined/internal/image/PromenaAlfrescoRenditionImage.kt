@@ -14,7 +14,7 @@ internal fun determineTransformation(mediaType: MediaType, targetMediaType: Medi
         LibreOfficeConverterSupport.MediaTypeSupport.isSupported(mediaType, APPLICATION_PDF)
         ImageMagickConverterSupport.MediaTypeSupport.isSupported(APPLICATION_PDF, targetMediaType)
 
-        libreOfficeConverterTransformation(APPLICATION_PDF) next transformation
+        libreOfficeConverterTransformation() next transformation
     } catch (e: TransformationNotSupportedException) {
         ImageMagickConverterSupport.MediaTypeSupport.isSupported(mediaType, targetMediaType)
 

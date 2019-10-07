@@ -12,7 +12,6 @@ import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.contract.transformation.transformation
 import pl.beone.promena.transformer.contract.transformer.transformerId
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
-import java.nio.charset.Charset
 import kotlin.text.Charsets.UTF_8
 
 internal object TransformationDeterminer {
@@ -48,7 +47,7 @@ internal object TransformationDeterminer {
 
         val mimeType = arguments[TRANSFORMATION_MEDIA_TYPE_MIME_TYPE_SUFFIX]
             ?: throw IllegalStateException("There is no header <$transformationPrefix$TRANSFORMATION_MEDIA_TYPE_MIME_TYPE_SUFFIX>")
-        val charset = arguments[TRANSFORMATION_MEDIA_TYPE_CHARSET_SUFFIX]?.let(Charset::forName) ?: UTF_8
+        val charset = arguments[TRANSFORMATION_MEDIA_TYPE_CHARSET_SUFFIX] ?: UTF_8.name()
 
         return singleTransformation(transformerId(name, subName), mediaType(mimeType, charset), emptyParameters())
     }

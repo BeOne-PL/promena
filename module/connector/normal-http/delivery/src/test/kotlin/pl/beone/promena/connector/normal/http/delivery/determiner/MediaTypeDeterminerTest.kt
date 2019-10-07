@@ -11,6 +11,7 @@ import pl.beone.promena.connector.normal.http.delivery.extension.toHttpString
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
+import pl.beone.promena.transformer.applicationmodel.mediatype.withCharset
 import kotlin.text.Charsets.UTF_16
 
 class MediaTypeDeterminerTest {
@@ -31,7 +32,7 @@ class MediaTypeDeterminerTest {
 
     @Test
     fun `determine _ Content-Type header with charset`() {
-        val mediaType = mediaType(TEXT_PLAIN.mimeType, UTF_16)
+        val mediaType = TEXT_PLAIN.withCharset(UTF_16)
         MediaTypeDeterminer.determine(
             null, createHeaders(null, null, mediaType.toHttpString()) + additionalHeaders
         ) shouldBe mediaType

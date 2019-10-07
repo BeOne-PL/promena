@@ -12,7 +12,7 @@ internal fun determineTransformation(mediaType: MediaType, targetMediaType: Medi
     try {
         LibreOfficeConverterSupport.MediaTypeSupport.isSupported(mediaType, targetMediaType)
 
-        libreOfficeConverterTransformation(targetMediaType)
+        libreOfficeConverterTransformation()
     } catch (e: TransformationNotSupportedException) {
         ImageMagickConverterSupport.MediaTypeSupport.isSupported(mediaType, targetMediaType)
 

@@ -36,6 +36,7 @@ import pl.beone.promena.transformer.applicationmodel.exception.transformer.Trans
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
+import pl.beone.promena.transformer.applicationmodel.mediatype.withCharset
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
@@ -67,12 +68,12 @@ class TransformationNormalControllerTestIT {
         private const val normalTransformEndpoint = "/normal/transform"
 
         private val transformation =
-            singleTransformation("transformerName", "transformerSubName", mediaType(TEXT_PLAIN.mimeType, ISO_8859_1), emptyParameters())
+            singleTransformation("transformerName", "transformerSubName", TEXT_PLAIN.withCharset(ISO_8859_1), emptyParameters())
         private val dataDescriptor = singleDataDescriptor("1".toMemoryData(), TEXT_PLAIN, emptyMetadata())
         private val dataDescriptor2 = singleDataDescriptor("2".toMemoryData(), TEXT_PLAIN, emptyMetadata())
         private val dataDescriptor3 =
-            singleDataDescriptor("3".toMemoryData(), mediaType(TEXT_PLAIN.mimeType, ISO_8859_1.name()), emptyMetadata())
-        private val dataDescriptor4 = singleDataDescriptor("4".toMemoryData(), mediaType(TEXT_PLAIN.mimeType, ISO_8859_1.name()), emptyMetadata())
+            singleDataDescriptor("3".toMemoryData(), TEXT_PLAIN.withCharset(ISO_8859_1), emptyMetadata())
+        private val dataDescriptor4 = singleDataDescriptor("4".toMemoryData(), TEXT_PLAIN.withCharset(ISO_8859_1), emptyMetadata())
         private val communicationParameters = memoryCommunicationParameters()
         private val transformedDataDescriptor = singleTransformedDataDescriptor("response body".toMemoryData(), emptyMetadata())
     }
