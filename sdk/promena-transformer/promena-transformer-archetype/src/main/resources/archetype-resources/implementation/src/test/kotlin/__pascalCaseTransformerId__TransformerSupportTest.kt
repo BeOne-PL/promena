@@ -1,8 +1,6 @@
 package ${package}
 
 import io.mockk.*
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.beone.lib.junit.jupiter.external.DockerExtension
@@ -14,27 +12,18 @@ import ${package}.applicationmodel.${pascalCaseTransformerId}Support
 @ExtendWith(DockerExtension::class)
 class ${pascalCaseTransformerId}TransformerSupportTest {
 
-    @BeforeEach
-    fun setUp() {
-        mockkObject(${pascalCaseTransformerId}Support)
-    }
-
     @Test
     fun isSupported() {
         val dataDescriptor = mockk<DataDescriptor>()
         val targetMediaType = mockk<MediaType>()
         val parameters = mockk<Parameters>()
 
+        mockkStatic(${pascalCaseTransformerId}Support::class)
         every { ${pascalCaseTransformerId}Support.isSupported(dataDescriptor, targetMediaType, parameters) } just Runs
 
         ${pascalCaseTransformerId}Transformer(mockk(), mockk(), mockk())
             .isSupported(dataDescriptor, targetMediaType, parameters)
 
         verify(exactly = 1) { ${pascalCaseTransformerId}Support.isSupported(dataDescriptor, targetMediaType, parameters) }
-    }
-
-    @AfterEach
-    fun tearDown() {
-        unmockkObject(${pascalCaseTransformerId}Support)
     }
 }

@@ -1,8 +1,6 @@
 package ${package}.applicationmodel.support
 
 import io.mockk.*
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.dataDescriptor
@@ -14,12 +12,6 @@ import ${package}.applicationmodel.${pascalCaseTransformerId}Support.isSupported
 
 class ${pascalCaseTransformerId}SupportTest {
 
-    @BeforeEach
-    fun setUp() {
-        mockkObject(MediaTypeSupport)
-        mockkObject(ParametersSupport)
-    }
-
     @Test
     fun isSupported() {
         val mediaType = mockk<MediaType>()
@@ -27,6 +19,8 @@ class ${pascalCaseTransformerId}SupportTest {
         val targetMediaType = mockk<MediaType>()
         val parameters = mockk<Parameters>()
 
+        mockkStatic(MediaTypeSupport::class)
+        mockkStatic(ParametersSupport::class)
         every { MediaTypeSupport.isSupported(mediaType, targetMediaType) } just Runs
         every { ParametersSupport.isSupported(parameters) } just Runs
 
@@ -34,11 +28,5 @@ class ${pascalCaseTransformerId}SupportTest {
 
         verify(exactly = 1) { MediaTypeSupport.isSupported(mediaType, targetMediaType) }
         verify(exactly = 1) { ParametersSupport.isSupported(parameters) }
-    }
-
-    @AfterEach
-    fun tearDown() {
-        unmockkObject(MediaTypeSupport)
-        unmockkObject(ParametersSupport)
     }
 }
