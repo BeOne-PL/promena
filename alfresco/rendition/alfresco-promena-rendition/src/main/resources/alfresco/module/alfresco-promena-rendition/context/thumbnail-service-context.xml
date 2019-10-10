@@ -4,126 +4,41 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="thumbnailService" class="pl.beone.promena.alfresco.module.rendition.external.thumbnail.PromenaThumbnailService">
-        <constructor-arg index="0" ref="nodeService"/>
-        <constructor-arg index="1" ref="thumbnailRegistry"/>
-        <constructor-arg index="2" ref="promenaAlfrescoRenditionGetter"/>
-        <constructor-arg index="3" ref="defaultAlfrescoPromenaRenditionTransformer"/>
-    </bean>
+    <bean id ="thumbnailRenditionConvertor" class="kotlin.Unit"/>
 
-    <bean id="thumbnailRegistry" class="pl.beone.promena.alfresco.module.rendition.external.thumbnail.PromenaThumbnailRegistry">
-        <constructor-arg index="0" ref="contentService"/>
-        <constructor-arg index="1" ref="memoryAlfrescoPromenaRenditionDefinitionGetter"/>
-    </bean>
+    <bean id="baseThumbnailDefinition" class="kotlin.Unit"/>
 
-    <!-- *** -->
+    <bean id="defaultImageResizeOptions" class="kotlin.Unit"/>
 
-    <bean id="thumbnailRenditionConvertor" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailRenditionConvertor"/>
-    </bean>
+    <bean id="defaultImageTransformationOptions" class="kotlin.Unit"/>
 
-    <bean id="baseThumbnailDefinition" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="thumbnailDefinitionMedium" class="kotlin.Unit"/>
 
-    <bean id="defaultImageResizeOptions" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.content.transform.magick.ImageResizeOptions"/>
-    </bean>
+    <bean id="thumbnailDefinitionDoclib" class="kotlin.Unit"/>
 
-    <bean id="defaultImageTransformationOptions" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.content.transform.magick.ImageTransformationOptions"/>
-    </bean>
+    <bean id="thumbnailDefinitionImgpreview" class="kotlin.Unit"/>
 
-    <bean id="thumbnailDefinitionMedium" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="thumbnailDefinitionAvatar" class="kotlin.Unit"/>
 
-    <bean id="thumbnailDefinitionDoclib" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="thumbnailDefinitionAvatar32" class="kotlin.Unit"/>
 
-    <bean id="thumbnailDefinitionImgpreview" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="thumbnailDefinitionWebpreview" class="kotlin.Unit"/>
 
-    <bean id="thumbnailDefinitionAvatar" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="thumbnailDefinitionPDFpreview" class="kotlin.Unit"/>
 
-    <bean id="thumbnailDefinitionAvatar32" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="baseThumbnailRegistry" class="kotlin.Unit"/>
 
-    <bean id="thumbnailDefinitionWebpreview" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="standardFailureOptions" class="kotlin.Unit"/>
 
-    <bean id="thumbnailDefinitionPDFpreview" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.ThumbnailDefinition"/>
-    </bean>
+    <bean id="create-thumbnail" class="kotlin.Unit"/>
 
-    <bean id="standardFailureOptions" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.FailureHandlingOptions"/>
-    </bean>
+    <bean id="update-thumbnail" class="kotlin.Unit"/>
 
-    <bean id="create-thumbnail" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.CreateThumbnailActionExecuter"/>
-    </bean>
+    <bean id="createThumbnailActionFilter" class="kotlin.Unit"/>
 
-    <bean id="update-thumbnail" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.UpdateThumbnailActionExecuter"/>
-    </bean>
+    <bean id="add-failed-thumbnail" class="kotlin.Unit"/>
 
-    <bean id="createThumbnailActionFilter" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.action.CreateThumbnailActionFilter"/>
-    </bean>
+    <bean id="node-eligible-for-rethumbnailing-evaluator" class="kotlin.Unit"/>
 
-    <bean id="add-failed-thumbnail" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.AddFailedThumbnailActionExecuter"/>
-    </bean>
-
-    <bean id="node-eligible-for-rethumbnailing-evaluator" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.conditions.NodeEligibleForRethumbnailingEvaluator"/>
-    </bean>
-
-    <bean id="failedThumbnailAspect" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.thumbnail.FailedThumbnailSourceAspect"/>
-    </bean>
-
+    <bean id="failedThumbnailAspect" class="kotlin.Unit"/>
 </beans>

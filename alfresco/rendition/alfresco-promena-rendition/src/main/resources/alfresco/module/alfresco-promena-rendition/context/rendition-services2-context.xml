@@ -4,92 +4,36 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="renditionService2" class="pl.beone.promena.alfresco.module.rendition.external.rendition2.PromenaRenditionService2">
-        <constructor-arg index="0" ref="promenaAlfrescoRenditionGetter"/>
-        <constructor-arg index="1" ref="defaultAlfrescoPromenaRenditionTransformer"/>
-        <constructor-arg index="2" ref="renditionDefinitionRegistry2"/>
-    </bean>
+    <bean id="renditionRequestSheduler" class="kotlin.Unit"/>
 
-    <bean id="renditionDefinitionRegistry2" class="pl.beone.promena.alfresco.module.rendition.external.rendition2.PromenaRenditionDefinitionRegistry2">
-        <constructor-arg index="0" ref="memoryAlfrescoPromenaRenditionDefinitionGetter"/>
-    </bean>
+    <bean id="transformClient" class="kotlin.Unit"/>
 
-    <!-- *** -->
+    <bean id="localTransformClient" class="kotlin.Unit"/>
 
-    <bean id="renditionRequestSheduler" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.util.PostTxnCallbackScheduler"/>
-    </bean>
+    <bean id="transformOptionsConverter" class="kotlin.Unit"/>
 
-    <bean id="transformClient" parent="localTransformClient"/>
+    <bean id="transformServiceRegistry" class="kotlin.Unit"/>
 
-    <bean id="localTransformClient" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.LegacyLocalTransformClient"/>
-    </bean>
+    <bean id="localTransformServiceRegistry" class="kotlin.Unit"/>
 
-    <bean id="transformOptionsConverter" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.TransformationOptionsConverter"/>
-    </bean>
-
-    <bean id="transformServiceRegistry" parent="localTransformServiceRegistry"/>
-
-    <bean id="localTransformServiceRegistry" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.LegacyLocalTransformServiceRegistry"/>
-    </bean>
-
+    <!-- Required by Messaging subsystem -->
     <bean id="renditionEventProcessor" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
         <property name="targetMethod" value="mock"/>
         <property name="arguments" value="org.alfresco.repo.rendition2.RenditionEventProcessor"/>
     </bean>
 
-    <bean id="renditionDefinition2Medium" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionDefinition2Impl"/>
-    </bean>
+    <bean id="renditionDefinition2Medium" class="kotlin.Unit"/>
 
-    <bean id="renditionDefinition2DocLib" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionDefinition2Impl"/>
-    </bean>
+    <bean id="renditionDefinition2DocLib" class="kotlin.Unit"/>
 
-    <bean id="renditionDefinition2Imgpreview" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionDefinition2Impl"/>
-    </bean>
+    <bean id="renditionDefinition2Imgpreview" class="kotlin.Unit"/>
 
-    <bean id="renditionDefinition2Avatar" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionDefinition2Impl"/>
-    </bean>
+    <bean id="renditionDefinition2Avatar" class="kotlin.Unit"/>
 
-    <bean id="renditionDefinition2Avatar32" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionDefinition2Impl"/>
-    </bean>
+    <bean id="renditionDefinition2Avatar32" class="kotlin.Unit"/>
 
-    <bean id="renditionDefinition2Webpreview" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionDefinition2Impl"/>
-    </bean>
+    <bean id="renditionDefinition2Webpreview" class="kotlin.Unit"/>
 
-    <bean id="renditionDefinition2Pdf" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionDefinition2Impl"/>
-    </bean>
-
+    <bean id="renditionDefinition2Pdf" class="kotlin.Unit"/>
 </beans>
