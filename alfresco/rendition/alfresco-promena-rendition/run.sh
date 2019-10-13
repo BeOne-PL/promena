@@ -15,6 +15,10 @@ start() {
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
+start_acs() {
+    docker-compose -f $COMPOSE_FILE_PATH up --build -d alfresco-promena-rendition-acs
+}
+
 down() {
     if [ -f $COMPOSE_FILE_PATH ]; then
         docker-compose -f $COMPOSE_FILE_PATH down -v
@@ -28,6 +32,8 @@ purge() {
 }
 
 build() {
+    docker-compose -f $COMPOSE_FILE_PATH kill alfresco-promena-rendition-acs
+    yes | docker-compose -f $COMPOSE_FILE_PATH rm -f alfresco-promena-rendition-acs
     $MVN_EXEC -DskipTests=true clean package
 }
 
@@ -61,6 +67,11 @@ case "$1" in
     start
     tail
     ;;
+  reload)
+    build
+    start_acs
+    tail
+    ;;
   start)
     start
     tail
@@ -88,5 +99,5 @@ case "$1" in
     test
     ;;
   *)
-    echo "Usage: $0 {build_start|build_start_it_supported|start|stop|purge|tail|build_test|test}"
+    echo "Usage: $0 {build_start|build_start_it_supported|reload|start|stop|purge|tail|build_test|test|}"
 esac
