@@ -28,8 +28,6 @@
         <promena-connector-normal-http.version>1.0.0</promena-connector-normal-http.version>
 
         <promena-communication-memory-model.version>1.0.0</promena-communication-memory-model.version>
-
-        <digital-signature-digiseal.version>1.0.0</digital-signature-digiseal.version>
     </properties>
 
     <dependencies>

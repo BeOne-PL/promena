@@ -35,12 +35,6 @@
         </dependency>
 
         <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>digital-signature-digiseal-application-model</artifactId>
-            <version>${digital-signature-digiseal.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
