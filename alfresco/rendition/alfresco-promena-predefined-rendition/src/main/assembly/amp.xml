@@ -73,7 +73,7 @@
                 <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-contract</exclude>
                 <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-internal</exclude>
                 <exclude>pl.beone.lib:type-converter</exclude>
-                <exclude>pl.beone.promena.alfresco.module:alfresco-promena-rendition</exclude>
+                <exclude>pl.beone.promena.alfresco.module.rendition:alfresco-promena-rendition</exclude>
 
                 <exclude>org.jetbrains:annotations</exclude>
                 <exclude>org.jetbrains.kotlin:kotlin-reflect</exclude>
