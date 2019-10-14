@@ -2,8 +2,7 @@ FROM azul/zulu-openjdk-centos:11.0.4
 
 ENV MAVEN_VERSION 3.6.1
 
-RUN yum update -y && \
-    yum install -y wget && \
+RUN yum install -y wget && \
     # Maven
     cd opt && \
     wget https://www-eu.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
