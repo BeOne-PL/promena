@@ -10,13 +10,13 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.namespace.QName
 import org.alfresco.util.GUID
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionTransformer
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformer
+import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 
 class PromenaRenditionService(
     private val nodeService: NodeService,
-    private val alfrescoRenditionGetter: AlfrescoRenditionGetter,
-    private val alfrescoPromenaRenditionTransformer: AlfrescoPromenaRenditionTransformer
+    private val renditionGetter: RenditionGetter,
+    private val promenaRenditionTransformer: PromenaRenditionTransformer
 ) : RenditionService {
 
     override fun createCompositeRenditionDefinition(renditionName: QName?): CompositeRenditionDefinition =
@@ -32,10 +32,10 @@ class PromenaRenditionService(
         emptyList()
 
     override fun getRenditions(node: NodeRef): List<ChildAssociationRef> =
-        alfrescoRenditionGetter.getRenditions(node)
+        renditionGetter.getRenditions(node)
 
     override fun getRenditions(node: NodeRef, mimeTypePrefix: String?): List<ChildAssociationRef> =
-        alfrescoRenditionGetter.getRenditions(node)
+        renditionGetter.getRenditions(node)
 
     override fun loadRenditionDefinition(renditionName: QName): RenditionDefinition =
         RenditionDefinitionImpl(GUID.generate(), renditionName, renditionName.localName)
@@ -51,23 +51,23 @@ class PromenaRenditionService(
         RenditionDefinitionImpl(GUID.generate(), renditionName, renderingEngineName)
 
     override fun getRenditionByName(node: NodeRef, renditionName: QName): ChildAssociationRef? =
-        alfrescoRenditionGetter.getRendition(node, renditionName.localName)
+        renditionGetter.getRendition(node, renditionName.localName)
 
     override fun getSourceNode(renditionNode: NodeRef?): ChildAssociationRef =
         TODO("not implemented")
 
     override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition): ChildAssociationRef =
-        alfrescoPromenaRenditionTransformer.transform(sourceNode, renditionDefinition.renditionName.localName)
+        promenaRenditionTransformer.transform(sourceNode, renditionDefinition.renditionName.localName)
 
     override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition, callback: RenderCallback?) {
-        alfrescoPromenaRenditionTransformer.transformAsync(sourceNode, renditionDefinition.renditionName.localName)
+        promenaRenditionTransformer.transformAsync(sourceNode, renditionDefinition.renditionName.localName)
     }
 
     override fun render(sourceNode: NodeRef, renditionDefinitionQName: QName): ChildAssociationRef =
-        alfrescoPromenaRenditionTransformer.transform(sourceNode, renditionDefinitionQName.localName)
+        promenaRenditionTransformer.transform(sourceNode, renditionDefinitionQName.localName)
 
     override fun render(sourceNode: NodeRef, renditionDefinitionQName: QName, callback: RenderCallback?) {
-        alfrescoPromenaRenditionTransformer.transformAsync(sourceNode, renditionDefinitionQName.localName)
+        promenaRenditionTransformer.transformAsync(sourceNode, renditionDefinitionQName.localName)
     }
 
     override fun loadRenditionDefinitions(): List<RenditionDefinition> =

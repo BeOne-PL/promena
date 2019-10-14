@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.JmsUtils
-import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQAlfrescoPromenaTransformer
+import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQPromenaTransformer
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoAuthenticationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoNodesChecksumGenerator
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.TransformedDataDescriptorSaver
 
 @Configuration
 @ComponentScan(
@@ -39,18 +39,18 @@ class SetupContext {
         )
 
     @Bean
-    fun alfrescoNodesChecksumGenerator() =
-        mockk<AlfrescoNodesChecksumGenerator>()
+    fun nodesChecksumGenerator() =
+        mockk<NodesChecksumGenerator>()
 
     @Bean
-    fun alfrescoTransformedDataDescriptorSaver() =
-        mockk<AlfrescoTransformedDataDescriptorSaver>()
+    fun transformedDataDescriptorSaver() =
+        mockk<TransformedDataDescriptorSaver>()
 
     @Bean
-    fun alfrescoAuthenticationService() =
-        mockk<AlfrescoAuthenticationService>()
+    fun authorizationService() =
+        mockk<AuthorizationService>()
 
     @Bean
-    fun activeMQAlfrescoPromenaTransformer() =
-        mockk<ActiveMQAlfrescoPromenaTransformer>()
+    fun activeMQPromenaTransformer() =
+        mockk<ActiveMQPromenaTransformer>()
 }

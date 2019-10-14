@@ -5,16 +5,16 @@ import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
-import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQAlfrescoPromenaTransformer
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
+import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQPromenaTransformer
 import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.Retry
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoAuthenticationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoNodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.extension.couldNotTransform
 import pl.beone.promena.alfresco.module.core.extension.couldNotTransformButChecksumsAreDifferent
 import pl.beone.promena.alfresco.module.core.extension.logOnRetry
@@ -23,10 +23,10 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 import reactor.core.publisher.Mono
 
 class TransformerResponseErrorConsumer(
-    private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-    private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
+    private val nodesChecksumGenerator: NodesChecksumGenerator,
+    private val authorizationService: AuthorizationService,
     private val reactiveTransformationManager: ReactiveTransformationManager,
-    private val activeMQAlfrescoPromenaTransformer: ActiveMQAlfrescoPromenaTransformer,
+    private val activeMQPromenaTransformer: ActiveMQPromenaTransformer,
     private val transformationParametersSerializationService: TransformationParametersSerializationService
 ) {
 
@@ -47,7 +47,7 @@ class TransformerResponseErrorConsumer(
 
         val transformation = transformationException.transformation
 
-        val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeDescriptors.toNodeRefs())
+        val currentNodesChecksum = nodesChecksumGenerator.generateChecksum(nodeDescriptors.toNodeRefs())
         if (nodesChecksum != currentNodesChecksum) {
             reactiveTransformationManager.completeErrorTransformation(
                 correlationId,
@@ -76,8 +76,8 @@ class TransformerResponseErrorConsumer(
             .doOnNext { logger.logOnRetry(transformation, nodeDescriptors, attempt, retry.maxAttempts, retry.nextAttemptDelay) }
             .delayElement(retry.nextAttemptDelay)
             .doOnNext {
-                alfrescoAuthenticationService.runAs(userName) {
-                    activeMQAlfrescoPromenaTransformer.transformAsync(id, transformation, nodeDescriptors, retry, attempt)
+                authorizationService.runAs(userName) {
+                    activeMQPromenaTransformer.transformAsync(id, transformation, nodeDescriptors, retry, attempt)
                 }
             }
             .subscribe()

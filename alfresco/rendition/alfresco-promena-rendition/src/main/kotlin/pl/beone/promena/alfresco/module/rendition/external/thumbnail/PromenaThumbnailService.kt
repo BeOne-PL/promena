@@ -10,14 +10,14 @@ import org.alfresco.service.cmr.thumbnail.FailedThumbnailInfo
 import org.alfresco.service.cmr.thumbnail.ThumbnailParentAssociationDetails
 import org.alfresco.service.cmr.thumbnail.ThumbnailService
 import org.alfresco.service.namespace.QName
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionTransformer
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoRenditionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformer
+import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 
 class PromenaThumbnailService(
     private val nodeService: NodeService,
     private val thumbnailRegistry: ThumbnailRegistry,
-    private val alfrescoRenditionGetter: AlfrescoRenditionGetter,
-    private val alfrescoPromenaRenditionTransformer: AlfrescoPromenaRenditionTransformer
+    private val renditionGetter: RenditionGetter,
+    private val promenaRenditionTransformer: PromenaRenditionTransformer
 ) : ThumbnailService {
 
     override fun getFailedThumbnails(sourceNode: NodeRef?): Map<String, FailedThumbnailInfo> =
@@ -27,13 +27,13 @@ class PromenaThumbnailService(
         thumbnailRegistry
 
     override fun updateThumbnail(thumbnail: NodeRef, transformationOptions: TransformationOptions?) {
-        alfrescoPromenaRenditionTransformer.transform(thumbnail, nodeService.getProperty(thumbnail, PROP_NAME) as String)
+        promenaRenditionTransformer.transform(thumbnail, nodeService.getProperty(thumbnail, PROP_NAME) as String)
     }
 
     override fun getThumbnails(node: NodeRef, contentProperty: QName, mimetype: String?, options: TransformationOptions?): List<NodeRef> {
         validateContentProperty(contentProperty)
 
-        return alfrescoRenditionGetter.getRenditions(node).map { it.childRef }
+        return renditionGetter.getRenditions(node).map { it.childRef }
     }
 
     override fun setThumbnailsEnabled(thumbnailsEnabled: Boolean) {
@@ -62,13 +62,13 @@ class PromenaThumbnailService(
     ): NodeRef? {
         validateContentProperty(contentProperty)
 
-        return alfrescoPromenaRenditionTransformer.transform(node, name).childRef
+        return promenaRenditionTransformer.transform(node, name).childRef
     }
 
     override fun getThumbnailByName(node: NodeRef, contentProperty: QName?, thumbnailName: String): NodeRef? {
         validateContentProperty(contentProperty)
 
-        return alfrescoRenditionGetter.getRendition(node, thumbnailName)?.childRef
+        return renditionGetter.getRendition(node, thumbnailName)?.childRef
     }
 
     private fun validateContentProperty(contentProperty: QName?) {

@@ -3,9 +3,9 @@ package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 import org.apache.activemq.command.ActiveMQBytesMessage
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_ATTEMPT
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.TransformationParameters
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP

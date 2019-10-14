@@ -14,15 +14,15 @@ import org.alfresco.service.transaction.TransactionService
 import org.alfresco.transform.client.model.config.TransformServiceRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.event.ApplicationContextEvent
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.AlfrescoPromenaRenditionTransformationNotSupportedException
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchAlfrescoPromenaRenditionDefinitionException
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
+import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaRenditionTransformationNotSupportedException
+import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchPromenaRenditionDefinitionException
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.extension.getMediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
 
 internal class PromenaThumbnailRegistry(
     private val contentService: ContentService,
-    private val alfrescoPromenaRenditionDefinitionGetter: AlfrescoPromenaRenditionDefinitionGetter
+    private val promenaRenditionDefinitionGetter: PromenaRenditionDefinitionGetter
 ) : ThumbnailRegistry() {
 
     companion object {
@@ -30,7 +30,7 @@ internal class PromenaThumbnailRegistry(
     }
 
     private val definitions =
-        alfrescoPromenaRenditionDefinitionGetter.getAll()
+        promenaRenditionDefinitionGetter.getAll()
             .map(::PromenaThumbnailDefinition)
 
     override fun getThumbnailDefinition(thumbnailName: String): ThumbnailDefinition? =
@@ -48,14 +48,14 @@ internal class PromenaThumbnailRegistry(
         thumbnailDefinition: ThumbnailDefinition
     ): Boolean =
         try {
-            alfrescoPromenaRenditionDefinitionGetter
+            promenaRenditionDefinitionGetter
                 .getByRenditionName(thumbnailDefinition.name)
                 .getTransformation(contentService.getMediaType(sourceNodeRef))
             true
-        } catch (e: NoSuchAlfrescoPromenaRenditionDefinitionException) {
+        } catch (e: NoSuchPromenaRenditionDefinitionException) {
             logger.debug { "Couldn't get rendition for <$sourceNodeRef> | ${e.message}" }
             false
-        } catch (e: AlfrescoPromenaRenditionTransformationNotSupportedException) {
+        } catch (e: PromenaRenditionTransformationNotSupportedException) {
             logger.debug { e.message }
             false
         }
@@ -67,10 +67,10 @@ internal class PromenaThumbnailRegistry(
         thumbnailDefinition: ThumbnailDefinition
     ): Boolean =
         try {
-            alfrescoPromenaRenditionDefinitionGetter
+            promenaRenditionDefinitionGetter
                 .getByRenditionName(thumbnailDefinition.name)
             true
-        } catch (e: NoSuchAlfrescoPromenaRenditionDefinitionException) {
+        } catch (e: NoSuchPromenaRenditionDefinitionException) {
             logger.debug { e.message }
             false
         }
@@ -146,7 +146,7 @@ internal class PromenaThumbnailRegistry(
                 try {
                     it.renditionDefinition.getTransformation(mediaType(mimetype))
                     true
-                } catch (e: AlfrescoPromenaRenditionTransformationNotSupportedException) {
+                } catch (e: PromenaRenditionTransformationNotSupportedException) {
                     false
                 }
             }

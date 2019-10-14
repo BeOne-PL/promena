@@ -23,8 +23,8 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.exception.AnotherT
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoAuthenticationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoNodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
@@ -48,13 +48,13 @@ class TransformerResponseFlowTest {
     private lateinit var jmsUtils: JmsUtils
 
     @Autowired
-    private lateinit var alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator
+    private lateinit var nodesChecksumGenerator: NodesChecksumGenerator
 
     @Autowired
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
 
     @Autowired
-    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+    private lateinit var authorizationService: AuthorizationService
 
     companion object {
         private val nodeDescriptors = listOf(
@@ -80,9 +80,9 @@ class TransformerResponseFlowTest {
 
     @Before
     fun setUp() {
-        clearMocks(alfrescoAuthenticationService)
-        every { alfrescoAuthenticationService.getCurrentUser() } returns userName
-        every { alfrescoAuthenticationService.runAs<List<NodeRef>>(userName, any()) } returns resultNodeRefs
+        clearMocks(authorizationService)
+        every { authorizationService.getCurrentUser() } returns userName
+        every { authorizationService.runAs<List<NodeRef>>(userName, any()) } returns resultNodeRefs
     }
 
     @After
@@ -95,7 +95,7 @@ class TransformerResponseFlowTest {
         val id = UUID.randomUUID().toString()
 
         every {
-            alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
+            nodesChecksumGenerator.generateChecksum(nodeRefs)
         } returns nodesChecksum
 
         val transformation = reactiveTransformationManager.startTransformation(id)
@@ -114,7 +114,7 @@ class TransformerResponseFlowTest {
         val id = UUID.randomUUID().toString()
 
         every {
-            alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
+            nodesChecksumGenerator.generateChecksum(nodeRefs)
         } returns "not equal"
 
         val transformation = reactiveTransformationManager.startTransformation(id)

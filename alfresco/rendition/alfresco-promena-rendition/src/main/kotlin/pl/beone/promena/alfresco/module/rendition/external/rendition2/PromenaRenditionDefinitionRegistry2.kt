@@ -2,19 +2,19 @@ package pl.beone.promena.alfresco.module.rendition.external.rendition2
 
 import org.alfresco.repo.rendition2.RenditionDefinition2
 import org.alfresco.repo.rendition2.RenditionDefinitionRegistry2
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinition
-import pl.beone.promena.alfresco.module.rendition.contract.AlfrescoPromenaRenditionDefinitionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionGetter
 
 class PromenaRenditionDefinitionRegistry2(
-    private val alfrescoPromenaRenditionDefinitionGetter: AlfrescoPromenaRenditionDefinitionGetter
+    private val promenaRenditionDefinitionGetter: PromenaRenditionDefinitionGetter
 ) : RenditionDefinitionRegistry2 {
 
     override fun getRenditionNamesFrom(sourceMimetype: String?, size: Long): Set<String> =
         emptySet()
 
     override fun getRenditionNames(): Set<String> =
-        alfrescoPromenaRenditionDefinitionGetter.getAll()
-            .map(AlfrescoPromenaRenditionDefinition::getRenditionName)
+        promenaRenditionDefinitionGetter.getAll()
+            .map(PromenaRenditionDefinition::getRenditionName)
             .toSet()
 
     override fun getRenditionDefinition(renditionName: String): RenditionDefinition2 =

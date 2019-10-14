@@ -22,8 +22,8 @@ import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTran
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoAuthenticationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoNodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
@@ -48,7 +48,7 @@ class TransformerResponseErrorRetryFlowTest {
     private lateinit var jmsUtils: JmsUtils
 
     @Autowired
-    private lateinit var alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator
+    private lateinit var nodesChecksumGenerator: NodesChecksumGenerator
 
     @Autowired
     private lateinit var reactiveTransformationManager: ReactiveTransformationManager
@@ -68,12 +68,12 @@ class TransformerResponseErrorRetryFlowTest {
     }
 
     @Autowired
-    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+    private lateinit var authorizationService: AuthorizationService
 
     @Before
     fun setUp() {
-        clearMocks(alfrescoAuthenticationService)
-        every { alfrescoAuthenticationService.getCurrentUser() } returns userName
+        clearMocks(authorizationService)
+        every { authorizationService.getCurrentUser() } returns userName
     }
 
     @After
@@ -84,11 +84,11 @@ class TransformerResponseErrorRetryFlowTest {
     @Test
     fun `should receive exception and throw it after 1 attempt`() {
         every {
-            alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
+            nodesChecksumGenerator.generateChecksum(nodeRefs)
         } returns nodesChecksum
 
         every {
-            alfrescoAuthenticationService.runAs<Mono<List<NodeRef>>>(userName, any())
+            authorizationService.runAs<Mono<List<NodeRef>>>(userName, any())
         } returns Mono.error(exception)
 
         val transformation = reactiveTransformationManager.startTransformation(id)

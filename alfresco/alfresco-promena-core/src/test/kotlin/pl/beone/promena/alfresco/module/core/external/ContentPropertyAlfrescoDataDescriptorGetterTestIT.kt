@@ -10,7 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodeDoesNotExist
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeDescriptor
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoDataConverter
+import pl.beone.promena.alfresco.module.core.contract.DataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
@@ -30,11 +30,11 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
             createNode().apply { saveContent(mediaType, "no matter") }
         }
 
-        val alfrescoDataConverter = mockk<AlfrescoDataConverter> {
+        val dataConverter = mockk<DataConverter> {
             every { createData(any()) } returns data
         }
 
-        ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, alfrescoDataConverter)
+        ContentPropertyDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, dataConverter)
             .get(listOf(node.toNodeDescriptor(metadata))).let {
                 it shouldBe singleDataDescriptor(data, mediaType, metadata)
             }
@@ -43,7 +43,7 @@ class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoI
     @Test
     fun get_shouldThrowNodeDoesNotExist() {
         shouldThrow<NodeDoesNotExist> {
-            ContentPropertyAlfrescoDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, mockk())
+            ContentPropertyDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, mockk())
                 .get(listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}").toNodeDescriptor()))
         }
     }

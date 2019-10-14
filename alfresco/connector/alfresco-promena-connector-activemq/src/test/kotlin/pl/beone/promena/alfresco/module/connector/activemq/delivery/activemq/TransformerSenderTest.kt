@@ -20,17 +20,17 @@ import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_ATTEMPT
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS_STRING
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_ATTEMPT
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS_STRING
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.TransformationParameters
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoAuthenticationService
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
@@ -91,15 +91,15 @@ class TransformerSenderTest {
     }
 
     @Autowired
-    private lateinit var alfrescoAuthenticationService: AlfrescoAuthenticationService
+    private lateinit var authorizationService: AuthorizationService
 
     @Autowired
     private lateinit var transformationParametersSerializationService: TransformationParametersSerializationService
 
     @Before
     fun setUp() {
-        clearMocks(alfrescoAuthenticationService)
-        every { alfrescoAuthenticationService.getCurrentUser() } returns userName
+        clearMocks(authorizationService)
+        every { authorizationService.getCurrentUser() } returns userName
     }
 
     @After

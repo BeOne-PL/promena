@@ -5,14 +5,14 @@ import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaAlfrescoJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
+import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
 import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.AnotherTransformationIsInProgressException
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoAuthenticationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoNodesChecksumGenerator
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.TransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.core.extension.skippedSavingResult
 import pl.beone.promena.alfresco.module.core.extension.transformedSuccessfully
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
@@ -20,9 +20,9 @@ import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TR
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 
 class TransformerResponseConsumer(
-    private val alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-    private val alfrescoTransformedDataDescriptorSaver: AlfrescoTransformedDataDescriptorSaver,
-    private val alfrescoAuthenticationService: AlfrescoAuthenticationService,
+    private val nodesChecksumGenerator: NodesChecksumGenerator,
+    private val transformedDataDescriptorSaver: TransformedDataDescriptorSaver,
+    private val authorizationService: AuthorizationService,
     private val reactiveTransformationManager: ReactiveTransformationManager,
     private val transformationParametersSerializationService: TransformationParametersSerializationService
 ) {
@@ -44,7 +44,7 @@ class TransformerResponseConsumer(
 
         val (transformation, transformedDataDescriptors) = performedTransformationDescriptor
 
-        val currentNodesChecksum = alfrescoNodesChecksumGenerator.generateChecksum(nodeRefs)
+        val currentNodesChecksum = nodesChecksumGenerator.generateChecksum(nodeRefs)
         if (nodesChecksum != currentNodesChecksum) {
             reactiveTransformationManager.completeErrorTransformation(
                 correlationId,
@@ -58,8 +58,8 @@ class TransformerResponseConsumer(
 
             logger.skippedSavingResult(transformation, nodeDescriptors, nodesChecksum, currentNodesChecksum)
         } else {
-            val targetNodeRefs = alfrescoAuthenticationService.runAs(userName) {
-                alfrescoTransformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
+            val targetNodeRefs = authorizationService.runAs(userName) {
+                transformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
             }
             reactiveTransformationManager.completeTransformation(correlationId, targetNodeRefs)
 

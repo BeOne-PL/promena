@@ -3,28 +3,28 @@ package pl.beone.promena.alfresco.module.connector.activemq.configuration.delive
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.TransformerResponseErrorConsumer
-import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQAlfrescoPromenaTransformer
+import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQPromenaTransformer
 import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTransformationManager
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoAuthenticationService
-import pl.beone.promena.alfresco.module.core.contract.AlfrescoNodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
 
 @Configuration
 class TransformerResponseErrorConsumerContext {
 
     @Bean
     fun transformerResponseErrorConsumer(
-        alfrescoNodesChecksumGenerator: AlfrescoNodesChecksumGenerator,
-        activeMQAlfrescoPromenaTransformer: ActiveMQAlfrescoPromenaTransformer,
-        alfrescoAuthenticationService: AlfrescoAuthenticationService,
+        nodesChecksumGenerator: NodesChecksumGenerator,
+        activeMQPromenaTransformer: ActiveMQPromenaTransformer,
+        authorizationService: AuthorizationService,
         reactiveTransformationManager: ReactiveTransformationManager,
         transformationParametersSerializationService: TransformationParametersSerializationService
     ): TransformerResponseErrorConsumer =
         TransformerResponseErrorConsumer(
-            alfrescoNodesChecksumGenerator,
-            alfrescoAuthenticationService,
+            nodesChecksumGenerator,
+            authorizationService,
             reactiveTransformationManager,
-            activeMQAlfrescoPromenaTransformer,
+            activeMQPromenaTransformer,
             transformationParametersSerializationService
         )
 }
