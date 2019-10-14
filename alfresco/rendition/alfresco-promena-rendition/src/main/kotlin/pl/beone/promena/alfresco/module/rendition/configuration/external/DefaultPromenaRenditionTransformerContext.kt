@@ -32,10 +32,10 @@ class DefaultPromenaRenditionTransformerContext {
             renditionGetter,
             promenaRenditionDefinitionGetter,
             promenaRenditionInProgressSynchronizer,
-            applicationContext.getAlfrescoPromenaTransformer(properties.getPropertyWithEmptySupport("promena.rendition.transformer.bean.name")),
+            applicationContext.getPromenaTransformer(properties.getPropertyWithEmptySupport("promena.rendition.transformer.bean.name")),
             properties.getRequiredPropertyWithResolvedPlaceholders("promena.rendition.transformation.timeout").toDuration()
         )
 
-    private fun ApplicationContext.getAlfrescoPromenaTransformer(beanName: String?): PromenaTransformer =
+    private fun ApplicationContext.getPromenaTransformer(beanName: String?): PromenaTransformer =
         if (beanName != null) getBean(beanName, PromenaTransformer::class.java) else getBean(PromenaTransformer::class.java)
 }

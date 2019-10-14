@@ -19,7 +19,7 @@ import pl.beone.promena.transformer.internal.model.metadata.plus
 import java.util.*
 
 @RunWith(AlfrescoTestRunner::class)
-class ContentPropertyAlfrescoDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
+class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
 
     @Test
     fun get_shouldDetermineDataDescriptor() {
