@@ -63,7 +63,7 @@ class TransformerResponseErrorConsumer(
         } else {
             logger.couldNotTransform(transformation, nodeDescriptors, transformationException)
 
-            if (wasLastAttempt(attempt, retry.maxAttempts)) {
+            if (retry is Retry.No || wasLastAttempt(attempt, retry.maxAttempts)) {
                 reactiveTransformationManager.completeErrorTransformation(correlationId, transformationException)
             } else {
                 retry(correlationId, transformation, nodeDescriptors, retry, attempt + 1, userName)

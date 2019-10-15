@@ -51,7 +51,7 @@ class TransformerSender(
                 setStringProperty(SEND_BACK_TRANSFORMATION_PARAMETERS_STRING, transformationParameters.toString())
 
                 setLongProperty(SEND_BACK_ATTEMPT, attempt)
-                setLongProperty(SEND_BACK_RETRY_MAX_ATTEMPTS, retry.maxAttempts)
+                setLongProperty(SEND_BACK_RETRY_MAX_ATTEMPTS, if (retry !is Retry.No) retry.maxAttempts else 0)
             }
         }
     }
