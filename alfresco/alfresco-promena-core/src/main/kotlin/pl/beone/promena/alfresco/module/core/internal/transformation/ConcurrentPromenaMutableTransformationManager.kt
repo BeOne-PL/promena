@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.core.internal
+package pl.beone.promena.alfresco.module.core.internal.transformation
 
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
@@ -29,7 +29,10 @@ class ConcurrentPromenaMutableTransformationManager(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val transformationMap = MaxSizeHashMap<String, Transformation>(bufferSize)
+    private val transformationMap =
+        MaxSizeHashMap<String, Transformation>(
+            bufferSize
+        )
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     override fun getResult(transformationExecution: TransformationExecution, waitMax: Duration?): TransformationExecutionResult {
@@ -52,7 +55,8 @@ class ConcurrentPromenaMutableTransformationManager(
             val id = generateId()
             val transformationExecution = TransformationExecution(id)
 
-            val transformation = Transformation(ReentrantLock())
+            val transformation =
+                Transformation(ReentrantLock())
             transformationMap[id] = transformation
             try {
                 transformation.lock.lock()

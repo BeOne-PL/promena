@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.core.external
+package pl.beone.promena.alfresco.module.core.external.node
 
 import org.alfresco.model.ContentModel.*
 import org.alfresco.model.RenditionModel.ASSOC_RENDITION
@@ -14,8 +14,8 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTrans
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
-import pl.beone.promena.alfresco.module.core.contract.DataConverter
-import pl.beone.promena.alfresco.module.core.contract.TransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
+import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data

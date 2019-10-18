@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.core.contract
+package pl.beone.promena.alfresco.module.core.contract.node
 
 import org.alfresco.service.cmr.repository.ContentReader
 import org.alfresco.service.cmr.repository.ContentWriter

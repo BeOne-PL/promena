@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.core.internal
+package pl.beone.promena.alfresco.module.core.internal.transformation
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotThrowAny
@@ -24,12 +24,16 @@ class ConcurrentPromenaMutableTransformationManagerTest {
     }
 
     private val dispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
-    private val promenaMutableTransformationManager = ConcurrentPromenaMutableTransformationManager(100, Duration.ofMillis(500))
+    private val promenaMutableTransformationManager =
+        ConcurrentPromenaMutableTransformationManager(100, Duration.ofMillis(500))
 
     @Test
     fun `correct flow and waiting for result before transaction is completed`() {
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
-        promenaMutableTransformationManager.completeTransformation(transformationExecution, transformationExecutionResult)
+        promenaMutableTransformationManager.completeTransformation(
+            transformationExecution,
+            transformationExecutionResult
+        )
         promenaMutableTransformationManager.getResult(transformationExecution, ZERO) shouldBe transformationExecutionResult
     }
 
@@ -38,7 +42,10 @@ class ConcurrentPromenaMutableTransformationManagerTest {
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         runBlocking(dispatcher) {
             launch {
-                promenaMutableTransformationManager.completeTransformation(transformationExecution, transformationExecutionResult)
+                promenaMutableTransformationManager.completeTransformation(
+                    transformationExecution,
+                    transformationExecutionResult
+                )
             }
 
             launch {
@@ -51,7 +58,10 @@ class ConcurrentPromenaMutableTransformationManagerTest {
     @Test
     fun `incorrect flow and waiting for result before transaction is completed`() {
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
-        promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, exception)
+        promenaMutableTransformationManager.completeErrorTransformation(
+            transformationExecution,
+            exception
+        )
         shouldThrowExactly<RuntimeException> {
             promenaMutableTransformationManager.getResult(transformationExecution, ZERO)
         }.message shouldBe "exception"
@@ -62,7 +72,10 @@ class ConcurrentPromenaMutableTransformationManagerTest {
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         runBlocking(dispatcher) {
             launch {
-                promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, exception)
+                promenaMutableTransformationManager.completeErrorTransformation(
+                    transformationExecution,
+                    exception
+                )
             }
 
             launch {
@@ -81,7 +94,10 @@ class ConcurrentPromenaMutableTransformationManagerTest {
         runBlocking(dispatcher) {
             launch {
                 delay(1000)
-                promenaMutableTransformationManager.completeTransformation(transformationExecution, transformationExecutionResult)
+                promenaMutableTransformationManager.completeTransformation(
+                    transformationExecution,
+                    transformationExecutionResult
+                )
             }
 
             launch {
@@ -104,7 +120,10 @@ class ConcurrentPromenaMutableTransformationManagerTest {
         runBlocking(dispatcher) {
             launch {
                 delay(700)
-                promenaMutableTransformationManager.completeTransformation(transformationExecution, transformationExecutionResult)
+                promenaMutableTransformationManager.completeTransformation(
+                    transformationExecution,
+                    transformationExecutionResult
+                )
             }
 
             launch {
@@ -130,7 +149,10 @@ class ConcurrentPromenaMutableTransformationManagerTest {
     @Test
     fun `marking transaction that wasn't started as complete _ shouldn't throw any exception`() {
         shouldNotThrowAny {
-            promenaMutableTransformationManager.completeTransformation(TransformationExecution("absent"), transformationExecutionResult)
+            promenaMutableTransformationManager.completeTransformation(
+                TransformationExecution("absent"),
+                transformationExecutionResult
+            )
         }
     }
 
@@ -140,7 +162,10 @@ class ConcurrentPromenaMutableTransformationManagerTest {
         runBlocking(dispatcher) {
             transformationExecution.forEach {
                 launch {
-                    promenaMutableTransformationManager.completeTransformation(it, transformationExecutionResult)
+                    promenaMutableTransformationManager.completeTransformation(
+                        it,
+                        transformationExecutionResult
+                    )
                 }
             }
 

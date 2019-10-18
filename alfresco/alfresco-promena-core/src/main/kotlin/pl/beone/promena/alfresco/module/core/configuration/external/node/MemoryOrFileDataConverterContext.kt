@@ -1,9 +1,9 @@
-package pl.beone.promena.alfresco.module.core.configuration.external
+package pl.beone.promena.alfresco.module.core.configuration.external.node
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.core.external.MemoryOrFileDataConverter
+import pl.beone.promena.alfresco.module.core.external.node.MemoryOrFileDataConverter
 import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.io.File
@@ -15,7 +15,10 @@ class MemoryOrFileDataConverterContext {
     fun memoryOrFileDataConverter(
         @Qualifier("externalCommunicationParameters") externalCommunicationParameters: CommunicationParameters
     ): MemoryOrFileDataConverter =
-        MemoryOrFileDataConverter(externalCommunicationParameters.getId(), getDirectoryIfFileOrNull(externalCommunicationParameters))
+        MemoryOrFileDataConverter(
+            externalCommunicationParameters.getId(),
+            getDirectoryIfFileOrNull(externalCommunicationParameters)
+        )
 
     private fun getDirectoryIfFileOrNull(externalCommunicationParameters: CommunicationParameters): File? =
         if (externalCommunicationParameters.getId() == FileCommunicationParameters.ID) {

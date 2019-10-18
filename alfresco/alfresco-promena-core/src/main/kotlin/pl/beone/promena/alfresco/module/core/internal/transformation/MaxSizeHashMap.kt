@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.core.internal
+package pl.beone.promena.alfresco.module.core.internal.transformation
 
 internal class MaxSizeHashMap<K, V>(
     private val maxSize: Int

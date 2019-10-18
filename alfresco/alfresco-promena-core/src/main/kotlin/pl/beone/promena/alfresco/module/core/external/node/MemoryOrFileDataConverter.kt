@@ -1,10 +1,10 @@
-package pl.beone.promena.alfresco.module.core.external
+package pl.beone.promena.alfresco.module.core.external.node
 
 import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.ContentReader
 import org.alfresco.service.cmr.repository.ContentWriter
 import org.alfresco.service.cmr.repository.FileContentReader
-import pl.beone.promena.alfresco.module.core.contract.DataConverter
+import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
 import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException

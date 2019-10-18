@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.core.external
+package pl.beone.promena.alfresco.module.core.external.node
 
 import org.alfresco.model.ContentModel.PROP_CONTENT
 import org.alfresco.repo.rendition2.RenditionService2Impl.SOURCE_HAS_NO_CONTENT
@@ -6,7 +6,7 @@ import org.alfresco.service.cmr.repository.ContentData
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter
-import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 
 class RenditionContentNodesChecksumGenerator(
     private val nodeService: NodeService
