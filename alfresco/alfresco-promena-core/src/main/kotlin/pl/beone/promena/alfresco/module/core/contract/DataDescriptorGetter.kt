@@ -5,5 +5,5 @@ import pl.beone.promena.transformer.contract.data.DataDescriptor
 
 interface DataDescriptorGetter {
 
-    fun get(nodeDescriptors: List<NodeDescriptor>): DataDescriptor
+    fun get(nodeDescriptor: NodeDescriptor): DataDescriptor
 }

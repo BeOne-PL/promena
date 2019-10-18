@@ -9,7 +9,7 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodeDoesNotExist
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeDescriptor
+import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.contract.DataConverter
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
@@ -26,7 +26,7 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
         val data = "test".toMemoryData()
         val mediaType = TEXT_PLAIN
         val metadata = emptyMetadata() + ("key" to "value")
-        val node = with(createOrGetIntegrationTestsFolder()) {
+        val nodeRef = with(createOrGetIntegrationTestsFolder()) {
             createNode().apply { saveContent(mediaType, "no matter") }
         }
 
@@ -35,7 +35,7 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
         }
 
         ContentPropertyDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, dataConverter)
-            .get(listOf(node.toNodeDescriptor(metadata))).let {
+            .get(nodeRef.toSingleNodeDescriptor(metadata)).let {
                 it shouldBe singleDataDescriptor(data, mediaType, metadata)
             }
     }
@@ -44,7 +44,7 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
     fun get_shouldThrowNodeDoesNotExist() {
         shouldThrow<NodeDoesNotExist> {
             ContentPropertyDataDescriptorGetter(serviceRegistry.nodeService, serviceRegistry.contentService, mockk())
-                .get(listOf(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}").toNodeDescriptor()))
+                .get(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}").toSingleNodeDescriptor())
         }
     }
 }

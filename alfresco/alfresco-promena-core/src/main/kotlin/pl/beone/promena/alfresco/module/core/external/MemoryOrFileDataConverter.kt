@@ -55,7 +55,7 @@ class MemoryOrFileDataConverter(
             when (e) {
                 is UnsupportedOperationException,
                 is DataDeleteException -> logger.debug(e) { "Couldn't delete <${data.toSimplifiedString()}> resource" }
-                else                   -> throw e
+                else -> throw e
             }
         }
         logger.debug { "Finished deleting <${data.toSimplifiedString()}> resource" }

@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodeDoesNotExist
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
+import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.contract.DataConverter
 import pl.beone.promena.alfresco.module.core.contract.DataDescriptorGetter
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
@@ -19,9 +20,9 @@ class ContentPropertyDataDescriptorGetter(
     private val dataConverter: DataConverter
 ) : DataDescriptorGetter {
 
-    override fun get(nodeDescriptors: List<NodeDescriptor>): DataDescriptor {
-        nodeDescriptors.map(NodeDescriptor::nodeRef).forEach { it.checkIfExists() }
-        return dataDescriptor(nodeDescriptors.map(::convertToSingleDataDescriptor))
+    override fun get(nodeDescriptor: NodeDescriptor): DataDescriptor {
+        nodeDescriptor.toNodeRefs().forEach { it.checkIfExists() }
+        return dataDescriptor(nodeDescriptor.descriptors.map(::convertToSingleDataDescriptor))
     }
 
     private fun NodeRef.checkIfExists() {
@@ -30,7 +31,7 @@ class ContentPropertyDataDescriptorGetter(
         }
     }
 
-    private fun convertToSingleDataDescriptor(nodeDescriptor: NodeDescriptor): DataDescriptor.Single {
+    private fun convertToSingleDataDescriptor(nodeDescriptor: NodeDescriptor.Single): DataDescriptor.Single {
         val contentReader = contentService.getReader(nodeDescriptor.nodeRef, PROP_CONTENT)
         val mediaType = mediaType(contentReader.mimetype, contentReader.encoding)
 

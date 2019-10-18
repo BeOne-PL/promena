@@ -4,18 +4,38 @@ import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 
-data class NodeDescriptor internal constructor(
-    val nodeRef: NodeRef,
-    val metadata: Metadata
-) {
+sealed class NodeDescriptor {
 
-    companion object {
-        @JvmStatic
-        fun of(nodeRef: NodeRef, metadata: Metadata): NodeDescriptor =
-            NodeDescriptor(nodeRef, metadata)
+    data class Single internal constructor(
+        val nodeRef: NodeRef,
+        val metadata: Metadata
+    ) : NodeDescriptor() {
 
-        @JvmStatic
-        fun of(nodeRef: NodeRef): NodeDescriptor =
-            NodeDescriptor(nodeRef, emptyMetadata())
+        companion object {
+            @JvmStatic
+            fun of(nodeRef: NodeRef, metadata: Metadata): Single =
+                Single(nodeRef, metadata)
+
+            @JvmStatic
+            fun of(nodeRef: NodeRef): Single =
+                Single(nodeRef, emptyMetadata())
+        }
+
+        override val descriptors: List<Single>
+            get() = listOf(this)
     }
+
+    data class Multi internal constructor(
+        override val descriptors: List<Single>
+    ) : NodeDescriptor() {
+
+        companion object {
+            @JvmStatic
+            fun of(descriptors: List<Single>): Multi =
+                Multi(descriptors)
+        }
+
+    }
+
+    abstract val descriptors: List<Single>
 }
