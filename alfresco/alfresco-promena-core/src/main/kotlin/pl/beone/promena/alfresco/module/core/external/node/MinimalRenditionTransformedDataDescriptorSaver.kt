@@ -5,7 +5,6 @@ import org.alfresco.model.RenditionModel.ASSOC_RENDITION
 import org.alfresco.service.cmr.repository.ContentService
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
-import org.alfresco.service.namespace.NamespaceService
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.transaction.TransactionService
@@ -14,8 +13,10 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTrans
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationMetadataMapperElement
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataMapper
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
@@ -28,16 +29,19 @@ import kotlin.collections.ArrayList
 
 class MinimalRenditionTransformedDataDescriptorSaver(
     private val saveIfZero: Boolean,
+    private val promenaTransformationMetadataMappers: List<PromenaTransformationMetadataMapper>,
+    private val dataConverter: DataConverter,
     private val nodeService: NodeService,
     private val contentService: ContentService,
-    private val namespaceService: NamespaceService,
-    private val transactionService: TransactionService,
-    private val dataConverter: DataConverter
+    private val transactionService: TransactionService
 ) : TransformedDataDescriptorSaver {
 
-    companion object {
-        const val METADATA_ALF_PREFIX = "alf_"
-    }
+    private val promenaTransformationMetadataElements = createMapFromAllMappers()
+
+    private fun createMapFromAllMappers(): Map<String, TransformationMetadataMapperElement> =
+        promenaTransformationMetadataMappers.flatMap(PromenaTransformationMetadataMapper::getElements)
+            .map { it.key to it }
+            .toMap()
 
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
         transactionService.retryingTransactionHelper.doInTransaction {
@@ -67,7 +71,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
             val dataSize = transformedDataDescriptors.size
             val properties = createGeneralAndThumbnailProperties(transformation.getTransformerIdsDescription()) +
                     determinePromenaProperties(id, transformation, index, dataSize) +
-                    determineAlfrescoProperties(transformedDataDescriptor.metadata)
+                    determineProperties(transformedDataDescriptor.metadata)
 
             createRenditionNode(sourceNodeRef, transformation.getTransformerIdsDescription(), properties).apply {
                 if (transformedDataDescriptor.hasContent()) {
@@ -128,11 +132,11 @@ class MinimalRenditionTransformedDataDescriptorSaver(
     private fun <T, U> Map<T, U>.filterNotNullValues(): Map<T, U> =
         filter { (_, value) -> value != null }
 
-    private fun determineAlfrescoProperties(metadata: Metadata): Map<QName, Serializable?> =
+    private fun determineProperties(metadata: Metadata): Map<QName, Serializable?> =
         metadata.getAll()
-            .filter { (key) -> key.startsWith(METADATA_ALF_PREFIX) }
-            .map { (key, value) -> key.removePrefix(METADATA_ALF_PREFIX) to value }
-            .map { (key, value) -> QName.createQName(key, namespaceService) to value as Serializable? }
+            .filterKeys(promenaTransformationMetadataElements::containsKey)
+            .mapKeys { (key) -> promenaTransformationMetadataElements[key] ?: error("Impossible. It's filtered in the previous line") }
+            .map { (mapperElement, value) -> mapperElement.property to mapperElement.converter(value) }
             .toMap()
 
     private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =
