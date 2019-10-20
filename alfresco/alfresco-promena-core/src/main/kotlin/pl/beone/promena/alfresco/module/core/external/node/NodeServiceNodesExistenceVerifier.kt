@@ -14,7 +14,7 @@ class NodeServiceNodesExistenceVerifier(
     }
 
     private fun throwIfDoesNotExist(nodeRef: NodeRef) {
-        if (serviceRegistry.nodeService.exists(nodeRef)) {
+        if (!serviceRegistry.nodeService.exists(nodeRef)) {
             throw InvalidNodeRefException("Node <$nodeRef> doesn't exist", nodeRef)
         }
     }
