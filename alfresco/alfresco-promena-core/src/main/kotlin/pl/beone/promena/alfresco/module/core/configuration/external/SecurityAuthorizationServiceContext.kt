@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.core.configuration.external
 
-import org.alfresco.service.cmr.security.AuthenticationService
+import org.alfresco.service.ServiceRegistry
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.core.external.SecurityAuthorizationService
@@ -10,9 +10,9 @@ class SecurityAuthorizationServiceContext {
 
     @Bean
     fun securityAuthorizationService(
-        authenticationService: AuthenticationService
+        serviceRegistry: ServiceRegistry
     ) =
         SecurityAuthorizationService(
-            authenticationService
+            serviceRegistry
         )
 }

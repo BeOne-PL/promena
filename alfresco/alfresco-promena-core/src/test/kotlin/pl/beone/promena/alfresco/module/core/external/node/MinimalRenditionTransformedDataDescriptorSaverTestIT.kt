@@ -81,14 +81,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(
-            true,
-            promenaTransformationMetadataMappers,
-            dataConverter,
-            serviceRegistry.nodeService,
-            serviceRegistry.contentService,
-            serviceRegistry.transactionService
-        )
+        MinimalRenditionTransformedDataDescriptorSaver(true, promenaTransformationMetadataMappers, dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", APPLICATION_PDF, emptyParameters()) next
                         singleTransformation("transformer2", "sub", TEXT_PLAIN, emptyParameters() + ("key" to "value")),
@@ -196,14 +189,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(
-            true,
-            promenaTransformationMetadataMappers,
-            dataConverter,
-            serviceRegistry.nodeService,
-            serviceRegistry.contentService,
-            serviceRegistry.transactionService
-        )
+        MinimalRenditionTransformedDataDescriptorSaver(true, promenaTransformationMetadataMappers, dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
@@ -256,14 +242,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(
-            true,
-            emptyList(),
-            dataConverter,
-            serviceRegistry.nodeService,
-            serviceRegistry.contentService,
-            serviceRegistry.transactionService
-        )
+        MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
@@ -309,14 +288,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
             every { saveDataInContentWriter(any(), any()) } just Runs
         }
 
-        val nodes = MinimalRenditionTransformedDataDescriptorSaver(
-            false,
-            emptyList(),
-            dataConverter,
-            serviceRegistry.nodeService,
-            serviceRegistry.contentService,
-            serviceRegistry.transactionService
-        )
+        MinimalRenditionTransformedDataDescriptorSaver(false, emptyList(), dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),

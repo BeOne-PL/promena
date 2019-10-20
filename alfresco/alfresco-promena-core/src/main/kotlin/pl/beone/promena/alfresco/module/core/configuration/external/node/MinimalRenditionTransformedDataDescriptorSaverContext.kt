@@ -1,8 +1,6 @@
 package pl.beone.promena.alfresco.module.core.configuration.external.node
 
-import org.alfresco.service.cmr.repository.ContentService
-import org.alfresco.service.cmr.repository.NodeService
-import org.alfresco.service.transaction.TransactionService
+import org.alfresco.service.ServiceRegistry
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,17 +17,13 @@ class MinimalRenditionTransformedDataDescriptorSaverContext {
     fun minimalRenditionTransformedDataDescriptorSaver(
         @Qualifier("global-properties") properties: Properties,
         promenaTransformationMetadataMappers: Optional<List<PromenaTransformationMetadataMapper>>,
-        nodeService: NodeService,
-        contentService: ContentService,
-        transactionService: TransactionService,
-        dataConverter: DataConverter
+        dataConverter: DataConverter,
+        serviceRegistry: ServiceRegistry
     ) =
         MinimalRenditionTransformedDataDescriptorSaver(
             properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.transformation.save-if-zero").toBoolean(),
             promenaTransformationMetadataMappers.orElse(emptyList()),
             dataConverter,
-            nodeService,
-            contentService,
-            transactionService
+            serviceRegistry
         )
 }

@@ -20,14 +20,14 @@ class RenditionContentNodesChecksumGeneratorTestIT : AbstractUtilsAlfrescoIT() {
             }
         }
 
-        RenditionContentNodesChecksumGenerator(serviceRegistry.nodeService)
+        RenditionContentNodesChecksumGenerator(serviceRegistry)
             .generateChecksum(nodeRefs) shouldHaveMinLength 2
     }
 
     @Test
     fun generateChecksum_shouldThrowIllegalArgumentException() {
         shouldThrow<IllegalArgumentException> {
-            RenditionContentNodesChecksumGenerator(serviceRegistry.nodeService).generateChecksum(emptyList())
+            RenditionContentNodesChecksumGenerator(serviceRegistry).generateChecksum(emptyList())
         }.message shouldBe "You must pass at least one node"
     }
 }

@@ -35,11 +35,7 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
             every { createData(any()) } returns data
         }
 
-        ContentPropertyDataDescriptorGetter(
-            serviceRegistry.nodeService,
-            serviceRegistry.contentService,
-            dataConverter
-        )
+        ContentPropertyDataDescriptorGetter(dataConverter, serviceRegistry)
             .get(nodeRef.toSingleNodeDescriptor(metadata)).let {
                 it shouldBe singleDataDescriptor(data, mediaType, metadata)
             }
@@ -48,11 +44,7 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
     @Test
     fun get_shouldThrowNodeDoesNotExist() {
         shouldThrow<InvalidNodeRefException> {
-            ContentPropertyDataDescriptorGetter(
-                serviceRegistry.nodeService,
-                serviceRegistry.contentService,
-                mockk()
-            )
+            ContentPropertyDataDescriptorGetter(mockk(), serviceRegistry)
                 .get(NodeRef("workspace://SpacesStore/${UUID.randomUUID()}").toSingleNodeDescriptor())
         }
     }

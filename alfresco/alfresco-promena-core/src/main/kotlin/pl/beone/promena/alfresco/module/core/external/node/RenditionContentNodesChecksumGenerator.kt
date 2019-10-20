@@ -2,14 +2,14 @@ package pl.beone.promena.alfresco.module.core.external.node
 
 import org.alfresco.model.ContentModel.PROP_CONTENT
 import org.alfresco.repo.rendition2.RenditionService2Impl.SOURCE_HAS_NO_CONTENT
+import org.alfresco.service.ServiceRegistry
 import org.alfresco.service.cmr.repository.ContentData
 import org.alfresco.service.cmr.repository.NodeRef
-import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 
 class RenditionContentNodesChecksumGenerator(
-    private val nodeService: NodeService
+    private val serviceRegistry: ServiceRegistry
 ) : NodesChecksumGenerator {
 
     override fun generateChecksum(nodeRefs: List<NodeRef>): String =
@@ -22,7 +22,7 @@ class RenditionContentNodesChecksumGenerator(
     private fun getSourceContentHashCode(nodeRef: NodeRef): Int {
         val contentData = DefaultTypeConverter.INSTANCE.convert(
             ContentData::class.java,
-            nodeService.getProperty(nodeRef, PROP_CONTENT)
+            serviceRegistry.nodeService.getProperty(nodeRef, PROP_CONTENT)
         )
 
         return if (contentData != null) {

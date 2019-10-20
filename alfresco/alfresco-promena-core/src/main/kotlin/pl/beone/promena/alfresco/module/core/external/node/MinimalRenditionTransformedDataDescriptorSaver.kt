@@ -2,12 +2,10 @@ package pl.beone.promena.alfresco.module.core.external.node
 
 import org.alfresco.model.ContentModel.*
 import org.alfresco.model.RenditionModel.ASSOC_RENDITION
-import org.alfresco.service.cmr.repository.ContentService
+import org.alfresco.service.ServiceRegistry
 import org.alfresco.service.cmr.repository.NodeRef
-import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
-import org.alfresco.service.transaction.TransactionService
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_ID
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
@@ -31,9 +29,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
     private val saveIfZero: Boolean,
     private val promenaTransformationMetadataMappers: List<PromenaTransformationMetadataMapper>,
     private val dataConverter: DataConverter,
-    private val nodeService: NodeService,
-    private val contentService: ContentService,
-    private val transactionService: TransactionService
+    private val serviceRegistry: ServiceRegistry
 ) : TransformedDataDescriptorSaver {
 
     private val promenaTransformationMetadataElements = createMapFromAllMappers()
@@ -44,7 +40,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
             .toMap()
 
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
-        transactionService.retryingTransactionHelper.doInTransaction {
+        serviceRegistry.retryingTransactionHelper.doInTransaction {
             val sourceNodeRef = nodeRefs.first()
 
             val renditionsNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
@@ -140,7 +136,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
             .toMap()
 
     private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =
-        nodeService.createNode(
+        serviceRegistry.nodeService.createNode(
             sourceNodeRef,
             ASSOC_RENDITION,
             QName.createQName(CONTENT_MODEL_1_0_URI, name),
@@ -149,7 +145,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
         ).childRef
 
     private fun NodeRef.saveContent(targetMediaType: MediaType, data: Data) {
-        contentService.getWriter(this, PROP_CONTENT, true).apply {
+        serviceRegistry.contentService.getWriter(this, PROP_CONTENT, true).apply {
             mimetype = targetMediaType.mimeType
             dataConverter.saveDataInContentWriter(data, this)
         }

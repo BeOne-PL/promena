@@ -3,7 +3,6 @@ package pl.beone.promena.alfresco.module.core.external.node
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotThrowExactly
 import io.kotlintest.shouldThrowExactly
-import org.alfresco.model.ContentModel.PROP_NAME
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.alfresco.repo.domain.node.NodeDAO
 import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
@@ -28,7 +27,7 @@ class NodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() {
 
     @Test
     fun verify_aNodeWasCreatedInANewTransactionThatWasFinishedBeforeVerification() {
-        val nodeRef = serviceRegistry.retryingTransactionHelper.doInTransaction({
+        serviceRegistry.retryingTransactionHelper.doInTransaction({
             createOrGetIntegrationTestsFolder().createNode()
         }, false, true)
 
