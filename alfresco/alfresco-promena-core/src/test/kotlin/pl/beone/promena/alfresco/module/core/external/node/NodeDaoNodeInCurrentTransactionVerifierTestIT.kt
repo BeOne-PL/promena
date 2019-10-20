@@ -6,17 +6,21 @@ import io.kotlintest.shouldThrowExactly
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.alfresco.repo.domain.node.NodeDAO
 import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialConcurrentModificationException
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 
 @RunWith(AlfrescoTestRunner::class)
-class NodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() {
+class NodeDaoNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() {
 
-    private val nodeInCurrentTransactionVerifier = NodeInCurrentTransactionVerifier(
-        applicationContext.getBean("nodeDAO", NodeDAO::class.java)
-    )
+    private lateinit var nodeInCurrentTransactionVerifier: NodeDaoNodeInCurrentTransactionVerifier
+
+    @Before
+    fun setUp() {
+        nodeInCurrentTransactionVerifier = NodeDaoNodeInCurrentTransactionVerifier(applicationContext.getBean("nodeDAO", NodeDAO::class.java))
+    }
 
     @Test
     fun verify_anExistingUnchangedNode() {

@@ -8,6 +8,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.junit.Before
 import org.junit.Test
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
@@ -24,8 +25,12 @@ class ConcurrentPromenaMutableTransformationManagerTest {
     }
 
     private val dispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
-    private val promenaMutableTransformationManager =
-        ConcurrentPromenaMutableTransformationManager(100, Duration.ofMillis(500))
+    private lateinit var promenaMutableTransformationManager: ConcurrentPromenaMutableTransformationManager
+
+    @Before
+    fun setUp() {
+        promenaMutableTransformationManager = ConcurrentPromenaMutableTransformationManager(100, Duration.ofMillis(500))
+    }
 
     @Test
     fun `correct flow and waiting for result before transaction is completed`() {

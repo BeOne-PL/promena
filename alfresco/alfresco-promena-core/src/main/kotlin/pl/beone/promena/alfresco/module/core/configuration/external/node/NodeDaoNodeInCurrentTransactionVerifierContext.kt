@@ -3,16 +3,16 @@ package pl.beone.promena.alfresco.module.core.configuration.external.node
 import org.alfresco.repo.domain.node.NodeDAO
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.beone.promena.alfresco.module.core.external.node.NodeInCurrentTransactionVerifier
+import pl.beone.promena.alfresco.module.core.external.node.NodeDaoNodeInCurrentTransactionVerifier
 
 @Configuration
-class NodeInCurrentTransactionCheckerContext {
+class NodeDaoNodeInCurrentTransactionVerifierContext {
 
     @Bean
-    fun nodeInCurrentTransactionChecker(
+    fun nodeDaoNodeInCurrentTransactionVerifier(
         nodeDAO: NodeDAO
     ) =
-        NodeInCurrentTransactionVerifier(
+        NodeDaoNodeInCurrentTransactionVerifier(
             nodeDAO
         )
 }

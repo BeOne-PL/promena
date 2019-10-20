@@ -1,5 +1,6 @@
 package pl.beone.promena.alfresco.module.core.extension
 
+import org.alfresco.service.cmr.repository.NodeRef
 import org.slf4j.Logger
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
@@ -30,14 +31,14 @@ fun Logger.transformedSuccessfully(
     )
 }
 
-fun Logger.skippedSavingResult(
+fun Logger.stoppedTransformingBecauseChecksumsAreDifferent(
     transformation: Transformation,
     nodeDescriptor: NodeDescriptor,
     oldNodesChecksum: String,
     currentNodesChecksum: String
 ) {
     warn(
-        "Skipped saving result <{}> from <{}> because nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
+        "Stopped transforming <{}> using <{}> because nodes have been changed in the meantime (old checksum <{}>, current checksum <{}>)",
         nodeDescriptor,
         transformation,
         oldNodesChecksum,
@@ -45,32 +46,13 @@ fun Logger.skippedSavingResult(
     )
 }
 
-fun Logger.couldNotTransformButChecksumsAreDifferent(
-    transformation: Transformation,
-    nodeDescriptor: NodeDescriptor,
-    oldNodesChecksum: String,
-    currentNodesChecksum: String,
-    exception: Throwable
-) {
-    if (exception.cause != null) {
-        warn(
-            "Couldn't transform <{}> using <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...",
-            nodeDescriptor,
-            transformation,
-            oldNodesChecksum,
-            currentNodesChecksum,
-            exception
-        )
-    } else {
-        warn(
-            "Couldn't transform <{}> using <{}> but nodes were changed in the meantime (old checksum <{}>, current checksum <{}>). Another transformation is in progress...\n> {}",
-            nodeDescriptor,
-            transformation,
-            oldNodesChecksum,
-            currentNodesChecksum,
-            exception.toString()
-        )
-    }
+fun Logger.stoppedTransformingBecauseNodeDoesNotExist(transformation: Transformation, nodeDescriptor: NodeDescriptor, nodeRef: NodeRef) {
+    warn(
+        "Stopped transforming <{}> using <{}> because <{}> node has been removed in the meantime",
+        nodeDescriptor,
+        transformation,
+        nodeRef
+    )
 }
 
 fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: Throwable) {
