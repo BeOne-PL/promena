@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.core.external
+package pl.beone.promena.alfresco.module.core.external.node
 
 import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.matchers.collections.shouldHaveSize
@@ -26,7 +26,7 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.Tra
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationMetadataMapperElement
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataMapper
-import pl.beone.promena.alfresco.module.core.external.node.MinimalRenditionTransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.emptyTransformedDataDescriptor

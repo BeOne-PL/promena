@@ -1,17 +1,17 @@
-package pl.beone.promena.alfresco.module.core.external
+package pl.beone.promena.alfresco.module.core.external.node
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
 import org.alfresco.rad.test.AlfrescoTestRunner
+import org.alfresco.service.cmr.repository.InvalidNodeRefException
 import org.alfresco.service.cmr.repository.NodeRef
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodeDoesNotExist
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
-import pl.beone.promena.alfresco.module.core.external.node.ContentPropertyDataDescriptorGetter
+import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
@@ -47,7 +47,7 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
 
     @Test
     fun get_shouldThrowNodeDoesNotExist() {
-        shouldThrow<NodeDoesNotExist> {
+        shouldThrow<InvalidNodeRefException> {
             ContentPropertyDataDescriptorGetter(
                 serviceRegistry.nodeService,
                 serviceRegistry.contentService,

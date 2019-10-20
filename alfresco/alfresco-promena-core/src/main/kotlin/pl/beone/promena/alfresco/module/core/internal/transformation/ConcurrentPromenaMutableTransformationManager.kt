@@ -15,7 +15,7 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
 class ConcurrentPromenaMutableTransformationManager(
-    private val bufferSize: Int,
+    bufferSize: Int,
     private val waitMax: Duration
 ) : PromenaMutableTransformationManager {
 

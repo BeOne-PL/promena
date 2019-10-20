@@ -2,9 +2,9 @@ package pl.beone.promena.alfresco.module.core.external.node
 
 import org.alfresco.model.ContentModel.PROP_CONTENT
 import org.alfresco.service.cmr.repository.ContentService
+import org.alfresco.service.cmr.repository.InvalidNodeRefException
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodeDoesNotExist
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
@@ -27,7 +27,7 @@ class ContentPropertyDataDescriptorGetter(
 
     private fun NodeRef.checkIfExists() {
         if (!nodeService.exists(this)) {
-            throw NodeDoesNotExist(this)
+            throw InvalidNodeRefException("Node <$this> doesn't exist", this)
         }
     }
 
