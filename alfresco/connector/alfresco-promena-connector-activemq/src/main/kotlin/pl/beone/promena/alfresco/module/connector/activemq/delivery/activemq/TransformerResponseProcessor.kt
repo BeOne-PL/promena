@@ -3,7 +3,6 @@ package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 import mu.KotlinLogging
 import org.alfresco.service.cmr.repository.InvalidNodeRefException
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodesInconsistencyException
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.TransformationStoppedException
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
@@ -45,14 +44,14 @@ class TransformerResponseProcessor(
                 )
                 promenaMutableTransformationManager.completeErrorTransformation(
                     transformationExecution,
-                    TransformationStoppedException(NodesInconsistencyException(nodeRefs, nodesChecksum, currentNodesChecksum))
+                    NodesInconsistencyException(nodeRefs, nodesChecksum, currentNodesChecksum)
                 )
             } else {
                 toRunIfNodesExistAndHaveTheSameChecksum()
             }
         } catch (e: InvalidNodeRefException) {
             logger.stoppedTransformingBecauseNodeDoesNotExist(transformation, nodeDescriptor, e.nodeRef)
-            promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, TransformationStoppedException(e))
+            promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, e)
         }
     }
 }

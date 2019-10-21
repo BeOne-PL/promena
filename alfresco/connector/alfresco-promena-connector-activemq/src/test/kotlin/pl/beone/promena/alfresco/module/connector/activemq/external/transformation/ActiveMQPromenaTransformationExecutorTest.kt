@@ -2,10 +2,7 @@ package pl.beone.promena.alfresco.module.connector.activemq.external.transformat
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactly
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
+import io.mockk.*
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.junit.Before
@@ -54,7 +51,7 @@ class ActiveMQPromenaTransformationExecutorTest {
         private val nodeDescriptor =
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value"))
         private val nodeRefs = nodeDescriptor.toNodeRefs()
-        private val postTransformationExecution = PostTransformationExecution { _, _, _, _ -> }
+        private val postTransformationExecution = mockk<PostTransformationExecution>()
         private val retry = customRetry(3, Duration.ofMillis(1000))
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
@@ -113,8 +110,36 @@ class ActiveMQPromenaTransformationExecutorTest {
         ).execute(
             transformation,
             nodeDescriptor,
+            postTransformationExecution,
+            retry
+        ) shouldBe transformationExecution
+
+        verify { transformerSender.send(transformationExecution.id, transformationDescriptor, transformationParameters) }
+    }
+
+    @Test
+    fun execute_shouldUseDefaultRetry() {
+        nodeInCurrentTransactionVerifier = mockk {
+            every { verify(nodeRefs[0]) } just Runs
+        }
+
+        val defaultRetry = noRetry()
+        ActiveMQPromenaTransformationExecutor(
+            externalCommunicationParameters,
+            promenaMutableTransformationManager,
+            defaultRetry,
+            nodeInCurrentTransactionVerifier,
+            nodesChecksumGenerator,
+            dataDescriptorGetter,
+            transformerSender,
+            authorizationService
+        ).execute(
+            transformation,
+            nodeDescriptor,
             postTransformationExecution
-        )
+        ) shouldBe transformationExecution
+
+        verify { transformerSender.send(transformationExecution.id, transformationDescriptor, transformationParameters.copy(retry = defaultRetry)) }
     }
 
     @Test

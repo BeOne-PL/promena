@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 
-import io.kotlintest.matchers.instanceOf
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 import io.kotlintest.shouldThrow
 import io.mockk.Runs
 import io.mockk.clearMocks
@@ -24,7 +24,7 @@ import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.con
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodesInconsistencyException
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.TransformationStoppedException
+import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialOutOfScopeVariableException
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
@@ -121,7 +121,7 @@ class TransformerResponseFlowTest {
     }
 
     @Test
-    fun `should detect difference between nodes checksums and throw TransformationStoppedException that has NodesInconsistencyException cause`() {
+    fun `should detect difference between nodes checksums and throw NodesInconsistencyException`() {
         every {
             nodesChecksumGenerator.generate(nodeRefs)
         } returns "not equal"
@@ -129,29 +129,23 @@ class TransformerResponseFlowTest {
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
 
-        shouldThrow<TransformationStoppedException> {
+        shouldThrow<NodesInconsistencyException> {
             promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
-        }.let {
-            it.message shouldBe "Transformation has been stopped"
-            it.cause shouldBe instanceOf(NodesInconsistencyException::class)
-        }
+        }.message shouldBe "Nodes <$nodeRefs> have changed in the meantime (old checksum <$nodesChecksum>, current checksum <not equal>)"
     }
 
     @Test
-    fun `should detect that one of nodes doesn't exist and throw TransformationStoppedException that has InvalidNodeRefException cause`() {
+    fun `should detect that one of nodes doesn't exist and throw InvalidNodeRefException`() {
         every {
             nodesExistenceVerifier.verify(nodeRefs)
-        } throws InvalidNodeRefException(nodeRefs[0])
+        } throws InvalidNodeRefException("Node <${nodeRefs[0]}> doesn't exist", nodeRefs[0])
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
 
-        shouldThrow<TransformationStoppedException> {
+        shouldThrow<InvalidNodeRefException> {
             promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
-        }.let {
-            it.message shouldBe "Transformation has been stopped"
-            it.cause shouldBe instanceOf(InvalidNodeRefException::class)
-        }
+        }.message shouldBe "Node <${nodeRefs[0]}> doesn't exist"
     }
 
     @Test
@@ -164,5 +158,21 @@ class TransformerResponseFlowTest {
         shouldThrow<RuntimeException> {
             promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
         }.message shouldBe "exception"
+    }
+
+    @Test
+    fun `should throw NullPointerException during executing post transaction execution`() {
+        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } throws NullPointerException("exception")
+
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
+
+        shouldThrow<PotentialOutOfScopeVariableException> {
+            promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
+        }.let {
+            it.message shouldBe "It's highly probable that your implementation of PostTransformationExecution has used out of scope variable"
+            it.cause shouldNotBe null
+            it.cause!!.message shouldBe "exception"
+        }
     }
 }

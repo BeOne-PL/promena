@@ -45,14 +45,13 @@ class TransformerResponseErrorConsumer(
         val transformation = transformationException.transformation
 
         transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum) {
-            logger.couldNotTransform(transformation, nodeDescriptor, transformationException)
-
             if (retry is Retry.No || wasLastAttempt(attempt, retry.maxAttempts)) {
+                logger.couldNotTransform(transformation, nodeDescriptor, transformationException)
                 promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, transformationException)
             } else {
                 val currentAttempt = attempt + 1
 
-                logger.logOnRetry(transformation, nodeDescriptor, currentAttempt, retry.maxAttempts, retry.nextAttemptDelay)
+                logger.logOnRetry(transformation, nodeDescriptor, currentAttempt, retry.maxAttempts, retry.nextAttemptDelay, transformationException)
                 Thread.sleep(retry.nextAttemptDelay.toMillis())
 
                 try {
