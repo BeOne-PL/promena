@@ -7,7 +7,7 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.Pos
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
-typealias PostTransformationExecutionAlias = (serviceRegistry: ServiceRegistry, result: TransformationExecutionResult) -> Unit
+typealias PostTransformationExecutionAlias = (transformation: Transformation, nodeDescriptor: NodeDescriptor, serviceRegistry: ServiceRegistry, result: TransformationExecutionResult) -> Unit
 
 fun PromenaTransformationExecutor.execute(
     transformation: Transformation,
@@ -17,7 +17,11 @@ fun PromenaTransformationExecutor.execute(
 ) = execute(
     transformation,
     nodeDescriptor,
-    postTransformationExecution?.let { PostTransformationExecution { serviceRegistry, result -> postTransformationExecution(serviceRegistry, result) } },
+    postTransformationExecution?.let {
+        PostTransformationExecution { transformation, nodeDescriptor, serviceRegistry, result ->
+            postTransformationExecution(transformation, nodeDescriptor, serviceRegistry, result)
+        }
+    },
     retry
 )
 
@@ -39,6 +43,10 @@ fun PromenaTransformationExecutor.execute(
 ) = execute(
     transformation,
     nodeDescriptor,
-    postTransformationExecution?.let { PostTransformationExecution { serviceRegistry, result -> postTransformationExecution(serviceRegistry, result) } },
+    postTransformationExecution?.let {
+        PostTransformationExecution { serviceRegistry, transformation, nodeDescriptor, result ->
+            postTransformationExecution(serviceRegistry, transformation, nodeDescriptor, result)
+        }
+    },
     null
 )

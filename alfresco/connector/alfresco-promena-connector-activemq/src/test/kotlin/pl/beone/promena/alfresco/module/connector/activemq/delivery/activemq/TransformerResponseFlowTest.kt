@@ -85,7 +85,7 @@ class TransformerResponseFlowTest {
         private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
             nodeDescriptor,
-            PostTransformationExecution { _, _ -> },
+            PostTransformationExecution { _, _, _, _ -> },
             customRetry(3, Duration.ofMillis(1000)),
             singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
             nodesChecksum,

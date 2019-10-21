@@ -54,7 +54,7 @@ class ActiveMQPromenaTransformationExecutorTest {
         private val nodeDescriptor =
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value"))
         private val nodeRefs = nodeDescriptor.toNodeRefs()
-        private val postTransformationExecution = PostTransformationExecution { _, _ -> }
+        private val postTransformationExecution = PostTransformationExecution { _, _, _, _ -> }
         private val retry = customRetry(3, Duration.ofMillis(1000))
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"

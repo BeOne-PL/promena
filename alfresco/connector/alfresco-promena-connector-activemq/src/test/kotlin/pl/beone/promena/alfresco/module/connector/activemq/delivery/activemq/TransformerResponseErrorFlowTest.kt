@@ -79,7 +79,7 @@ class TransformerResponseErrorFlowTest {
         private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
             nodeDescriptor,
-            PostTransformationExecution { _, _ -> },
+            PostTransformationExecution { _, _, _, _ -> },
             noRetry(),
             singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
             nodesChecksum,

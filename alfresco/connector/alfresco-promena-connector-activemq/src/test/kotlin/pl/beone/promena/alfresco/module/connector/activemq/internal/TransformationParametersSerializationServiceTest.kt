@@ -2,6 +2,7 @@ package pl.beone.promena.alfresco.module.connector.activemq.internal
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
+import io.mockk.mockk
 import org.alfresco.model.ContentModel.PROP_NAME
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.alfresco.service.cmr.repository.NodeRef
@@ -34,7 +35,7 @@ class TransformationParametersSerializationServiceTest : AbstractUtilsAlfrescoIT
         val nodeRef = createOrGetIntegrationTestsFolder().createNode()
         val transformationParameters = TransformationParameters(
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata()),
-            PostTransformationExecution { serviceRegistry, result ->
+            PostTransformationExecution { _, _, serviceRegistry, result ->
                 serviceRegistry.nodeService.setProperty(result.nodeRefs[0], PROP_NAME, "changed")
             },
             customRetry(3, Duration.ofMillis(1000)),
@@ -55,7 +56,7 @@ class TransformationParametersSerializationServiceTest : AbstractUtilsAlfrescoIT
             it.userName shouldBe transformationParameters.userName
 
             it.postTransformationExecution shouldNotBe null
-            it.postTransformationExecution!!.execute(serviceRegistry, transformationExecutionResult(nodeRef))
+            it.postTransformationExecution!!.execute(mockk(), mockk(), serviceRegistry, transformationExecutionResult(nodeRef))
             nodeRef.getProperty(PROP_NAME) shouldBe "changed"
         }
     }
