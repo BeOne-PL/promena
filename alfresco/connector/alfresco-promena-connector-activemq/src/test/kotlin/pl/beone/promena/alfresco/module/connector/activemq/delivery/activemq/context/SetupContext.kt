@@ -1,17 +1,19 @@
 package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context
 
 import io.mockk.mockk
+import org.alfresco.service.ServiceRegistry
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.JmsUtils
-import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQPromenaTransformer
+import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.ActiveMQPromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
-import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
-import pl.beone.promena.alfresco.module.core.contract.TransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.node.NodesExistenceVerifier
+import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
 
 @Configuration
 @ComponentScan(
@@ -43,6 +45,14 @@ class SetupContext {
         mockk<NodesChecksumGenerator>()
 
     @Bean
+    fun nodesExistenceVerifier() =
+        mockk<NodesExistenceVerifier>()
+
+    @Bean
+    fun serviceRegistry() =
+        mockk<ServiceRegistry>()
+
+    @Bean
     fun transformedDataDescriptorSaver() =
         mockk<TransformedDataDescriptorSaver>()
 
@@ -52,5 +62,5 @@ class SetupContext {
 
     @Bean
     fun activeMQPromenaTransformer() =
-        mockk<ActiveMQPromenaTransformer>()
+        mockk<ActiveMQPromenaTransformationExecutor>()
 }

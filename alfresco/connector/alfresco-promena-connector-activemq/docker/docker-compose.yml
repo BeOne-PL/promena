@@ -59,6 +59,11 @@ services:
     volumes:
       - alfresco-promena-connector-activemq-activemq-volume:/opt/activemq/data
 
+  promena:
+    image: promena-connector-activemq-executable:1.0.0
+    environment:
+      - spring.activemq.broker-url=failover:(nio://activemq:61616)?timeout=3000&jms.useCompression=true
+
 volumes:
   alfresco-promena-connector-activemq-acs-volume:
     external: true

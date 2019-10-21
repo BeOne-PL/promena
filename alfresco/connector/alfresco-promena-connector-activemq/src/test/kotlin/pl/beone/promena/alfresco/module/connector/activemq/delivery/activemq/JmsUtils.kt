@@ -1,13 +1,13 @@
 package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 
-import org.apache.activemq.command.ActiveMQBytesMessage
 import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_ATTEMPT
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.TransformationParameters
+import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
+import pl.beone.promena.alfresco.module.core.applicationmodel.retry.Retry
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
@@ -37,12 +37,6 @@ class JmsUtils(
         jmsTemplate.receiveTimeout = receiveTimeout
     }
 
-    fun getTransformationParametersFromResponseError(): TransformationParameters =
-        transformationParametersSerializationService.deserialize(
-            (jmsTemplate.receive(queueResponseError) as ActiveMQBytesMessage)
-                .properties[SEND_BACK_TRANSFORMATION_PARAMETERS].toString()
-        )
-
     fun sendResponseMessage(
         id: String,
         performedTransformationDescriptor: PerformedTransformationDescriptor,
@@ -67,8 +61,15 @@ class JmsUtils(
         setStringProperty(SEND_BACK_TRANSFORMATION_PARAMETERS, transformationParametersSerializationService.serialize(transformationParameters))
 
         setLongProperty(SEND_BACK_ATTEMPT, transformationParameters.attempt)
-        setLongProperty(SEND_BACK_RETRY_MAX_ATTEMPTS, transformationParameters.retry.maxAttempts)
+        setLongProperty(SEND_BACK_RETRY_MAX_ATTEMPTS, determineMaxAttempts(transformationParameters))
 
         return this
     }
+
+    private fun determineMaxAttempts(transformationParameters: TransformationParameters): Long =
+        if (transformationParameters.retry !is Retry.No) {
+            transformationParameters.retry.maxAttempts
+        } else {
+            0
+        }
 }

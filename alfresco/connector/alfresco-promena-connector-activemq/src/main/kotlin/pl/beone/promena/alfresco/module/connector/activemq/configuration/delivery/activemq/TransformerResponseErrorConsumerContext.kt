@@ -3,28 +3,28 @@ package pl.beone.promena.alfresco.module.connector.activemq.configuration.delive
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.TransformerResponseErrorConsumer
-import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQPromenaTransformer
-import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTransformationManager
+import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.TransformerResponseProcessor
+import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.ActiveMQPromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
-import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 
 @Configuration
 class TransformerResponseErrorConsumerContext {
 
     @Bean
     fun transformerResponseErrorConsumer(
-        nodesChecksumGenerator: NodesChecksumGenerator,
-        activeMQPromenaTransformer: ActiveMQPromenaTransformer,
+        promenaMutableTransformationManager: PromenaMutableTransformationManager,
+        transformerResponseProcessor: TransformerResponseProcessor,
+        activeMQPromenaTransformer: ActiveMQPromenaTransformationExecutor,
         authorizationService: AuthorizationService,
-        reactiveTransformationManager: ReactiveTransformationManager,
         transformationParametersSerializationService: TransformationParametersSerializationService
-    ): TransformerResponseErrorConsumer =
+    ) =
         TransformerResponseErrorConsumer(
-            nodesChecksumGenerator,
-            authorizationService,
-            reactiveTransformationManager,
+            promenaMutableTransformationManager,
+            transformerResponseProcessor,
             activeMQPromenaTransformer,
+            authorizationService,
             transformationParametersSerializationService
         )
 }

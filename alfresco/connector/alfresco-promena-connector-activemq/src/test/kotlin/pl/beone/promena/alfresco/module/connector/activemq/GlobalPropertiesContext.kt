@@ -24,6 +24,9 @@ class GlobalPropertiesContext(
             "promena.core.transformation.error.retry.max-attempts".let { setProperty(it, environment.getProperty(it)) }
             "promena.core.transformation.error.retry.next-attempt-delay".let { setProperty(it, environment.getProperty(it)) }
 
+            "promena.core.transformation.manager.buffer-size".let { setProperty(it, environment.getProperty(it)) }
+            "promena.core.transformation.manager.wait-max".let { setProperty(it, environment.getProperty(it)) }
+
             "promena.connector.activemq.consumer.queue.request".let { setProperty(it, environment.getProperty(it)) }
             "promena.connector.activemq.consumer.queue.response".let { setProperty(it, environment.getProperty(it)) }
             "promena.connector.activemq.consumer.queue.response.error".let { setProperty(it, environment.getProperty(it)) }

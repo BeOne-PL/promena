@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.TransformerSender
-import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQPromenaTransformer
-import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTransformationManager
+import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.ActiveMQPromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.Retry
-import pl.beone.promena.alfresco.module.core.contract.DataDescriptorGetter
-import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.node.DataDescriptorGetter
+import pl.beone.promena.alfresco.module.core.contract.node.NodeInCurrentTransactionVerifier
+import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.util.*
 
@@ -19,18 +21,22 @@ class ActiveMQPromenaTransformerContext {
     fun activeMQPromenaTransformer(
         @Qualifier("global-properties") properties: Properties,
         @Qualifier("externalCommunicationParameters") externalCommunicationParameters: CommunicationParameters,
+        promenaMutableTransformationManager: PromenaMutableTransformationManager,
         retry: Retry,
+        nodeInCurrentTransactionVerifier: NodeInCurrentTransactionVerifier,
         nodesChecksumGenerator: NodesChecksumGenerator,
         dataDescriptorGetter: DataDescriptorGetter,
-        reactiveTransformationManager: ReactiveTransformationManager,
-        transformerSender: TransformerSender
+        transformerSender: TransformerSender,
+        authorizationService: AuthorizationService
     ) =
-        ActiveMQPromenaTransformer(
+        ActiveMQPromenaTransformationExecutor(
             externalCommunicationParameters,
+            promenaMutableTransformationManager,
             retry,
+            nodeInCurrentTransactionVerifier,
             nodesChecksumGenerator,
             dataDescriptorGetter,
-            reactiveTransformationManager,
-            transformerSender
+            transformerSender,
+            authorizationService
         )
 }

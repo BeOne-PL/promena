@@ -6,27 +6,21 @@ import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
-import pl.beone.promena.alfresco.module.connector.activemq.external.ActiveMQPromenaTransformer
-import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTransformationManager
+import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.ActiveMQPromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.AnotherTransformationIsInProgressException
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.Retry
+import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecution
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
-import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.alfresco.module.core.extension.couldNotTransform
-import pl.beone.promena.alfresco.module.core.extension.couldNotTransformButChecksumsAreDifferent
 import pl.beone.promena.alfresco.module.core.extension.logOnRetry
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
-import pl.beone.promena.transformer.contract.transformation.Transformation
-import reactor.core.publisher.Mono
 
 class TransformerResponseErrorConsumer(
-    private val nodesChecksumGenerator: NodesChecksumGenerator,
+    private val promenaMutableTransformationManager: PromenaMutableTransformationManager,
+    private val transformerResponseProcessor: TransformerResponseProcessor,
+    private val activeMQPromenaTransformer: ActiveMQPromenaTransformationExecutor,
     private val authorizationService: AuthorizationService,
-    private val reactiveTransformationManager: ReactiveTransformationManager,
-    private val activeMQPromenaTransformer: ActiveMQPromenaTransformer,
     private val transformationParametersSerializationService: TransformationParametersSerializationService
 ) {
 
@@ -40,47 +34,42 @@ class TransformerResponseErrorConsumer(
     )
     fun receiveQueue(
         @Header(CORRELATION_ID) correlationId: String,
-        @Header(SEND_BACK_TRANSFORMATION_PARAMETERS) transformationParameters: String,
+        @Header(SEND_BACK_TRANSFORMATION_PARAMETERS) transformationParametersString: String,
         @Payload transformationException: TransformationException
     ) {
-        val (nodeDescriptors, nodesChecksum, retry, attempt, userName) = transformationParametersSerializationService.deserialize(transformationParameters)
+        val transformationExecution = transformationExecution(correlationId)
+
+        val transformationParameters = transformationParametersSerializationService.deserialize(transformationParametersString)
+        val (nodeDescriptor, _, retry, dataDescriptor, nodesChecksum, attempt, userName) = transformationParameters
 
         val transformation = transformationException.transformation
 
-        val currentNodesChecksum = nodesChecksumGenerator.generateChecksum(nodeDescriptors.toNodeRefs())
-        if (nodesChecksum != currentNodesChecksum) {
-            reactiveTransformationManager.completeErrorTransformation(
-                correlationId,
-                AnotherTransformationIsInProgressException(
-                    transformation,
-                    nodeDescriptors,
-                    nodesChecksum,
-                    currentNodesChecksum
-                )
-            )
-
-            logger.couldNotTransformButChecksumsAreDifferent(transformation, nodeDescriptors, nodesChecksum, currentNodesChecksum, transformationException)
-        } else {
-            logger.couldNotTransform(transformation, nodeDescriptors, transformationException)
+        transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum) {
+            logger.couldNotTransform(transformation, nodeDescriptor, transformationException)
 
             if (retry is Retry.No || wasLastAttempt(attempt, retry.maxAttempts)) {
-                reactiveTransformationManager.completeErrorTransformation(correlationId, transformationException)
+                promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, transformationException)
             } else {
-                retry(correlationId, transformation, nodeDescriptors, retry, attempt + 1, userName)
-            }
-        }
-    }
+                val currentAttempt = attempt + 1
 
-    private fun retry(id: String, transformation: Transformation, nodeDescriptors: List<NodeDescriptor>, retry: Retry, attempt: Long, userName: String) {
-        Mono.just("")
-            .doOnNext { logger.logOnRetry(transformation, nodeDescriptors, attempt, retry.maxAttempts, retry.nextAttemptDelay) }
-            .delayElement(retry.nextAttemptDelay)
-            .doOnNext {
-                authorizationService.runAs(userName) {
-                    activeMQPromenaTransformer.transformAsync(id, transformation, nodeDescriptors, retry, attempt)
+                logger.logOnRetry(transformation, nodeDescriptor, currentAttempt, retry.maxAttempts, retry.nextAttemptDelay)
+                Thread.sleep(retry.nextAttemptDelay.toMillis())
+
+                try {
+                    authorizationService.runAs(userName) {
+                        activeMQPromenaTransformer.execute(
+                            correlationId,
+                            transformation,
+                            dataDescriptor,
+                            transformationParameters.copy(attempt = currentAttempt)
+                        )
+                    }
+                } catch (e: Exception) {
+                    logger.couldNotTransform(transformation, nodeDescriptor, e)
+                    promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, e)
                 }
             }
-            .subscribe()
+        }
     }
 
     private fun wasLastAttempt(attempt: Long, retryMaxAttempts: Long): Boolean =

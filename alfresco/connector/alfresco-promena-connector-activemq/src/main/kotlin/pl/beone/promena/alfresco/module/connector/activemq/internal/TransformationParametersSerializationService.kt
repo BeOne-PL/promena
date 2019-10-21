@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.connector.activemq.internal
 
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.TransformationParameters
+import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
 import pl.beone.promena.core.contract.serialization.SerializationService
 
 class TransformationParametersSerializationService(

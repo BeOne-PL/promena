@@ -1,10 +1,15 @@
 package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 
-import io.kotlintest.matchers.collections.shouldContainExactly
+import io.kotlintest.matchers.instanceOf
+import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
+import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.just
+import org.alfresco.service.cmr.repository.InvalidNodeRefException
 import org.alfresco.service.cmr.repository.NodeRef
+import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -15,18 +20,25 @@ import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
-import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.TransformationParameters
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
-import pl.beone.promena.alfresco.module.connector.activemq.internal.ReactiveTransformationManager
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.AnotherTransformationIsInProgressException
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
+import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodesInconsistencyException
+import pl.beone.promena.alfresco.module.core.applicationmodel.exception.TransformationStoppedException
+import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
+import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
+import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.PostTransformationExecution
+import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
+import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
-import pl.beone.promena.alfresco.module.core.contract.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
+import pl.beone.promena.alfresco.module.core.contract.node.NodesExistenceVerifier
+import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
+import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
@@ -34,7 +46,6 @@ import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.time.Duration
-import java.util.*
 
 @RunWith(SpringRunner::class)
 @TestPropertySource(locations = ["classpath:alfresco-global-test.properties"])
@@ -51,38 +62,49 @@ class TransformerResponseFlowTest {
     private lateinit var nodesChecksumGenerator: NodesChecksumGenerator
 
     @Autowired
-    private lateinit var reactiveTransformationManager: ReactiveTransformationManager
+    private lateinit var nodesExistenceVerifier: NodesExistenceVerifier
+
+    @Autowired
+    private lateinit var promenaMutableTransformationManager: PromenaMutableTransformationManager
 
     @Autowired
     private lateinit var authorizationService: AuthorizationService
 
     companion object {
-        private val nodeDescriptors = listOf(
-            NodeRef("workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toNodeDescriptor(emptyMetadata()),
-            NodeRef("workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c").toNodeDescriptor(emptyMetadata() + ("key" to "value"))
-        )
-        private val nodeRefs = nodeDescriptors.toNodeRefs()
-        private const val nodesChecksum = "123456789"
-        private const val userName = "admin"
-        private val transformationParameters = TransformationParameters(
-            nodeDescriptors,
-            nodesChecksum,
-            customRetry(1, Duration.ZERO),
-            0,
-            userName
-        )
         private val performedTransformationDescriptor = performedTransformationDescriptor(
             singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters()),
             singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value"))
         )
-        private val resultNodeRefs = listOf(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
+        private val transformationExecutionResult = transformationExecutionResult(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
+
+        private val nodeDescriptor =
+            NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
+                    NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata())
+        private val nodeRefs = nodeDescriptor.toNodeRefs()
+        private const val nodesChecksum = "123456789"
+        private const val userName = "admin"
+        private val transformationParameters = TransformationParameters(
+            nodeDescriptor,
+            PostTransformationExecution { _, _ -> },
+            customRetry(3, Duration.ofMillis(1000)),
+            singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
+            nodesChecksum,
+            0,
+            userName
+        )
     }
 
     @Before
     fun setUp() {
         clearMocks(authorizationService)
         every { authorizationService.getCurrentUser() } returns userName
-        every { authorizationService.runAs<List<NodeRef>>(userName, any()) } returns resultNodeRefs
+        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } returns transformationExecutionResult
+
+        clearMocks(nodesChecksumGenerator)
+        every { nodesChecksumGenerator.generateChecksum(nodeRefs) } returns nodesChecksum
+
+        clearMocks(nodesExistenceVerifier)
+        every { nodesExistenceVerifier.verify(nodeRefs) } just Runs
     }
 
     @After
@@ -91,41 +113,56 @@ class TransformerResponseFlowTest {
     }
 
     @Test
-    fun `should receive message from response queue and persist it`() {
-        val id = UUID.randomUUID().toString()
+    fun `should receive message from response queue and go correct path`() {
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
 
-        every {
-            nodesChecksumGenerator.generateChecksum(nodeRefs)
-        } returns nodesChecksum
-
-        val transformation = reactiveTransformationManager.startTransformation(id)
-        jmsUtils.sendResponseMessage(
-            id,
-            performedTransformationDescriptor,
-            transformationParameters
-        )
-
-        transformation.block(Duration.ofSeconds(2)) shouldContainExactly
-                resultNodeRefs
+        promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2)) shouldBe transformationExecutionResult
     }
 
     @Test
-    fun `should detect the difference between nodes checksums and throw AnotherTransformationIsInProgressException`() {
-        val id = UUID.randomUUID().toString()
-
+    fun `should detect difference between nodes checksums and throw TransformationStoppedException that has NodesInconsistencyException cause`() {
         every {
             nodesChecksumGenerator.generateChecksum(nodeRefs)
         } returns "not equal"
 
-        val transformation = reactiveTransformationManager.startTransformation(id)
-        jmsUtils.sendResponseMessage(
-            id,
-            performedTransformationDescriptor,
-            transformationParameters
-        )
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
 
-        shouldThrow<AnotherTransformationIsInProgressException> {
-            transformation.block(Duration.ofSeconds(2))
+        shouldThrow<TransformationStoppedException> {
+            promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
+        }.let {
+            it.message shouldBe "Transformation has been stopped"
+            it.cause shouldBe instanceOf(NodesInconsistencyException::class)
         }
+    }
+
+    @Test
+    fun `should detect that one of nodes doesn't exist and throw TransformationStoppedException that has InvalidNodeRefException cause`() {
+        every {
+            nodesExistenceVerifier.verify(nodeRefs)
+        } throws InvalidNodeRefException(nodeRefs[0])
+
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
+
+        shouldThrow<TransformationStoppedException> {
+            promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
+        }.let {
+            it.message shouldBe "Transformation has been stopped"
+            it.cause shouldBe instanceOf(InvalidNodeRefException::class)
+        }
+    }
+
+    @Test
+    fun `should throw RuntimeException during processing result`() {
+        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } throws RuntimeException("exception")
+
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
+
+        shouldThrow<RuntimeException> {
+            promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
+        }.message shouldBe "exception"
     }
 }
