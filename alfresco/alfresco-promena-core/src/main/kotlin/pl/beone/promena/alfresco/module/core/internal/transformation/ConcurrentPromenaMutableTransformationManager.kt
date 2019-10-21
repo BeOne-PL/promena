@@ -42,7 +42,8 @@ class ConcurrentPromenaMutableTransformationManager(
 
         val transformation = transformationMap[id] ?: throw IllegalStateException("There is no <$id> transaction in progress")
         return if (transformation.lock.tryLock(determinedWaitMax.toMillis(), MILLISECONDS)) {
-            transformation.result ?: throw transformation.throwable!!
+            transformation.result ?: throw transformation.throwable
+                ?: IllegalStateException("There is no result or throwable for <$transformationExecution>")
         } else {
             throw TimeoutException("Waiting time for <$id> transaction has expired")
         }

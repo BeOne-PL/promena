@@ -4,14 +4,16 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.slf4j.Logger
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
+import pl.beone.promena.transformer.contract.extension.toPrettyString
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.time.Duration
 
 fun Logger.start(transformation: Transformation, nodeDescriptor: NodeDescriptor) {
     info(
-        "Transforming <{}> using <{}>...",
-        nodeDescriptor,
-        transformation
+        "Transforming...\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}"
     )
 }
 
@@ -23,11 +25,10 @@ fun Logger.transformedSuccessfully(
     endTimestamp: Long
 ) {
     info(
-        "Transformed <{}> using <{}> to <{}> in <{} s>",
-        nodeDescriptor,
-        transformation,
-        transformationExecutionResult,
-        calculateExecutionTimeInSeconds(startTimestamp, endTimestamp)
+        "Transformed in <${calculateExecutionTimeInSeconds(startTimestamp, endTimestamp)} s>\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}\n" +
+                "> Result: ${transformationExecutionResult.toPrettyString()}"
     )
 }
 
@@ -38,39 +39,45 @@ fun Logger.stoppedTransformingBecauseChecksumsAreDifferent(
     currentNodesChecksum: String
 ) {
     warn(
-        "Stopped transforming <{}> using <{}> because nodes have been changed in the meantime (old checksum <{}>, current checksum <{}>)",
-        nodeDescriptor,
-        transformation,
-        oldNodesChecksum,
-        currentNodesChecksum
+        "Stopped transforming because nodes have been changed in the meantime - old checksum <$oldNodesChecksum>, current checksum <$currentNodesChecksum>\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}"
     )
 }
 
 fun Logger.stoppedTransformingBecauseNodeDoesNotExist(transformation: Transformation, nodeDescriptor: NodeDescriptor, nodeRef: NodeRef) {
     warn(
-        "Stopped transforming <{}> using <{}> because <{}> node has been removed in the meantime",
-        nodeDescriptor,
-        transformation,
-        nodeRef
+        "Stopped transforming because node <$nodeRef> has been removed in the meantime\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}"
     )
 }
 
-fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: Throwable) {
-    if (exception.cause != null) {
-        error(
-            "Couldn't transform <{}> using <{}>",
-            nodeDescriptor,
-            transformation,
-            exception
-        )
-    } else {
-        error(
-            "Couldn't transform <{}> using <{}>\n{}",
-            nodeDescriptor,
-            transformation,
-            exception.toString().addHashAtTheBeggingOfEachLine()
-        )
-    }
+fun Logger.stoppedTransformingBecausePostTransformationExecutionUsedOutOfScopeVariable(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: NullPointerException) {
+    error(
+        "Stopped transforming because your implementation of PostTransformationExecution has thrown NullPointerException. It's highly probable that your implementation has used out of scope variable\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}",
+        exception
+    )
+}
+
+fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: Exception) {
+    error(
+        "Couldn't transform\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}",
+        exception
+    )
+}
+
+fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: TransformationException) {
+    error(
+        "Couldn't transform\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}\n" +
+                exception.toString().addHashAtTheBeggingOfEachLine()
+    )
 }
 
 private fun String.addHashAtTheBeggingOfEachLine(): String =
@@ -82,15 +89,14 @@ fun Logger.logOnRetry(
     nodeDescriptor: NodeDescriptor,
     attempt: Long,
     maxAttempts: Long,
-    nextAttemptDelay: Duration
+    nextAttemptDelay: Duration,
+    exception: TransformationException
 ) {
     warn(
-        "Attempt ({}/{}). Transformation <{}> using <{}> will be run after <{}>",
-        attempt,
-        maxAttempts,
-        nodeDescriptor,
-        transformation,
-        nextAttemptDelay.toPrettyString()
+        "Attempt ($attempt/$maxAttempts). This attempt will be made in <${nextAttemptDelay.toPrettyString()}>\n" +
+                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Transformation: ${transformation.toPrettyString()}\n" +
+                exception.toString().addHashAtTheBeggingOfEachLine()
     )
 }
 
