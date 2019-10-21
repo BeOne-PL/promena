@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
+import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecution
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import java.time.Duration
 import java.util.*
@@ -39,9 +40,9 @@ class ConcurrentPromenaMutableTransformationManager(
         val id = transformationExecution.id
         val determinedWaitMax = determineWaitMax(waitMax)
 
-        val (lock, result, throwable) = transformationMap[id] ?: throw IllegalStateException("There is no <$id> transaction in progress")
-        return if (lock.tryLock(determinedWaitMax.toMillis(), MILLISECONDS)) {
-            result ?: throw throwable!!
+        val transformation = transformationMap[id] ?: throw IllegalStateException("There is no <$id> transaction in progress")
+        return if (transformation.lock.tryLock(determinedWaitMax.toMillis(), MILLISECONDS)) {
+            transformation.result ?: throw transformation.throwable!!
         } else {
             throw TimeoutException("Waiting time for <$id> transaction has expired")
         }
@@ -53,7 +54,7 @@ class ConcurrentPromenaMutableTransformationManager(
     override fun startTransformation(): TransformationExecution =
         runBlocking(dispatcher) {
             val id = generateId()
-            val transformationExecution = TransformationExecution(id)
+            val transformationExecution = transformationExecution(id)
 
             val transformation =
                 Transformation(ReentrantLock())

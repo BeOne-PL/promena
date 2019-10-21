@@ -12,7 +12,7 @@ class RenditionContentNodesChecksumGenerator(
     private val serviceRegistry: ServiceRegistry
 ) : NodesChecksumGenerator {
 
-    override fun generateChecksum(nodeRefs: List<NodeRef>): String =
+    override fun generate(nodeRefs: List<NodeRef>): String =
         if (nodeRefs.isEmpty()) {
             throw IllegalArgumentException("You must pass at least one node")
         } else {

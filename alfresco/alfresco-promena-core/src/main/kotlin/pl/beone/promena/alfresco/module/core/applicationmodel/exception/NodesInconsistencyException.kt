@@ -6,4 +6,4 @@ class NodesInconsistencyException(
     val nodeRefs: List<NodeRef>,
     val oldNodesChecksum: String,
     val currentNodesChecksum: String
-) : RuntimeException("Nodes <$nodeRefs> have changed in the meantime (old checksum <$oldNodesChecksum>, current checksum <$currentNodesChecksum>)")
+) : IllegalStateException("Nodes <$nodeRefs> have changed in the meantime (old checksum <$oldNodesChecksum>, current checksum <$currentNodesChecksum>)")
