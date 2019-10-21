@@ -96,7 +96,7 @@ class TransformerResponseErrorFlowTest {
         every { authorizationService.getCurrentUser() } returns userName
 
         clearMocks(nodesChecksumGenerator)
-        every { nodesChecksumGenerator.generateChecksum(nodeRefs) } returns nodesChecksum
+        every { nodesChecksumGenerator.generate(nodeRefs) } returns nodesChecksum
 
         clearMocks(nodesExistenceVerifier)
         every { nodesExistenceVerifier.verify(nodeRefs) } just Runs

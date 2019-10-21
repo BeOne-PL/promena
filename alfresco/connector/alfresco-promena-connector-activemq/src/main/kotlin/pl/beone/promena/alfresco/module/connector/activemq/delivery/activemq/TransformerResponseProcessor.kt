@@ -35,7 +35,7 @@ class TransformerResponseProcessor(
             val nodeRefs = nodeDescriptor.toNodeRefs()
             nodesExistenceVerifier.verify(nodeRefs)
 
-            val currentNodesChecksum = nodesChecksumGenerator.generateChecksum(nodeRefs)
+            val currentNodesChecksum = nodesChecksumGenerator.generate(nodeRefs)
             if (nodesChecksum != currentNodesChecksum) {
                 logger.stoppedTransformingBecauseChecksumsAreDifferent(
                     transformation,

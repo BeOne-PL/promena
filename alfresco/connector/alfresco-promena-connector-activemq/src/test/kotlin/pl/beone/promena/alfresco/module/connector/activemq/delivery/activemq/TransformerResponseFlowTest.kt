@@ -101,7 +101,7 @@ class TransformerResponseFlowTest {
         every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } returns transformationExecutionResult
 
         clearMocks(nodesChecksumGenerator)
-        every { nodesChecksumGenerator.generateChecksum(nodeRefs) } returns nodesChecksum
+        every { nodesChecksumGenerator.generate(nodeRefs) } returns nodesChecksum
 
         clearMocks(nodesExistenceVerifier)
         every { nodesExistenceVerifier.verify(nodeRefs) } just Runs
@@ -123,7 +123,7 @@ class TransformerResponseFlowTest {
     @Test
     fun `should detect difference between nodes checksums and throw TransformationStoppedException that has NodesInconsistencyException cause`() {
         every {
-            nodesChecksumGenerator.generateChecksum(nodeRefs)
+            nodesChecksumGenerator.generate(nodeRefs)
         } returns "not equal"
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()

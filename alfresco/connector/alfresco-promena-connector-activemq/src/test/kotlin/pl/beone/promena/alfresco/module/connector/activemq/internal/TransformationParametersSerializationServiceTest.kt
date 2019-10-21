@@ -10,7 +10,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.connector.activemq.AbstractUtilsAlfrescoIT
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.PostTransformationExecution
@@ -20,7 +19,6 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
-import pl.beone.promena.transformer.internal.model.metadata.plus
 import java.time.Duration
 
 @RunWith(AlfrescoTestRunner::class)
@@ -34,11 +32,11 @@ class TransformationParametersSerializationServiceTest : AbstractUtilsAlfrescoIT
     @Test
     fun serializeAndDeserialize() {
         val nodeRef = createOrGetIntegrationTestsFolder().createNode()
-
         val transformationParameters = TransformationParameters(
-            NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
-                    NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata()),
-            PostTransformationExecution { serviceRegistry, result -> serviceRegistry.nodeService.setProperty(result.nodeRefs[0], PROP_NAME, "changed") },
+            NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata()),
+            PostTransformationExecution { serviceRegistry, result ->
+                serviceRegistry.nodeService.setProperty(result.nodeRefs[0], PROP_NAME, "changed")
+            },
             customRetry(3, Duration.ofMillis(1000)),
             singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
             "123456789",

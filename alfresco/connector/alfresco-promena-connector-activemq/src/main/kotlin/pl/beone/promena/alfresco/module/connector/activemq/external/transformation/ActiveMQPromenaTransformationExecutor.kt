@@ -55,7 +55,7 @@ class ActiveMQPromenaTransformationExecutor(
             postTransformationExecution,
             determineRetry(retry),
             dataDescriptor,
-            nodesChecksumGenerator.generateChecksum(toNodeRefs),
+            nodesChecksumGenerator.generate(toNodeRefs),
             0,
             authorizationService.getCurrentUser()
         )
