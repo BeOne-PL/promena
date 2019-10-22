@@ -12,6 +12,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeoutException
+import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
@@ -30,22 +31,20 @@ class ConcurrentPromenaMutableTransformationManager(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val transformationMap =
-        MaxSizeHashMap<String, Transformation>(
-            bufferSize
-        )
+    private val transformationMap = MaxSizeHashMap<String, Transformation>(bufferSize)
+    private var globalId: Long = 1
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     override fun getResult(transformationExecution: TransformationExecution, waitMax: Duration?): TransformationExecutionResult {
         val id = transformationExecution.id
         val determinedWaitMax = determineWaitMax(waitMax)
 
-        val transformation = transformationMap[id] ?: throw IllegalStateException("There is no <$id> transaction in progress")
+        val transformation = transformationMap[id] ?: throw IllegalStateException("There is no <$id> transformation in progress")
         return if (transformation.lock.tryLock(determinedWaitMax.toMillis(), MILLISECONDS)) {
             transformation.result ?: throw transformation.throwable
-                ?: IllegalStateException("There is no result or throwable for <$transformationExecution>")
+                ?: IllegalStateException("There is no result or throwable for <$id> transformation")
         } else {
-            throw TimeoutException("Waiting time for <$id> transaction has expired")
+            throw TimeoutException("Waiting time for <$id> transformation has expired")
         }
     }
 
@@ -54,7 +53,7 @@ class ConcurrentPromenaMutableTransformationManager(
 
     override fun startTransformation(): TransformationExecution =
         runBlocking(dispatcher) {
-            val id = generateId()
+            val id = globalId++.toString()
             val transformationExecution = transformationExecution(id)
 
             val transformation =
@@ -62,6 +61,7 @@ class ConcurrentPromenaMutableTransformationManager(
             transformationMap[id] = transformation
             try {
                 transformation.lock.lock()
+                logger.debug { "Started <$id> transformation" }
                 transformationExecution
             } catch (e: Exception) {
                 transformationMap.remove(id)
@@ -72,28 +72,34 @@ class ConcurrentPromenaMutableTransformationManager(
     override fun completeTransformation(transformationExecution: TransformationExecution, result: TransformationExecutionResult) {
         runBlocking(dispatcher) {
             val id = transformationExecution.id
-            unlockAndExecute(id) { it.result = result }
+            if (unlockAndExecute(id) { it.result = result }) {
+                logger.debug { "Completed <$id> transformation: ${result.nodeRefs}" }
+            } else {
+                logger.warn { "Couldn't complete transformation. There is no <$id> transformation in progress" }
+            }
         }
     }
 
     override fun completeErrorTransformation(transformationExecution: TransformationExecution, throwable: Throwable) {
         runBlocking(dispatcher) {
             val id = transformationExecution.id
-            unlockAndExecute(id) { it.throwable = throwable }
+            if (unlockAndExecute(id) { it.throwable = throwable }) {
+                logger.debug(throwable) { "Completed <$id> transformation with the error" }
+            } else {
+                logger.warn(throwable) { "Couldn't complete transformation with an error. There is no <$id> transformation in progress" }
+            }
         }
     }
 
-    private fun unlockAndExecute(id: String, toExecute: (Transformation) -> Unit) {
+    private fun unlockAndExecute(id: String, toExecute: (Transformation) -> Unit): Boolean {
         val transformation = transformationMap[id]
 
-        if (transformation != null) {
+        return if (transformation != null) {
             transformation.lock.unlock()
             toExecute(transformation)
+            true
         } else {
-            logger.warn { "There is no <$id> transaction in progress" }
+            false
         }
     }
-
-    private fun generateId(): String =
-        UUID.randomUUID().toString()
 }
