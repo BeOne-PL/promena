@@ -82,7 +82,7 @@ class DefaultTransformationUseCaseTest {
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
             it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Couldn't perform transformation <Single(transformerId=TransformerId(name=test, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={key=value}))> <0 source(s)>: [] <MapCommunicationParameters(parameters={id=memory})> because an error occurred. Check Promena logs for more details"
+                messages[0] shouldBe "Couldn't transform because an error occurred. Check Promena logs for more details"
                 messages[1] shouldBe "# Exception occurred"
             }
             it.causeClass shouldBe ExternalCommunicationManagerValidationException::class.java
@@ -91,7 +91,7 @@ class DefaultTransformationUseCaseTest {
     }
 
     @Test
-    fun `transform _ transformationService throws TransformationException _ should unwrap and throw exception only with message to hide Promena implementation details`() {
+    fun `transform _ transformationService throws TransformationException _ should log and rethrow exception`() {
         val data = mockk<Data> {
             every { getLocation() } throws UnsupportedOperationException()
         }
@@ -114,22 +114,14 @@ class DefaultTransformationUseCaseTest {
 
         val transformerService = mockk<TransformationService> {
             every { transform(transformation, dataDescriptor) } throws
-                    TransformationException(
-                        transformation,
-                        "Transformation isn't supported",
-                        TransformationNotSupportedException::class.java,
-                        TransformationNotSupportedException.custom("Not supported")
-                    )
+                    TransformationException("Transformation isn't supported", TransformationNotSupportedException::class.java)
         }
 
         shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, transformerService)
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }.let {
-            it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Couldn't perform transformation <Single(transformerId=TransformerId(name=test, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={key=value}))> <2 source(s)>: [<no location, MediaType(mimeType=text/plain, charset=UTF-8)>, <file:/tmp/test.tmp, MediaType(mimeType=application/json, charset=UTF-8), MapMetadata(metadata={key=value})>] <MapCommunicationParameters(parameters={id=memory})>"
-                messages[1] shouldBe "# Transformation isn't supported"
-            }
+            it.message shouldBe "Transformation isn't supported"
             it.causeClass shouldBe TransformationNotSupportedException::class.java
             it.cause shouldBe null
         }

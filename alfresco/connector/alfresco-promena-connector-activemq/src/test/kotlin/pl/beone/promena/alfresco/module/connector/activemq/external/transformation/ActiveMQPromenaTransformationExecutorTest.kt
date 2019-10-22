@@ -56,6 +56,7 @@ class ActiveMQPromenaTransformationExecutorTest {
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
+            transformation,
             nodeDescriptor,
             postTransformationExecution,
             retry,

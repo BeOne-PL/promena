@@ -71,12 +71,7 @@ class TransformerResponseFlowTest {
     private lateinit var authorizationService: AuthorizationService
 
     companion object {
-        private val performedTransformationDescriptor = performedTransformationDescriptor(
-            singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters()),
-            singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value"))
-        )
-        private val transformationExecutionResult = transformationExecutionResult(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
-
+        private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
         private val nodeDescriptor =
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
                     NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata())
@@ -84,6 +79,7 @@ class TransformerResponseFlowTest {
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
+            transformation,
             nodeDescriptor,
             PostTransformationExecution { _, _, _, _ -> },
             customRetry(3, Duration.ofMillis(1000)),
@@ -92,6 +88,11 @@ class TransformerResponseFlowTest {
             0,
             userName
         )
+
+        private val performedTransformationDescriptor = performedTransformationDescriptor(
+            singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value"))
+        )
+        private val transformationExecutionResult = transformationExecutionResult(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
     }
 
     @Before
@@ -170,7 +171,7 @@ class TransformerResponseFlowTest {
         shouldThrow<PotentialOutOfScopeVariableException> {
             promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
         }.let {
-            it.message shouldBe "It's highly probable that your implementation of PostTransformationExecution has used out of scope variable"
+            it.message shouldBe "It's highly probable that your implementation of PostTransformationExecution uses out of scope variable"
             it.cause shouldNotBe null
             it.cause!!.message shouldBe "exception"
         }

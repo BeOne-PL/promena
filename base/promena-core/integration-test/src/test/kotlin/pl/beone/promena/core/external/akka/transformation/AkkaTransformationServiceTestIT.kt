@@ -46,8 +46,6 @@ import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.addTimeout
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import pl.beone.promena.transformer.internal.model.parameters.plus
-import java.io.PrintWriter
-import java.io.StringWriter
 import java.time.Duration
 
 class AkkaTransformationServiceTestIT {
@@ -159,10 +157,8 @@ class AkkaTransformationServiceTestIT {
         shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }.let {
-            it.transformation shouldBe transformation
             it.message shouldBe "There is no <absentTransformer> transformer"
             it.causeClass shouldBe TransformerNotFoundException::class.java
-            it.cause!!.javaClass shouldBe TransformerNotFoundException::class.java
         }
     }
 
@@ -177,15 +173,13 @@ class AkkaTransformationServiceTestIT {
         shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }.let {
-            it.transformation shouldBe transformation
             it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Transformation isn't supported | There is no transformer in group <text appender> that support transforming [<no location, MediaType(mimeType=text/plain, charset=UTF-8), MapMetadata(metadata={})>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>"
+                messages[0] shouldBe "Transformation isn't supported | There is no transformer in group <text appender> that support this transformation"
                 messages[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin): Only the transformation from text/plain to text/plain is supported"
                 messages[2] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer(text appender, Kotlin useless): I can't transform nothing. I'm useless"
                 messages[3] shouldBe "> pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(text appender, java): Only the transformation from text/plain to text/plain is supported"
             }
             it.causeClass shouldBe TransformationNotSupportedException::class.java
-            it.cause!!.javaClass shouldBe TransformationNotSupportedException::class.java
         }
     }
 
@@ -200,13 +194,8 @@ class AkkaTransformationServiceTestIT {
         shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }.let {
-            it.transformation shouldBe transformation
-            it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Transformation isn't supported | Transformer doesn't support transforming [<no location, MediaType(mimeType=text/plain, charset=UTF-8), MapMetadata(metadata={})>] using <MediaType(mimeType=application/epub+zip, charset=UTF-8), MapParameters(parameters={})>"
-                messages[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin): Only the transformation from text/plain to text/plain is supported"
-            }
+            it.message shouldBe "Transformation isn't supported | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin) doesn't support this transformation: Only the transformation from text/plain to text/plain is supported"
             it.causeClass shouldBe TransformationNotSupportedException::class.java
-            it.cause!!.javaClass shouldBe TransformationNotSupportedException::class.java
         }
     }
 
@@ -222,10 +211,8 @@ class AkkaTransformationServiceTestIT {
         shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }.let {
-            it.transformation shouldBe transformation
             it.message shouldBe "Transformer <timeout> timeout <1ms> has been reached"
             it.causeClass shouldBe TransformerTimeoutException::class.java
-            it.cause!!.javaClass shouldBe TransformerTimeoutException::class.java
         }
     }
 
@@ -242,10 +229,8 @@ class AkkaTransformationServiceTestIT {
         shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }.let {
-            it.transformation shouldBe transformation
             it.message shouldBe "Transformation timeout has been reached"
             it.causeClass shouldBe AskTimeoutException::class.java
-            it.cause!!.javaClass shouldBe AskTimeoutException::class.java
         }
     }
 
@@ -262,10 +247,8 @@ class AkkaTransformationServiceTestIT {
         shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }.let {
-            it.transformation shouldBe transformation
             it.message shouldBe "Transformation was abruptly terminated"
             it.causeClass shouldBe AbruptStageTerminationException::class.java
-            it.cause!!.javaClass shouldBe AbruptStageTerminationException::class.java
         }
     }
 

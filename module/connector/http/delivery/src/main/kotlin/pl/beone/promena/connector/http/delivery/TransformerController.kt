@@ -27,10 +27,7 @@ class TransformerController(
         body
             .map(::deserializeTransformationDescriptor)
             .map { (transformation, dataDescriptor, communicationParameters) ->
-                performedTransformationDescriptor(
-                    transformation,
-                    transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-                )
+                performedTransformationDescriptor(transformationUseCase.transform(transformation, dataDescriptor, communicationParameters))
             }
             .map(serializationService::serialize)
             .map(::createResponse)

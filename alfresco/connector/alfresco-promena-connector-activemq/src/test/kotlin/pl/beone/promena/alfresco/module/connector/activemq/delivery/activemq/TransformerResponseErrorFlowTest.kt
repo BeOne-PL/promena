@@ -69,8 +69,7 @@ class TransformerResponseErrorFlowTest {
     private lateinit var authorizationService: AuthorizationService
 
     companion object {
-        private val transformationExecutionResult = transformationExecutionResult(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
-
+        val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
         private val nodeDescriptor =
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
                     NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata())
@@ -78,6 +77,7 @@ class TransformerResponseErrorFlowTest {
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
+            transformation,
             nodeDescriptor,
             PostTransformationExecution { _, _, _, _ -> },
             noRetry(),
@@ -87,7 +87,8 @@ class TransformerResponseErrorFlowTest {
             userName
         )
 
-        private val exception = TransformationException(singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters()), "Exception")
+        private val transformationExecutionResult = transformationExecutionResult(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
+        private val exception = TransformationException("Exception", TimeoutException::class.java)
     }
 
     @Before

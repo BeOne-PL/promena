@@ -26,7 +26,7 @@ class GroupedByNameTransformersCreator(
     }
 
     override fun create(transformers: List<Transformer>): List<TransformerActorDescriptor> {
-        logger.info { "Found <${transformers.size}> transformer(s). Actor config: <${actorCreator::class.java.canonicalName}>" }
+        logger.info { "Found <${transformers.size}> transformer(s). Actor config: ${actorCreator::class.java.canonicalName}" }
 
         validateNumberOfTransformers(transformers)
         validateUniqueTransformers(transformers)
@@ -62,7 +62,7 @@ class GroupedByNameTransformersCreator(
         check(notUniqueTransforms.isEmpty()) {
             "Detected <${notUniqueTransforms.size}> transformers with duplicated id:\n" +
                     notUniqueTransforms.joinToString("\n") { (transformerId, transformers) ->
-                        "> $transformerId: <${transformers.joinToString(", ") { it::class.java.canonicalName }}>"
+                        "> $transformerId: ${transformers.joinToString(", ") { it::class.java.canonicalName }}"
                     }
         }
     }

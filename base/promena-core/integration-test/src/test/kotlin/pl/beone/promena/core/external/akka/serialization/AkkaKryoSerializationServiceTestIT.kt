@@ -134,7 +134,6 @@ class AkkaKryoSerializationServiceTestIT {
     @Test
     fun `serialize _ and _ deserialize _ PerformedTransformationDescriptor`() {
         val transformedDataDescriptor = performedTransformationDescriptor(
-            singleTransformation("transformer", APPLICATION_PDF, emptyParameters()),
             singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
                     singleTransformedDataDescriptor("test2".toMemoryData(), emptyMetadata())
         )

@@ -18,10 +18,7 @@ import pl.beone.promena.core.contract.actor.TransformerActorGetter
 import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
-import pl.beone.promena.core.external.akka.extension.format
 import pl.beone.promena.core.external.akka.extension.getTimeoutOrInfiniteIfNotFound
-import pl.beone.promena.core.external.akka.extension.toMB
-import pl.beone.promena.core.external.akka.extension.toSeconds
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
 import pl.beone.promena.core.external.akka.util.unwrapExecutionException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
@@ -33,6 +30,10 @@ import pl.beone.promena.transformer.contract.data.toDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.contract.transformer.TransformerId
+import pl.beone.promena.transformer.internal.extension.format
+import pl.beone.promena.transformer.internal.extension.toPrettyString
+import pl.beone.promena.transformer.internal.extension.toSeconds
+import pl.beone.promena.transformer.internal.extension.toSimplePrettyString
 import java.time.Duration
 
 private data class ActorTransformerDescriptor(
@@ -68,22 +69,24 @@ class AkkaTransformationService(
                         .get()
                 }
             } catch (e: Exception) {
-                throw convertException(transformation, e)
+                throw convertException(e)
             }
         }
 
-        logAfterTransformation(transformation, measuredTimeMs, transformedDataDescriptor)
+        logAfterTransformation(transformation, dataDescriptor, transformedDataDescriptor, measuredTimeMs)
 
         return transformedDataDescriptor
     }
 
     private fun logBeforeTransformation(transformation: Transformation, dataDescriptor: DataDescriptor) {
         val message = if (logger.isDebugEnabled) {
-            "Transforming <$transformation> <${dataDescriptor.descriptors.size} source(s)>: " +
-                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.mediaType}, ${it.metadata}>" }}]..."
+            "Transforming\n" +
+                    "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                    "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toPrettyString()}"
         } else {
-            "Transforming <$transformation> <${dataDescriptor.descriptors.size} source(s)>: " +
-                    "[${dataDescriptor.descriptors.joinToString(", ") { "<${it.mediaType}, ${it.metadata}>" }}]..."
+            "Transforming\n" +
+                    "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                    "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toSimplePrettyString()}"
         }
 
         logger.info { message }
@@ -137,32 +140,35 @@ class AkkaTransformationService(
 
     private fun logAfterTransformation(
         transformation: Transformation,
-        measuredTimeMs: Long,
-        transformedDataDescriptor: TransformedDataDescriptor
+        dataDescriptor: DataDescriptor,
+        transformedDataDescriptor: TransformedDataDescriptor,
+        measuredTimeMs: Long
     ) {
         val message = if (logger.isDebugEnabled) {
-            "Finished transforming <$transformation> <${transformedDataDescriptor.descriptors.size} result(s)> in <${measuredTimeMs.toSeconds()} s>: " +
-                    "[${transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.data.getBytes().toMB().format(2)} MB, ${it.metadata}>" }}]"
-
+            "Transformed in <${measuredTimeMs.toSeconds().format(3)} s>\n" +
+                    "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                    "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toPrettyString()}\n" +
+                    "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toPrettyString()}\n"
         } else {
-            "Finished transforming <$transformation> <${transformedDataDescriptor.descriptors.size} result(s)> in <${measuredTimeMs.toSeconds()} s>: " +
-                    "[${transformedDataDescriptor.descriptors.joinToString(", ") { "<${it.metadata}>" }}]"
-
+            "Transforming in <${measuredTimeMs.toSeconds().format(3)} s>\n" +
+                    "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                    "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toSimplePrettyString()}" +
+                    "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toSimplePrettyString()}\n"
         }
 
         logger.info { message }
     }
 
-    private fun convertException(transformation: Transformation, e: Exception): Exception =
+    private fun convertException(e: Exception): Exception =
         when (e) {
             is TransformerException ->
-                TransformationException(transformation, e.message!!, e.javaClass, e)
+                TransformationException(e.message!!, e.javaClass)
             is TransformationNotSupportedException ->
-                TransformationException(transformation, "Transformation isn't supported | ${e.message}", e.javaClass, e)
+                TransformationException("Transformation isn't supported | ${e.message}", e.javaClass)
             is AskTimeoutException ->
-                TransformationException(transformation, "Transformation timeout has been reached", e.javaClass, e)
+                TransformationException("Transformation timeout has been reached", e.javaClass)
             is AbruptStageTerminationException ->
-                TransformationTerminationException(transformation, "Transformation was abruptly terminated", e.javaClass, e)
+                TransformationTerminationException("Transformation was abruptly terminated", e.javaClass)
             else ->
                 e
         }

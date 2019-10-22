@@ -8,7 +8,8 @@ import pl.beone.promena.core.contract.communication.internal.InternalCommunicati
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
 import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescriptor
-import pl.beone.promena.core.external.akka.extension.*
+import pl.beone.promena.core.external.akka.extension.getTimeoutOrInfiniteIfNotFound
+import pl.beone.promena.core.external.akka.extension.toPrettyString
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
@@ -17,6 +18,9 @@ import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import pl.beone.promena.transformer.contract.transformer.TransformerId
+import pl.beone.promena.transformer.internal.extension.format
+import pl.beone.promena.transformer.internal.extension.toPrettyString
+import pl.beone.promena.transformer.internal.extension.toSeconds
 import java.util.concurrent.TimeoutException
 
 class GroupedByNameTransformerActor(
@@ -54,14 +58,10 @@ class GroupedByNameTransformerActor(
         if (log().isDebugEnabled) {
             // I have to use replace functions because Akka debug handles only 4 arguments
             log().debug(
-                "Transformed <:1, :2> from <:3 MB, :4 source(s)> to <:5 MB, :6 result(s)> in <:7 s>"
-                    .replace(":1", targetMediaType.toString())
-                    .replace(":2", parameters.toString())
-                    .replace(":3", dataDescriptor.descriptors.map { it.data.getBytes() }.toMB().format(2))
-                    .replace(":4", dataDescriptor.descriptors.size.toString())
-                    .replace(":5", transformedDataDescriptor.descriptors.map { it.data.getBytes() }.toMB().format(2))
-                    .replace(":6", transformedDataDescriptor.descriptors.size.toString())
-                    .replace(":7", measuredTimeMs.toSeconds().toString())
+                "Transformed in <${measuredTimeMs.toSeconds().format(3)} s>\n" +
+                        "> Transformation: (id=${transformationTransformerId.toPrettyString()}, targetMediaType=${targetMediaType.toPrettyString()}, parameters=${parameters.getAll()})\n" +
+                        "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toPrettyString()}\n" +
+                        "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toPrettyString()}\n"
             )
         }
 
@@ -93,8 +93,7 @@ class GroupedByNameTransformerActor(
                 .also { transformer.isSupported(dataDescriptor, targetMediaType, parameters) }
         } catch (e: TransformationNotSupportedException) {
             throw TransformationNotSupportedException.custom(
-                "Transformer doesn't support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>\n" +
-                        "> ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}): ${e.message}"
+                "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) doesn't support this transformation: ${e.message}"
             )
         }
     }
@@ -115,31 +114,17 @@ class GroupedByNameTransformerActor(
                     false
                 }
             }?.transformer
-            ?: throw createGeneralException(dataDescriptor, targetMediaType, parameters, transformerExceptionsAccumulator)
+            ?: throw createGeneralException(transformerExceptionsAccumulator)
     }
 
-    private fun createGeneralException(
-        dataDescriptor: DataDescriptor,
-        targetMediaType: MediaType,
-        parameters: Parameters,
-        transformerExceptionsAccumulator: TransformerExceptionsAccumulator
-    ): TransformationNotSupportedException =
+    private fun createGeneralException(transformerExceptionsAccumulator: TransformerExceptionsAccumulator): TransformationNotSupportedException =
         TransformationNotSupportedException.custom(
-            "There is no transformer in group <$transformerName> that support transforming [${dataDescriptor.generateDescription()}] using <$targetMediaType, $parameters>\n" +
+            "There is no transformer in group <$transformerName> that support this transformation\n" +
                     transformerExceptionsAccumulator.generateDescription()
         )
 
     private fun List<TransformerDescriptor>.get(transformerId: TransformerId): TransformerDescriptor =
         first { it.transformerId == transformerId }
-
-    private fun DataDescriptor.generateDescription(): String =
-        descriptors.joinToString(", ") {
-            try {
-                "<${it.data.getLocation()}, ${it.mediaType}, ${it.metadata}>"
-            } catch (e: UnsupportedOperationException) {
-                "<no location, ${it.mediaType}, ${it.metadata}>"
-            }
-        }
 
     private fun processException(exception: Exception, parameters: Parameters): Exception =
         if (exception is TimeoutException) {

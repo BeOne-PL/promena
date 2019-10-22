@@ -51,6 +51,7 @@ class ActiveMQPromenaTransformationExecutor(
         val dataDescriptor = dataDescriptorGetter.get(nodeDescriptor)
 
         val transformationParameters = TransformationParameters(
+            transformation,
             nodeDescriptor,
             postTransformationExecution,
             determineRetry(retry),

@@ -59,7 +59,7 @@ class TransformerControllerTestIT {
         private val communicationParameters = communicationParameters("")
         private val transformationDescriptor = transformationDescriptor(transformation, dataDescriptor, communicationParameters)
         private val transformedDataDescriptor = singleTransformedDataDescriptor("".toMemoryData(), emptyMetadata())
-        private val performedTransformationDescriptor = performedTransformationDescriptor(transformation, transformedDataDescriptor)
+        private val performedTransformationDescriptor = performedTransformationDescriptor(transformedDataDescriptor)
         private val responseBody = "response body".toByteArray()
     }
 
@@ -91,7 +91,7 @@ class TransformerControllerTestIT {
 
     @Test
     fun `transform _ should throw TransformationException and return InternalServerError with serialized exception`() {
-        val exception = TransformationException(singleTransformation("test", TEXT_PLAIN, emptyParameters()), "exception")
+        val exception = TransformationException("exception", RuntimeException::class.java)
         val messageByteArray = exception.message!!.toByteArray()
 
         every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor

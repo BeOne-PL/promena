@@ -42,6 +42,7 @@ import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.util.*
+import java.util.concurrent.TimeoutException
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IntegrationTestApplication::class])
@@ -51,7 +52,7 @@ class TransformationExceptionFlowTestIT {
     companion object {
         private val transformerIds = listOf(TestTransformerMockContext.TRANSFORMER_ID)
         private val correlationId = UUID.randomUUID().toString()
-        private val expectedException = TransformationException(singleTransformation("test", TEXT_PLAIN, emptyParameters()), "Time expired")
+        private val expectedException = TransformationException("Time expired", TimeoutException::class.java)
     }
 
     @Autowired
@@ -117,7 +118,6 @@ class TransformationExceptionFlowTestIT {
 
         exception.let {
             it should beInstanceOf(expectedException::class)
-            (it as TransformationException).transformation shouldBe expectedException.transformation
             it.message shouldBe expectedException.message
             it.localizedMessage shouldBe expectedException.localizedMessage
             it.cause shouldBe expectedException.cause

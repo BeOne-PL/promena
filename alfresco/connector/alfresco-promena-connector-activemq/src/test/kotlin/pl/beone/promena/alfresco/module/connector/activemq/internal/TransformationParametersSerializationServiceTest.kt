@@ -18,8 +18,10 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.tra
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
+import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
+import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.time.Duration
 
 @RunWith(AlfrescoTestRunner::class)
@@ -34,6 +36,7 @@ class TransformationParametersSerializationServiceTest : AbstractUtilsAlfrescoIT
     fun serializeAndDeserialize() {
         val nodeRef = createOrGetIntegrationTestsFolder().createNode()
         val transformationParameters = TransformationParameters(
+            singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters()),
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata()),
             PostTransformationExecution { _, _, serviceRegistry, result ->
                 serviceRegistry.nodeService.setProperty(result.nodeRefs[0], PROP_NAME, "changed")

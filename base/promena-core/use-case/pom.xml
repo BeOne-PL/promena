@@ -22,7 +22,6 @@
             <groupId>pl.beone.promena.base</groupId>
             <artifactId>promena-transformer-internal</artifactId>
             <version>${promena-transformer.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

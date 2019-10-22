@@ -121,8 +121,6 @@ class TransformationCorrectFlowTestIT {
         validateTimestamps(transformationStartTimestamp, transformationEndTimestamp, startTimestamp, endTimestamp)
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
-        performedTransformationDescriptor.transformation shouldBe
-                transformation
         performedTransformationDescriptor.transformedDataDescriptor.descriptors.let {
             it shouldHaveSize 1
             it[0].let { transformedDataDescriptor ->

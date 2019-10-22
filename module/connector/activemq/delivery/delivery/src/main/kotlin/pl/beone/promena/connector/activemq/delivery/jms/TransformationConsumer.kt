@@ -38,10 +38,7 @@ class TransformationConsumer(
         val (transformation, dataDescriptor, communicationParameters) = transformationDescriptor
 
         val (queue, payload) = try {
-            responseQueue to performedTransformationDescriptor(
-                transformation,
-                transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-            )
+            responseQueue to performedTransformationDescriptor(transformationUseCase.transform(transformation, dataDescriptor, communicationParameters))
         } catch (e: Exception) {
             errorResponseQueue to e
         }

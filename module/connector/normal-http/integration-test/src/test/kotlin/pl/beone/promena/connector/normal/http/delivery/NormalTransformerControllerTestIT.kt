@@ -193,7 +193,7 @@ class NormalTransformerControllerTestIT {
     fun `transform _ TransformationException with causeClass TransformationNotSupportedException _ should return BadRequest`() {
         every {
             transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-        } throws TransformationException(transformation, "Exception", TransformationNotSupportedException::class.java)
+        } throws TransformationException("Exception", TransformationNotSupportedException::class.java)
 
         val body = MultipartBodyBuilder().apply {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
@@ -215,7 +215,7 @@ class NormalTransformerControllerTestIT {
     fun `transform _ TransformationException with causeClass TransformerNotFoundException _ should return BadRequest`() {
         every {
             transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-        } throws TransformationException(transformation, "Exception", TransformerNotFoundException::class.java)
+        } throws TransformationException("Exception", TransformerNotFoundException::class.java)
 
         val body = MultipartBodyBuilder().apply {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
@@ -237,7 +237,7 @@ class NormalTransformerControllerTestIT {
     fun `transform _ TransformationException with causeClass TransformerTimeoutException _ should return RequestTimeout`() {
         every {
             transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-        } throws TransformationException(transformation, "Exception", TransformerTimeoutException::class.java)
+        } throws TransformationException("Exception", TransformerTimeoutException::class.java)
 
         val body = MultipartBodyBuilder().apply {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
@@ -259,7 +259,7 @@ class NormalTransformerControllerTestIT {
     fun `transform _ TransformationException with causeClass subclass of TimeoutException _ should return RequestException`() {
         every {
             transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-        } throws TransformationException(transformation, "Exception", (object : TimeoutException() {})::class.java)
+        } throws TransformationException("Exception", (object : TimeoutException() {})::class.java)
 
         val body = MultipartBodyBuilder().apply {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
@@ -303,7 +303,7 @@ class NormalTransformerControllerTestIT {
     fun `transform _ TransformationException with not known exception _ should return InternalServerException`() {
         every {
             transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-        } throws TransformationException(transformation, "Exception", RuntimeException::class.java)
+        } throws TransformationException("Exception", RuntimeException::class.java)
 
         val body = MultipartBodyBuilder().apply {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)

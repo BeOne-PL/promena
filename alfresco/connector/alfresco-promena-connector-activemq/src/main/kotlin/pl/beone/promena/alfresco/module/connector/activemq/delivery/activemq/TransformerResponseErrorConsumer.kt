@@ -40,9 +40,7 @@ class TransformerResponseErrorConsumer(
         val transformationExecution = transformationExecution(correlationId)
 
         val transformationParameters = transformationParametersSerializationService.deserialize(transformationParametersString)
-        val (nodeDescriptor, _, retry, dataDescriptor, nodesChecksum, attempt, userName) = transformationParameters
-
-        val transformation = transformationException.transformation
+        val (transformation, nodeDescriptor, _, retry, dataDescriptor, nodesChecksum, attempt, userName) = transformationParameters
 
         transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum) {
             if (retry is Retry.No || wasLastAttempt(attempt, retry.maxAttempts)) {

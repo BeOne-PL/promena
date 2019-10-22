@@ -9,6 +9,8 @@ import pl.beone.promena.transformer.contract.communication.CommunicationParamete
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
+import pl.beone.promena.transformer.internal.extension.toPrettyString
+import pl.beone.promena.transformer.internal.extension.toSimplePrettyString
 
 class DefaultTransformationUseCase(
     private val externalCommunicationManager: ExternalCommunicationManager,
@@ -34,63 +36,24 @@ class DefaultTransformationUseCase(
                     outgoingExternalCommunicationConverter.convert(transformedDataDescriptor, externalCommunicationParameters)
                 }
         } catch (e: Exception) {
-            val processedException = processExceptionMessage(e)
-            val exceptionMessage = "Couldn't perform transformation " +
-                    "${generateTransformationExceptionDescription(transformation, dataDescriptor)} <$externalCommunicationParameters>"
+            val exceptionMessage = "Couldn't transform\n" +
+                    "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                    "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toSimplePrettyString()}\n" +
+                    "> External communication: ${externalCommunicationParameters.toPrettyString()}"
 
             if (e is TransformationException) {
-                throw processExpectedException(transformation, exceptionMessage, processedException, e)
+                logger.error { exceptionMessage + "\n" + processExceptionMessage(e) }
+                throw e
             } else {
+                logger.error(e) { exceptionMessage }
                 // unwrap expected exception to hide unnecessary information from user
-                throw processUnexpectedException(transformation, exceptionMessage, processedException, e)
+                throw TransformationException(
+                    "Couldn't transform because an error occurred. Check Promena logs for more details" + "\n" + processExceptionMessage(e),
+                    e.javaClass
+                )
             }
         }
     }
-
-    private fun processExpectedException(
-        transformation: Transformation,
-        exceptionMessage: String,
-        processedException: String,
-        exception: TransformationException
-    ): TransformationException {
-        logger.error { exceptionMessage + "\n" + processedException }
-
-        return TransformationException(
-            transformation,
-            exceptionMessage + "\n" + processedException,
-            exception.cause?.javaClass
-        )
-    }
-
-    private fun processUnexpectedException(
-        transformation: Transformation,
-        exceptionMessage: String,
-        processedException: String,
-        exception: Exception
-    ): Exception {
-        logger.error(exception) { exceptionMessage }
-
-        return TransformationException(
-            transformation,
-            exceptionMessage + " because an error occurred. Check Promena logs for more details" + "\n" + processedException,
-            exception.javaClass
-        )
-    }
-
-    private fun generateTransformationExceptionDescription(transformation: Transformation, dataDescriptor: DataDescriptor): String =
-        "<:1> <:2 source(s)>: [:3]"
-            .replace(":1", transformation.toString())
-            .replace(":2", dataDescriptor.descriptors.size.toString())
-            .replace(":3", dataDescriptor.generateDescription())
-
-    private fun DataDescriptor.generateDescription(): String =
-        descriptors.joinToString(", ") {
-            try {
-                "<${it.data.getLocation()}, ${it.mediaType}, ${it.metadata}>"
-            } catch (e: UnsupportedOperationException) {
-                "<no location, ${it.mediaType}>"
-            }
-        }
 
     private fun processExceptionMessage(exception: Exception): String =
         (exception.message ?: "No exception message available")

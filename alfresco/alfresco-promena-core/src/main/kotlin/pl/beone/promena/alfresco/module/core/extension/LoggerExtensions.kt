@@ -5,15 +5,17 @@ import org.slf4j.Logger
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
-import pl.beone.promena.transformer.contract.extension.toPrettyString
 import pl.beone.promena.transformer.contract.transformation.Transformation
+import pl.beone.promena.transformer.internal.extension.format
+import pl.beone.promena.transformer.internal.extension.toPrettyString
+import pl.beone.promena.transformer.internal.extension.toSeconds
 import java.time.Duration
 
 fun Logger.start(transformation: Transformation, nodeDescriptor: NodeDescriptor) {
     info(
         "Transforming...\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}"
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}"
     )
 }
 
@@ -25,10 +27,10 @@ fun Logger.transformedSuccessfully(
     endTimestamp: Long
 ) {
     info(
-        "Transformed in <${calculateExecutionTimeInSeconds(startTimestamp, endTimestamp)} s>\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}\n" +
-                "> Result: ${transformationExecutionResult.toPrettyString()}"
+        "Transformed in <${(endTimestamp - startTimestamp).toSeconds().format(3)} s>\n" +
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}\n" +
+                "> Result <${transformationExecutionResult.nodeRefs.size}>: ${transformationExecutionResult.toPrettyString()}"
     )
 }
 
@@ -40,24 +42,28 @@ fun Logger.stoppedTransformingBecauseChecksumsAreDifferent(
 ) {
     warn(
         "Stopped transforming because nodes have been changed in the meantime - old checksum <$oldNodesChecksum>, current checksum <$currentNodesChecksum>\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}"
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}"
     )
 }
 
 fun Logger.stoppedTransformingBecauseNodeDoesNotExist(transformation: Transformation, nodeDescriptor: NodeDescriptor, nodeRef: NodeRef) {
     warn(
         "Stopped transforming because node <$nodeRef> has been removed in the meantime\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}"
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}"
     )
 }
 
-fun Logger.stoppedTransformingBecausePostTransformationExecutionUsedOutOfScopeVariable(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: NullPointerException) {
+fun Logger.stoppedTransformingBecausePostTransformationExecutionUsedOutOfScopeVariable(
+    transformation: Transformation,
+    nodeDescriptor: NodeDescriptor,
+    exception: NullPointerException
+) {
     error(
-        "Stopped transforming because your implementation of PostTransformationExecution has thrown NullPointerException. It's highly probable that your implementation has used out of scope variable\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}",
+        "Stopped transforming because your implementation of PostTransformationExecution has thrown NullPointerException. It's highly probable that your implementation uses out of scope variable\n" +
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}",
         exception
     )
 }
@@ -65,8 +71,8 @@ fun Logger.stoppedTransformingBecausePostTransformationExecutionUsedOutOfScopeVa
 fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: Exception) {
     error(
         "Couldn't transform\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}",
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}",
         exception
     )
 }
@@ -74,15 +80,11 @@ fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: Nod
 fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: TransformationException) {
     error(
         "Couldn't transform\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}\n" +
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}\n" +
                 exception.toString().addHashAtTheBeggingOfEachLine()
     )
 }
-
-private fun String.addHashAtTheBeggingOfEachLine(): String =
-    this.split("\n")
-        .joinToString("\n") { "# $it" }
 
 fun Logger.logOnRetry(
     transformation: Transformation,
@@ -94,11 +96,12 @@ fun Logger.logOnRetry(
 ) {
     warn(
         "Attempt ($attempt/$maxAttempts). This attempt will be made in <${nextAttemptDelay.toPrettyString()}>\n" +
-                "> Node descriptor: ${nodeDescriptor.toPrettyString()}\n" +
-                "> Transformation: ${transformation.toPrettyString()}\n" +
+                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}\n" +
                 exception.toString().addHashAtTheBeggingOfEachLine()
     )
 }
 
-private fun calculateExecutionTimeInSeconds(millisStart: Long, millisEnd: Long): String =
-    String.format("%.3f", (millisEnd - millisStart) / 1000.0)
+private fun String.addHashAtTheBeggingOfEachLine(): String =
+    this.split("\n")
+        .joinToString("\n") { "# $it" }

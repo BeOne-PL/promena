@@ -81,6 +81,7 @@ class TransformerSenderTest {
         private val retry = customRetry(3, Duration.ofMillis(1000))
         private const val attempt: Long = 0
         private val transformationParameters = TransformationParameters(
+            singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters()),
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
                     NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata()),
             PostTransformationExecution { _, _, _, _ -> },

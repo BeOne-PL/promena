@@ -45,11 +45,11 @@ class TransformerResponseConsumer(
     ) {
         val transformationExecution = transformationExecution(correlationId)
 
-        val (nodeDescriptor, postTransformationExecution, _, _, nodesChecksum, _, userName) =
+        val (transformation, nodeDescriptor, postTransformationExecution, _, _, nodesChecksum, _, userName) =
             transformationParametersSerializationService.deserialize(transformationParameters)
         val nodeRefs = nodeDescriptor.toNodeRefs()
 
-        val (transformation, transformedDataDescriptors) = performedTransformationDescriptor
+        val (transformedDataDescriptors) = performedTransformationDescriptor
 
         transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum) {
             try {

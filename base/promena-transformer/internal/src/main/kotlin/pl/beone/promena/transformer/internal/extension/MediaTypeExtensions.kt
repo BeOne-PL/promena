@@ -1,4 +1,4 @@
-package pl.beone.promena.transformer.applicationmodel.extension
+package pl.beone.promena.transformer.internal.extension
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 
