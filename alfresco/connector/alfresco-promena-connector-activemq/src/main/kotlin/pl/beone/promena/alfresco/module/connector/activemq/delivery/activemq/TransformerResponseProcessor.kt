@@ -6,6 +6,7 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodesInc
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
+import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.node.NodesExistenceVerifier
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
@@ -16,7 +17,8 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 class TransformerResponseProcessor(
     private val promenaMutableTransformationManager: PromenaMutableTransformationManager,
     private val nodesExistenceVerifier: NodesExistenceVerifier,
-    private val nodesChecksumGenerator: NodesChecksumGenerator
+    private val nodesChecksumGenerator: NodesChecksumGenerator,
+    private val authorizationService: AuthorizationService
 ) {
 
     companion object {
@@ -28,13 +30,15 @@ class TransformerResponseProcessor(
         nodeDescriptor: NodeDescriptor,
         transformationExecution: TransformationExecution,
         nodesChecksum: String,
+        userName: String,
         toRunIfNodesExistAndHaveTheSameChecksum: () -> Unit
     ) {
         try {
             val nodeRefs = nodeDescriptor.toNodeRefs()
-            nodesExistenceVerifier.verify(nodeRefs)
+            val toRun = { nodesExistenceVerifier.verify(nodeRefs) }
+            authorizationService.runAs(userName, toRun)
 
-            val currentNodesChecksum = nodesChecksumGenerator.generate(nodeRefs)
+            val currentNodesChecksum = authorizationService.runAs(userName) { nodesChecksumGenerator.generate(nodeRefs) }
             if (nodesChecksum != currentNodesChecksum) {
                 logger.stoppedTransformingBecauseChecksumsAreDifferent(
                     transformation,

@@ -49,12 +49,10 @@ class TransformerResponseConsumer(
             transformationParametersSerializationService.deserialize(transformationParameters)
         val nodeRefs = nodeDescriptor.toNodeRefs()
 
-        val (transformedDataDescriptors) = performedTransformationDescriptor
-
-        transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum) {
+        transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum, userName) {
             try {
                 val transformationExecutionResult = authorizationService.runAs(userName) {
-                    transformedDataDescriptorSaver.save(transformation, nodeRefs, transformedDataDescriptors)
+                    transformedDataDescriptorSaver.save(transformation, nodeRefs, performedTransformationDescriptor.transformedDataDescriptor)
                         .let(::transformationExecutionResult)
                         .also { result -> postTransformationExecution?.execute(transformation, nodeDescriptor, serviceRegistry, result) }
                 }

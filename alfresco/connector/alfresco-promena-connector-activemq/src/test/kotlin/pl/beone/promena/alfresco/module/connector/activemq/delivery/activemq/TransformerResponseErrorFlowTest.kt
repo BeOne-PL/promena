@@ -2,10 +2,8 @@ package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
-import io.mockk.just
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.junit.After
@@ -22,16 +20,12 @@ import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.con
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.PostTransformationExecution
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
-import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
-import pl.beone.promena.alfresco.module.core.contract.node.NodesExistenceVerifier
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
@@ -57,23 +51,16 @@ class TransformerResponseErrorFlowTest {
     private lateinit var jmsUtils: JmsUtils
 
     @Autowired
-    private lateinit var nodesChecksumGenerator: NodesChecksumGenerator
-
-    @Autowired
-    private lateinit var nodesExistenceVerifier: NodesExistenceVerifier
-
-    @Autowired
     private lateinit var promenaMutableTransformationManager: PromenaMutableTransformationManager
 
     @Autowired
     private lateinit var authorizationService: AuthorizationService
 
     companion object {
-        val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
+        private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
         private val nodeDescriptor =
             NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
                     NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata())
-        private val nodeRefs = nodeDescriptor.toNodeRefs()
         private const val nodesChecksum = "123456789"
         private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
@@ -96,11 +83,9 @@ class TransformerResponseErrorFlowTest {
         clearMocks(authorizationService)
         every { authorizationService.getCurrentUser() } returns userName
 
-        clearMocks(nodesChecksumGenerator)
-        every { nodesChecksumGenerator.generate(nodeRefs) } returns nodesChecksum
-
-        clearMocks(nodesExistenceVerifier)
-        every { nodesExistenceVerifier.verify(nodeRefs) } just Runs
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                nodesChecksum // nodesChecksumGenerator.generate(nodeRefs)
     }
 
     @After
@@ -110,7 +95,10 @@ class TransformerResponseErrorFlowTest {
 
     @Test
     fun `should receive exception and try to retry again _ first attempt`() {
-        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } returns transformationExecutionResult
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                nodesChecksum andThen // nodesChecksumGenerator.generate(nodeRefs)
+                transformationExecutionResult
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseErrorMessage(
@@ -168,7 +156,10 @@ class TransformerResponseErrorFlowTest {
 
     @Test
     fun `should receive exception _ throw RuntimeException during processing result`() {
-        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } throws RuntimeException("exception")
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                nodesChecksum andThenThrows  // nodesChecksumGenerator.generate(nodeRefs)
+                RuntimeException("exception")
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseErrorMessage(

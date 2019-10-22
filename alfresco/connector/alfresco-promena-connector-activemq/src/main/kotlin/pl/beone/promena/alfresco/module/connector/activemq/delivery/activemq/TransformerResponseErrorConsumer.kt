@@ -42,7 +42,7 @@ class TransformerResponseErrorConsumer(
         val transformationParameters = transformationParametersSerializationService.deserialize(transformationParametersString)
         val (transformation, nodeDescriptor, _, retry, dataDescriptor, nodesChecksum, attempt, userName) = transformationParameters
 
-        transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum) {
+        transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum, userName) {
             if (retry is Retry.No || wasLastAttempt(attempt, retry.maxAttempts)) {
                 logger.couldNotTransform(transformation, nodeDescriptor, transformationException)
                 promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, transformationException)

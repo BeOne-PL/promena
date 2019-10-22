@@ -3,10 +3,8 @@ package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
 import io.kotlintest.shouldThrow
-import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
-import io.mockk.just
 import org.alfresco.service.cmr.repository.InvalidNodeRefException
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
@@ -30,11 +28,8 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.PostTransformationExecution
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
-import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
-import pl.beone.promena.alfresco.module.core.contract.node.NodesExistenceVerifier
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
@@ -57,12 +52,6 @@ class TransformerResponseFlowTest {
 
     @Autowired
     private lateinit var jmsUtils: JmsUtils
-
-    @Autowired
-    private lateinit var nodesChecksumGenerator: NodesChecksumGenerator
-
-    @Autowired
-    private lateinit var nodesExistenceVerifier: NodesExistenceVerifier
 
     @Autowired
     private lateinit var promenaMutableTransformationManager: PromenaMutableTransformationManager
@@ -99,13 +88,6 @@ class TransformerResponseFlowTest {
     fun setUp() {
         clearMocks(authorizationService)
         every { authorizationService.getCurrentUser() } returns userName
-        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } returns transformationExecutionResult
-
-        clearMocks(nodesChecksumGenerator)
-        every { nodesChecksumGenerator.generate(nodeRefs) } returns nodesChecksum
-
-        clearMocks(nodesExistenceVerifier)
-        every { nodesExistenceVerifier.verify(nodeRefs) } just Runs
     }
 
     @After
@@ -115,6 +97,11 @@ class TransformerResponseFlowTest {
 
     @Test
     fun `should receive message from response queue and go correct path`() {
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                nodesChecksum andThen // nodesChecksumGenerator.generate(nodeRefs)
+                transformationExecutionResult
+
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
 
@@ -123,9 +110,9 @@ class TransformerResponseFlowTest {
 
     @Test
     fun `should detect difference between nodes checksums and throw NodesInconsistencyException`() {
-        every {
-            nodesChecksumGenerator.generate(nodeRefs)
-        } returns "not equal"
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                "not equal"  // nodesChecksumGenerator.generate(nodeRefs)
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
@@ -137,9 +124,8 @@ class TransformerResponseFlowTest {
 
     @Test
     fun `should detect that one of nodes doesn't exist and throw InvalidNodeRefException`() {
-        every {
-            nodesExistenceVerifier.verify(nodeRefs)
-        } throws InvalidNodeRefException("Node <${nodeRefs[0]}> doesn't exist", nodeRefs[0])
+        every { authorizationService.runAs<Any>(userName, any()) } throws
+                InvalidNodeRefException("Node <${nodeRefs[0]}> doesn't exist", nodeRefs[0])
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
@@ -151,7 +137,10 @@ class TransformerResponseFlowTest {
 
     @Test
     fun `should throw RuntimeException during processing result`() {
-        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } throws RuntimeException("exception")
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                nodesChecksum andThenThrows  // nodesChecksumGenerator.generate(nodeRefs)
+                RuntimeException("exception")
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
@@ -163,7 +152,10 @@ class TransformerResponseFlowTest {
 
     @Test
     fun `should throw NullPointerException during executing post transaction execution`() {
-        every { authorizationService.runAs<TransformationExecutionResult>(userName, any()) } throws NullPointerException("exception")
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                nodesChecksum andThenThrows  // nodesChecksumGenerator.generate(nodeRefs)
+                NullPointerException("exception")
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
