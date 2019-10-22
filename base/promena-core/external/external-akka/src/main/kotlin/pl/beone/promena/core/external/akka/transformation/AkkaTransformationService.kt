@@ -148,12 +148,12 @@ class AkkaTransformationService(
             "Transformed in <${measuredTimeMs.toSeconds().format(3)} s>\n" +
                     "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
                     "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toPrettyString()}\n" +
-                    "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toPrettyString()}\n"
+                    "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toPrettyString()}"
         } else {
-            "Transforming in <${measuredTimeMs.toSeconds().format(3)} s>\n" +
+            "Transformed in <${measuredTimeMs.toSeconds().format(3)} s>\n" +
                     "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
-                    "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toSimplePrettyString()}" +
-                    "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toSimplePrettyString()}\n"
+                    "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toSimplePrettyString()}\n" +
+                    "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toSimplePrettyString()}"
         }
 
         logger.info { message }

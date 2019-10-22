@@ -61,7 +61,7 @@ class GroupedByNameTransformerActor(
                 "Transformed in <${measuredTimeMs.toSeconds().format(3)} s>\n" +
                         "> Transformation: (id=${transformationTransformerId.toPrettyString()}, targetMediaType=${targetMediaType.toPrettyString()}, parameters=${parameters.getAll()})\n" +
                         "> Data descriptor <${dataDescriptor.descriptors.size}>: ${dataDescriptor.toPrettyString()}\n" +
-                        "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toPrettyString()}\n"
+                        "> Transformed data descriptor <${transformedDataDescriptor.descriptors.size}>: ${transformedDataDescriptor.toPrettyString()}"
             )
         }
 
