@@ -1,7 +1,7 @@
-package pl.beone.promena.alfresco.module.rendition.predefined.internal.image
+package pl.beone.promena.alfresco.module.rendition.predefined.internal.definition.image
 
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaRenditionTransformationNotSupportedException
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinition
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.IMAGE_PNG
@@ -28,7 +28,10 @@ object DocLibPromenaRenditionDefinition : PromenaRenditionDefinition {
                 )
             )
         } catch (e: TransformationNotSupportedException) {
-            throw PromenaRenditionTransformationNotSupportedException.unsupportedMediaType(getRenditionName(), mediaType, getTargetMediaType())
+            throw PromenaRenditionTransformationNotSupportedException.unsupportedMediaType(
+                getRenditionName(), mediaType,
+                getTargetMediaType()
+            )
         }
 
     override fun getPlaceHolderResourcePath(): String? =

@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.rendition.external
+package pl.beone.promena.alfresco.module.rendition.external.definition
 
 import io.kotlintest.matchers.string.shouldStartWith
 import io.kotlintest.shouldBe
@@ -8,7 +8,7 @@ import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchPromenaRenditionDefinitionException
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinition
 
 class MemoryPromenaRenditionDefinitionGetterTest {
 

@@ -1,6 +1,6 @@
 package pl.beone.promena.alfresco.module.rendition.applicationmodel.exception
 
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinition
 
 class NoSuchPromenaRenditionDefinitionException(
     val renditionName: String,

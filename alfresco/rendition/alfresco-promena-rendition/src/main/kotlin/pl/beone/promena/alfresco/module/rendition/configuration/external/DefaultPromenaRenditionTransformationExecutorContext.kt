@@ -10,9 +10,9 @@ import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTran
 import pl.beone.promena.alfresco.module.core.extension.getPropertyWithEmptySupport
 import pl.beone.promena.alfresco.module.core.extension.getRequiredPropertyWithResolvedPlaceholders
 import pl.beone.promena.alfresco.module.core.extension.toDuration
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.external.DefaultPromenaRenditionTransformationExecutor
 import java.util.*
 

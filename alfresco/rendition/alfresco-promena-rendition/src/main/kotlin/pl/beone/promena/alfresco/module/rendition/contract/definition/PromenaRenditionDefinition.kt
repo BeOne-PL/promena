@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.rendition.contract
+package pl.beone.promena.alfresco.module.rendition.contract.definition
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.transformation.Transformation

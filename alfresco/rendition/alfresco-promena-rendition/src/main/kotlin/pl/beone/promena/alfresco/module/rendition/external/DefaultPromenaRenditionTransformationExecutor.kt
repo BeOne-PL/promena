@@ -11,12 +11,12 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.Tra
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutor
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformationExecutor
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.extension.getMediaType
-import pl.beone.promena.alfresco.module.rendition.internal.transformation.RenditionPromenaTransformationMetadataMapper.Companion.PROP_RENDITION_NAME_PREFIXED
+import pl.beone.promena.alfresco.module.rendition.internal.transformation.definition.PromenaRenditionNamePromenaTransformationMetadataMappingDefinition.Companion.PROP_RENDITION_NAME_PREFIXED
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus

@@ -7,8 +7,8 @@ import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinition
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
 
 class PromenaRenditionDefinitionValidatorTest {
 

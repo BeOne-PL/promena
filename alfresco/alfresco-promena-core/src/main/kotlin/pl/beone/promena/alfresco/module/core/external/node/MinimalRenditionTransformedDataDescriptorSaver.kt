@@ -11,10 +11,9 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTrans
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationMetadataMapperElement
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
-import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataMapper
+import pl.beone.promena.alfresco.module.core.contract.transformation.definition.PromenaTransformationMetadataMappingDefinition
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Data
@@ -27,17 +26,12 @@ import kotlin.collections.ArrayList
 
 class MinimalRenditionTransformedDataDescriptorSaver(
     private val saveIfZero: Boolean,
-    private val promenaTransformationMetadataMappers: List<PromenaTransformationMetadataMapper>,
+    promenaTransformationMetadataMappingDefinitions: List<PromenaTransformationMetadataMappingDefinition>,
     private val dataConverter: DataConverter,
     private val serviceRegistry: ServiceRegistry
 ) : TransformedDataDescriptorSaver {
 
-    private val promenaTransformationMetadataElements = createMapFromAllMappers()
-
-    private fun createMapFromAllMappers(): Map<String, TransformationMetadataMapperElement> =
-        promenaTransformationMetadataMappers.flatMap(PromenaTransformationMetadataMapper::getElements)
-            .map { it.key to it }
-            .toMap()
+    private val metadataMappingDefinitionMap = promenaTransformationMetadataMappingDefinitions.map { it.getKey() to it }.toMap()
 
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
         serviceRegistry.retryingTransactionHelper.doInTransaction {
@@ -130,9 +124,9 @@ class MinimalRenditionTransformedDataDescriptorSaver(
 
     private fun determineProperties(metadata: Metadata): Map<QName, Serializable?> =
         metadata.getAll()
-            .filterKeys(promenaTransformationMetadataElements::containsKey)
-            .mapKeys { (key) -> promenaTransformationMetadataElements[key] ?: error("Impossible. It's filtered in the previous line") }
-            .map { (mapperElement, value) -> mapperElement.property to mapperElement.converter(value) }
+            .filterKeys(metadataMappingDefinitionMap::containsKey)
+            .mapKeys { (key) -> metadataMappingDefinitionMap[key] ?: error("Impossible. It's filtered in the previous line") }
+            .map { (mapperElement, value) -> mapperElement.getProperty() to mapperElement.getConverter()(value) }
             .toMap()
 
     private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =

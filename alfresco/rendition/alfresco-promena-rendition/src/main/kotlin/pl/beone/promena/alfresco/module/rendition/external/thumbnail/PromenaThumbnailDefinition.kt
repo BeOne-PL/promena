@@ -2,7 +2,7 @@ package pl.beone.promena.alfresco.module.rendition.external.thumbnail
 
 import org.alfresco.repo.thumbnail.ThumbnailDefinition
 import org.alfresco.service.cmr.repository.TransformationOptions
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinition
 
 internal class PromenaThumbnailDefinition(
     internal val renditionDefinition: PromenaRenditionDefinition

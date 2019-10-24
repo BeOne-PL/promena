@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.rendition.contract
+package pl.beone.promena.alfresco.module.rendition.contract.definition
 
 interface PromenaRenditionDefinitionGetter {
 

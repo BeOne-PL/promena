@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.rendition.configuration.internal
 
 import org.springframework.stereotype.Component
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
 import javax.annotation.PostConstruct
 
 @Component

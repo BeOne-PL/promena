@@ -1,9 +1,9 @@
-package pl.beone.promena.alfresco.module.rendition.external
+package pl.beone.promena.alfresco.module.rendition.external.definition
 
 import mu.KotlinLogging
 import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.NoSuchPromenaRenditionDefinitionException
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinition
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionDefinitionGetter
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
 
 class MemoryPromenaRenditionDefinitionGetter(
     private val promenaRenditionDefinitions: List<PromenaRenditionDefinition>

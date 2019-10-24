@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.rendition.predefined.internal.pdf
+package pl.beone.promena.alfresco.module.rendition.predefined.internal.definition.pdf
 
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType

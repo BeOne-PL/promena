@@ -22,10 +22,9 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTrans
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationMetadataMapperElement
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationMetadataMapperElement
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
-import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataMapper
+import pl.beone.promena.alfresco.module.core.contract.transformation.definition.Converter
+import pl.beone.promena.alfresco.module.core.contract.transformation.definition.PromenaTransformationMetadataMappingDefinition
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
@@ -50,25 +49,37 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
     companion object {
         private val data = "test".toMemoryData()
 
-        private val promenaTransformationMetadataMappers = listOf(
-            promenaTransformationMetadataMapper(
-                transformationMetadataMapperElement("cm:author", PROP_AUTHOR), // text
-                transformationMetadataMapperElement("cm:latitude", PROP_LATITUDE), // double
-                transformationMetadataMapperElement("cm:automaticUpdate", PROP_AUTOMATIC_UPDATE), // boolean
-                transformationMetadataMapperElement("cm:sentdate", PROP_SENTDATE), // datetime
-                transformationMetadataMapperElement("cm:hits", PROP_HITS) // int
-            ),
-            promenaTransformationMetadataMapper(
-                transformationMetadataMapperElement("cm:published", PROP_PUBLISHED) {
-                    Date.from((it as LocalDateTime).atZone(ZoneId.systemDefault()).toInstant())
-                } // datetime
-            )
-        )
-
-        private fun promenaTransformationMetadataMapper(vararg elements: TransformationMetadataMapperElement): PromenaTransformationMetadataMapper =
-            object : PromenaTransformationMetadataMapper {
-                override fun getElements(): List<TransformationMetadataMapperElement> = elements.toList()
+        private val metadataMappingDefinitions = listOf(
+            object : PromenaTransformationMetadataMappingDefinition { // text
+                override fun getKey(): String = "cm:author"
+                override fun getProperty(): QName = PROP_AUTHOR
+            },
+            object : PromenaTransformationMetadataMappingDefinition { // double
+                override fun getKey(): String = "cm:latitude"
+                override fun getProperty(): QName = PROP_LATITUDE
+            },
+            object : PromenaTransformationMetadataMappingDefinition { // boolean
+                override fun getKey(): String = "cm:automaticUpdate"
+                override fun getProperty(): QName = PROP_AUTOMATIC_UPDATE
+            },
+            object : PromenaTransformationMetadataMappingDefinition { // datetime
+                override fun getKey(): String = "cm:sentdate"
+                override fun getProperty(): QName = PROP_SENTDATE
+            },
+            object : PromenaTransformationMetadataMappingDefinition { // int
+                override fun getKey(): String = "cm:hits"
+                override fun getProperty(): QName = PROP_HITS
+            },
+            object : PromenaTransformationMetadataMappingDefinition { // int
+                override fun getKey(): String = "cm:hits"
+                override fun getProperty(): QName = PROP_HITS
+            },
+            object : PromenaTransformationMetadataMappingDefinition { // int
+                override fun getKey(): String = "cm:published"
+                override fun getProperty(): QName = PROP_PUBLISHED
+                override fun getConverter(): Converter = { Date.from((it as LocalDateTime).atZone(ZoneId.systemDefault()).toInstant()) }
             }
+        )
     }
 
     @Test
@@ -81,7 +92,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(true, promenaTransformationMetadataMappers, dataConverter, serviceRegistry)
+        MinimalRenditionTransformedDataDescriptorSaver(true, metadataMappingDefinitions, dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", APPLICATION_PDF, emptyParameters()) next
                         singleTransformation("transformer2", "sub", TEXT_PLAIN, emptyParameters() + ("key" to "value")),
@@ -189,7 +200,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(true, promenaTransformationMetadataMappers, dataConverter, serviceRegistry)
+        MinimalRenditionTransformedDataDescriptorSaver(true, metadataMappingDefinitions, dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),

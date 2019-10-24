@@ -30,7 +30,7 @@ class ReflectionPostTransformationExecutorInjectorTest {
         postTransformationExecutor.text shouldBe "applicationContext-serviceRegistry"
     }
 
-    private class TestPostTransformationExecutor() : PostTransformationExecutor() {
+    private class TestPostTransformationExecutor : PostTransformationExecutor() {
 
         lateinit var text: String
 
