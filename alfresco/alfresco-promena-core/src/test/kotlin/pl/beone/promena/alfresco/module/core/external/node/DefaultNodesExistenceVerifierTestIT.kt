@@ -12,13 +12,13 @@ import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 
 @RunWith(AlfrescoTestRunner::class)
-class NodeServiceNodesExistenceVerifierTestIT : AbstractUtilsAlfrescoIT() {
+class DefaultNodesExistenceVerifierTestIT : AbstractUtilsAlfrescoIT() {
 
-    private lateinit var nodeServiceNodesExistenceVerifier: NodeServiceNodesExistenceVerifier
+    private lateinit var nodesExistenceVerifier: DefaultNodesExistenceVerifier
 
     @Before
     fun setUp() {
-        nodeServiceNodesExistenceVerifier = NodeServiceNodesExistenceVerifier(serviceRegistry)
+        nodesExistenceVerifier = DefaultNodesExistenceVerifier(serviceRegistry)
     }
 
     @Test
@@ -26,7 +26,7 @@ class NodeServiceNodesExistenceVerifierTestIT : AbstractUtilsAlfrescoIT() {
         val nodeRef = createOrGetIntegrationTestsFolder().createNode()
 
         shouldNotThrowExactly<InvalidNodeRefException> {
-            nodeServiceNodesExistenceVerifier.verify(listOf(serviceRegistry.nodeService.getRootNode(STORE_REF_WORKSPACE_SPACESSTORE), nodeRef))
+            nodesExistenceVerifier.verify(listOf(serviceRegistry.nodeService.getRootNode(STORE_REF_WORKSPACE_SPACESSTORE), nodeRef))
         }
     }
 
@@ -35,7 +35,7 @@ class NodeServiceNodesExistenceVerifierTestIT : AbstractUtilsAlfrescoIT() {
         val nodeRef = createOrGetIntegrationTestsFolder().createNode()
 
         shouldThrowExactly<InvalidNodeRefException> {
-            nodeServiceNodesExistenceVerifier.verify(listOf(nodeRef, NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")))
+            nodesExistenceVerifier.verify(listOf(nodeRef, NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")))
         }
     }
 }

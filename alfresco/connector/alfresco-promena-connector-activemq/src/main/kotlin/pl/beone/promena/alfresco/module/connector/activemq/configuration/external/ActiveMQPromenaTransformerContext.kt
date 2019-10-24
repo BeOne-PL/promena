@@ -11,6 +11,7 @@ import pl.beone.promena.alfresco.module.core.contract.node.DataDescriptorGetter
 import pl.beone.promena.alfresco.module.core.contract.node.NodeInCurrentTransactionVerifier
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
+import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorValidator
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.util.*
 
@@ -23,6 +24,7 @@ class ActiveMQPromenaTransformerContext {
         @Qualifier("externalCommunicationParameters") externalCommunicationParameters: CommunicationParameters,
         promenaMutableTransformationManager: PromenaMutableTransformationManager,
         retry: Retry,
+        postTransformationExecutorValidator: PostTransformationExecutorValidator,
         nodeInCurrentTransactionVerifier: NodeInCurrentTransactionVerifier,
         nodesChecksumGenerator: NodesChecksumGenerator,
         dataDescriptorGetter: DataDescriptorGetter,
@@ -33,6 +35,7 @@ class ActiveMQPromenaTransformerContext {
             externalCommunicationParameters,
             promenaMutableTransformationManager,
             retry,
+            postTransformationExecutorValidator,
             nodeInCurrentTransactionVerifier,
             nodesChecksumGenerator,
             dataDescriptorGetter,

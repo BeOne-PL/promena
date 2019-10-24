@@ -55,19 +55,6 @@ fun Logger.stoppedTransformingBecauseNodeDoesNotExist(transformation: Transforma
     )
 }
 
-fun Logger.stoppedTransformingBecausePostTransformationExecutionUsedOutOfScopeVariable(
-    transformation: Transformation,
-    nodeDescriptor: NodeDescriptor,
-    exception: NullPointerException
-) {
-    error(
-        "Stopped transforming because your implementation of PostTransformationExecution has thrown NullPointerException. It's highly probable that your implementation uses out of scope variable\n" +
-                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
-                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}",
-        exception
-    )
-}
-
 fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: NodeDescriptor, exception: Exception) {
     error(
         "Couldn't transform\n" +

@@ -3,11 +3,9 @@ package pl.beone.promena.alfresco.module.core.contract.transformation
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecutionResult
 import java.time.Duration
-import java.util.concurrent.TimeoutException
 
 interface PromenaTransformationManager {
 
-    @Throws(TimeoutException::class)
     fun getResult(transformationExecution: TransformationExecution, waitMax: Duration? = null): TransformationExecutionResult
 
     interface PromenaMutableTransformationManager : PromenaTransformationManager {

@@ -8,11 +8,9 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.Tra
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecution
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import java.time.Duration
-import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeoutException
-import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
@@ -21,7 +19,7 @@ class ConcurrentPromenaMutableTransformationManager(
     private val waitMax: Duration
 ) : PromenaMutableTransformationManager {
 
-    data class Transformation(
+    private data class Transformation(
         val lock: Lock,
         var result: TransformationExecutionResult? = null,
         var throwable: Throwable? = null
@@ -57,7 +55,9 @@ class ConcurrentPromenaMutableTransformationManager(
             val transformationExecution = transformationExecution(id)
 
             val transformation =
-                Transformation(ReentrantLock())
+                Transformation(
+                    ReentrantLock()
+                )
             transformationMap[id] = transformation
             try {
                 transformation.lock.lock()
@@ -72,7 +72,7 @@ class ConcurrentPromenaMutableTransformationManager(
     override fun completeTransformation(transformationExecution: TransformationExecution, result: TransformationExecutionResult) {
         runBlocking(dispatcher) {
             val id = transformationExecution.id
-            if (unlockAndExecute(id) { it.result = result }) {
+            if (executeAndUnlock(id) { it.result = result }) {
                 logger.debug { "Completed <$id> transformation: ${result.nodeRefs}" }
             } else {
                 logger.warn { "Couldn't complete transformation. There is no <$id> transformation in progress" }
@@ -83,7 +83,7 @@ class ConcurrentPromenaMutableTransformationManager(
     override fun completeErrorTransformation(transformationExecution: TransformationExecution, throwable: Throwable) {
         runBlocking(dispatcher) {
             val id = transformationExecution.id
-            if (unlockAndExecute(id) { it.throwable = throwable }) {
+            if (executeAndUnlock(id) { it.throwable = throwable }) {
                 logger.debug(throwable) { "Completed <$id> transformation with the error" }
             } else {
                 logger.warn(throwable) { "Couldn't complete transformation with an error. There is no <$id> transformation in progress" }
@@ -91,12 +91,12 @@ class ConcurrentPromenaMutableTransformationManager(
         }
     }
 
-    private fun unlockAndExecute(id: String, toExecute: (Transformation) -> Unit): Boolean {
+    private fun executeAndUnlock(id: String, toExecute: (Transformation) -> Unit): Boolean {
         val transformation = transformationMap[id]
 
         return if (transformation != null) {
-            transformation.lock.unlock()
             toExecute(transformation)
+            transformation.lock.unlock()
             true
         } else {
             false

@@ -35,8 +35,7 @@ class TransformerResponseProcessor(
     ) {
         try {
             val nodeRefs = nodeDescriptor.toNodeRefs()
-            val toRun = { nodesExistenceVerifier.verify(nodeRefs) }
-            authorizationService.runAs(userName, toRun)
+            authorizationService.runAs(userName) { nodesExistenceVerifier.verify(nodeRefs) }
 
             val currentNodesChecksum = authorizationService.runAs(userName) { nodesChecksumGenerator.generate(nodeRefs) }
             if (nodesChecksum != currentNodesChecksum) {

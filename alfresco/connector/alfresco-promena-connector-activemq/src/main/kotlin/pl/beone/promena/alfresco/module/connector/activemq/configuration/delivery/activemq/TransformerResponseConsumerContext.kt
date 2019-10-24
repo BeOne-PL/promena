@@ -9,6 +9,7 @@ import pl.beone.promena.alfresco.module.connector.activemq.internal.Transformati
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
+import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorInjector
 
 @Configuration
 class TransformerResponseConsumerContext {
@@ -19,6 +20,7 @@ class TransformerResponseConsumerContext {
         transformerResponseProcessor: TransformerResponseProcessor,
         transformedDataDescriptorSaver: TransformedDataDescriptorSaver,
         transformationParametersSerializationService: TransformationParametersSerializationService,
+        postTransformationExecutorInjector: PostTransformationExecutorInjector,
         authorizationService: AuthorizationService,
         serviceRegistry: ServiceRegistry
     ) =
@@ -27,6 +29,7 @@ class TransformerResponseConsumerContext {
             transformerResponseProcessor,
             transformedDataDescriptorSaver,
             transformationParametersSerializationService,
+            postTransformationExecutorInjector,
             authorizationService,
             serviceRegistry
         )

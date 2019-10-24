@@ -5,7 +5,6 @@ import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.Tra
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.Retry
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.PostTransformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.node.DataDescriptorGetter
@@ -13,6 +12,8 @@ import pl.beone.promena.alfresco.module.core.contract.node.NodeInCurrentTransact
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
+import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutor
+import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorValidator
 import pl.beone.promena.alfresco.module.core.extension.start
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
@@ -23,6 +24,7 @@ class ActiveMQPromenaTransformationExecutor(
     private val externalCommunicationParameters: CommunicationParameters,
     private val promenaMutableTransformationManager: PromenaMutableTransformationManager,
     private val retry: Retry,
+    private val postTransformationExecutorValidator: PostTransformationExecutorValidator,
     private val nodeInCurrentTransactionVerifier: NodeInCurrentTransactionVerifier,
     private val nodesChecksumGenerator: NodesChecksumGenerator,
     private val dataDescriptorGetter: DataDescriptorGetter,
@@ -37,13 +39,14 @@ class ActiveMQPromenaTransformationExecutor(
     override fun execute(
         transformation: Transformation,
         nodeDescriptor: NodeDescriptor,
-        postTransformationExecution: PostTransformationExecution?,
+        postTransformationExecutor: PostTransformationExecutor?,
         retry: Retry?
     ): TransformationExecution {
         logger.start(transformation, nodeDescriptor)
 
         val toNodeRefs = nodeDescriptor.toNodeRefs()
 
+        postTransformationExecutor?.let(postTransformationExecutorValidator::validate)
         toNodeRefs.forEach(nodeInCurrentTransactionVerifier::verify)
 
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
@@ -53,7 +56,7 @@ class ActiveMQPromenaTransformationExecutor(
         val transformationParameters = TransformationParameters(
             transformation,
             nodeDescriptor,
-            postTransformationExecution,
+            postTransformationExecutor,
             determineRetry(retry),
             dataDescriptor,
             nodesChecksumGenerator.generate(toNodeRefs),

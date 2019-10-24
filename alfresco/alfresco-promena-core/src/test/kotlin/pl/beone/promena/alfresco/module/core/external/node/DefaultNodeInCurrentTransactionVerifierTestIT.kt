@@ -9,22 +9,21 @@ import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESST
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialConcurrentModificationException
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 
 @RunWith(AlfrescoTestRunner::class)
-class NodeDaoNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() {
+class DefaultNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() {
 
-    private lateinit var nodeInCurrentTransactionVerifier: NodeDaoNodeInCurrentTransactionVerifier
+    private lateinit var nodeInCurrentTransactionVerifier: DefaultNodeInCurrentTransactionVerifier
 
     @Before
     fun setUp() {
-        nodeInCurrentTransactionVerifier = NodeDaoNodeInCurrentTransactionVerifier(applicationContext.getBean("nodeDAO", NodeDAO::class.java))
+        nodeInCurrentTransactionVerifier = DefaultNodeInCurrentTransactionVerifier(applicationContext.getBean("nodeDAO", NodeDAO::class.java))
     }
 
     @Test
     fun verify_anExistingUnchangedNode() {
-        shouldNotThrowExactly<PotentialConcurrentModificationException> {
+        shouldNotThrowExactly<ConcurrentModificationException> {
             nodeInCurrentTransactionVerifier.verify(serviceRegistry.nodeService.getRootNode(STORE_REF_WORKSPACE_SPACESSTORE))
         }
     }
@@ -35,23 +34,23 @@ class NodeDaoNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() 
             createOrGetIntegrationTestsFolder().createNode()
         }, false, true)
 
-        shouldNotThrowExactly<PotentialConcurrentModificationException> {
+        shouldNotThrowExactly<ConcurrentModificationException> {
             nodeInCurrentTransactionVerifier.verify(serviceRegistry.nodeService.getRootNode(STORE_REF_WORKSPACE_SPACESSTORE))
         }
     }
 
     @Test
-    fun verify_aNodeIsCreatedInTheSameTransaction_shouldThrowPotentialConcurrentModificationException() {
+    fun verify_aNodeIsCreatedInTheSameTransaction_shouldThrowConcurrentModificationException() {
         val nodeRef = createOrGetIntegrationTestsFolder().createNode()
 
-        shouldThrowExactly<PotentialConcurrentModificationException> {
+        shouldThrowExactly<ConcurrentModificationException> {
             nodeInCurrentTransactionVerifier.verify(nodeRef)
-        }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Finish this transaction before a transformation"
+        }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
     }
 
     // It should pass but the nature of Alfresco IT test causes an error (node doesn't exist in the second transaction)
 //    @Test
-//    fun verify_nameNodePropertyIsChangedInTheSameTransaction_shouldThrowPotentialConcurrentModificationException() {
+//    fun verify_nameNodePropertyIsChangedInTheSameTransaction_shouldThrowConcurrentModificationException() {
 //        val nodeRef = serviceRegistry.retryingTransactionHelper.doInTransaction({
 //            createOrGetIntegrationTestsFolder().createNode()
 //        }, false, true)
@@ -59,9 +58,9 @@ class NodeDaoNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() 
 //        serviceRegistry.retryingTransactionHelper.doInTransaction({
 //            serviceRegistry.nodeService.setProperty(nodeRef, PROP_NAME, "changed")
 //
-//            shouldThrowExactly<PotentialConcurrentModificationException> {
+//            shouldThrowExactly<ConcurrentModificationException> {
 //                nodeInCurrentTransactionVerifier.verify(nodeRef)
-//            }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Finish this transaction before a transformation"
+//            }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
 //        }, false, true)
 //    }
 }

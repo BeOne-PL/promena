@@ -29,7 +29,11 @@ class ConcurrentPromenaMutableTransformationManagerTest {
 
     @Before
     fun setUp() {
-        promenaMutableTransformationManager = ConcurrentPromenaMutableTransformationManager(100, Duration.ofMillis(500))
+        promenaMutableTransformationManager =
+            ConcurrentPromenaMutableTransformationManager(
+                100,
+                Duration.ofMillis(500)
+            )
     }
 
     @Test

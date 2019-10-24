@@ -62,6 +62,7 @@ services:
   promena:
     image: promena-connector-activemq-executable:1.0.0
     environment:
+      - logging.level.pl.beone=DEBUG
       - spring.activemq.broker-url=failover:(nio://activemq:61616)?timeout=3000&jms.useCompression=true
       - transformer.pl.beone.promena.transformer.mirror.archetype.ArchetypeMirrorTransformer.actors=4
       - spring.jms.listener.concurrency=4

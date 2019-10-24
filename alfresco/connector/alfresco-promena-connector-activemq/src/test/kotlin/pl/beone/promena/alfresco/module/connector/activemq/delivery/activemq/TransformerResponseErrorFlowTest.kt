@@ -23,7 +23,6 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.noRetry
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.PostTransformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
@@ -66,7 +65,7 @@ class TransformerResponseErrorFlowTest {
         private val transformationParameters = TransformationParameters(
             transformation,
             nodeDescriptor,
-            PostTransformationExecution { _, _, _, _ -> },
+            null,
             noRetry(),
             singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
             nodesChecksum,

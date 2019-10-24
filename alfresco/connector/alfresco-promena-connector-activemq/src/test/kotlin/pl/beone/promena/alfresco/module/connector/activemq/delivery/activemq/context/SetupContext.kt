@@ -14,6 +14,8 @@ import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.node.NodesExistenceVerifier
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
+import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorInjector
+import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorValidator
 
 @Configuration
 @ComponentScan(
@@ -39,6 +41,14 @@ class SetupContext {
             environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response"),
             environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")
         )
+
+    @Bean
+    fun postTransformationExecutorValidator() =
+        mockk<PostTransformationExecutorValidator>()
+
+    @Bean
+    fun postTransformationExecutorInjector() =
+        mockk<PostTransformationExecutorInjector>()
 
     @Bean
     fun nodesChecksumGenerator() =

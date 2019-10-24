@@ -1,7 +1,6 @@
 package pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq
 
 import io.kotlintest.shouldBe
-import io.kotlintest.shouldNotBe
 import io.kotlintest.shouldThrow
 import io.mockk.clearMocks
 import io.mockk.every
@@ -22,12 +21,10 @@ import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.con
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodesInconsistencyException
-import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialOutOfScopeVariableException
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.PostTransformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
@@ -70,7 +67,7 @@ class TransformerResponseFlowTest {
         private val transformationParameters = TransformationParameters(
             transformation,
             nodeDescriptor,
-            PostTransformationExecution { _, _, _, _ -> },
+            null,
             customRetry(3, Duration.ofMillis(1000)),
             singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
             nodesChecksum,
@@ -148,24 +145,5 @@ class TransformerResponseFlowTest {
         shouldThrow<RuntimeException> {
             promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
         }.message shouldBe "exception"
-    }
-
-    @Test
-    fun `should throw NullPointerException during executing post transaction execution`() {
-        every { authorizationService.runAs<Any>(userName, any()) } returns
-                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
-                nodesChecksum andThenThrows  // nodesChecksumGenerator.generate(nodeRefs)
-                NullPointerException("exception")
-
-        val transformationExecution = promenaMutableTransformationManager.startTransformation()
-        jmsUtils.sendResponseMessage(transformationExecution.id, performedTransformationDescriptor, transformationParameters)
-
-        shouldThrow<PotentialOutOfScopeVariableException> {
-            promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
-        }.let {
-            it.message shouldBe "It's highly probable that your implementation of PostTransformationExecution uses out of scope variable"
-            it.cause shouldNotBe null
-            it.cause!!.message shouldBe "exception"
-        }
     }
 }
