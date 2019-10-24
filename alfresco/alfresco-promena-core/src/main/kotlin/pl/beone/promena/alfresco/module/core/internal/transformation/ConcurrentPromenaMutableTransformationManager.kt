@@ -19,7 +19,7 @@ class ConcurrentPromenaMutableTransformationManager(
     private val waitMax: Duration
 ) : PromenaMutableTransformationManager {
 
-    private data class Transformation(
+    private data class TransformationDescription(
         val lock: Lock,
         var result: TransformationExecutionResult? = null,
         var throwable: Throwable? = null
@@ -29,7 +29,7 @@ class ConcurrentPromenaMutableTransformationManager(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val transformationMap = MaxSizeHashMap<String, Transformation>(bufferSize)
+    private val transformationDescriptionMap = MaxSizeHashMap<String, TransformationDescription>(bufferSize)
     private var globalId: Long = 1
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
@@ -37,9 +37,9 @@ class ConcurrentPromenaMutableTransformationManager(
         val id = transformationExecution.id
         val determinedWaitMax = determineWaitMax(waitMax)
 
-        val transformation = transformationMap[id] ?: throw IllegalStateException("There is no <$id> transformation in progress")
-        return if (transformation.lock.tryLock(determinedWaitMax.toMillis(), MILLISECONDS)) {
-            transformation.result ?: throw transformation.throwable
+        val transformationDescriptor = transformationDescriptionMap[id] ?: throw IllegalStateException("There is no <$id> transformation in progress")
+        return if (transformationDescriptor.lock.tryLock(determinedWaitMax.toMillis(), MILLISECONDS)) {
+            transformationDescriptor.result ?: throw transformationDescriptor.throwable
                 ?: IllegalStateException("There is no result or throwable for <$id> transformation")
         } else {
             throw TimeoutException("Waiting time for <$id> transformation has expired")
@@ -54,17 +54,14 @@ class ConcurrentPromenaMutableTransformationManager(
             val id = globalId++.toString()
             val transformationExecution = transformationExecution(id)
 
-            val transformation =
-                Transformation(
-                    ReentrantLock()
-                )
-            transformationMap[id] = transformation
+            val transformationDescription = TransformationDescription(ReentrantLock())
+            transformationDescriptionMap[id] = transformationDescription
             try {
-                transformation.lock.lock()
+                transformationDescription.lock.lock()
                 logger.debug { "Started <$id> transformation" }
                 transformationExecution
             } catch (e: Exception) {
-                transformationMap.remove(id)
+                transformationDescriptionMap.remove(id)
                 throw e
             }
         }
@@ -91,12 +88,12 @@ class ConcurrentPromenaMutableTransformationManager(
         }
     }
 
-    private fun executeAndUnlock(id: String, toExecute: (Transformation) -> Unit): Boolean {
-        val transformation = transformationMap[id]
+    private fun executeAndUnlock(id: String, toExecute: (TransformationDescription) -> Unit): Boolean {
+        val transformationDescription = transformationDescriptionMap[id]
 
-        return if (transformation != null) {
-            toExecute(transformation)
-            transformation.lock.unlock()
+        return if (transformationDescription != null) {
+            toExecute(transformationDescription)
+            transformationDescription.lock.unlock()
             true
         } else {
             false
