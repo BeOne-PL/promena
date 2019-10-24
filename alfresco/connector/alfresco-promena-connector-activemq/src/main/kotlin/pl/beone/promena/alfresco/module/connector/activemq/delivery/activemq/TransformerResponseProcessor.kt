@@ -39,12 +39,7 @@ class TransformerResponseProcessor(
 
             val currentNodesChecksum = authorizationService.runAs(userName) { nodesChecksumGenerator.generate(nodeRefs) }
             if (nodesChecksum != currentNodesChecksum) {
-                logger.stoppedTransformingBecauseChecksumsAreDifferent(
-                    transformation,
-                    nodeDescriptor,
-                    nodesChecksum,
-                    currentNodesChecksum
-                )
+                logger.stoppedTransformingBecauseChecksumsAreDifferent(transformation, nodeDescriptor, nodesChecksum, currentNodesChecksum)
                 promenaMutableTransformationManager.completeErrorTransformation(
                     transformationExecution,
                     NodesInconsistencyException(nodeRefs, nodesChecksum, currentNodesChecksum)

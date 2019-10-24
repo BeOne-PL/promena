@@ -37,11 +37,11 @@ fun Logger.transformedSuccessfully(
 fun Logger.stoppedTransformingBecauseChecksumsAreDifferent(
     transformation: Transformation,
     nodeDescriptor: NodeDescriptor,
-    oldNodesChecksum: String,
+    nodesChecksum: String,
     currentNodesChecksum: String
 ) {
     warn(
-        "Stopped transforming because nodes have been changed in the meantime - old checksum <$oldNodesChecksum>, current checksum <$currentNodesChecksum>\n" +
+        "Stopped transforming because nodes have been changed in the meantime - old checksum <$nodesChecksum>, current checksum <$currentNodesChecksum>\n" +
                 "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
                 "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}"
     )

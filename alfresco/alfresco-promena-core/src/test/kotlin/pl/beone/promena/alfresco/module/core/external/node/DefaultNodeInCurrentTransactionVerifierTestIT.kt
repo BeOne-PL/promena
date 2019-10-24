@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESST
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialConcurrentModificationException
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 
 @RunWith(AlfrescoTestRunner::class)
@@ -23,34 +24,34 @@ class DefaultNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() 
 
     @Test
     fun verify_anExistingUnchangedNode() {
-        shouldNotThrowExactly<ConcurrentModificationException> {
+        shouldNotThrowExactly<PotentialConcurrentModificationException> {
             nodeInCurrentTransactionVerifier.verify(serviceRegistry.nodeService.getRootNode(STORE_REF_WORKSPACE_SPACESSTORE))
         }
     }
 
     @Test
-    fun verify_aNodeWasCreatedInANewTransactionThatWasFinishedBeforeVerification() {
+    fun verify_nodeWasCreatedInANewTransactionThatWasFinishedBeforeVerification() {
         serviceRegistry.retryingTransactionHelper.doInTransaction({
             createOrGetIntegrationTestsFolder().createNode()
         }, false, true)
 
-        shouldNotThrowExactly<ConcurrentModificationException> {
+        shouldNotThrowExactly<PotentialConcurrentModificationException> {
             nodeInCurrentTransactionVerifier.verify(serviceRegistry.nodeService.getRootNode(STORE_REF_WORKSPACE_SPACESSTORE))
         }
     }
 
     @Test
-    fun verify_aNodeIsCreatedInTheSameTransaction_shouldThrowConcurrentModificationException() {
+    fun verify_aNodeIsCreatedInTheSameTransaction_shouldThrowPotentialConcurrentModificationException() {
         val nodeRef = createOrGetIntegrationTestsFolder().createNode()
 
-        shouldThrowExactly<ConcurrentModificationException> {
+        shouldThrowExactly<PotentialConcurrentModificationException> {
             nodeInCurrentTransactionVerifier.verify(nodeRef)
         }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
     }
 
     // It should pass but the nature of Alfresco IT test causes an error (node doesn't exist in the second transaction)
 //    @Test
-//    fun verify_nameNodePropertyIsChangedInTheSameTransaction_shouldThrowConcurrentModificationException() {
+//    fun verify_nameNodePropertyIsChangedInTheSameTransaction_shouldThrowPotentialConcurrentModificationException() {
 //        val nodeRef = serviceRegistry.retryingTransactionHelper.doInTransaction({
 //            createOrGetIntegrationTestsFolder().createNode()
 //        }, false, true)
@@ -58,7 +59,7 @@ class DefaultNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() 
 //        serviceRegistry.retryingTransactionHelper.doInTransaction({
 //            serviceRegistry.nodeService.setProperty(nodeRef, PROP_NAME, "changed")
 //
-//            shouldThrowExactly<ConcurrentModificationException> {
+//            shouldThrowExactly<PotentialConcurrentModificationException> {
 //                nodeInCurrentTransactionVerifier.verify(nodeRef)
 //            }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
 //        }, false, true)

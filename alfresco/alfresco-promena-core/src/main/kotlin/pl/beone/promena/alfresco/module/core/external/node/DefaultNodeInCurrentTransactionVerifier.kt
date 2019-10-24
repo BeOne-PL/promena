@@ -2,6 +2,7 @@ package pl.beone.promena.alfresco.module.core.external.node
 
 import org.alfresco.repo.domain.node.NodeDAO
 import org.alfresco.service.cmr.repository.NodeRef
+import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialConcurrentModificationException
 import pl.beone.promena.alfresco.module.core.contract.node.NodeInCurrentTransactionVerifier
 
 class DefaultNodeInCurrentTransactionVerifier(
@@ -16,7 +17,7 @@ class DefaultNodeInCurrentTransactionVerifier(
         }
 
         if (isInCurrentTransaction) {
-            throw ConcurrentModificationException("Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation")
+            throw PotentialConcurrentModificationException(nodeRef)
         }
     }
 

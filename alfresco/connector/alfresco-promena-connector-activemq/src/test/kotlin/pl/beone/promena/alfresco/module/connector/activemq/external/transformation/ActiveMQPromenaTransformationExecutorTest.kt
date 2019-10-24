@@ -8,6 +8,7 @@ import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESST
 import org.junit.Before
 import org.junit.Test
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.TransformerSender
+import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialConcurrentModificationException
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
@@ -148,13 +149,13 @@ class ActiveMQPromenaTransformationExecutorTest {
     }
 
     @Test
-    fun execute_oneOfNodesHasBeenChangedInCurrentTransaction_shouldThrowConcurrentModificationException() {
-        val concurrentModificationException = ConcurrentModificationException("message")
+    fun execute_oneOfNodesHasBeenChangedInCurrentTransaction_shouldThrowPotentialConcurrentModificationException() {
+        val exception = PotentialConcurrentModificationException(nodeRefs[0])
         nodeInCurrentTransactionVerifier = mockk {
-            every { verify(nodeRefs[0]) } throws concurrentModificationException
+            every { verify(nodeRefs[0]) } throws exception
         }
 
-        shouldThrowExactly<ConcurrentModificationException> {
+        shouldThrowExactly<PotentialConcurrentModificationException> {
             ActiveMQPromenaTransformationExecutor(
                 externalCommunicationParameters,
                 promenaMutableTransformationManager,
@@ -170,7 +171,7 @@ class ActiveMQPromenaTransformationExecutorTest {
                 nodeDescriptor,
                 postTransformationExecution
             )
-        }.message shouldBe "message"
+        }.message shouldBe "Node <${nodeRefs[0]}> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
     }
 
     @Test
