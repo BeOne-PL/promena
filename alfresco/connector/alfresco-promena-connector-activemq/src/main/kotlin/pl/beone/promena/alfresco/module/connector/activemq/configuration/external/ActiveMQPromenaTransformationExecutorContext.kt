@@ -16,10 +16,10 @@ import pl.beone.promena.transformer.contract.communication.CommunicationParamete
 import java.util.*
 
 @Configuration
-class ActiveMQPromenaTransformerContext {
+class ActiveMQPromenaTransformationExecutorContext {
 
     @Bean
-    fun activeMQPromenaTransformer(
+    fun activeMQPromenaTransformationExecutor(
         @Qualifier("global-properties") properties: Properties,
         @Qualifier("externalCommunicationParameters") externalCommunicationParameters: CommunicationParameters,
         promenaMutableTransformationManager: PromenaMutableTransformationManager,
