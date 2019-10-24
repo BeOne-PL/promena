@@ -10,14 +10,14 @@ import org.alfresco.service.cmr.thumbnail.FailedThumbnailInfo
 import org.alfresco.service.cmr.thumbnail.ThumbnailParentAssociationDetails
 import org.alfresco.service.cmr.thumbnail.ThumbnailService
 import org.alfresco.service.namespace.QName
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformer
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformationExecutor
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 
 class PromenaThumbnailService(
     private val nodeService: NodeService,
     private val thumbnailRegistry: ThumbnailRegistry,
     private val renditionGetter: RenditionGetter,
-    private val promenaRenditionTransformer: PromenaRenditionTransformer
+    private val promenaRenditionTransformationExecutor: PromenaRenditionTransformationExecutor
 ) : ThumbnailService {
 
     override fun getFailedThumbnails(sourceNode: NodeRef?): Map<String, FailedThumbnailInfo> =
@@ -27,7 +27,7 @@ class PromenaThumbnailService(
         thumbnailRegistry
 
     override fun updateThumbnail(thumbnail: NodeRef, transformationOptions: TransformationOptions?) {
-        promenaRenditionTransformer.transform(thumbnail, nodeService.getProperty(thumbnail, PROP_NAME) as String)
+        promenaRenditionTransformationExecutor.transform(thumbnail, nodeService.getProperty(thumbnail, PROP_NAME) as String)
     }
 
     override fun getThumbnails(node: NodeRef, contentProperty: QName, mimetype: String?, options: TransformationOptions?): List<NodeRef> {
@@ -62,7 +62,7 @@ class PromenaThumbnailService(
     ): NodeRef? {
         validateContentProperty(contentProperty)
 
-        return promenaRenditionTransformer.transform(node, name).childRef
+        return promenaRenditionTransformationExecutor.transform(node, name).childRef
     }
 
     override fun getThumbnailByName(node: NodeRef, contentProperty: QName?, thumbnailName: String): NodeRef? {

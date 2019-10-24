@@ -10,13 +10,13 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.namespace.QName
 import org.alfresco.util.GUID
-import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformer
+import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformationExecutor
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 
 class PromenaRenditionService(
     private val nodeService: NodeService,
     private val renditionGetter: RenditionGetter,
-    private val promenaRenditionTransformer: PromenaRenditionTransformer
+    private val promenaRenditionTransformationExecutor: PromenaRenditionTransformationExecutor
 ) : RenditionService {
 
     override fun createCompositeRenditionDefinition(renditionName: QName?): CompositeRenditionDefinition =
@@ -57,17 +57,17 @@ class PromenaRenditionService(
         TODO("not implemented")
 
     override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition): ChildAssociationRef =
-        promenaRenditionTransformer.transform(sourceNode, renditionDefinition.renditionName.localName)
+        promenaRenditionTransformationExecutor.transform(sourceNode, renditionDefinition.renditionName.localName)
 
     override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition, callback: RenderCallback?) {
-        promenaRenditionTransformer.transformAsync(sourceNode, renditionDefinition.renditionName.localName)
+        promenaRenditionTransformationExecutor.transformAsync(sourceNode, renditionDefinition.renditionName.localName)
     }
 
     override fun render(sourceNode: NodeRef, renditionDefinitionQName: QName): ChildAssociationRef =
-        promenaRenditionTransformer.transform(sourceNode, renditionDefinitionQName.localName)
+        promenaRenditionTransformationExecutor.transform(sourceNode, renditionDefinitionQName.localName)
 
     override fun render(sourceNode: NodeRef, renditionDefinitionQName: QName, callback: RenderCallback?) {
-        promenaRenditionTransformer.transformAsync(sourceNode, renditionDefinitionQName.localName)
+        promenaRenditionTransformationExecutor.transformAsync(sourceNode, renditionDefinitionQName.localName)
     }
 
     override fun loadRenditionDefinitions(): List<RenditionDefinition> =

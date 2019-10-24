@@ -9,6 +9,5 @@ interface PromenaRenditionInProgressSynchronizer {
 
     fun finish(nodeRef: NodeRef, renditionName: String)
 
-    @Throws(PromenaRenditionInProgressException::class)
     fun isInProgress(nodeRef: NodeRef, renditionName: String)
 }

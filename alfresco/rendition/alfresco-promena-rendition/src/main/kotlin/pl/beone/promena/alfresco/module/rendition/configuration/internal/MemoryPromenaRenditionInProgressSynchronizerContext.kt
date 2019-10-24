@@ -10,5 +10,4 @@ class MemoryPromenaRenditionInProgressSynchronizerContext {
     @Bean
     fun memoryPromenaRenditionInProgressSynchronizer() =
         MemoryPromenaRenditionInProgressSynchronizer()
-
 }

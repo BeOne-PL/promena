@@ -18,6 +18,7 @@
 
         <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
         <alfresco-promena-connector-http.version>1.0.0</alfresco-promena-connector-http.version>
+        <alfresco-promena-connector-activemq.version>1.0.0</alfresco-promena-connector-activemq.version>
 
         <!-- Alfresco Maven Plugin version to use -->
         <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
@@ -82,10 +83,17 @@
             <type>amp</type>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.alfresco.module.connector</groupId>-->
+<!--            <artifactId>alfresco-promena-connector-http</artifactId>-->
+<!--            <version>${alfresco-promena-connector-http.version}</version>-->
+<!--            <type>amp</type>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>pl.beone.promena.alfresco.module.connector</groupId>
-            <artifactId>alfresco-promena-connector-http</artifactId>
-            <version>${alfresco-promena-connector-http.version}</version>
+            <artifactId>alfresco-promena-connector-activemq</artifactId>
+            <version>${alfresco-promena-connector-activemq.version}</version>
             <type>amp</type>
             <scope>provided</scope>
         </dependency>
