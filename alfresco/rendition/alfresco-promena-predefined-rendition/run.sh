@@ -16,6 +16,10 @@ start() {
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
+start_acs() {
+    docker-compose -f $COMPOSE_FILE_PATH up --build -d alfresco-promena-predefined-rendition-acs
+}
+
 down() {
     if [ -f $COMPOSE_FILE_PATH ]; then
         docker-compose -f $COMPOSE_FILE_PATH down -v
@@ -28,6 +32,10 @@ purge() {
     docker volume rm -f alfresco-promena-predefined-rendition-db-volume
     docker volume rm -f alfresco-promena-predefined-rendition-ass-volume
     docker volume rm -f alfresco-promena-predefined-rendition-activemq-volume
+}
+
+build_acs() {
+    $MVN_EXEC -DskipTests=true clean package
 }
 
 build() {
@@ -65,6 +73,11 @@ case "$1" in
     start
     tail
     ;;
+  reload_acs)
+    build_acs
+    start_acs
+    tail
+    ;;
   start)
     start
     tail
@@ -92,5 +105,5 @@ case "$1" in
     test
     ;;
   *)
-    echo "Usage: $0 {build_start|build_start_it_supported|start|stop|purge|tail|build_test|test}"
+    echo "Usage: $0 {build_start|build_start_it_supported|reload_acs|start|stop|purge|tail|build_test|test}"
 esac

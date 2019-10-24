@@ -98,13 +98,13 @@
             <type>amp</type>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.alfresco.module.connector</groupId>
-            <artifactId>alfresco-promena-connector-http</artifactId>
-            <version>${alfresco-promena-connector-http.version}</version>
-            <type>amp</type>
-            <scope>provided</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.alfresco.module.connector</groupId>-->
+<!--            <artifactId>alfresco-promena-connector-http</artifactId>-->
+<!--            <version>${alfresco-promena-connector-http.version}</version>-->
+<!--            <type>amp</type>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>pl.beone.promena.alfresco.module.connector</groupId>
             <artifactId>alfresco-promena-connector-activemq</artifactId>
