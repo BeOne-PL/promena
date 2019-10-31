@@ -37,12 +37,12 @@ class ConcurrentPromenaMutableTransformationManager(
         val id = transformationExecution.id
         val determinedWaitMax = determineWaitMax(waitMax)
 
-        val transformationDescriptor = transformationDescriptionMap[id] ?: throw IllegalStateException("There is no <$id> transformation in progress")
+        val transformationDescriptor = transformationDescriptionMap[id] ?: throw IllegalStateException("There is no transformation <$id> in progress")
         return if (transformationDescriptor.lock.tryLock(determinedWaitMax.toMillis(), MILLISECONDS)) {
             transformationDescriptor.result ?: throw transformationDescriptor.throwable
-                ?: IllegalStateException("There is no result or throwable for <$id> transformation")
+                ?: IllegalStateException("There is no result or throwable for transformation <$id>")
         } else {
-            throw TimeoutException("Waiting time for <$id> transformation has expired")
+            throw TimeoutException("Waiting time for transformation <$id> has expired")
         }
     }
 
@@ -58,7 +58,7 @@ class ConcurrentPromenaMutableTransformationManager(
             transformationDescriptionMap[id] = transformationDescription
             try {
                 transformationDescription.lock.lock()
-                logger.debug { "Started <$id> transformation" }
+                logger.debug { "Started transformation <$id>" }
                 transformationExecution
             } catch (e: Exception) {
                 transformationDescriptionMap.remove(id)
@@ -70,9 +70,9 @@ class ConcurrentPromenaMutableTransformationManager(
         runBlocking(dispatcher) {
             val id = transformationExecution.id
             if (executeAndUnlock(id) { it.result = result }) {
-                logger.debug { "Completed <$id> transformation: ${result.nodeRefs}" }
+                logger.debug { "Completed transformation <$id>: ${result.nodeRefs}" }
             } else {
-                logger.warn { "Couldn't complete transformation. There is no <$id> transformation in progress" }
+                logger.warn { "Couldn't complete transformation. There is no transformation <$id> in progress" }
             }
         }
     }

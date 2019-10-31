@@ -82,7 +82,7 @@ fun Logger.logOnRetry(
     exception: TransformationException
 ) {
     warn(
-        "Attempt ($attempt/$maxAttempts). This attempt will be made in <${nextAttemptDelay.toPrettyString()}>\n" +
+        "Couldn't transform. Attempt ($attempt/$maxAttempts) will be made in <${nextAttemptDelay.toPrettyString()}>\n" +
                 "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
                 "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}\n" +
                 exception.toString().addHashAtTheBeggingOfEachLine()

@@ -113,7 +113,7 @@ class ConcurrentPromenaMutableTransformationManagerTest {
                 delay(500)
                 shouldThrowExactly<TimeoutException> {
                     promenaMutableTransformationManager.getResult(transformationExecution, ZERO)
-                }.message shouldBe "Waiting time for <${transformationExecution.id}> transformation has expired"
+                }.message shouldBe "Waiting time for transformation <${transformationExecution.id}> has expired"
             }
 
             launch {
@@ -138,7 +138,7 @@ class ConcurrentPromenaMutableTransformationManagerTest {
             launch {
                 shouldThrowExactly<TimeoutException> {
                     promenaMutableTransformationManager.getResult(transformationExecution)
-                }.message shouldBe "Waiting time for <${transformationExecution.id}> transformation has expired"
+                }.message shouldBe "Waiting time for transformation <${transformationExecution.id}> has expired"
             }
 
             launch {
@@ -152,7 +152,7 @@ class ConcurrentPromenaMutableTransformationManagerTest {
     fun `getting result before transaction is started _ should throw IllegalStateException`() {
         shouldThrowExactly<IllegalStateException> {
             promenaMutableTransformationManager.getResult(TransformationExecution("absent"))
-        }.message shouldBe "There is no <absent> transformation in progress"
+        }.message shouldBe "There is no transformation <absent> in progress"
     }
 
     @Test
