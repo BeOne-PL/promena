@@ -15,6 +15,10 @@ start() {
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
+start_acs() {
+    docker-compose -f $COMPOSE_FILE_PATH up --build -d alfresco-promena-connector-http-acs
+}
+
 down() {
     if [ -f $COMPOSE_FILE_PATH ]; then
         docker-compose -f $COMPOSE_FILE_PATH down -v
@@ -27,8 +31,12 @@ purge() {
     docker volume rm -f alfresco-promena-connector-http-ass-volume
 }
 
-build() {
+build_acs() {
     $MVN_EXEC -DskipTests=true clean package
+}
+
+build_promena() {
+    $MVN_EXEC -DskipTests=true -f docker-img/promena-connector-http-executable/pom.xml clean package
 }
 
 tail() {
@@ -50,15 +58,22 @@ test() {
 case "$1" in
   build_start)
     down
-    build
+    build_acs
+    build_promena
     start
     tail
     ;;
   build_start_it_supported)
     down
-    build
+    build_acs
+    build_promena
     prepare_test
     start
+    tail
+    ;;
+  reload)
+    build_acs
+    start_acs
     tail
     ;;
   start)
@@ -77,7 +92,8 @@ case "$1" in
     ;;
   build_test)
     down
-    build
+    build_acs
+    build_promena
     prepare_test
     start
     test
@@ -88,5 +104,5 @@ case "$1" in
     test
     ;;
   *)
-    echo "Usage: $0 {build_start|build_start_it_supported|start|stop|purge|tail|build_test|test}"
+    echo "Usage: $0 {build_start|build_start_it_supported|reload|start|stop|purge|tail|build_test|test}"
 esac

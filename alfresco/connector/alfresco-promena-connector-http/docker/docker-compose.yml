@@ -49,6 +49,11 @@ services:
       - alfresco-promena-connector-http-ass-volume:/opt/alfresco-search-services/data
       - alfresco-promena-connector-http-ass-volume:/opt/alfresco-search-services/contentstore
 
+  promena:
+    image: promena-connector-http-executable:1.0.0
+    environment:
+      - logging.level.pl.beone=DEBUG
+
 volumes:
   alfresco-promena-connector-http-acs-volume:
     external: true

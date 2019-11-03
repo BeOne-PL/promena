@@ -9,7 +9,7 @@ import java.util.*
 import javax.annotation.PostConstruct
 
 @Configuration
-@DependsOn("httpClientPromenaTransformer")
+@DependsOn("httpPromenaTransformer")
 class HttpConnectorModuleLogger(
     @Qualifier("global-properties") private val properties: Properties
 ) {
@@ -20,6 +20,10 @@ class HttpConnectorModuleLogger(
 
     @PostConstruct
     private fun log() {
-        logger.info { "Registered <http> connector: [<base-url: ${properties.getRequiredPropertyWithResolvedPlaceholders("promena.connector.http.base-url")}>]" }
+        logger.info {
+            "Registered <http> connector: [<host: ${properties.getRequiredPropertyWithResolvedPlaceholders("promena.connector.http.host")}>, " +
+                    "<port: ${properties.getRequiredPropertyWithResolvedPlaceholders("promena.connector.http.port")}>, " +
+                    "<execution.threads: ${properties.getRequiredPropertyWithResolvedPlaceholders("promena.connector.http.execution.threads")}>]"
+        }
     }
 }
