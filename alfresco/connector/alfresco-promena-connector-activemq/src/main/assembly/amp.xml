@@ -80,6 +80,7 @@
                 <exclude>org.jetbrains.kotlin:kotlin-stdlib-common</exclude>
                 <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk7</exclude>
                 <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk8</exclude>
+                <exclude>org.jetbrains.kotlinx:kotlinx-coroutines-core</exclude>
 
                 <exclude>org.ow2.asm:asm</exclude>
                 <exclude>com.esotericsoftware:kryo</exclude>
@@ -90,8 +91,6 @@
 
                 <exclude>io.github.microutils:kotlin-logging</exclude>
                 <exclude>org.slf4j:slf4j-api</exclude>
-                <exclude>io.projectreactor:reactor-core</exclude>
-                <exclude>org.reactivestreams:reactive-streams</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

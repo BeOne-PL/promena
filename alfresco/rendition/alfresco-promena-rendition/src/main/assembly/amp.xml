@@ -60,38 +60,9 @@
     <dependencySets>
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
             <excludes>
                 <exclude>pl.beone.promena.alfresco.module:alfresco-promena-core</exclude>
-                <exclude>pl.beone.promena.base:promena-transformer-application-model</exclude>
-                <exclude>pl.beone.promena.base:promena-transformer-contract</exclude>
-                <exclude>pl.beone.promena.base:promena-transformer-internal</exclude>
-                <exclude>pl.beone.promena.base:promena-core-application-model</exclude>
-                <exclude>pl.beone.promena.base:promena-core-contract</exclude>
-                <exclude>pl.beone.promena.base:promena-core-internal-serialization</exclude>
-                <exclude>pl.beone.promena.communication.file.model:promena-communication-file-model-contract</exclude>
-                <exclude>pl.beone.promena.communication.file.model:promena-communication-file-model-internal</exclude>
-                <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-contract</exclude>
-                <exclude>pl.beone.promena.communication.memory.model:promena-communication-memory-model-internal</exclude>
-                <exclude>pl.beone.lib:type-converter</exclude>
-
-                <exclude>org.jetbrains:annotations</exclude>
-                <exclude>org.jetbrains.kotlin:kotlin-reflect</exclude>
-                <exclude>org.jetbrains.kotlin:kotlin-stdlib</exclude>
-                <exclude>org.jetbrains.kotlin:kotlin-stdlib-common</exclude>
-                <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk7</exclude>
-                <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk8</exclude>
-
-                <exclude>org.ow2.asm:asm</exclude>
-                <exclude>com.esotericsoftware:kryo</exclude>
-                <exclude>com.esotericsoftware:minlog</exclude>
-                <exclude>com.esotericsoftware:reflectasm</exclude>
-                <exclude>de.javakaffee:kryo-serializers</exclude>
-                <exclude>org.objenesis:objenesis</exclude>
-
-                <exclude>io.github.microutils:kotlin-logging</exclude>
-                <exclude>org.slf4j:slf4j-api</exclude>
-                <exclude>io.projectreactor:reactor-core</exclude>
-                <exclude>org.reactivestreams:reactive-streams</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
