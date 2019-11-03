@@ -17,11 +17,7 @@
     <bean id="localTransformServiceRegistry" class="kotlin.Unit"/>
 
     <!-- Required by Messaging subsystem -->
-    <bean id="renditionEventProcessor" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="pl.beone.promena.alfresco.module.rendition.util.BeanUtilsKt"/>
-        <property name="targetMethod" value="mock"/>
-        <property name="arguments" value="org.alfresco.repo.rendition2.RenditionEventProcessor"/>
-    </bean>
+    <bean id="renditionEventProcessor" class="pl.beone.promena.alfresco.module.rendition.mock.RenditionEventProcessor"/>
 
     <bean id="renditionDefinition2Medium" class="kotlin.Unit"/>
 
