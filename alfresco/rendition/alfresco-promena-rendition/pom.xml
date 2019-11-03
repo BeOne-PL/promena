@@ -14,8 +14,6 @@
         <kotlin.version>1.3.50</kotlin.version>
         <java.version>11</java.version>
 
-        <kotlin-logging.version>1.7.3</kotlin-logging.version>
-
         <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
         <alfresco-promena-connector-http.version>1.0.0</alfresco-promena-connector-http.version>
         <alfresco-promena-connector-activemq.version>1.0.0</alfresco-promena-connector-activemq.version>
@@ -65,12 +63,6 @@
                      the Alfresco Maven IT Mojo runs as part of the parent project ... -->
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>pl.beone.promena.alfresco.module</groupId>
             <artifactId>alfresco-promena-core</artifactId>
             <version>${alfresco-promena-core.version}</version>
@@ -83,25 +75,19 @@
             <type>amp</type>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>pl.beone.promena.alfresco.module.connector</groupId>-->
-<!--            <artifactId>alfresco-promena-connector-http</artifactId>-->
-<!--            <version>${alfresco-promena-connector-http.version}</version>-->
-<!--            <type>amp</type>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>pl.beone.promena.alfresco.module.connector</groupId>
+            <artifactId>alfresco-promena-connector-http</artifactId>
+            <version>${alfresco-promena-connector-http.version}</version>
+            <type>amp</type>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>pl.beone.promena.alfresco.module.connector</groupId>
             <artifactId>alfresco-promena-connector-activemq</artifactId>
             <version>${alfresco-promena-connector-activemq.version}</version>
             <type>amp</type>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.microutils</groupId>
-            <artifactId>kotlin-logging</artifactId>
-            <version>${kotlin-logging.version}</version>
         </dependency>
 
         <dependency>
@@ -113,6 +99,7 @@
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
             <version>${mockk.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
