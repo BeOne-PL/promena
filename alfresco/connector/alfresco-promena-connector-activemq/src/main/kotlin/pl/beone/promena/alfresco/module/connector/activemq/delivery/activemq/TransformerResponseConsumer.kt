@@ -45,7 +45,7 @@ class TransformerResponseConsumer(
     ) {
         val transformationExecution = transformationExecution(correlationId)
 
-        val (transformation, nodeDescriptor, postTransformationExecution, _, _, nodesChecksum, _, userName) =
+        val (transformation, nodeDescriptor, postTransformationExecutor, _, _, nodesChecksum, _, userName) =
             transformationParametersSerializationService.deserialize(transformationParameters)
         val nodeRefs = nodeDescriptor.toNodeRefs()
 
@@ -56,7 +56,7 @@ class TransformerResponseConsumer(
                         transformedDataDescriptorSaver.save(transformation, nodeRefs, performedTransformationDescriptor.transformedDataDescriptor)
                             .let(::transformationExecutionResult)
                             .also { result ->
-                                postTransformationExecution
+                                postTransformationExecutor
                                     ?.also(postTransformationExecutorInjector::inject)
                                     ?.execute(transformation, nodeDescriptor, result)
                             }

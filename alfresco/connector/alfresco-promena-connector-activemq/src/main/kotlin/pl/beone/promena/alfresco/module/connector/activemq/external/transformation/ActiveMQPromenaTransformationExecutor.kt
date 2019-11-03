@@ -42,16 +42,19 @@ class ActiveMQPromenaTransformationExecutor(
         postTransformationExecutor: PostTransformationExecutor?,
         retry: Retry?
     ): TransformationExecution {
-        logger.start(transformation, nodeDescriptor)
-
         val nodeRefs = nodeDescriptor.toNodeRefs()
 
         postTransformationExecutor?.let(postTransformationExecutorValidator::validate)
         nodeRefs.forEach(nodeInCurrentTransactionVerifier::verify)
 
-        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        val nodesChecksum = nodesChecksumGenerator.generate(nodeRefs)
+        val userName = authorizationService.getCurrentUser()
 
         val dataDescriptor = dataDescriptorGetter.get(nodeDescriptor)
+
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+
+        logger.start(transformation, nodeDescriptor)
 
         val transformationParameters = TransformationParameters(
             transformation,
@@ -59,9 +62,9 @@ class ActiveMQPromenaTransformationExecutor(
             postTransformationExecutor,
             determineRetry(retry),
             dataDescriptor,
-            nodesChecksumGenerator.generate(nodeRefs),
+            nodesChecksum,
             0,
-            authorizationService.getCurrentUser()
+            userName
         )
 
         execute(transformationExecution.id, transformation, dataDescriptor, transformationParameters)

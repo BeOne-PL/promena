@@ -90,9 +90,6 @@ class ActiveMQPromenaTransformationExecutorTest {
         nodesChecksumGenerator = mockk {
             every { generate(nodeRefs) } returns nodesChecksum
         }
-        nodesChecksumGenerator = mockk {
-            every { generate(nodeRefs) } returns nodesChecksum
-        }
         dataDescriptorGetter = mockk {
             every { get(nodeDescriptor) } returns dataDescriptor
         }

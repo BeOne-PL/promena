@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.7.RELEASE</version>
+        <relativePath/>
+        <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>pl.beone.promena.executable</groupId>
+    <artifactId>promena-connector-activemq-executable</artifactId>
+    <version>1.0.0</version>
+
+    <repositories>
+        <repository>
+            <id>beone-releases</id>
+            <url>http://nexus.office.beone.pl/repository/releases</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>beone-releases</id>
+            <url>http://nexus.office.beone.pl/repository/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>beone-snapshots</id>
+            <url>http://nexus.office.beone.pl/repository/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>beone-releases</id>
+            <url>http://nexus.office.beone.pl/repository/releases</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <properties>
+        <java.version>11</java.version>
+        <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+
+        <promena-core.version>1.0.0</promena-core.version>
+
+        <promena-actor-creator-adaptive-load-balancing.version>1.0.0</promena-actor-creator-adaptive-load-balancing.version>
+
+        <promena-communication-memory-external.version>1.0.0</promena-communication-memory-external.version>
+        <promena-communication-file-external.version>1.0.0</promena-communication-file-external.version>
+        <promena-communication-memory-internal.version>1.0.0</promena-communication-memory-internal.version>
+        <promena-communication-file-internal.version>1.0.0</promena-communication-file-internal.version>
+
+        <promena-connector-activemq.version>1.0.0</promena-connector-activemq.version>
+
+        <promena-cluster-management-kubernetes.version>1.0.0</promena-cluster-management-kubernetes.version>
+
+        <!-- Put TRANSFORMERS versions here -->
+        <mirror-archetype.version>1.0.0</mirror-archetype.version>
+        <!-- /Put -->
+
+        <promena-docker-maven-plugin.version>1.0.0</promena-docker-maven-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Core -->
+        <dependency>
+            <groupId>pl.beone.promena.base</groupId>
+            <artifactId>promena-core-configuration</artifactId>
+            <version>${promena-core.version}</version>
+        </dependency>
+
+        <!-- Actor creator -->
+        <dependency>
+            <groupId>pl.beone.promena.actor-creator</groupId>
+            <artifactId>promena-actor-creator-adaptive-load-balancing-configuration</artifactId>
+            <version>${promena-actor-creator-adaptive-load-balancing.version}</version>
+        </dependency>
+
+        <!-- Communication - external -->
+        <dependency>
+            <groupId>pl.beone.promena.communication.memory.external</groupId>
+            <artifactId>promena-communication-memory-external-configuration</artifactId>
+            <version>${promena-communication-memory-external.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.beone.promena.communication.file.external</groupId>
+            <artifactId>promena-communication-file-external-configuration</artifactId>
+            <version>${promena-communication-file-external.version}</version>
+        </dependency>
+
+        <!-- Communication - internal -->
+        <dependency>
+            <groupId>pl.beone.promena.communication.memory.internal</groupId>
+            <artifactId>promena-communication-memory-internal-configuration</artifactId>
+            <version>${promena-communication-memory-internal.version}</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>pl.beone.promena.communication.file.internal</groupId>-->
+<!--            <artifactId>promena-communication-file-internal-configuration</artifactId>-->
+<!--            <version>${promena-communication-file-internal.version}</version>-->
+<!--        </dependency>-->
+
+        <!-- Connector -->
+        <dependency>
+            <groupId>pl.beone.promena.connector</groupId>
+            <artifactId>promena-connector-activemq-configuration</artifactId>
+            <version>${promena-connector-activemq.version}</version>
+        </dependency>
+
+        <!-- Put TRANSFORMERS configuration dependencies here -->
+        <dependency>
+            <groupId>pl.beone.promena.transformer</groupId>
+            <artifactId>mirror-archetype-configuration</artifactId>
+            <version>${mirror-archetype.version}</version>
+        </dependency>
+        <!-- /Put -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven-shade-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>${spring-boot.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+                                    <resource>META-INF/spring.factories</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>pl.beone.promena.executable.Application</mainClass>
+                                </transformer>
+
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>reference.conf</resource>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>pl.beone.promena.maven.plugin</groupId>
+                <artifactId>promena-docker-maven-plugin</artifactId>
+                <version>${promena-docker-maven-plugin.version}</version>
+
+                <configuration>
+                    <name>${project.artifactId}</name>
+                    <version>${project.version}</version>
+                </configuration>
+
+                <dependencies>
+                    <!-- Put TRANSFORMERS dependencies here -->
+                    <dependency>
+                        <groupId>pl.beone.promena.transformer</groupId>
+                        <artifactId>mirror-archetype</artifactId>
+                        <version>${mirror-archetype.version}</version>
+                    </dependency>
+                    <!-- /Put -->
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
