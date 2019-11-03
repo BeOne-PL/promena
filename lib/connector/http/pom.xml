@@ -15,6 +15,11 @@
             <id>beone-releases</id>
             <url>http://nexus.office.beone.pl/repository/releases</url>
         </repository>
+
+        <repository>
+            <id>spring-libs</id>
+            <url>https://repo.spring.io/libs-release/</url>
+        </repository>
     </repositories>
 
     <distributionManagement>
@@ -43,8 +48,8 @@
 
         <promena-core.version>1.0.0</promena-core.version>
 
-        <reactor-netty.version>0.8.10.RELEASE</reactor-netty.version>
-        <reactor-extra.version>3.2.3.RELEASE</reactor-extra.version>
+        <fuel.version>2.2.1</fuel.version>
+        <fuel-coroutines.version>2.2.1</fuel-coroutines.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
@@ -68,14 +73,14 @@
         </dependency>
 
         <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
-            <version>${reactor-netty.version}</version>
+            <groupId>com.github.kittinunf.fuel</groupId>
+            <artifactId>fuel</artifactId>
+            <version>${fuel.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.projectreactor.addons</groupId>
-            <artifactId>reactor-extra</artifactId>
-            <version>${reactor-extra.version}</version>
+            <groupId>com.github.kittinunf.fuel</groupId>
+            <artifactId>fuel-coroutines</artifactId>
+            <version>${fuel-coroutines.version}</version>
         </dependency>
     </dependencies>
 
