@@ -9,7 +9,7 @@ import java.util.*
 import javax.annotation.PostConstruct
 
 @Configuration
-@DependsOn("httpPromenaTransformer")
+@DependsOn("httpPromenaTransformationExecutor")
 class HttpConnectorModuleLogger(
     @Qualifier("global-properties") private val properties: Properties
 ) {
