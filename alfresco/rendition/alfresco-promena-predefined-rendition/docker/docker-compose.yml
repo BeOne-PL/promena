@@ -3,8 +3,9 @@ services:
   alfresco-promena-predefined-rendition-share:
     image: ${docker.share.image}:${alfresco.share.version}
     environment:
-      REPO_HOST: alfresco-promena-predefined-rendition-acs
-      REPO_PORT: 8080
+      - REPO_HOST=alfresco-promena-predefined-rendition-acs
+      - REPO_PORT=8080
+      - "JAVA_OPTS=-Xms1g -Xmx1g"
     ports:
       - "${share.port}:8080"
 
@@ -14,7 +15,10 @@ services:
       dockerfile: ./Dockerfile
       context: ../../../target
     environment:
-      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
+      CATALINA_OPTS: "
+        -Xms2g -Xmx2g
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888
+      "
     ports:
       - "${acs.port}:8080"
       - "${acs.debug.port}:8888"
@@ -38,11 +42,12 @@ services:
   alfresco-promena-predefined-rendition-ass:
     image: alfresco/alfresco-search-services:1.2.0
     environment:
-      SOLR_ALFRESCO_HOST: alfresco-promena-predefined-rendition-acs
-      SOLR_ALFRESCO_PORT: 8080
-      SOLR_SOLR_HOST: alfresco-promena-predefined-rendition-ass
-      SOLR_SOLR_PORT: 8983
-      SOLR_CREATE_ALFRESCO_DEFAULTS: alfresco,archive
+      - "SOLR_JAVA_MEM=-Xms2g -Xmx2g"
+      - SOLR_ALFRESCO_HOST=alfresco-promena-predefined-rendition-acs
+      - SOLR_ALFRESCO_PORT=8080
+      - SOLR_SOLR_HOST=alfresco-promena-predefined-rendition-ass
+      - SOLR_SOLR_PORT=8983
+      - SOLR_CREATE_ALFRESCO_DEFAULTS=alfresco,archive
     ports:
       - "8983:8983"
     volumes:
@@ -62,6 +67,7 @@ services:
   promena:
     image: promena-predefined-rendition-executable:1.0.0
     environment:
+      - "JAVA_OPTS_MEMORY=-Xms1g -Xmx1g -XX:NewSize=256m -XX:MaxNewSize=256m"
       - spring.activemq.broker-url=failover:(nio://activemq:61616)?timeout=3000&jms.useCompression=true
       - spring.jms.listener.concurrency=4
       - spring.jms.listener.max-concurrency=4
