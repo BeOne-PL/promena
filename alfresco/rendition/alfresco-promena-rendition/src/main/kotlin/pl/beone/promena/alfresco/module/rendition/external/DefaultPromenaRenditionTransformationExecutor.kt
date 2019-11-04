@@ -11,6 +11,7 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.Tra
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutor
+import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaRenditionInProgressException
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTransformationExecutor
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
@@ -37,29 +38,48 @@ class DefaultPromenaRenditionTransformationExecutor(
     }
 
     override fun transform(nodeRef: NodeRef, renditionName: String): ChildAssociationRef =
-        transform(nodeRef, renditionName) { transformationExecution ->
-            promenaTransformationManager.getResult(transformationExecution, timeout)
+        try {
+            transform(nodeRef, renditionName) { transformationExecution ->
+                waitForResultAndGetRendition(nodeRef, renditionName, transformationExecution)
+            }
+        } catch (e: PromenaRenditionInProgressException) {
+            logger.debug { "Transforming <$renditionName> rendition of <$nodeRef> is in progress in transaction <${e.transformationExecution.id}. Waiting for result..." }
 
-            renditionGetter.getRendition(nodeRef, renditionName) ?: throw NoSuchElementException("There is no <$renditionName> rendition of <$nodeRef>")
+            waitForResultAndGetRendition(nodeRef, renditionName, e.transformationExecution)
         }
 
-    override fun transformAsync(nodeRef: NodeRef, renditionName: String) {
-        transform(nodeRef, renditionName) {}
+    private fun waitForResultAndGetRendition(
+        nodeRef: NodeRef,
+        renditionName: String,
+        transformationExecution: TransformationExecution
+    ): ChildAssociationRef {
+        promenaTransformationManager.getResult(transformationExecution, timeout)
+
+        return renditionGetter.getRendition(nodeRef, renditionName) ?: throw NoSuchElementException("There is no <$renditionName> rendition of <$nodeRef>")
     }
 
-    private fun <T> transform(nodeRef: NodeRef, renditionName: String, toRun: (TransformationExecution) -> T): T {
-        logger.debug { "Transforming <$renditionName> rendition of <$nodeRef>..." }
+    override fun transformAsync(nodeRef: NodeRef, renditionName: String) {
+        try {
+            transform(nodeRef, renditionName) {}
+        } catch (e: PromenaRenditionInProgressException) {
+            logger.debug { "Skipped. Transforming <$renditionName> rendition of <$nodeRef> is in progress in transaction <${e.transformationExecution.id}..." }
+        }
+    }
 
+    @Synchronized
+    private fun <T> transform(nodeRef: NodeRef, renditionName: String, toRun: (TransformationExecution) -> T): T {
         promenaRenditionInProgressSynchronizer.isInProgress(nodeRef, renditionName)
         val transformation = getTransformation(nodeRef, renditionName)
         return try {
-            promenaRenditionInProgressSynchronizer.start(nodeRef, renditionName)
-
             val transformationExecution = promenaTransformationExecutor.execute(
                 transformation,
                 creatRenditionNodeDescriptor(nodeRef, renditionName),
                 FinishPostTransformationExecutor(promenaRenditionInProgressSynchronizer, renditionName)
             )
+
+            promenaRenditionInProgressSynchronizer.start(nodeRef, renditionName, transformationExecution)
+
+            logger.debug { "Transforming <$renditionName> rendition of <$nodeRef>..." }
 
             toRun(transformationExecution)
         } catch (e: Exception) {
@@ -83,12 +103,16 @@ class DefaultPromenaRenditionTransformationExecutor(
         private val renditionName: String
     ) : PostTransformationExecutor() {
 
+        companion object {
+            private val logger = KotlinLogging.logger {}
+        }
+
         override fun execute(transformation: Transformation, nodeDescriptor: NodeDescriptor, result: TransformationExecutionResult) {
             val nodeRef = nodeDescriptor.descriptors[0].nodeRef
 
             promenaRenditionInProgressSynchronizer.finish(nodeRef, renditionName)
 
-            KotlinLogging.logger {}.debug { "Transformed <$renditionName> rendition of <$nodeRef>" }
+            logger.debug { "Transformed <$renditionName> rendition of <$nodeRef>" }
         }
     }
 }

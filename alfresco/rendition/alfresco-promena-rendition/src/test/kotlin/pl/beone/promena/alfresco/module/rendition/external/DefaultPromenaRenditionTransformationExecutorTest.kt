@@ -1,6 +1,7 @@
 package pl.beone.promena.alfresco.module.rendition.external
 
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotThrowExactly
 import io.kotlintest.shouldThrowExactly
 import io.mockk.*
 import org.alfresco.model.ContentModel.PROP_CONTENT
@@ -16,6 +17,7 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.tra
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager
+import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaRenditionInProgressException
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
@@ -74,9 +76,9 @@ class DefaultPromenaRenditionTransformationExecutorTest {
             }
         }
 
-        promenaRenditionInProgressSynchronizer = mockk<PromenaRenditionInProgressSynchronizer> {
+        promenaRenditionInProgressSynchronizer = mockk {
             every { isInProgress(sourceNodeRef, renditionName) } just Runs
-            every { start(sourceNodeRef, renditionName) } just Runs
+            every { start(sourceNodeRef, renditionName, transformationExecution) } just Runs
             every { finish(sourceNodeRef, renditionName) } just Runs
         }
 
@@ -105,7 +107,34 @@ class DefaultPromenaRenditionTransformationExecutorTest {
         verify { renditionGetter.getRendition(sourceNodeRef, renditionName) }
 
         verify { promenaRenditionInProgressSynchronizer.isInProgress(sourceNodeRef, renditionName) }
-        verify { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName) }
+        verify { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName, transformationExecution) }
+        verify(exactly = 0) { promenaRenditionInProgressSynchronizer.finish(sourceNodeRef, renditionName) }
+    }
+
+    @Test
+    fun `transform _ promenaRenditionInProgressSynchronizer throws PromenaRenditionInProgressException _ should wait for result`() {
+        val exception = PromenaRenditionInProgressException(nodeDescriptor.nodeRef, renditionName, transformationExecution)
+
+        promenaRenditionInProgressSynchronizer = mockk {
+            every { isInProgress(sourceNodeRef, renditionName) } throws exception
+        }
+
+        shouldNotThrowExactly<PromenaRenditionInProgressException> {
+            DefaultPromenaRenditionTransformationExecutor(
+                serviceRegistry,
+                renditionGetter,
+                promenaRenditionDefinitionGetter,
+                promenaRenditionInProgressSynchronizer,
+                mockk(),
+                promenaTransformationManager,
+                waitMax
+            ).transform(sourceNodeRef, renditionName)
+        }
+
+        verify { renditionGetter.getRendition(sourceNodeRef, renditionName) }
+
+        verify { promenaRenditionInProgressSynchronizer.isInProgress(sourceNodeRef, renditionName) }
+        verify(exactly = 0) { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName, transformationExecution) }
         verify(exactly = 0) { promenaRenditionInProgressSynchronizer.finish(sourceNodeRef, renditionName) }
     }
 
@@ -128,7 +157,7 @@ class DefaultPromenaRenditionTransformationExecutorTest {
         verify(exactly = 0) { renditionGetter.getRendition(sourceNodeRef, renditionName) }
 
         verify { promenaRenditionInProgressSynchronizer.isInProgress(sourceNodeRef, renditionName) }
-        verify { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName) }
+        verify { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName, transformationExecution) }
         verify(exactly = 0) { promenaRenditionInProgressSynchronizer.finish(sourceNodeRef, renditionName) }
     }
 
@@ -153,7 +182,32 @@ class DefaultPromenaRenditionTransformationExecutorTest {
         }.message shouldBe "message"
 
         verify { promenaRenditionInProgressSynchronizer.isInProgress(sourceNodeRef, renditionName) }
-        verify { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName) }
+        verify(exactly = 0) { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName, transformationExecution) }
         verify { promenaRenditionInProgressSynchronizer.finish(sourceNodeRef, renditionName) }
+    }
+
+    @Test
+    fun `transformAsync _ promenaRenditionInProgressSynchronizer throws PromenaRenditionInProgressException _ should do nothing`() {
+        val exception = PromenaRenditionInProgressException(nodeDescriptor.nodeRef, renditionName, transformationExecution)
+
+        promenaRenditionInProgressSynchronizer = mockk {
+            every { isInProgress(sourceNodeRef, renditionName) } throws exception
+        }
+
+        shouldNotThrowExactly<PromenaRenditionInProgressException> {
+            DefaultPromenaRenditionTransformationExecutor(
+                serviceRegistry,
+                renditionGetter,
+                promenaRenditionDefinitionGetter,
+                promenaRenditionInProgressSynchronizer,
+                mockk(),
+                promenaTransformationManager,
+                waitMax
+            ).transformAsync(sourceNodeRef, renditionName)
+        }
+
+        verify { promenaRenditionInProgressSynchronizer.isInProgress(sourceNodeRef, renditionName) }
+        verify(exactly = 0) { promenaRenditionInProgressSynchronizer.start(sourceNodeRef, renditionName, transformationExecution) }
+        verify(exactly = 0) { promenaRenditionInProgressSynchronizer.finish(sourceNodeRef, renditionName) }
     }
 }
