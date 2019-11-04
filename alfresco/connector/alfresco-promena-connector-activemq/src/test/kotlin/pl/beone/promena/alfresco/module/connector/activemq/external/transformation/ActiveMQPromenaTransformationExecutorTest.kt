@@ -3,17 +3,20 @@ package pl.beone.promena.alfresco.module.connector.activemq.external.transformat
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactly
 import io.mockk.*
-import org.alfresco.service.cmr.repository.NodeRef
-import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.junit.Before
 import org.junit.Test
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeRefs
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodesChecksum
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.retry
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformation
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformationExecution
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.userName
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.TransformerSender
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.PotentialConcurrentModificationException
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
-import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.noRetry
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecution
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.node.DataDescriptorGetter
 import pl.beone.promena.alfresco.module.core.contract.node.NodeInCurrentTransactionVerifier
@@ -23,47 +26,27 @@ import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTr
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorValidator
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.data.singleDataDescriptor
-import pl.beone.promena.transformer.contract.transformation.singleTransformation
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
-import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
-import pl.beone.promena.transformer.internal.model.metadata.plus
-import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
-import pl.beone.promena.transformer.internal.model.parameters.plus
-import java.time.Duration
 
 class ActiveMQPromenaTransformationExecutorTest {
 
     companion object {
         private val externalCommunicationParameters = memoryCommunicationParameters()
 
-        private val transformationExecution = transformationExecution("1")
-
-        private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value"))
-        private val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value"))
         private val transformationDescriptor = transformationDescriptor(
             transformation,
             dataDescriptor,
             externalCommunicationParameters
         )
 
-        private val nodeDescriptor =
-            NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value"))
-        private val nodeRefs = nodeDescriptor.toNodeRefs()
-        private val postTransformationExecution = mockk<PostTransformationExecutor>()
-        private val retry = customRetry(3, Duration.ofMillis(1000))
-        private const val nodesChecksum = "123456789"
-        private const val userName = "admin"
+        private val postTransformationExecutor = mockk<PostTransformationExecutor>()
         private val transformationParameters = TransformationParameters(
             transformation,
             nodeDescriptor,
-            postTransformationExecution,
+            postTransformationExecutor,
             retry,
             dataDescriptor,
             nodesChecksum,
-            0,
+            attempt,
             userName
         )
     }
@@ -86,6 +69,7 @@ class ActiveMQPromenaTransformationExecutorTest {
         }
         nodeInCurrentTransactionVerifier = mockk {
             every { verify(nodeRefs[0]) } just Runs
+            every { verify(nodeRefs[1]) } just Runs
         }
         nodesChecksumGenerator = mockk {
             every { generate(nodeRefs) } returns nodesChecksum
@@ -116,7 +100,7 @@ class ActiveMQPromenaTransformationExecutorTest {
         ).execute(
             transformation,
             nodeDescriptor,
-            postTransformationExecution,
+            postTransformationExecutor,
             retry
         ) shouldBe transformationExecution
 
@@ -139,7 +123,7 @@ class ActiveMQPromenaTransformationExecutorTest {
         ).execute(
             transformation,
             nodeDescriptor,
-            postTransformationExecution
+            postTransformationExecutor
         ) shouldBe transformationExecution
 
         verify { transformerSender.send(transformationExecution.id, transformationDescriptor, transformationParameters.copy(retry = defaultRetry)) }
@@ -166,7 +150,7 @@ class ActiveMQPromenaTransformationExecutorTest {
             ).execute(
                 transformation,
                 nodeDescriptor,
-                postTransformationExecution
+                postTransformationExecutor
             )
         }.message shouldBe "Node <${nodeRefs[0]}> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
     }
@@ -192,7 +176,7 @@ class ActiveMQPromenaTransformationExecutorTest {
             ).execute(
                 transformation,
                 nodeDescriptor,
-                postTransformationExecution
+                postTransformationExecutor
             )
         }.message shouldBe "message"
     }

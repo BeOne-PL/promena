@@ -5,8 +5,6 @@ import io.kotlintest.shouldThrow
 import io.mockk.clearMocks
 import io.mockk.every
 import org.alfresco.service.cmr.repository.InvalidNodeRefException
-import org.alfresco.service.cmr.repository.NodeRef
-import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -17,26 +15,26 @@ import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeRefs
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodesChecksum
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.retry
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformation
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformationExecutionResult
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.userName
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
 import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodesInconsistencyException
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
-import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
-import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
-import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
-import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.time.Duration
 
 @RunWith(SpringRunner::class)
@@ -57,28 +55,20 @@ class TransformerResponseFlowTest {
     private lateinit var authorizationService: AuthorizationService
 
     companion object {
-        private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
-        private val nodeDescriptor =
-            NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
-                    NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata())
-        private val nodeRefs = nodeDescriptor.toNodeRefs()
-        private const val nodesChecksum = "123456789"
-        private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
             transformation,
             nodeDescriptor,
             null,
-            customRetry(3, Duration.ofMillis(1000)),
-            singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
+            retry,
+            dataDescriptor,
             nodesChecksum,
-            0,
+            attempt,
             userName
         )
 
         private val performedTransformationDescriptor = performedTransformationDescriptor(
             singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value"))
         )
-        private val transformationExecutionResult = transformationExecutionResult(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
     }
 
     @Before

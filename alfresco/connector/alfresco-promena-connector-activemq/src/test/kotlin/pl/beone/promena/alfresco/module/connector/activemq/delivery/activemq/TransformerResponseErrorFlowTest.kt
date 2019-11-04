@@ -4,8 +4,6 @@ import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.mockk.clearMocks
 import io.mockk.every
-import org.alfresco.service.cmr.repository.NodeRef
-import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -16,24 +14,21 @@ import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodesChecksum
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformation
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformationExecutionResult
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.userName
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.noRetry
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
-import pl.beone.promena.transformer.contract.data.singleDataDescriptor
-import pl.beone.promena.transformer.contract.transformation.singleTransformation
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
-import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
-import pl.beone.promena.transformer.internal.model.metadata.plus
-import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.time.Duration
 import java.time.Duration.ZERO
 import java.util.concurrent.TimeoutException
@@ -56,24 +51,17 @@ class TransformerResponseErrorFlowTest {
     private lateinit var authorizationService: AuthorizationService
 
     companion object {
-        private val transformation = singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters())
-        private val nodeDescriptor =
-            NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
-                    NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata())
-        private const val nodesChecksum = "123456789"
-        private const val userName = "admin"
         private val transformationParameters = TransformationParameters(
             transformation,
             nodeDescriptor,
             null,
             noRetry(),
-            singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
+            dataDescriptor,
             nodesChecksum,
-            0,
+            attempt,
             userName
         )
 
-        private val transformationExecutionResult = transformationExecutionResult(NodeRef("workspace://SpacesStore/98c8a344-7724-473d-9dd2-c7c29b77a0ff"))
         private val exception = TransformationException("Exception", TimeoutException::class.java)
     }
 

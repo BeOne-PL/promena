@@ -5,8 +5,6 @@ import io.kotlintest.matchers.maps.shouldContainAll
 import io.kotlintest.shouldBe
 import io.mockk.clearMocks
 import io.mockk.every
-import org.alfresco.service.cmr.repository.NodeRef
-import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.apache.activemq.command.ActiveMQMessage
 import org.fusesource.hawtbuf.UTF8Buffer
 import org.junit.After
@@ -21,6 +19,14 @@ import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodesChecksum
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.retry
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformation
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformationExecution
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.userName
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_ATTEMPT
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_RETRY_MAX_ATTEMPTS
 import pl.beone.promena.alfresco.module.connector.activemq.applicationmodel.PromenaJmsHeaders.SEND_BACK_TRANSFORMATION_PARAMETERS
@@ -29,24 +35,10 @@ import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.con
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
 import pl.beone.promena.alfresco.module.connector.activemq.internal.TransformationParametersSerializationService
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.plus
-import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
-import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
-import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecution
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
-import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.contract.data.singleDataDescriptor
-import pl.beone.promena.transformer.contract.transformation.singleTransformation
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
-import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
-import pl.beone.promena.transformer.internal.model.metadata.plus
-import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
-import pl.beone.promena.transformer.internal.model.parameters.plus
-import java.time.Duration
 
 @RunWith(SpringRunner::class)
 @TestPropertySource(locations = ["classpath:alfresco-global-test.properties"])
@@ -69,24 +61,19 @@ class TransformerSenderTest {
     private lateinit var transformerSender: TransformerSender
 
     companion object {
-        private val transformationExecution = transformationExecution("1")
         private val transformationDescriptor = transformationDescriptor(
-            singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters() + ("key" to "value")),
-            singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("key" to "value")),
+            transformation,
+            dataDescriptor,
             memoryCommunicationParameters()
         )
 
-        private const val userName = "admin"
-        private val retry = customRetry(3, Duration.ofMillis(1000))
-        private const val attempt: Long = 0
         private val transformationParameters = TransformationParameters(
-            singleTransformation("transformer-test", APPLICATION_PDF, emptyParameters()),
-            NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c").toSingleNodeDescriptor(emptyMetadata() + ("key" to "value")) +
-                    NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f").toSingleNodeDescriptor(emptyMetadata()),
+            transformation,
+            nodeDescriptor,
             null,
             retry,
-            singleDataDescriptor("".toMemoryData(), APPLICATION_PDF, emptyMetadata()),
-            "123456789",
+            dataDescriptor,
+            nodesChecksum,
             attempt,
             userName
         )
