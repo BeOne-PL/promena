@@ -53,6 +53,7 @@ services:
     image: promena-connector-http-executable:1.0.0
     environment:
       - logging.level.pl.beone=DEBUG
+      - transformer.pl.beone.promena.transformer.mirror.archetype.ArchetypeMirrorTransformer.actors=4
 
 volumes:
   alfresco-promena-connector-http-acs-volume:
