@@ -15,7 +15,6 @@ import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorInjector
-import pl.beone.promena.alfresco.module.core.extension.couldNotTransform
 import pl.beone.promena.alfresco.module.core.extension.transformedSuccessfully
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
@@ -50,25 +49,20 @@ class TransformerResponseConsumer(
         val nodeRefs = nodeDescriptor.toNodeRefs()
 
         transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum, userName) {
-            try {
-                val transformationExecutionResult = authorizationService.runAs(userName) {
-                    serviceRegistry.retryingTransactionHelper.doInTransaction({
-                        transformedDataDescriptorSaver.save(transformation, nodeRefs, performedTransformationDescriptor.transformedDataDescriptor)
-                            .let(::transformationExecutionResult)
-                            .also { result ->
-                                postTransformationExecutor
-                                    ?.also(postTransformationExecutorInjector::inject)
-                                    ?.execute(transformation, nodeDescriptor, result)
-                            }
-                    }, false, true)
-                }
-
-                logger.transformedSuccessfully(transformation, nodeDescriptor, transformationExecutionResult, startTimestamp, endTimestamp)
-                promenaMutableTransformationManager.completeTransformation(transformationExecution, transformationExecutionResult)
-            } catch (e: Exception) {
-                logger.couldNotTransform(transformation, nodeDescriptor, e)
-                promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, e)
+            val transformationExecutionResult = authorizationService.runAs(userName) {
+                serviceRegistry.retryingTransactionHelper.doInTransaction({
+                    transformedDataDescriptorSaver.save(transformation, nodeRefs, performedTransformationDescriptor.transformedDataDescriptor)
+                        .let(::transformationExecutionResult)
+                        .also { result ->
+                            postTransformationExecutor
+                                ?.also(postTransformationExecutorInjector::inject)
+                                ?.execute(transformation, nodeDescriptor, result)
+                        }
+                }, false, true)
             }
+
+            logger.transformedSuccessfully(transformation, nodeDescriptor, transformationExecutionResult, startTimestamp, endTimestamp)
+            promenaMutableTransformationManager.completeTransformation(transformationExecution, transformationExecutionResult)
         }
     }
 }

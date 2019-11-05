@@ -10,6 +10,7 @@ import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.node.NodesExistenceVerifier
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
+import pl.beone.promena.alfresco.module.core.extension.couldNotTransform
 import pl.beone.promena.alfresco.module.core.extension.stoppedTransformingBecauseChecksumsAreDifferent
 import pl.beone.promena.alfresco.module.core.extension.stoppedTransformingBecauseNodeDoesNotExist
 import pl.beone.promena.transformer.contract.transformation.Transformation
@@ -49,6 +50,9 @@ class TransformerResponseProcessor(
             }
         } catch (e: InvalidNodeRefException) {
             logger.stoppedTransformingBecauseNodeDoesNotExist(transformation, nodeDescriptor, e.nodeRef)
+            promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, e)
+        } catch (e: Exception) {
+            logger.couldNotTransform(transformation, nodeDescriptor, e)
             promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, e)
         }
     }

@@ -52,18 +52,13 @@ class TransformerResponseErrorConsumer(
                 logger.logOnRetry(transformation, nodeDescriptor, currentAttempt, retry.maxAttempts, retry.nextAttemptDelay, transformationException)
                 Thread.sleep(retry.nextAttemptDelay.toMillis())
 
-                try {
-                    authorizationService.runAs(userName) {
-                        activeMQPromenaTransformer.execute(
-                            correlationId,
-                            transformation,
-                            dataDescriptor,
-                            transformationParameters.copy(attempt = currentAttempt)
-                        )
-                    }
-                } catch (e: Exception) {
-                    logger.couldNotTransform(transformation, nodeDescriptor, e)
-                    promenaMutableTransformationManager.completeErrorTransformation(transformationExecution, e)
+                authorizationService.runAs(userName) {
+                    activeMQPromenaTransformer.execute(
+                        correlationId,
+                        transformation,
+                        dataDescriptor,
+                        transformationParameters.copy(attempt = currentAttempt)
+                    )
                 }
             }
         }

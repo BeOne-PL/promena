@@ -17,6 +17,7 @@ import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesConte
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeDescriptor
+import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodeRefs
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.nodesChecksum
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformation
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.transformationExecutionResult
@@ -24,6 +25,7 @@ import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.userNam
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.ActiveMQContainerContext
 import pl.beone.promena.alfresco.module.connector.activemq.delivery.activemq.context.SetupContext
 import pl.beone.promena.alfresco.module.connector.activemq.external.transformation.TransformationParameters
+import pl.beone.promena.alfresco.module.core.applicationmodel.exception.NodesInconsistencyException
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.customRetry
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.noRetry
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
@@ -100,6 +102,20 @@ class TransformerResponseErrorFlowTest {
     }
 
     @Test
+    fun `should receive exception, detect difference between nodes checksums and throw NodesInconsistencyException`() {
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
+                "not equal"  // nodesChecksumGenerator.generate(nodeRefs)
+
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        jmsUtils.sendResponseErrorMessage(transformationExecution.id, exception, transformationParameters)
+
+        shouldThrow<NodesInconsistencyException> {
+            promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
+        }.message shouldBe "Nodes <$nodeRefs> have changed in the meantime (old checksum <$nodesChecksum>, current checksum <not equal>)"
+    }
+
+    @Test
     fun `should receive exception and complete transaction _ last attempt`() {
         val transformationExecution = promenaMutableTransformationManager.startTransformation()
         jmsUtils.sendResponseErrorMessage(
@@ -142,7 +158,7 @@ class TransformerResponseErrorFlowTest {
     }
 
     @Test
-    fun `should receive exception _ throw RuntimeException during processing result`() {
+    fun `should receive exception and throw RuntimeException during processing result`() {
         every { authorizationService.runAs<Any>(userName, any()) } returns
                 Unit andThen // nodesExistenceVerifier.verify(nodeRefs)
                 nodesChecksum andThenThrows  // nodesChecksumGenerator.generate(nodeRefs)
@@ -158,5 +174,21 @@ class TransformerResponseErrorFlowTest {
         shouldThrow<RuntimeException> {
             promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
         }.message shouldBe "exception"
+    }
+
+    @Test
+    fun `should receive exception, throw RuntimeException during processing exception and stop further retrying`() {
+        val runtimeException = RuntimeException("exception")
+
+        every { authorizationService.runAs<Any>(userName, any()) } returns
+                Unit andThenThrows  // nodesExistenceVerifier.verify(nodeRefs)
+                runtimeException // nodesChecksumGenerator.generate(nodeRefs)
+
+        val transformationExecution = promenaMutableTransformationManager.startTransformation()
+        jmsUtils.sendResponseErrorMessage(transformationExecution.id, exception, transformationParameters)
+
+        shouldThrow<RuntimeException> {
+            promenaMutableTransformationManager.getResult(transformationExecution, Duration.ofSeconds(2))
+        }.message shouldBe runtimeException.message
     }
 }
