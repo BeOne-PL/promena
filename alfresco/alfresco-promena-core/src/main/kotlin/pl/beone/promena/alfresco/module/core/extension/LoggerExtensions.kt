@@ -79,14 +79,17 @@ fun Logger.logOnRetry(
     attempt: Long,
     maxAttempts: Long,
     nextAttemptDelay: Duration,
-    exception: TransformationException
+    exception: Exception
 ) {
-    warn(
-        "Couldn't transform. Attempt ($attempt/$maxAttempts) will be made in <${nextAttemptDelay.toPrettyString()}>\n" +
-                "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
-                "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}\n" +
-                exception.toString().addHashAtTheBeggingOfEachLine()
-    )
+    val message = "Couldn't transform. Attempt ($attempt/$maxAttempts) will be made in <${nextAttemptDelay.toPrettyString()}>\n" +
+            "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
+            "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}"
+
+    if (exception is TransformationException) {
+        warn(message + "\n" + exception.toString().addHashAtTheBeggingOfEachLine())
+    } else {
+        warn(message, exception)
+    }
 }
 
 private fun String.addHashAtTheBeggingOfEachLine(): String =
