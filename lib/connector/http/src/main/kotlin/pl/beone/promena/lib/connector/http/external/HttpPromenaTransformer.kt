@@ -1,6 +1,7 @@
 package pl.beone.promena.lib.connector.http.external
 
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.Headers.Companion.CONTENT_TYPE
 import com.github.kittinunf.fuel.core.Response
@@ -19,13 +20,17 @@ class HttpPromenaTransformer(
 ) {
 
     suspend fun execute(transformationDescriptor: TransformationDescriptor, httpAddress: String): PerformedTransformationDescriptor =
-        Fuel.post("http://$httpAddress/transform")
-            .header(CONTENT_TYPE, APPLICATION_OCTET_STREAM.mimeType)
-            .timeout(Int.MAX_VALUE)
-            .timeoutRead(Int.MAX_VALUE)
-            .body(serializationService.serialize(transformationDescriptor))
-            .awaitByteArrayResponse()
-            .let { handleTransformationResult(it.second, it.third) }
+        try {
+            Fuel.post("http://$httpAddress/transform")
+                .header(CONTENT_TYPE, APPLICATION_OCTET_STREAM.mimeType)
+                .timeout(Int.MAX_VALUE)
+                .timeoutRead(Int.MAX_VALUE)
+                .body(serializationService.serialize(transformationDescriptor))
+                .awaitByteArrayResponse()
+                .let { handleTransformationResult(it.second, it.third) }
+        } catch (e: FuelError) {
+            handleTransformationResult(e.response, e.errorData)
+        }
 
     private fun handleTransformationResult(response: Response, bytes: ByteArray): PerformedTransformationDescriptor =
         when (response.statusCode) {
