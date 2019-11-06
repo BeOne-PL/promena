@@ -57,7 +57,7 @@ class GroupedByNameTransformersCreatorTest {
     }
 
     @Test
-    fun `create _ duplicate id _ should throw TransformersCreatorValidationException`() {
+    fun `create _ duplicated id _ should throw IllegalStateException`() {
         val libreOfficeConverterTransformer = mockk<Transformer>()
         val libreOfficeConverter2Transformer = mockk<Transformer>()
         val msOfficeConverterTransformer = mockk<Transformer>()
@@ -89,14 +89,57 @@ class GroupedByNameTransformersCreatorTest {
         }.let {
             it.message!!.split("\n").let { messages ->
                 messages[0] shouldContain "Detected <2> transformers with duplicated id:"
-                messages[1] shouldContain "> TransformerId(name=converter, subName=libre-office): "
-                messages[2] shouldContain "> TransformerId(name=document-signer, subName=dss): "
+                messages[1] shouldContain "> (converter, libre-office): "
+                messages[2] shouldContain "> (document-signer, dss): "
             }
         }
     }
 
     @Test
-    fun `create _ no transformer _ should throw TransformersCreatorValidationException`() {
+    fun `create _ duplicated priority id _ should throw IllegalStateException`() {
+        val libreOfficeConverterTransformer = mockk<Transformer>()
+        val msOfficeConverterTransformer = mockk<Transformer>()
+        val zxingBarcodeTransformer = mockk<Transformer>()
+        val imageMagickSignerTransformer = mockk<Transformer>()
+
+        val transformerConfig = mockk<TransformerConfig> {
+            every { getTransformerId(libreOfficeConverterTransformer) } returns ("converter" to "libre-office").toTransformerId()
+            every { getActors(libreOfficeConverterTransformer) } returns 1
+            every { getPriority(libreOfficeConverterTransformer) } returns 1
+
+            every { getTransformerId(msOfficeConverterTransformer) } returns ("converter" to "ms-office").toTransformerId()
+            every { getActors(msOfficeConverterTransformer) } returns 1
+            every { getPriority(msOfficeConverterTransformer) } returns 1
+
+            every { getTransformerId(imageMagickSignerTransformer) } returns ("converter" to "image-magick").toTransformerId()
+            every { getActors(imageMagickSignerTransformer) } returns 1
+            every { getPriority(imageMagickSignerTransformer) } returns 2
+
+            every { getTransformerId(zxingBarcodeTransformer) } returns ("barcode" to "zxing").toTransformerId()
+            every { getActors(zxingBarcodeTransformer) } returns 1
+            every { getPriority(zxingBarcodeTransformer) } returns 1
+        }
+
+        shouldThrow<IllegalStateException> {
+            GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
+                .create(
+                    listOf(
+                        libreOfficeConverterTransformer,
+                        msOfficeConverterTransformer,
+                        zxingBarcodeTransformer,
+                        imageMagickSignerTransformer
+                    )
+                )
+        }.let {
+            it.message!!.split("\n").let { messages ->
+                messages[0] shouldContain "Detected <1> transformers with duplicated priority:"
+                messages[1] shouldContain "> (converter) [priority: 1]: "
+            }
+        }
+    }
+
+    @Test
+    fun `create _ no transformer _ should throw IllegalStateException`() {
         shouldThrow<IllegalStateException> {
             GroupedByNameTransformersCreator(mockk(), mockk(), mockk(), mockk())
                 .create(emptyList())

@@ -35,6 +35,8 @@ class GroupedByNameTransformersCreator(
             .flatMap { (transformerName, transformers) ->
                 val actors = transformers.getMaxActors()
 
+                validateUniquePriorities(transformerName, transformers)
+
                 val transformerDescriptors = transformers
                     .map(::createTransformerDescriptor)
 
@@ -55,14 +57,27 @@ class GroupedByNameTransformersCreator(
     }
 
     private fun validateUniqueTransformers(transformers: List<Transformer>) {
-        val notUniqueTransforms = transformers.groupBy { transformerConfig.getTransformerId(it) }
+        val notUniqueTransformers = transformers.groupBy { transformerConfig.getTransformerId(it) }
             .filter { (_, transformers) -> transformers.size >= 2 }
             .toList()
 
-        check(notUniqueTransforms.isEmpty()) {
-            "Detected <${notUniqueTransforms.size}> transformers with duplicated id:\n" +
-                    notUniqueTransforms.joinToString("\n") { (transformerId, transformers) ->
-                        "> $transformerId: ${transformers.joinToString(", ") { it::class.java.canonicalName }}"
+        check(notUniqueTransformers.isEmpty()) {
+            "Detected <${notUniqueTransformers.size}> transformers with duplicated id:\n" +
+                    notUniqueTransformers.joinToString("\n") { (transformerId, transformers) ->
+                        "> (${transformerId.name}, ${transformerId.subName}): ${transformers.joinToString(", ") { it::class.java.canonicalName }}"
+                    }
+        }
+    }
+
+    private fun validateUniquePriorities(transformerName: String, transformers: List<Transformer>) {
+        val notUniqueTransformers = transformers.groupBy { transformerConfig.getPriority(it) }
+            .filter { (_, transformers) -> transformers.size >= 2 }
+            .toList()
+
+        check(notUniqueTransformers.isEmpty()) {
+            "Detected <${notUniqueTransformers.size}> transformers with duplicated priority:\n" +
+                    notUniqueTransformers.joinToString("\n") { (priority, transformers) ->
+                        "> ($transformerName) [priority: $priority]: ${transformers.joinToString(", ") { "${it::class.java.canonicalName}($transformerName, ${it.getSubName()})" }}"
                     }
         }
     }
