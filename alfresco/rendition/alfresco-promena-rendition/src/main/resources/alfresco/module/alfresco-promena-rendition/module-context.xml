@@ -24,8 +24,21 @@
 
     <context:component-scan base-package="pl.beone.promena.alfresco.module.rendition.configuration"/>
 
-    <import resource="classpath:alfresco/module/${project.artifactId}/context/thumbnail-service-context.xml" />
-    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition-services-context.xml" />
-    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition-services2-context.xml" />
+    <!-- Replace Rendition by Promena implementation -->
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition/thumbnail-service-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition/thumbnail-service-promena-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition/rendition-services-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition/rendition-services-promena-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition/rendition-services2-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/rendition/rendition-services2-promena-context.xml"/>
+
+    <!-- Disable Transformers subsystem -->
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/transformer/bootstrap-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/transformer/content-services-context.xml"/>
+
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/transformer/subsystems/alfresco-pdf-renderer-transform-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/transformer/subsystems/imagemagick-transform-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/transformer/subsystems/jodconverter-context.xml"/>
+    <import resource="classpath:alfresco/module/${project.artifactId}/context/transformer/subsystems/transformers-context.xml"/>
 
 </beans>

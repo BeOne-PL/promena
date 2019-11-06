@@ -17,7 +17,7 @@
     <bean id="localTransformServiceRegistry" class="kotlin.Unit"/>
 
     <!-- Required by Messaging subsystem -->
-    <bean id="renditionEventProcessor" class="pl.beone.promena.alfresco.module.rendition.mock.RenditionEventProcessor"/>
+    <bean id="renditionEventProcessor" class="pl.beone.promena.alfresco.module.rendition.mock.rendition.RenditionEventProcessor"/>
 
     <bean id="renditionDefinition2Medium" class="kotlin.Unit"/>
 

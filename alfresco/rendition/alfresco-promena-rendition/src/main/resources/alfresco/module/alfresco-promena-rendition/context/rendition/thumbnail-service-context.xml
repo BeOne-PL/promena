@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id ="thumbnailRenditionConvertor" class="kotlin.Unit"/>
+    <bean id="thumbnailRenditionConvertor" class="kotlin.Unit"/>
 
     <bean id="baseThumbnailDefinition" class="kotlin.Unit"/>
 

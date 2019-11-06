@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    <bean id="jodconverter.shared.instance" class="kotlin.Unit"/>
+
+    <bean id="extracter.worker.JodConverter" class="kotlin.Unit"/>
+
+    <bean id="transformer.worker.JodConverter" class="kotlin.Unit"/>
+</beans>

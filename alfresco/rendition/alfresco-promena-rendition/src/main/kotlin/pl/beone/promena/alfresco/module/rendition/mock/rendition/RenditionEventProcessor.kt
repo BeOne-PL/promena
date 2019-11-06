@@ -1,4 +1,4 @@
-package pl.beone.promena.alfresco.module.rendition.mock
+package pl.beone.promena.alfresco.module.rendition.mock.rendition
 
 import org.apache.camel.Exchange
 import org.apache.camel.Processor
