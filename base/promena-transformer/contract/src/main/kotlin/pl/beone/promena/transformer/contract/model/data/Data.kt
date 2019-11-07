@@ -1,4 +1,4 @@
-package pl.beone.promena.transformer.contract.model
+package pl.beone.promena.transformer.contract.model.data
 
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException

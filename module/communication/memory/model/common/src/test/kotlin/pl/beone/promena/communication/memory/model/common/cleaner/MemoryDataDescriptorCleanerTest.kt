@@ -7,7 +7,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 
 class MemoryDataDescriptorCleanerTest {
 

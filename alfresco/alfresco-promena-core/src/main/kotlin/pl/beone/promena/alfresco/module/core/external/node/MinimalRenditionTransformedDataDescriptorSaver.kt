@@ -16,8 +16,8 @@ import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescri
 import pl.beone.promena.alfresco.module.core.contract.transformation.definition.PromenaTransformationMetadataMappingDefinition
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
-import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
+import pl.beone.promena.transformer.contract.model.data.Data
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.data.NoData
 import java.io.Serializable

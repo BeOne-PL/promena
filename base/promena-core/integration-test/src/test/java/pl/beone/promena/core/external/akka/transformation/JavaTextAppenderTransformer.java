@@ -6,10 +6,10 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType;
 import pl.beone.promena.transformer.contract.Transformer;
 import pl.beone.promena.transformer.contract.data.DataDescriptor;
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor;
-import pl.beone.promena.transformer.contract.model.Data;
 import pl.beone.promena.transformer.contract.model.Metadata;
 import pl.beone.promena.transformer.contract.model.Parameters;
-import pl.beone.promena.transformer.internal.model.data.MemoryData;
+import pl.beone.promena.transformer.contract.model.data.Data;
+import pl.beone.promena.transformer.internal.model.data.memory.MemoryData;
 import pl.beone.promena.transformer.internal.model.metadata.MapMetadata;
 
 import java.util.HashMap;

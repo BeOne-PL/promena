@@ -1,7 +1,7 @@
 package pl.beone.promena.communication.common.converter
 
 import pl.beone.promena.transformer.contract.data.*
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 
 abstract class AbstractDescriptorConverter<T : Data> {
 

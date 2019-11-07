@@ -1,4 +1,4 @@
-package pl.beone.promena.transformer.internal.model.data
+package pl.beone.promena.transformer.internal.model.data.file
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotThrow

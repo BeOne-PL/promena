@@ -1,6 +1,6 @@
-package pl.beone.promena.transformer.internal.model.data
+package pl.beone.promena.transformer.internal.model.data.memory
 
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 import java.io.InputStream
 import java.net.URI
 

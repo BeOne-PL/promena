@@ -26,7 +26,7 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -83,7 +83,7 @@ class NormalTransformerController(
                 e is TransformationException && e.causeClass == TransformationNotSupportedException::class.java -> BAD_REQUEST
                 e is TransformationException && e.causeClass == TransformerNotFoundException::class.java -> BAD_REQUEST
                 e is TransformationException && e.causeClass == TransformerTimeoutException::class.java -> REQUEST_TIMEOUT
-                e is TransformationException && e.causeClass?.kotlin?.isSubclassOf(TimeoutException::class) ?: false -> REQUEST_TIMEOUT
+                e is TransformationException && e.causeClass.kotlin.isSubclassOf(TimeoutException::class) -> REQUEST_TIMEOUT
                 else -> INTERNAL_SERVER_ERROR
             },
             e.message

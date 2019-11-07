@@ -5,9 +5,9 @@ import pl.beone.promena.communication.file.model.common.extension.isSubPath
 import pl.beone.promena.communication.file.model.common.extension.isTheSamePath
 import pl.beone.promena.communication.file.model.common.extension.toFile
 import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
-import pl.beone.promena.transformer.contract.model.Data
-import pl.beone.promena.transformer.internal.model.data.FileData
-import pl.beone.promena.transformer.internal.model.data.toFileData
+import pl.beone.promena.transformer.contract.model.data.Data
+import pl.beone.promena.transformer.internal.model.data.file.FileData
+import pl.beone.promena.transformer.internal.model.data.file.toFileData
 import java.io.File
 
 class FileDescriptorConverter(

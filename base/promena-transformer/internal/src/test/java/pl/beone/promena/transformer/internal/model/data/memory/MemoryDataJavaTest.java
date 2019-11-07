@@ -1,4 +1,4 @@
-package pl.beone.promena.transformer.internal.model.data;
+package pl.beone.promena.transformer.internal.model.data.memory;
 
 import org.junit.jupiter.api.Test;
 

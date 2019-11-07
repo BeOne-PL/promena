@@ -10,8 +10,8 @@ import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
 import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.internal.model.data.FileData
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.data.file.FileData
+import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 
 @RunWith(AlfrescoTestRunner::class)
 class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {

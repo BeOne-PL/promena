@@ -5,8 +5,8 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_XML
-import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
+import pl.beone.promena.transformer.contract.model.data.Data
 
 class DataDescriptorDslTest {
 

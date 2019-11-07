@@ -1,4 +1,4 @@
-package pl.beone.promena.transformer.internal.model.data;
+package pl.beone.promena.transformer.internal.model.data.file;
 
 import java.io.File;
 import java.io.FileOutputStream;

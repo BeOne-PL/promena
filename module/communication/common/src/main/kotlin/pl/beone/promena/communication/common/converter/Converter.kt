@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import pl.beone.promena.communication.common.extension.deleteAndLog
 import pl.beone.promena.communication.common.extension.toSimplifiedString
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataOperationException
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 
 internal class Converter<T : Data, D>(
     private val getData: (descriptor: D) -> Data,

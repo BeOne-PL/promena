@@ -1,6 +1,6 @@
 @file:JvmName("MemoryDataDsl")
 
-package pl.beone.promena.transformer.internal.model.data
+package pl.beone.promena.transformer.internal.model.data.memory
 
 import java.io.InputStream
 

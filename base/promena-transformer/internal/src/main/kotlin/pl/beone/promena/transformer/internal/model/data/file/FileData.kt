@@ -1,9 +1,9 @@
-package pl.beone.promena.transformer.internal.model.data
+package pl.beone.promena.transformer.internal.model.data.file
 
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessibilityException
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataReadException
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 import java.io.File
 import java.io.IOException
 import java.io.InputStream

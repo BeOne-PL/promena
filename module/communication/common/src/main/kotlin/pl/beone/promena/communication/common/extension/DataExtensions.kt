@@ -2,7 +2,7 @@ package pl.beone.promena.communication.common.extension
 
 import mu.KLogger
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataOperationException
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 
 internal fun Data.deleteAndLog(logger: KLogger) {
     logger.debug { "Deleting <${toSimplifiedString()}> resource..." }

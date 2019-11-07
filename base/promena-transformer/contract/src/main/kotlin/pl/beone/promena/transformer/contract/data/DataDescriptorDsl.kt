@@ -3,8 +3,8 @@
 package pl.beone.promena.transformer.contract.data
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
-import pl.beone.promena.transformer.contract.model.Data
 import pl.beone.promena.transformer.contract.model.Metadata
+import pl.beone.promena.transformer.contract.model.data.Data
 
 fun emptyDataDescriptor(): DataDescriptor.Empty = DataDescriptor.Empty
 

@@ -8,10 +8,10 @@ import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
 import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
-import pl.beone.promena.transformer.contract.model.Data
-import pl.beone.promena.transformer.internal.model.data.FileData
-import pl.beone.promena.transformer.internal.model.data.MemoryData
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.contract.model.data.Data
+import pl.beone.promena.transformer.internal.model.data.file.FileData
+import pl.beone.promena.transformer.internal.model.data.memory.MemoryData
+import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 import java.io.File
 
 class MemoryOrFileDataConverter(

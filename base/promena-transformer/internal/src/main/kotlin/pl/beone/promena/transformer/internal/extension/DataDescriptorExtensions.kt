@@ -1,7 +1,7 @@
 package pl.beone.promena.transformer.internal.extension
 
 import pl.beone.promena.transformer.contract.data.DataDescriptor
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 
 fun DataDescriptor.toPrettyString(): String =
     "[" + descriptors.joinToString(", ", transform = DataDescriptor.Single::toPrettyString) + "]"

@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import pl.beone.promena.communication.common.extension.deleteAndLog
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 
 abstract class AbstractDataDescriptorCleaner {
 
