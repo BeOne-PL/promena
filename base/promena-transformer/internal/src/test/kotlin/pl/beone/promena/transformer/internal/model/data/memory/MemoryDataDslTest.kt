@@ -12,31 +12,26 @@ class MemoryDataDslTest {
 
     @Test
     fun `memoryData _ byteArray`() {
-        memoryData(bytes).getBytes() shouldBe
-                bytes
+        memoryData(bytes).getBytes() shouldBe bytes
     }
 
     @Test
     fun `memoryData _ inputStream`() {
-        memoryData(bytes.inputStream()).getBytes() shouldBe
-                bytes
+        memoryData(bytes.inputStream()).getBytes() shouldBe bytes
     }
 
     @Test
     fun `toMemoryData _ byteArray`() {
-        bytes.toMemoryData().getBytes() shouldBe
-                bytes
+        bytes.toMemoryData().getBytes() shouldBe bytes
     }
 
     @Test
     fun `toMemoryData _ inputStream`() {
-        bytes.inputStream().toMemoryData().getBytes() shouldBe
-                bytes
+        bytes.inputStream().toMemoryData().getBytes() shouldBe bytes
     }
 
     @Test
     fun `toMemoryData _ string`() {
-        string.toMemoryData().getBytes() shouldBe
-                bytes
+        string.toMemoryData().getBytes() shouldBe bytes
     }
 }

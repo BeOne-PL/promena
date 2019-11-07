@@ -12,20 +12,17 @@ class FileDataDslTest {
 
     @Test
     fun `fileData _ file`() {
-        fileData(fileString.createTmpFile()).getBytes() shouldBe
-                fileBytes
+        fileData(fileString.createTmpFile()).getBytes() shouldBe fileBytes
     }
 
     @Test
     fun `fileData _ input stream and directory`() {
-        fileData(fileString.byteInputStream(), createTempDir()).getBytes() shouldBe
-                fileBytes
+        fileData(fileString.byteInputStream(), createTempDir()).getBytes() shouldBe fileBytes
     }
 
     @Test
     fun getFile() {
         val file = fileString.createTmpFile()
-        fileData(file).getFile() shouldBe
-                file
+        fileData(file).getFile() shouldBe file
     }
 }

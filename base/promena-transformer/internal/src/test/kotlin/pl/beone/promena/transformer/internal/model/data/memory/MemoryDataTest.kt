@@ -13,26 +13,22 @@ class MemoryDataTest {
 
     @Test
     fun `of _ byteArray`() {
-        MemoryData.of(bytes).getBytes() shouldBe
-                bytes
+        MemoryData.of(bytes).getBytes() shouldBe bytes
     }
 
     @Test
     fun `of _ inputStream`() {
-        MemoryData.of(bytes.inputStream()).getBytes() shouldBe
-                bytes
+        MemoryData.of(bytes.inputStream()).getBytes() shouldBe bytes
     }
 
     @Test
     fun getBytes() {
-        bytes.toMemoryData().getBytes() shouldBe
-                bytes
+        bytes.toMemoryData().getBytes() shouldBe bytes
     }
 
     @Test
     fun getInputStream() {
-        bytes.toMemoryData().getInputStream().readAllBytes() shouldBe
-                bytes
+        bytes.toMemoryData().getInputStream().readAllBytes() shouldBe bytes
     }
 
     @Test
@@ -54,11 +50,5 @@ class MemoryDataTest {
         shouldThrow<UnsupportedOperationException> {
             bytes.toMemoryData().delete()
         }.message shouldBe "This resource exists only in memory"
-    }
-
-    @Test
-    fun equals() {
-        bytes.toMemoryData() shouldBe
-                "test".byteInputStream().toMemoryData()
     }
 }

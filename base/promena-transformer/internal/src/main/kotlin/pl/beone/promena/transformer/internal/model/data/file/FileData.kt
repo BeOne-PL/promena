@@ -4,13 +4,14 @@ import pl.beone.promena.transformer.applicationmodel.exception.data.DataAccessib
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataReadException
 import pl.beone.promena.transformer.contract.model.data.Data
+import pl.beone.promena.transformer.internal.extension.copy
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.URI
 
-data class FileData internal constructor(
-    private val file: File
+open class FileData internal constructor(
+    protected val file: File
 ) : Data {
 
     companion object {
@@ -25,11 +26,8 @@ data class FileData internal constructor(
         fun of(inputStream: InputStream, directory: File): FileData {
             require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't a directory" }
 
-            val file = createTempFile(directory = directory).apply {
-                outputStream().use { inputStream.copyTo(it) }
-            }
-
-            return FileData(file)
+            return FileWritableData(createTempFile(directory = directory))
+                .also { it.copy(inputStream) }
         }
     }
 

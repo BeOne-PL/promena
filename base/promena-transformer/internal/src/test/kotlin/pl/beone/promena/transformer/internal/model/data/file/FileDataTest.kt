@@ -19,19 +19,18 @@ class FileDataTest {
 
     @Test
     fun `of _ file`() {
-        FileData.of(file).getBytes() shouldBe
-                fileBytes
+        FileData.of(file).getBytes() shouldBe fileBytes
     }
 
     @Test
-    fun `of _ input stream and not exists file _ should throw IllegalArgumentException`() {
+    fun `of _ non-existent file _ should throw IllegalArgumentException`() {
         shouldThrow<IllegalArgumentException> {
             FileData.of(File("/notExists")).getBytes()
         }.message shouldBe "File </notExists> doesn't exist or isn't a file"
     }
 
     @Test
-    fun `of _ input stream and file which is directory _ should throw IllegalArgumentException`() {
+    fun `of _ file is directory _ should throw IllegalArgumentException`() {
         val directory = createTempDir()
 
         shouldThrow<IllegalArgumentException> {
@@ -41,19 +40,18 @@ class FileDataTest {
 
     @Test
     fun `of _ input stream and directory`() {
-        FileData.of(fileString.byteInputStream(), createTempDir()).getBytes() shouldBe
-                fileBytes
+        FileData.of(fileString.byteInputStream(), createTempDir()).getBytes() shouldBe fileBytes
     }
 
     @Test
-    fun `of _ input stream and not exists directory _ should throw IllegalArgumentException`() {
+    fun `of _ input stream and non-existent directory _ should throw IllegalArgumentException`() {
         shouldThrow<IllegalArgumentException> {
             FileData.of(fileString.byteInputStream(), File("/notExists")).getBytes()
         }.message shouldBe "Directory </notExists> doesn't exist or isn't a directory"
     }
 
     @Test
-    fun `of _ input stream and directory which is file _ should throw IllegalArgumentException`() {
+    fun `of _ input stream and directory is file _ should throw IllegalArgumentException`() {
         shouldThrow<IllegalArgumentException> {
             FileData.of(fileString.byteInputStream(), file).getBytes()
         }.message shouldBe "Directory <$file> doesn't exist or isn't a directory"
@@ -71,20 +69,17 @@ class FileDataTest {
 
     @Test
     fun getBytes() {
-        FileData.of(file).getBytes() shouldBe
-                fileBytes
+        FileData.of(file).getBytes() shouldBe fileBytes
     }
 
     @Test
     fun getInputStream() {
-        FileData.of(file).getInputStream().readAllBytes() shouldBe
-                fileBytes
+        FileData.of(file).getInputStream().readAllBytes() shouldBe fileBytes
     }
 
     @Test
     fun getLocation() {
-        FileData.of(file).getLocation() shouldBe
-                file.toURI()
+        FileData.of(file).getLocation() shouldBe file.toURI()
     }
 
     @Test
@@ -99,8 +94,7 @@ class FileDataTest {
         val data = FileData.of(createTempFile())
             .also { it.delete() }
 
-        data.getLocation().toFile().exists() shouldBe
-                false
+        data.getLocation().toFile().exists() shouldBe false
     }
 
     @Test
