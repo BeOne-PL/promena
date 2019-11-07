@@ -20,6 +20,10 @@ start_acs() {
     docker-compose -f $COMPOSE_FILE_PATH up --build -d alfresco-promena-predefined-rendition-acs
 }
 
+start_promena() {
+    docker-compose -f $COMPOSE_FILE_PATH up --build -d promena
+}
+
 down() {
     if [ -f $COMPOSE_FILE_PATH ]; then
         docker-compose -f $COMPOSE_FILE_PATH down -v
@@ -38,8 +42,7 @@ build_acs() {
     $MVN_EXEC -DskipTests=true clean package
 }
 
-build() {
-    $MVN_EXEC -DskipTests=true clean package
+build_promena() {
     $MVN_EXEC -DskipTests=true -f docker-img/promena-predefined-rendition-executable/pom.xml clean package
 }
 
@@ -62,13 +65,15 @@ test() {
 case "$1" in
   build_start)
     down
-    build
+    build_acs
+    build_promena
     start
     tail
     ;;
   build_start_it_supported)
     down
-    build
+    build_acs
+    build_promena
     prepare_test
     start
     tail
@@ -76,6 +81,11 @@ case "$1" in
   reload_acs)
     build_acs
     start_acs
+    tail
+    ;;
+  reload_promena)
+    build_promena
+    start_promena
     tail
     ;;
   start)
@@ -94,7 +104,8 @@ case "$1" in
     ;;
   build_test)
     down
-    build
+    build_acs
+    build_promena
     prepare_test
     start
     test
@@ -105,5 +116,5 @@ case "$1" in
     test
     ;;
   *)
-    echo "Usage: $0 {build_start|build_start_it_supported|reload_acs|start|stop|purge|tail|build_test|test}"
+    echo "Usage: $0 {build_start|build_start_it_supported|reload_acs|reload_promena|start|stop|purge|tail|build_test|test}"
 esac

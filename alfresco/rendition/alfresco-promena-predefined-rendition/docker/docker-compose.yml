@@ -71,6 +71,10 @@ services:
       - spring.activemq.broker-url=failover:(nio://activemq:61616)?timeout=3000&jms.useCompression=true
       - spring.jms.listener.concurrency=4
       - spring.jms.listener.max-concurrency=4
+      - transformer.pl.beone.promena.transformer.converter.libreoffice.LibreOfficeConverterTransformer.priority=1
+      - transformer.pl.beone.promena.transformer.converter.libreoffice.LibreOfficeConverterTransformer.actors=4
+      - transformer.pl.beone.promena.transformer.converter.imagemagick.ImageMagickConverterTransformer.priority=2
+      - transformer.pl.beone.promena.transformer.converter.imagemagick.ImageMagickConverterTransformer.actors=4
       - transformer.pl.beone.promena.transformer.mirror.archetype.ArchetypeMirrorTransformer.actors=4
 
 volumes:
