@@ -7,6 +7,6 @@ class MemoryWritableDataDslTest {
 
     @Test
     fun emptyMemoryWritableData_() {
-        emptyMemoryWritableData().getBytes() shouldBe ByteArray(1024)
+        emptyMemoryWritableData().getBytes() shouldBe ByteArray(0)
     }
 }

@@ -52,8 +52,6 @@
         <promena-transformer.version>1.0.0</promena-transformer.version>
 
         <type-converter.version>1.0.0</type-converter.version>
-
-        <java-util.version>1.38.0</java-util.version>
     </properties>
 
     <dependencies>

@@ -8,7 +8,7 @@ class MemoryWritableDataTest {
 
     @Test
     fun emptyByteArray() {
-        MemoryWritableData.empty().getBytes() shouldBe ByteArray(1024)
+        MemoryWritableData.empty().getBytes() shouldBe ByteArray(0)
     }
 
     @Test

@@ -11,7 +11,7 @@ class MemoryWritableData internal constructor(
     companion object {
         @JvmStatic
         fun empty(): MemoryWritableData =
-            MemoryWritableData(FastByteArrayOutputStream())
+            MemoryWritableData(FastByteArrayOutputStream(0))
     }
 
     override fun getOutputStream(): OutputStream =
