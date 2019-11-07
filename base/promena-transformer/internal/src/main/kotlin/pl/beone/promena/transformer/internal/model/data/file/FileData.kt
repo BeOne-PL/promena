@@ -65,4 +65,17 @@ open class FileData internal constructor(
             throw DataDeleteException("Couldn't delete <$file> file", e)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is FileData) return false
+
+        if (file != other.file) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return file.hashCode()
+    }
 }

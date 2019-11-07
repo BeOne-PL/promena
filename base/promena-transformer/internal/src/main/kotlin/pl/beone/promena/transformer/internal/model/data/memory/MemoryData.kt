@@ -37,4 +37,17 @@ open class MemoryData internal constructor(
     override fun delete() {
         throw UnsupportedOperationException("This resource exists only in memory")
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is MemoryData) return false
+
+        if (!fastByteArrayOutputStream.buffer!!.contentEquals(other.fastByteArrayOutputStream.buffer)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return fastByteArrayOutputStream.hashCode()
+    }
 }

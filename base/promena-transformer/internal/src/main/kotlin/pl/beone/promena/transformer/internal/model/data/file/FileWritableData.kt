@@ -30,4 +30,15 @@ class FileWritableData internal constructor(
 
         return file.outputStream()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is FileWritableData) return false
+        if (!super.equals(other)) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
 }
