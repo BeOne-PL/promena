@@ -23,7 +23,7 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
         determine(transformer, "actors", Int::class.java, 1)
 
     override fun getPriority(transformer: Transformer): Int =
-        determine(transformer, "priority", Int::class.java, 0)
+        determine(transformer, "priority", Int::class.java, 1)
 
     private fun <T> determine(transformer: Transformer, keyElement: String, clazz: Class<T>, default: T?): T {
         val key = "transformer.${transformer.javaClass.canonicalName}.$keyElement"

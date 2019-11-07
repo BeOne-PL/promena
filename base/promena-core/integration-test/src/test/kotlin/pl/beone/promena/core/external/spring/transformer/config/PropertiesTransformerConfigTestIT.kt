@@ -75,8 +75,8 @@ class PropertiesTransformerConfigTestIT {
     }
 
     @Test
-    fun `getPriority _ no property _ should use default 0`() {
-        propertiesTransformerConfig.getPriority(TransformerWithoutProperties) shouldBe 0
+    fun `getPriority _ no property _ should use default 1`() {
+        propertiesTransformerConfig.getPriority(TransformerWithoutProperties) shouldBe 1
     }
 
 }
