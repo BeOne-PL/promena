@@ -36,12 +36,24 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <properties>
+        <maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
+        <archetype-packaging.version>3.0.1</archetype-packaging.version>
+    </properties>
+
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+            </plugin>
+        </plugins>
         <extensions>
             <extension>
                 <groupId>org.apache.maven.archetype</groupId>
                 <artifactId>archetype-packaging</artifactId>
-                <version>3.0.1</version>
+                <version>${archetype-packaging.version}</version>
             </extension>
         </extensions>
     </build>
