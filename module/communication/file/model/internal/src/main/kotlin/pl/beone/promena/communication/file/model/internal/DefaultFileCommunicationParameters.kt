@@ -4,7 +4,9 @@ import pl.beone.promena.communication.file.model.contract.FileCommunicationParam
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.io.File
 
-data class DefaultFileCommunicationParameters internal constructor(private val communicationParameters: CommunicationParameters) :
+data class DefaultFileCommunicationParameters internal constructor(
+    private val communicationParameters: CommunicationParameters
+) :
     FileCommunicationParameters, CommunicationParameters by communicationParameters {
 
     companion object {
