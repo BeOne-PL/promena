@@ -1,6 +1,5 @@
 package ${package}.configuration
 
-import org.joda.time.format.PeriodFormatterBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment

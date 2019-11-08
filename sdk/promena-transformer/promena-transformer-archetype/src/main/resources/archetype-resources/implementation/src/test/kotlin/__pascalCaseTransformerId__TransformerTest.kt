@@ -3,15 +3,15 @@ package ${package}
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.withClue
 import io.kotlintest.shouldBe
-import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.beone.lib.junit.jupiter.external.DockerExtension
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
+import ${package}.util.create${pascalCaseTransformerId}Transformer
 
 @ExtendWith(DockerExtension::class)
 class ${pascalCaseTransformerId}TransformerTest {
@@ -22,7 +22,7 @@ class ${pascalCaseTransformerId}TransformerTest {
         val mediaType = TEXT_PLAIN
         val metadata = emptyMetadata()
 
-        ${pascalCaseTransformerId}Transformer(mockk(), mockk(), mockk())
+        create${pascalCaseTransformerId}Transformer()
             .transform(
                 singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
                 TEXT_PLAIN,

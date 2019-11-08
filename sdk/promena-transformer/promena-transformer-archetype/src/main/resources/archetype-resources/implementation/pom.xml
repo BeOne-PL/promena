@@ -30,6 +30,11 @@
         </dependency>
 
         <dependency>
+            <groupId>pl.beone.promena.base</groupId>
+            <artifactId>promena-transformer-util</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>${groupId}</groupId>
             <artifactId>${rootArtifactId}-application-model</artifactId>
             <version>${${rootArtifactId}.version}</version>
