@@ -21,6 +21,7 @@
         <module>application-model</module>
         <module>contract</module>
         <module>internal</module>
+        <module>util</module>
     </modules>
 
     <repositories>
@@ -52,6 +53,8 @@
         <promena-transformer.version>1.0.0</promena-transformer.version>
 
         <type-converter.version>1.0.0</type-converter.version>
+
+        <kotlinx-coroutines-core.version>1.3.2</kotlinx-coroutines-core.version>
     </properties>
 
     <dependencies>
