@@ -3,12 +3,14 @@ package pl.beone.promena.intellij.plugin.linemarker
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.psi.*
+import com.intellij.psi.impl.source.PsiJavaFileImpl
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import pl.beone.promena.intellij.plugin.applicationmodel.ClassDescriptor
 import pl.beone.promena.intellij.plugin.extension.getActiveFile
 import pl.beone.promena.intellij.plugin.extension.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
-class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedItemLineMarkerProvider() {
+internal class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedItemLineMarkerProvider() {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project
@@ -25,15 +27,9 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedIte
                 hasNoParameters(psiMethod) &&
                 isTransformationReturnType(psiMethod)
             ) {
-                return PromenaLineMarkerInfo(
-                    element,
-                    createOnClickHandler(
-                        project,
-                        { psiMethod.getClassQualifiedName() },
-                        { psiMethod.name },
-                        { getMethodComments(psiMethod) }
-                    )
-                )
+                return PromenaLineMarkerInfo(element, createOnClickHandler(project, { getMethodComments(psiMethod) }) {
+                    ClassDescriptor(getPackageName(psiMethod), getClassName(psiMethod), getFunctionName(psiMethod))
+                })
             }
         }
 
@@ -64,11 +60,17 @@ class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractRelatedIte
     private fun isTransformationReturnType(method: PsiMethod): Boolean =
         method.returnType?.canonicalText == Transformation::class.java.canonicalName
 
-    private fun PsiMethod.getClassQualifiedName(): String =
-        containingClass!!.qualifiedName!!
+    private fun getPackageName(method: PsiMethod): String =
+        (method.containingFile as PsiJavaFileImpl).packageName
+
+    private fun getClassName(method: PsiMethod): String =
+        method.containingClass!!.name!!
+
+    private fun getFunctionName(method: PsiMethod): String =
+        method.name
 
     private fun getMethodComments(method: PsiMethod): List<String> =
         method
             .children.filterIsInstance<PsiCodeBlock>().first()
-            .children.filterIsInstance<PsiComment>().map { it.text }
+            .children.filterIsInstance<PsiComment>().map(PsiElement::getText)
 }

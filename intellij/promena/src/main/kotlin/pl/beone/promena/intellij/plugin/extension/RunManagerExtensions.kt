@@ -11,9 +11,15 @@ internal fun RunManager.getSelectedPromenaRunnerAndConfigurationSettings(): Runn
     return if (selectedConfiguration != null && selectedConfiguration.configuration is PromenaRunConfiguration) selectedConfiguration else null
 }
 
+internal fun RunManager.getPromenaRunnerAndConfigurationSettings(): List<RunnerAndConfigurationSettings> =
+    allSettings.filter { it.configuration is PromenaRunConfiguration }
+
 internal fun RunManager.createPromenaRunnerAndConfigurationSettings(): RunnerAndConfigurationSettings {
     val uniqueName = suggestUniqueName(null, PromenaRunConfigurationType)
-    return createConfiguration(uniqueName, PromenaConfigurationFactory(PromenaRunConfigurationType))
+    return createConfiguration(
+        uniqueName,
+        PromenaConfigurationFactory(PromenaRunConfigurationType)
+    )
         .also(::addConfiguration)
         .also(::setTemporaryConfiguration)
 }

@@ -1,5 +1,7 @@
 package pl.beone.promena.intellij.plugin.extension
 
+import com.intellij.execution.RunnerAndConfigurationSettings
+import com.intellij.execution.impl.RunDialog
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
@@ -16,12 +18,12 @@ fun Project.getEditor(): FileEditor =
     FileEditorManager.getInstance(this).selectedEditors.firstOrNull { it is TextEditor }
         ?: throw IllegalStateException("No text editor or file opened")
 
-fun Project.getExistingOutputFolders(): List<VirtualFile> =
-    allModules().mapNotNull {
+fun Project.getCompilerOutputFolders(): List<VirtualFile> =
+    allModules().flatMap {
         try {
-            it.getOutputFolder()
+            it.getCompilerOutputFolders()
         } catch (e: IllegalStateException) {
-            null
+            emptyList<VirtualFile>()
         }
     }
 
@@ -30,3 +32,7 @@ fun Project.isFileInAnyModule(file: VirtualFile): Boolean =
 
 private fun Project.getModuleForFile(file: VirtualFile): Module? =
     ModuleManager.getInstance(this).modules.firstOrNull { it.moduleScope.contains(file) }
+
+fun Project.editConfiguration(runnerAndConfigurationSettings: RunnerAndConfigurationSettings) {
+    RunDialog.editConfiguration(this, runnerAndConfigurationSettings, "Edit configuration")
+}

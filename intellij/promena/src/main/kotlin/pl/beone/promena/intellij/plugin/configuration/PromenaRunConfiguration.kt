@@ -11,10 +11,8 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializer
 import org.jdom.Element
-import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfigurationValidator.Concurrency
 import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfigurationValidator.Host
 import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfigurationValidator.Port
-import pl.beone.promena.intellij.plugin.configuration.PromenaRunConfigurationValidator.Repeat
 
 class PromenaRunConfiguration(
     project: Project,
@@ -22,10 +20,8 @@ class PromenaRunConfiguration(
     name: String
 ) : RunConfigurationBase<PromenaSettingsEditor>(project, factory, name) {
 
-    internal var host: String = ""
+    internal var host: String = "localhost"
     internal var port: Int = 8080
-    internal var repeat: Int = 1
-    internal var concurrency: Int = 1
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> =
         PromenaSettingsEditor()
@@ -43,14 +39,6 @@ class PromenaRunConfiguration(
 
         if (!Port.validate(port)) {
             throw RuntimeConfigurationError("Port must be in range ${Port.RANGE.toDescription()}")
-        }
-
-        if (!Repeat.validate(repeat)) {
-            throw RuntimeConfigurationError("Repeat must be in range ${Repeat.RANGE.toDescription()}")
-        }
-
-        if (!Concurrency.validate(concurrency)) {
-            throw RuntimeConfigurationError("Concurrency must be in range ${Concurrency.RANGE.toDescription()}")
         }
     }
 

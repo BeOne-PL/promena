@@ -15,7 +15,9 @@ import org.jetbrains.kotlin.idea.run.LocalFileHyperlinkInfo
 import java.io.File
 import javax.swing.Icon
 
-internal class RunToolWindowTab(private val project: Project) {
+internal class RunToolWindowTab(
+    private val project: Project
+) {
 
     private lateinit var toolWindow: ToolWindow
     private lateinit var content: Content
@@ -37,17 +39,17 @@ internal class RunToolWindowTab(private val project: Project) {
         }
     }
 
-    fun print(message: String) {
-        consoleView.print(message, ConsoleViewContentType.NORMAL_OUTPUT)
+    fun print(message: String, contentType: ConsoleViewContentType = ConsoleViewContentType.NORMAL_OUTPUT) {
+        consoleView.print(message, contentType)
     }
 
     fun print(file: File) {
         consoleView.printHyperlink(file.path, LocalFileHyperlinkInfo(file.path, 0, 0))
     }
 
-    fun println(message: String = "") {
-        print(message)
-        consoleView.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
+    fun println(message: String = "", contentType: ConsoleViewContentType = ConsoleViewContentType.NORMAL_OUTPUT) {
+        print(message, contentType)
+        consoleView.print("\n", contentType)
     }
 
     fun printlnError(message: String) {

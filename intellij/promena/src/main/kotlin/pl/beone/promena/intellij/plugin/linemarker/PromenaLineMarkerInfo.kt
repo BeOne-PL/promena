@@ -24,14 +24,14 @@ internal class PromenaLineMarkerInfo<T : PsiElement>(
         object : LineMarkerGutterIconRenderer<T>(this) {
 
             override fun getClickAction(): AnAction? =
-                object : AnAction("Transform using Promena", null, AllIcons.RunConfigurations.TestState.Run) {
+                object : AnAction("Transform on Promena", null, AllIcons.RunConfigurations.TestState.Run) {
                     override fun actionPerformed(e: AnActionEvent) {
                         executeOnClick()
                     }
                 }
 
             override fun getTooltipText(): String? {
-                return "Run 'Transform using Promena'"
+                return "Run 'Transform on Promena'"
             }
 
             override fun isNavigateAction(): Boolean =

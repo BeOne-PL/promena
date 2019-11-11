@@ -1,47 +1,36 @@
 package pl.beone.promena.intellij.plugin.toolwindow
 
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
 import pl.beone.promena.intellij.plugin.parser.DataDescriptorWithFile
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import java.io.File
 
-internal fun List<RunToolWindowTab>.logStart(tabName: String, httpAddress: String) {
-    forEachIndexed { index, runToolWindowTab ->
-        runToolWindowTab.create(tabName + " #${index + 1}")
-        runToolWindowTab.setIcon(AllIcons.RunConfigurations.TestState.Run)
-        runToolWindowTab.show()
+internal fun RunToolWindowTab.logStart(tabName: String, address: String) {
+    create(tabName)
+    setIcon(AllIcons.RunConfigurations.TestState.Run)
+    show()
 
-        runToolWindowTab.println("Transforming using HTTP <$httpAddress>...")
-    }
+    println("Executing on Promena <$address>...")
+    println()
 }
 
-internal fun List<RunToolWindowTab>.logParameters(repeat: Int, concurrency: Int) {
-    all {
-        println("Parameters: <repeat: ${repeat}>, <concurrency: ${concurrency}>")
-        scrollToTheBeginning()
-    }
+internal fun RunToolWindowTab.newLine() {
+    println()
 }
 
-internal fun List<RunToolWindowTab>.logData(singleDataDescriptorWithFileList: List<DataDescriptorWithFile>) {
-    all {
-        println("Data descriptors <${singleDataDescriptorWithFileList.size}>:")
-        singleDataDescriptorWithFileList.forEach { (dataDescriptor, file) ->
-            print("> Data: <")
-            print(file)
-            print("; ${dataDescriptor.data.calculateSizeInMB()} MB> | MediaType: <${dataDescriptor.mediaType.mimeType}, ${dataDescriptor.mediaType.charset.name()}> | Metadata: <${emptyMetadata()}>")
-            println()
-        }
-        scrollToTheBeginning()
-    }
-}
-
-internal fun List<RunToolWindowTab>.newLine() {
-    all {
+internal fun RunToolWindowTab.logData(singleDataDescriptorWithFileList: List<DataDescriptorWithFile>) {
+    println("Data descriptors <${singleDataDescriptorWithFileList.size}>:")
+    singleDataDescriptorWithFileList.forEach { (dataDescriptor, file) ->
+        print("> Data: <")
+        print(file)
+        print("; ${dataDescriptor.data.calculateSizeInMB()} MB> | MediaType: <${dataDescriptor.mediaType.mimeType}, ${dataDescriptor.mediaType.charset.name()}> | Metadata: <${emptyMetadata()}>")
         println()
     }
+    scrollToTheBeginning()
 }
 
 internal fun RunToolWindowTab.logSuccess(
@@ -55,22 +44,20 @@ internal fun RunToolWindowTab.logSuccess(
     val descriptors = transformedDataDescriptor.descriptors
     println(
         "Transformed <${targetMediaType.mimeType}, ${targetMediaType.charset.name()}> data descriptors <${descriptors.size}> " +
-                "in <${calculateTimeInSeconds(executionTimeMillis)} s>:"
+                "in <${calculateTimeInSeconds(executionTimeMillis)} s>:",
+        ConsoleViewContentType.USER_INPUT
     )
     descriptors.zip(files).forEach { (transformedDataDescriptor, file) ->
-        print("> Data: <")
+        print("> Data: <", ConsoleViewContentType.USER_INPUT)
         print(file)
-        print("; ${transformedDataDescriptor.data.calculateSizeInMB()} MB> | Metadata: <${transformedDataDescriptor.metadata}>")
+        print(
+            "; ${transformedDataDescriptor.data.calculateSizeInMB()} MB> | Metadata: <${transformedDataDescriptor.metadata}>",
+            ConsoleViewContentType.USER_INPUT
+        )
         println()
     }
     println("")
     scrollToTheBeginning()
-}
-
-internal fun List<RunToolWindowTab>.logFailureThrowable(exceptionString: String) {
-    all {
-        logFailureThrowable(exceptionString)
-    }
 }
 
 internal fun RunToolWindowTab.logFailureThrowable(exceptionString: String) {
@@ -98,9 +85,3 @@ private fun Double.format(digits: Int): String =
 
 private fun calculateTimeInSeconds(millis: Long): String =
     String.format("%.3f", millis / 1000.0)
-
-private fun List<RunToolWindowTab>.all(block: RunToolWindowTab.() -> Unit) {
-    forEach {
-        it.apply(block)
-    }
-}

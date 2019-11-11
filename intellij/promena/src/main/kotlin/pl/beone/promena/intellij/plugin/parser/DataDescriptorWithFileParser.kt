@@ -5,11 +5,10 @@ import pl.beone.promena.intellij.plugin.extension.detectMimeType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
 import pl.beone.promena.transformer.contract.data.singleDataDescriptor
-import pl.beone.promena.transformer.internal.model.data.toMemoryData
+import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import java.io.File
 import java.net.URL
-import java.nio.charset.Charset
 
 private data class CommentDataDescriptor(
     val dataPath: String,

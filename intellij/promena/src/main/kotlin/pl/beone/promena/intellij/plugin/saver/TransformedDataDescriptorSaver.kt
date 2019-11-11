@@ -3,7 +3,7 @@ package pl.beone.promena.intellij.plugin.saver
 import pl.beone.promena.intellij.plugin.extension.determineExtension
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
-import pl.beone.promena.transformer.contract.model.Data
+import pl.beone.promena.transformer.contract.model.data.Data
 import java.io.File
 
 internal object TransformedDataDescriptorSaver {
