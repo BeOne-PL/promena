@@ -27,19 +27,19 @@ class HttpPromenaTransformer(
                 .timeoutRead(Int.MAX_VALUE)
                 .body(serializationService.serialize(transformationDescriptor))
                 .awaitByteArrayResponse()
-                .let { handleTransformationResult(it.second, it.third) }
+                .let { (_, response, byteArray) -> handleTransformationResult(response, byteArray) }
         } catch (e: FuelError) {
-            handleTransformationResult(e.response, e.errorData)
+            handleTransformationResult(e.response, e.errorData, e)
         }
 
-    private fun handleTransformationResult(response: Response, bytes: ByteArray): PerformedTransformationDescriptor =
+    private fun handleTransformationResult(response: Response, bytes: ByteArray, cause: Throwable? = null): PerformedTransformationDescriptor =
         when (response.statusCode) {
             HTTP_OK ->
                 serializationService.deserialize(bytes, getClazz())
             HTTP_INTERNAL_ERROR ->
                 throw serializationService.deserialize(bytes, response.headers.getSerializationClass())
             else ->
-                throw HttpException(response.statusCode, bytes)
+                throw HttpException(response.statusCode, String(bytes), cause)
         }
 
     private inline fun <reified T : Any> getClazz(): Class<T> =

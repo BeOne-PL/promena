@@ -33,7 +33,9 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.lang.System.currentTimeMillis
-import java.net.HttpURLConnection.HTTP_NOT_FOUND
+import java.net.ConnectException
+import java.net.HttpURLConnection.*
+import java.net.UnknownHostException
 
 internal abstract class AbstractRelatedItemLineMarkerProvider {
 
@@ -133,7 +135,7 @@ internal abstract class AbstractRelatedItemLineMarkerProvider {
                 } catch (e: Exception) {
                     handleFailedTransformation(runToolWindowTab, e)
                 }
-            }.also { runToolWindowTab.onClose { it.cancel(null) } }
+            }.also { runToolWindowTab.onClose { it.cancel() } }
         } catch (e: Throwable) {
             handleFailedTransformation(runToolWindowTab, e)
         }
@@ -157,12 +159,24 @@ internal abstract class AbstractRelatedItemLineMarkerProvider {
 
     private fun handleFailedTransformation(runToolWindowTab: RunToolWindowTab, exception: Throwable) {
         invokeLater {
-            if (exception is HttpException && (exception.responseStatus == -1 || exception.responseStatus == HTTP_NOT_FOUND)) {
+            if (exception is HttpException && checkIfIndicatesCorrectPromenaServer(exception)) {
                 runToolWindowTab.logFailureThrowable("Promena not found. Check if the given parameters point to the running server")
             } else {
                 runToolWindowTab.logFailureThrowable(determineExceptionString(exception))
             }
         }
+    }
+
+    private fun checkIfIndicatesCorrectPromenaServer(exception: HttpException): Boolean =
+        exception.statusCode == HTTP_NOT_FOUND ||
+                exception.statusCode == HTTP_BAD_REQUEST ||
+                exception.statusCode == HTTP_UNAUTHORIZED ||
+                verifyUnknownResponseCode(exception)
+
+    private fun verifyUnknownResponseCode(exception: HttpException): Boolean {
+        val exceptionString = exception.toFullString()
+        return exception.statusCode == -1 &&
+                (exceptionString.contains(UnknownHostException::class.java.canonicalName) || exceptionString.contains(ConnectException::class.java.canonicalName))
     }
 
     private fun determineExceptionString(e: Throwable): String {
