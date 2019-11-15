@@ -43,8 +43,8 @@
         <jrebel.version>1.1.8</jrebel.version>
 
         <mockk.version>1.9.3</mockk.version>
-        <junit-jupiter.version>5.5.1</junit-jupiter.version>
-        <kotlintest-runner-junit5.version>3.4.0</kotlintest-runner-junit5.version>
+        <junit-jupiter.version>5.5.2</junit-jupiter.version>
+        <kotlintest-runner-junit5.version>3.4.2</kotlintest-runner-junit5.version>
         <logback-classic.version>1.2.3</logback-classic.version>
 
         <!-- Environment configuration properties -->

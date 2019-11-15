@@ -26,6 +26,18 @@ class TransformationNotSupportedExceptionTest {
     }
 
     @Test
+    fun unsupportedParameterValue() {
+        TransformationNotSupportedException.unsupportedParameterValue("parameter", "test").message shouldBe
+                "Parameter <parameter> has invalid value <test>"
+    }
+
+    @Test
+    fun `unsupportedParameterValue _ with message`() {
+        TransformationNotSupportedException.unsupportedParameterValue("parameter", "test", """("one", "two")""").message shouldBe
+                """Parameter <parameter> has invalid value <test>: ("one", "two")"""
+    }
+
+    @Test
     fun custom() {
         TransformationNotSupportedException.custom("It isn't possible to transform using given arguments").message shouldBe
                 "It isn't possible to transform using given arguments"

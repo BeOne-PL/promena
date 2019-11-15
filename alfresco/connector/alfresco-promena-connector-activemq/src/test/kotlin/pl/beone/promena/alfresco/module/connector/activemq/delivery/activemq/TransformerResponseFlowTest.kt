@@ -8,12 +8,10 @@ import org.alfresco.service.cmr.repository.InvalidNodeRefException
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
@@ -37,7 +35,6 @@ import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
 import java.time.Duration
 
-@RunWith(SpringRunner::class)
 @TestPropertySource(locations = ["classpath:alfresco-global-test.properties"])
 @ContextHierarchy(
     ContextConfiguration(classes = [ActiveMQContainerContext::class, GlobalPropertiesContext::class]),

@@ -44,16 +44,16 @@
 
         <promena-transformer.version>1.0.0</promena-transformer.version>
 
-        <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+        <spring-boot.version>2.2.1.RELEASE</spring-boot.version>
 
         <slf4j.version>1.7.26</slf4j.version>
-        <kotlin-logging.version>1.7.3</kotlin-logging.version>
+        <kotlin-logging.version>1.7.6</kotlin-logging.version>
 
-        <joda-time.version>2.10.4</joda-time.version>
+        <joda-time.version>2.10.5</joda-time.version>
 
         <logback.version>1.2.3</logback.version>
-        <kotlintest-runner-junit5.version>3.4.0</kotlintest-runner-junit5.version>
-        <junit-jupiter.version>5.5.1</junit-jupiter.version>
+        <kotlintest-runner-junit5.version>3.4.2</kotlintest-runner-junit5.version>
+        <junit-jupiter.version>5.5.2</junit-jupiter.version>
         <mockk.version>1.9.3</mockk.version>
         <docker-extension-junit5.version>1.0.0</docker-extension-junit5.version>
 

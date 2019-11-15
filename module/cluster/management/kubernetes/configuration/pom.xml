@@ -33,6 +33,16 @@
             <groupId>com.github.TanUkkii007</groupId>
             <artifactId>akka-cluster-custom-downing</artifactId>
             <version>${akka-cluster-custom-downing.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-actor_2.12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-cluster_2.12</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

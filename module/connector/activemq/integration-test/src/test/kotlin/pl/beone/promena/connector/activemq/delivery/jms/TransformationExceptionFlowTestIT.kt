@@ -12,7 +12,6 @@ import io.mockk.mockkObject
 import org.apache.activemq.command.ActiveMQQueue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,7 +19,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
@@ -44,7 +42,6 @@ import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.util.*
 import java.util.concurrent.TimeoutException
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IntegrationTestApplication::class])
 @TestPropertySource("classpath:extension-connector-activemq-test.properties")
 class TransformationExceptionFlowTestIT {

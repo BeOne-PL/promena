@@ -5,7 +5,6 @@ import io.mockk.every
 import io.mockk.mockkObject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.REQUEST_TIMEOUT
 import org.springframework.http.MediaType.parseMediaType
 import org.springframework.http.client.MultipartBodyBuilder
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
@@ -47,7 +45,6 @@ import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import java.util.concurrent.TimeoutException
 import kotlin.text.Charsets.ISO_8859_1
 
-@RunWith(SpringRunner::class)
 @EnableAutoConfiguration
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,

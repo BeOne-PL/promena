@@ -21,7 +21,7 @@
         <promena-communication-memory-model.version>1.0.0</promena-communication-memory-model.version>
         <promena-communication-file-model.version>1.0.0</promena-communication-file-model.version>
 
-        <kotlin-logging.version>1.7.3</kotlin-logging.version>
+        <kotlin-logging.version>1.7.6</kotlin-logging.version>
         <kotlinx-coroutines-core.version>1.3.2</kotlinx-coroutines-core.version>
 
         <!-- Alfresco Maven Plugin version to use -->

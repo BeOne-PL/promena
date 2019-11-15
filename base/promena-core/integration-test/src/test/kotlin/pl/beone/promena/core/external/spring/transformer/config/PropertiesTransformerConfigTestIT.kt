@@ -3,10 +3,8 @@ package pl.beone.promena.core.external.spring.transformer.config
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.jupiter.api.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.data.DataDescriptor
@@ -27,7 +25,6 @@ private abstract class AbstractTransformer : Transformer {
 private object TransformerWithProperties : AbstractTransformer()
 private object TransformerWithoutProperties : AbstractTransformer()
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(
     classes = [
         PropertiesTransformerConfig::class
