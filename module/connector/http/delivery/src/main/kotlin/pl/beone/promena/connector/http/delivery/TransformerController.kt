@@ -1,5 +1,6 @@
 package pl.beone.promena.connector.http.delivery
 
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE
 import org.springframework.http.ResponseEntity
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
@@ -22,6 +24,10 @@ class TransformerController(
     private val transformationUseCase: TransformationUseCase
 ) {
 
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     @PostMapping("/transform", consumes = [APPLICATION_OCTET_STREAM_VALUE])
     fun handle(@RequestBody body: Mono<ByteArray>): Mono<ResponseEntity<ByteArray>> =
         body
@@ -31,13 +37,22 @@ class TransformerController(
             }
             .map(serializationService::serialize)
             .map(::createResponse)
-            .onErrorResume({ it !is ResponseStatusException }) { createInternalServerErrorResponse(it).toMono() }
+            .onErrorResume({ it !is ResponseStatusException }) {
+                logUnknownException(it)
+                createInternalServerErrorResponse(it).toMono()
+            }
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
         serializationService.deserialize(byteArray, getClazz())
 
     private fun createResponse(bytes: ByteArray): ResponseEntity<ByteArray> =
         ResponseEntity.ok().body(bytes)
+
+    private fun logUnknownException(exception: Throwable) {
+        if (exception !is TransformationException) {
+            logger.error(exception) { "An error occurred before starting given transformation" }
+        }
+    }
 
     private fun createInternalServerErrorResponse(exception: Throwable): ResponseEntity<ByteArray> =
         ResponseEntity.status(INTERNAL_SERVER_ERROR)
