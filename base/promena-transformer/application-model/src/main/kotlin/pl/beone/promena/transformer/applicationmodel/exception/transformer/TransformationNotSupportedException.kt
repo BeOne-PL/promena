@@ -20,6 +20,10 @@ class TransformationNotSupportedException internal constructor(
             TransformationNotSupportedException("Parameter <$name> isn't type of <${clazz.canonicalName}>")
 
         @JvmStatic
+        fun <T> unsupportedParameterValue(name: String, value: T, message: String? = null): TransformationNotSupportedException =
+            TransformationNotSupportedException("Parameter <$name> has invalid value <$value>${if (message != null) ": $message" else ""}")
+
+        @JvmStatic
         fun custom(reason: String): TransformationNotSupportedException =
             TransformationNotSupportedException(reason)
 
