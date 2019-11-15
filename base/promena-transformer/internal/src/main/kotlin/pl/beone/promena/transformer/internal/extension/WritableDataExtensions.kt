@@ -4,5 +4,5 @@ import pl.beone.promena.transformer.contract.model.data.WritableData
 import java.io.InputStream
 
 fun WritableData.copy(inputStream: InputStream) {
-    getOutputStream().use { inputStream.copyTo(it) }
+    getOutputStream().use { outputStream -> inputStream.use { it.copyTo(outputStream) } }
 }
