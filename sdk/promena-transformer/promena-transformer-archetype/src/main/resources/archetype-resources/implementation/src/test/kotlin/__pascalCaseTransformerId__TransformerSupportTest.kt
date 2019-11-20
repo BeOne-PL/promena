@@ -8,6 +8,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
 import ${package}.applicationmodel.${pascalCaseTransformerId}Support
+import ${package}.util.create${pascalCaseTransformerId}Transformer
 
 @ExtendWith(DockerExtension::class)
 class ${pascalCaseTransformerId}TransformerSupportTest {
@@ -21,7 +22,7 @@ class ${pascalCaseTransformerId}TransformerSupportTest {
         mockkStatic(${pascalCaseTransformerId}Support::class)
         every { ${pascalCaseTransformerId}Support.isSupported(dataDescriptor, targetMediaType, parameters) } just Runs
 
-        ${pascalCaseTransformerId}Transformer(mockk(), mockk(), mockk(), mockk())
+        create${pascalCaseTransformerId}Transformer()
             .isSupported(dataDescriptor, targetMediaType, parameters)
 
         verify(exactly = 1) { ${pascalCaseTransformerId}Support.isSupported(dataDescriptor, targetMediaType, parameters) }
