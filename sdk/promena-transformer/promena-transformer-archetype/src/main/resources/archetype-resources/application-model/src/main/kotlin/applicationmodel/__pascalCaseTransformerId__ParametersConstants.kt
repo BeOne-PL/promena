@@ -2,15 +2,21 @@ package ${package}.applicationmodel
 
 object ${pascalCaseTransformerId}ParametersConstants {
 
-    object Example {
-        const val NAME = "example"
+    object Mandatory {
+        const val NAME = "mandatory"
         @JvmField
         val CLASS = String::class.java
     }
 
-    object Example2 {
-        const val NAME = "example2"
+    object Optional {
+        const val NAME = "optional"
         @JvmField
         val CLASS = String::class.java
+    }
+
+    object OptionalLimitedValue {
+        const val NAME = "optionalLimitedValue"
+        @JvmField
+        val CLASS = Int::class.java
     }
 }

@@ -6,30 +6,43 @@ import org.junit.jupiter.api.Test
 
 class ${pascalCaseTransformerId}ParametersDslTest {
 
+    companion object {
+        private const val mandatory = "value"
+        private const val optional = "optional value"
+        private const val optionalLimitedValue = 1
+    }
+
     @Test
     fun `${camelCaseTransformerId}Parameters _ default parameters`() {
-        val example = "value"
+        ${camelCaseTransformerId}Parameters(
+            mandatory = mandatory
+        ).let {
+            it.getMandatory() shouldBe mandatory
 
-        ${camelCaseTransformerId}Parameters(example = example).let {
-            it.getExample() shouldBe "value"
             shouldThrow<NoSuchElementException> {
-                it.getExample2()
+                it.getOptional()
             }
-            it.getExample2OrNull() shouldBe null
-            it.getExample2OrDefault("default") shouldBe "default"
+            it.getOptionalOrNull() shouldBe null
+            it.getOptionalOrDefault(optional) shouldBe optional
+
+            shouldThrow<NoSuchElementException> {
+                it.getOptionalLimitedValue()
+            }
+            it.getOptionalLimitedValueOrNull() shouldBe null
+            it.getOptionalLimitedValueOrDefault(optionalLimitedValue) shouldBe optionalLimitedValue
         }
     }
 
     @Test
     fun `${camelCaseTransformerId}Parameters _ all parameters`() {
-        val example = "value"
-        val example2 = "value2"
-
-        ${camelCaseTransformerId}Parameters(example = example, example2 = example2).let {
-            it.getExample() shouldBe example
-            it.getExample2() shouldBe example2
-            it.getExample2OrNull() shouldBe example2
-            it.getExample2OrDefault("default") shouldBe example2
+        ${camelCaseTransformerId}Parameters(
+            mandatory = mandatory,
+            optional = optional,
+            optionalLimitedValue = optionalLimitedValue
+        ).let {
+            it.getMandatory() shouldBe mandatory
+            it.getOptional() shouldBe optional
+            it.getOptionalLimitedValue() shouldBe optionalLimitedValue
         }
     }
 }

@@ -12,27 +12,28 @@ import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import ${package}.applicationmodel.${camelCaseTransformerId}Parameters
 import ${package}.util.create${pascalCaseTransformerId}Transformer
+import ${package}.util.getResourceAsBytes
+import ${package}.model.Resource.Text.EXAMPLE
 
 @ExtendWith(DockerExtension::class)
 class ${pascalCaseTransformerId}TransformerTest {
 
     @Test
     fun transform() {
-        val dataContent = "content"
         val mediaType = TEXT_PLAIN
         val metadata = emptyMetadata()
 
         create${pascalCaseTransformerId}Transformer()
             .transform(
-                singleDataDescriptor(dataContent.toMemoryData(), mediaType, metadata),
+                singleDataDescriptor(getResourceAsBytes(EXAMPLE).toMemoryData(), mediaType, metadata),
                 TEXT_PLAIN,
-                ${camelCaseTransformerId}Parameters(example = "value")
+                ${camelCaseTransformerId}Parameters(mandatory = "value")
             ).let { transformedDataDescriptor ->
                 val descriptors = transformedDataDescriptor.descriptors
                 withClue("Transformed data should contain only <1> element") { descriptors shouldHaveSize 1 }
 
                 descriptors[0].let {
-                    it.data.getBytes() shouldBe dataContent.toByteArray()
+                    it.data.getBytes() shouldBe "example content".toByteArray()
                     it.metadata shouldBe metadata
                 }
             }

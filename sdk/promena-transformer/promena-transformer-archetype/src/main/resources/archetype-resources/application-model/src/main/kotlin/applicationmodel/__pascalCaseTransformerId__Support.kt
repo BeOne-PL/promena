@@ -6,8 +6,9 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.model.Parameters
-import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants.Example
-import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants.Example2
+import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants.Mandatory
+import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants.Optional
+import ${package}.applicationmodel.${pascalCaseTransformerId}ParametersConstants.OptionalLimitedValue
 
 object ${pascalCaseTransformerId}Support {
 
@@ -33,13 +34,23 @@ object ${pascalCaseTransformerId}Support {
     object ParametersSupport {
         @JvmStatic
         fun isSupported(parameters: Parameters) {
-            parameters.validate(Example.NAME, Example.CLASS, true)
-            parameters.validate(Example2.NAME, Example2.CLASS, false)
+            parameters.validate(Mandatory.NAME, Mandatory.CLASS, true)
+            parameters.validate(Optional.NAME, Optional.CLASS, false)
+            parameters.validate(OptionalLimitedValue.NAME, OptionalLimitedValue.CLASS, false, "<0, 10>") { (0..10).contains(it) }
         }
 
-        private fun Parameters.validate(name: String, clazz: Class<*>, mandatory: Boolean) {
+        private fun <T> Parameters.validate(
+            name: String,
+            clazz: Class<T>,
+            mandatory: Boolean,
+            valueVerifierMessage: String? = null,
+            valueVerifier: (T) -> Boolean = { true }
+        ) {
             try {
-                get(name, clazz)
+                val value = get(name, clazz)
+                if (!valueVerifier(value)) {
+                    throw TransformationNotSupportedException.unsupportedParameterValue(name, value, valueVerifierMessage)
+                }
             } catch (e: NoSuchElementException) {
                 if (mandatory) {
                     throw TransformationNotSupportedException.mandatoryParameter(name)

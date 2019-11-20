@@ -12,44 +12,52 @@ import ${package}.${pascalCaseTransformerId}TransformerSettings
 class ${pascalCaseTransformerId}TransformerConfigurationContextTest {
 
     @Test
-    fun `setting context`() {
+    fun `setting context _ default parameters`() {
         val environment = createEnvironment(
             mapOf(
-                "transformer.${package}.settings.example" to "value",
+                "transformer.${package}.settings.hostname" to "localhost",
+                "transformer.${package}.settings.port" to "8080",
 
-                "transformer.${package}.default.parameters.example2" to "value2",
-                "transformer.${package}.default.parameters.timeout" to "5m"
-            )
-        )
-
-        val applicationContext = createConfigApplicationContext(environment, ${pascalCaseTransformerId}TransformerConfigurationContext::class.java)
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java).let {
-            it.example shouldBe "value"
-        }
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
-            it.example2 shouldBe "value2"
-            it.timeout shouldBe Duration.ofMinutes(5)
-        }
-    }
-
-    @Test
-    fun `setting context _ empty timeout`() {
-        val environment = createEnvironment(
-            mapOf(
-                "transformer.${package}.settings.example" to "value",
-
-                "transformer.${package}.default.parameters.example2" to "value2",
+                "transformer.${package}.default.parameters.optional" to "",
+                "transformer.${package}.default.parameters.optional-limited-value" to "",
                 "transformer.${package}.default.parameters.timeout" to ""
             )
         )
 
         val applicationContext = createConfigApplicationContext(environment, ${pascalCaseTransformerId}TransformerConfigurationContext::class.java)
         applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java).let {
-            it.example shouldBe "value"
+            it.hostname shouldBe "localhost"
+            it.port shouldBe 8080
         }
         applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
-            it.example2 shouldBe "value2"
+            it.optional shouldBe null
+            it.optionalLimitedValue shouldBe null
             it.timeout shouldBe null
+        }
+    }
+
+    @Test
+    fun `setting context _ all values`() {
+        val environment = createEnvironment(
+            mapOf(
+                "transformer.${package}.settings.hostname" to "localhost",
+                "transformer.${package}.settings.port" to "8080",
+
+                "transformer.${package}.default.parameters.optional" to "value",
+                "transformer.${package}.default.parameters.optional-limited-value" to "1",
+                "transformer.${package}.default.parameters.timeout" to "5m"
+            )
+        )
+
+        val applicationContext = createConfigApplicationContext(environment, ${pascalCaseTransformerId}TransformerConfigurationContext::class.java)
+        applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java).let {
+            it.hostname shouldBe "localhost"
+            it.port shouldBe 8080
+        }
+        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
+            it.optional shouldBe "value"
+            it.optionalLimitedValue shouldBe 1
+            it.timeout shouldBe Duration.ofMinutes(5)
         }
     }
 

@@ -1,5 +1,6 @@
 package ${package}
 
 data class ${pascalCaseTransformerId}TransformerSettings(
-    val example: String = "value"
+    val hostname: String,
+    val port: Int
 )

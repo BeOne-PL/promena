@@ -19,13 +19,15 @@ class ${pascalCaseTransformerId}TransformerConfigurationContext {
     @Bean
     fun ${camelCaseTransformerId}TransformerSettings(environment: Environment): ${pascalCaseTransformerId}TransformerSettings =
         ${pascalCaseTransformerId}TransformerSettings(
-            environment.getRequiredNotBlankProperty("$PROPERTY_PREFIX.settings.example")
+            environment.getRequiredNotBlankProperty("$PROPERTY_PREFIX.settings.hostname"),
+            environment.getRequiredNotBlankProperty("$PROPERTY_PREFIX.settings.port").toInt()
         )
 
     @Bean
     fun ${camelCaseTransformerId}TransformerDefaultParameters(environment: Environment): ${pascalCaseTransformerId}TransformerDefaultParameters =
         ${pascalCaseTransformerId}TransformerDefaultParameters(
-            environment.getRequiredNotBlankProperty("$PROPERTY_PREFIX.default.parameters.example2"),
+            environment.getNotBlankProperty("$PROPERTY_PREFIX.default.parameters.optional"),
+            environment.getNotBlankProperty("$PROPERTY_PREFIX.default.parameters.optional-limited-value")?.toInt(),
             environment.getNotBlankProperty("$PROPERTY_PREFIX.default.parameters.timeout")?.toDuration()
         )
 }

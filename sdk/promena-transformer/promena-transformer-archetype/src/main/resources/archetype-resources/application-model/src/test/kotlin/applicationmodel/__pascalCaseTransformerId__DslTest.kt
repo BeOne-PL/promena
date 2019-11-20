@@ -9,7 +9,7 @@ class ${pascalCaseTransformerId}DslTest {
 
     @Test
     fun ${camelCaseTransformerId}Transformation() {
-        ${camelCaseTransformerId}Transformation(TEXT_PLAIN, ${camelCaseTransformerId}Parameters(example = "value")).let {
+        ${camelCaseTransformerId}Transformation(TEXT_PLAIN, ${camelCaseTransformerId}Parameters(mandatory = "value")).let {
             it.transformerId shouldBe TRANSFORMER_ID
             it.targetMediaType shouldBe TEXT_PLAIN
             it.parameters.getAll().size shouldBe 1

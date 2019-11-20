@@ -14,7 +14,7 @@ internal object MemoryCommunicationWritableDataCreator : CommunicationWritableDa
 }
 
 internal fun create${pascalCaseTransformerId}Transformer(
-    settings: ${pascalCaseTransformerId}TransformerSettings = ${pascalCaseTransformerId}TransformerSettings(),
+    settings: ${pascalCaseTransformerId}TransformerSettings = ${pascalCaseTransformerId}TransformerSettings("localhost", 8080),
     parameters: ${pascalCaseTransformerId}TransformerDefaultParameters = ${pascalCaseTransformerId}TransformerDefaultParameters()
 ): ${pascalCaseTransformerId}Transformer =
     ${pascalCaseTransformerId}Transformer(settings, parameters, mockk(), MemoryCommunicationWritableDataCreator)
