@@ -18,14 +18,14 @@ class ${pascalCaseTransformerId}MediaTypeSupportTest {
     }
 
     @Test
-    fun `isSupported _ media type is not supported _ should throw TransformationNotSupportedException`() {
+    fun `isSupported _ target media type is not supported _ should throw TransformationNotSupportedException`() {
         shouldThrow<TransformationNotSupportedException> {
             isSupported(TEXT_PLAIN, APPLICATION_PDF)
         }
     }
 
     @Test
-    fun `isSupported _ target media type is not supported _ should throw TransformationNotSupportedException`() {
+    fun `isSupported _ media type is not supported _ should throw TransformationNotSupportedException`() {
         shouldThrow<TransformationNotSupportedException> {
             isSupported(APPLICATION_PDF, TEXT_PLAIN)
         }
