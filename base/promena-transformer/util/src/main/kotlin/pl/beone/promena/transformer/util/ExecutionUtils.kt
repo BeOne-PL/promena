@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import java.time.Duration
 import java.util.concurrent.TimeoutException
 
-fun <T> execute(timeout: Duration? = null, dispatcher: CoroutineDispatcher? = null, toRun: suspend () -> T) {
+fun <T> execute(timeout: Duration? = null, dispatcher: CoroutineDispatcher? = null, toRun: suspend () -> T): T =
     try {
         runBlocking {
             withTimeout(timeout?.toMillis() ?: Long.MAX_VALUE) {
@@ -20,4 +20,3 @@ fun <T> execute(timeout: Duration? = null, dispatcher: CoroutineDispatcher? = nu
     } catch (e: TimeoutCancellationException) {
         throw TimeoutException()
     }
-}
