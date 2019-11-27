@@ -281,11 +281,10 @@
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
-                </plugin>
-
-                <plugin>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${maven-failsafe-plugin.version}</version>
+                    <configuration>
+                        <forkCount>0</forkCount>
+                        <useSystemClassLoader>false</useSystemClassLoader>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
