@@ -23,14 +23,15 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTrans
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
-import pl.beone.promena.alfresco.module.core.contract.transformation.definition.Converter
-import pl.beone.promena.alfresco.module.core.contract.transformation.definition.PromenaTransformationMetadataMappingDefinition
+import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataSaver
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.emptyTransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
+import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.contract.transformation.next
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
@@ -39,47 +40,29 @@ import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import pl.beone.promena.transformer.internal.model.parameters.plus
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.*
 
 @RunWith(AlfrescoTestRunner::class)
 class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfrescoIT() {
 
     companion object {
         private val data = "test".toMemoryData()
+    }
 
-        private val metadataMappingDefinitions = listOf(
-            object : PromenaTransformationMetadataMappingDefinition { // text
-                override fun getKey(): String = "cm:author"
-                override fun getProperty(): QName = PROP_AUTHOR
-            },
-            object : PromenaTransformationMetadataMappingDefinition { // double
-                override fun getKey(): String = "cm:latitude"
-                override fun getProperty(): QName = PROP_LATITUDE
-            },
-            object : PromenaTransformationMetadataMappingDefinition { // boolean
-                override fun getKey(): String = "cm:automaticUpdate"
-                override fun getProperty(): QName = PROP_AUTOMATIC_UPDATE
-            },
-            object : PromenaTransformationMetadataMappingDefinition { // datetime
-                override fun getKey(): String = "cm:sentdate"
-                override fun getProperty(): QName = PROP_SENTDATE
-            },
-            object : PromenaTransformationMetadataMappingDefinition { // int
-                override fun getKey(): String = "cm:hits"
-                override fun getProperty(): QName = PROP_HITS
-            },
-            object : PromenaTransformationMetadataMappingDefinition { // int
-                override fun getKey(): String = "cm:hits"
-                override fun getProperty(): QName = PROP_HITS
-            },
-            object : PromenaTransformationMetadataMappingDefinition { // int
-                override fun getKey(): String = "cm:published"
-                override fun getProperty(): QName = PROP_PUBLISHED
-                override fun getConverter(): Converter = { Date.from((it as LocalDateTime).atZone(ZoneId.systemDefault()).toInstant()) }
+    private val promenaTransformationMetadataSaver = object : PromenaTransformationMetadataSaver {
+        override fun save(
+            sourceNodeRef: NodeRef,
+            transformation: Transformation,
+            transformedDataDescriptor: TransformedDataDescriptor,
+            transformedDataNodeRefs: List<NodeRef>
+        ) {
+            try {
+                val latitude = transformedDataDescriptor.descriptors
+                    .mapNotNull {it.metadata.getOrNull(PROP_LATITUDE.localName, Double::class.java)}
+                    .firstOrNull() ?: throw NoSuchElementException()
+                serviceRegistry.nodeService.setProperty(transformedDataNodeRefs[0], PROP_LATITUDE, latitude)
+            } catch (e: NoSuchElementException) {
             }
-        )
+        }
     }
 
     @Test
@@ -92,23 +75,13 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(true, metadataMappingDefinitions, dataConverter, serviceRegistry)
+        MinimalRenditionTransformedDataDescriptorSaver(true, listOf(promenaTransformationMetadataSaver), dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", APPLICATION_PDF, emptyParameters()) next
                         singleTransformation("transformer2", "sub", TEXT_PLAIN, emptyParameters() + ("key" to "value")),
                 listOf(integrationNode),
-                singleTransformedDataDescriptor(data, emptyMetadata()) +
-                        singleTransformedDataDescriptor(
-                            noData(),
-                            emptyMetadata() +
-                                    (PROP_AUTHOR.toPrefixString(serviceRegistry.namespaceService) to "string") +
-                                    (PROP_HITS.toPrefixString(serviceRegistry.namespaceService) to 10) +
-                                    (PROP_LATITUDE.toPrefixString(serviceRegistry.namespaceService) to 40.0) +
-                                    (PROP_AUTOMATIC_UPDATE.toPrefixString(serviceRegistry.namespaceService) to true) +
-                                    (PROP_SENTDATE.toPrefixString(serviceRegistry.namespaceService) to Date(1571481218000)) +
-                                    (PROP_PUBLISHED.toPrefixString(serviceRegistry.namespaceService) to LocalDateTime.of(1993, 12, 17, 10, 11)) +
-                                    ("alf_string" to "string")
-                        )
+                singleTransformedDataDescriptor(data, emptyMetadata() + (PROP_LATITUDE.localName to 5.5)) +
+                        singleTransformedDataDescriptor(noData(), emptyMetadata())
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
@@ -137,18 +110,11 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROP_TRANSFORMATION to transformationString,
                         PROP_TRANSFORMATION_ID to transformationIdString,
                         PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PROP_TRANSFORMATION_DATA_SIZE to 2
+                        PROP_TRANSFORMATION_DATA_SIZE to 2,
+                        PROP_LATITUDE to 5.5
                     )
                     properties shouldContainKey PROP_ID
                     properties shouldNotContainKey PROP_RENDITION_NAME
-                    properties shouldNotContainKey PROP_AUTHOR
-                    properties shouldNotContainKey PROP_HITS
-                    properties shouldNotContainKey PROP_LATITUDE
-                    properties shouldNotContainKey PROP_AUTOMATIC_UPDATE
-                    properties shouldNotContainKey PROP_SENTDATE
-                    properties shouldNotContainKey PROP_PUBLISHED
-                    properties shouldNotContainKey QName.createQName("alf_string")
-                    properties shouldNotContainKey QName.createQName("string")
                 }
 
                 node2.getType() shouldBe TYPE_THUMBNAIL
@@ -162,18 +128,11 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROP_TRANSFORMATION to transformationString,
                         PROP_TRANSFORMATION_ID to transformationIdString,
                         PROP_TRANSFORMATION_DATA_INDEX to 1,
-                        PROP_TRANSFORMATION_DATA_SIZE to 2,
-                        PROP_AUTHOR to "string",
-                        PROP_HITS to 10,
-                        PROP_LATITUDE to 40.0,
-                        PROP_AUTOMATIC_UPDATE to true,
-                        PROP_SENTDATE to Date(1571481218000),
-                        PROP_PUBLISHED to Date(756123060000)
+                        PROP_TRANSFORMATION_DATA_SIZE to 2
                     )
                     properties shouldContainKey PROP_ID
                     properties shouldNotContainKey PROP_RENDITION_NAME
-                    properties shouldNotContainKey QName.createQName("alf_string")
-                    properties shouldNotContainKey QName.createQName("string")
+                    properties shouldNotContainKey PROP_LATITUDE
                 }
 
                 node.getProperty(PROP_ID) shouldBe node2.getProperty(PROP_ID)
@@ -200,16 +159,11 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(true, metadataMappingDefinitions, dataConverter, serviceRegistry)
+        MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
             .save(
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
                 listOf(integrationNode),
-                singleTransformedDataDescriptor(
-                    data,
-                    emptyMetadata() +
-                            (PROP_AUTHOR.toPrefixString(serviceRegistry.namespaceService) to "string") +
-                            ("alf_string" to "string")
-                )
+                singleTransformedDataDescriptor(data, emptyMetadata())
             )
             .let { nodes ->
                 integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
@@ -230,12 +184,9 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
                         PROP_TRANSFORMATION_ID to listOf("transformer"),
                         PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PROP_TRANSFORMATION_DATA_SIZE to 1,
-                        PROP_AUTHOR to "string"
+                        PROP_TRANSFORMATION_DATA_SIZE to 1
                     )
                     properties shouldContainKey PROP_ID
-                    properties shouldNotContainKey QName.createQName("string")
-                    properties shouldNotContainKey QName.createQName("alf_string")
                 }
 
                 nodes shouldBe

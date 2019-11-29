@@ -12,6 +12,7 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.StoreRef.STORE_REF_WORKSPACE_SPACESSTORE
 import org.junit.Before
 import org.junit.Test
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
@@ -21,7 +22,6 @@ import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.Pro
 import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionInProgressSynchronizer
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
-import pl.beone.promena.alfresco.module.rendition.internal.transformation.definition.PromenaRenditionNamePromenaTransformationMetadataMappingDefinition.Companion.PROP_RENDITION_NAME_PREFIXED
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
@@ -45,7 +45,8 @@ class DefaultPromenaRenditionTransformationExecutorTest {
 
         private val mediaType = APPLICATION_PDF
         private val transformation = singleTransformation("converter", mediaType, emptyParameters())
-        private val nodeDescriptor = sourceNodeRef.toSingleNodeDescriptor(emptyMetadata() + (PROP_RENDITION_NAME_PREFIXED to renditionName))
+        private val nodeDescriptor =
+            sourceNodeRef.toSingleNodeDescriptor(emptyMetadata() + (PromenaTransformationModel.PROP_RENDITION_NAME.localName to renditionName))
 
     }
 

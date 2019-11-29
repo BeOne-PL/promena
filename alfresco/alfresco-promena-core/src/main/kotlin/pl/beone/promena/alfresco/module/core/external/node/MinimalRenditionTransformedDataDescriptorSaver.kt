@@ -13,10 +13,9 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTrans
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
-import pl.beone.promena.alfresco.module.core.contract.transformation.definition.PromenaTransformationMetadataMappingDefinition
+import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataSaver
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
-import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.model.data.Data
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.data.NoData
@@ -26,18 +25,16 @@ import kotlin.collections.ArrayList
 
 class MinimalRenditionTransformedDataDescriptorSaver(
     private val saveIfZero: Boolean,
-    promenaTransformationMetadataMappingDefinitions: List<PromenaTransformationMetadataMappingDefinition>,
+    private val promenaTransformationMetadataSavers: List<PromenaTransformationMetadataSaver>,
     private val dataConverter: DataConverter,
     private val serviceRegistry: ServiceRegistry
 ) : TransformedDataDescriptorSaver {
-
-    private val metadataMappingDefinitionMap = promenaTransformationMetadataMappingDefinitions.map { it.getKey() to it }.toMap()
 
     override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
         serviceRegistry.retryingTransactionHelper.doInTransaction {
             val sourceNodeRef = nodeRefs.first()
 
-            val renditionsNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
+            val transformedDataNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
                 handle(sourceNodeRef, transformation, transformedDataDescriptor.descriptors)
             } else {
                 if (saveIfZero) {
@@ -47,7 +44,11 @@ class MinimalRenditionTransformedDataDescriptorSaver(
                 }
             }
 
-            renditionsNodeRefs
+            promenaTransformationMetadataSavers.forEach {
+                it.save(sourceNodeRef, transformation, transformedDataDescriptor, transformedDataNodeRefs)
+            }
+
+            transformedDataNodeRefs
         }
 
     private fun handle(
@@ -60,8 +61,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
         return transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
             val dataSize = transformedDataDescriptors.size
             val properties = createGeneralAndThumbnailProperties(transformation.getTransformerIdsDescription()) +
-                    determinePromenaProperties(id, transformation, index, dataSize) +
-                    determineProperties(transformedDataDescriptor.metadata)
+                    determinePromenaProperties(id, transformation, index, dataSize)
 
             createRenditionNode(sourceNodeRef, transformation.getTransformerIdsDescription(), properties).apply {
                 if (transformedDataDescriptor.hasContent()) {
@@ -121,13 +121,6 @@ class MinimalRenditionTransformedDataDescriptorSaver(
 
     private fun <T, U> Map<T, U>.filterNotNullValues(): Map<T, U> =
         filter { (_, value) -> value != null }
-
-    private fun determineProperties(metadata: Metadata): Map<QName, Serializable?> =
-        metadata.getAll()
-            .filterKeys(metadataMappingDefinitionMap::containsKey)
-            .mapKeys { (key) -> metadataMappingDefinitionMap[key] ?: error("Impossible. It's filtered in the previous line") }
-            .map { (mapperElement, value) -> mapperElement.getProperty() to mapperElement.getConverter()(value) }
-            .toMap()
 
     private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =
         serviceRegistry.nodeService.createNode(

@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.alfresco.service.ServiceRegistry
 import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.toSingleNodeDescriptor
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
@@ -17,7 +18,6 @@ import pl.beone.promena.alfresco.module.rendition.contract.PromenaRenditionTrans
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinitionGetter
 import pl.beone.promena.alfresco.module.rendition.extension.getMediaType
-import pl.beone.promena.alfresco.module.rendition.internal.transformation.definition.PromenaRenditionNamePromenaTransformationMetadataMappingDefinition.Companion.PROP_RENDITION_NAME_PREFIXED
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
@@ -96,7 +96,7 @@ class DefaultPromenaRenditionTransformationExecutor(
             .getTransformation(serviceRegistry.contentService.getMediaType(nodeRef))
 
     private fun creatRenditionNodeDescriptor(nodeRef: NodeRef, renditionName: String): NodeDescriptor =
-        nodeRef.toSingleNodeDescriptor(emptyMetadata() + (PROP_RENDITION_NAME_PREFIXED to renditionName))
+        nodeRef.toSingleNodeDescriptor(emptyMetadata() + (PROP_RENDITION_NAME.localName to renditionName))
 
     internal class FinishPostTransformationExecutor(
         private val promenaRenditionInProgressSynchronizer: PromenaRenditionInProgressSynchronizer,
