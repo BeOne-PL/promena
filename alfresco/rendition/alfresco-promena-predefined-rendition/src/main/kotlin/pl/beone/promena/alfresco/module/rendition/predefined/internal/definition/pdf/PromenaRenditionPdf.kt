@@ -4,6 +4,7 @@ import pl.beone.promena.transformer.applicationmodel.exception.transformer.Trans
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.converter.imagemagick.applicationmodel.ImageMagickConverterSupport
+import pl.beone.promena.transformer.converter.imagemagick.applicationmodel.imageMagickConverterParameters
 import pl.beone.promena.transformer.converter.imagemagick.applicationmodel.imageMagickConverterTransformation
 import pl.beone.promena.transformer.converter.libreoffice.applicationmodel.LibreOfficeConverterSupport
 import pl.beone.promena.transformer.converter.libreoffice.applicationmodel.libreOfficeConverterTransformation
@@ -16,5 +17,5 @@ internal fun determineTransformation(mediaType: MediaType, targetMediaType: Medi
     } catch (e: TransformationNotSupportedException) {
         ImageMagickConverterSupport.MediaTypeSupport.isSupported(mediaType, targetMediaType)
 
-        imageMagickConverterTransformation(targetMediaType)
+        imageMagickConverterTransformation(targetMediaType, imageMagickConverterParameters(keepOriginalSizeIfConvertToPdf = true))
     }

@@ -8,7 +8,7 @@ import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstant
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
 class PdfPromenaRenditionDefinition(
-    private val notApplyForImages: Boolean
+    private val applyForImages: Boolean
 ) : PromenaRenditionDefinition {
 
     override fun getRenditionName(): String =
@@ -18,7 +18,7 @@ class PdfPromenaRenditionDefinition(
         APPLICATION_PDF
 
     override fun getTransformation(mediaType: MediaType): Transformation {
-        if (notApplyForImages) {
+        if (!applyForImages) {
             throwIfMimeTypePrimaryTypeIsImage(mediaType)
         }
 

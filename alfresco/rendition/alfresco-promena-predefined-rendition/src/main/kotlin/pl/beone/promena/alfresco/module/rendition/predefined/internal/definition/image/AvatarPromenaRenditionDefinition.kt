@@ -24,7 +24,7 @@ object AvatarPromenaRenditionDefinition : PromenaRenditionDefinition {
                 getTargetMediaType(),
                 imageMagickConverterTransformation(
                     getTargetMediaType(),
-                    imageMagickConverterParameters(width = 64, height = 64, allowEnlargement = false)
+                    imageMagickConverterParameters(width = 64, height = 64, ignoreAspectRatio = false, allowEnlargement = false)
                 )
             )
         } catch (e: TransformationNotSupportedException) {

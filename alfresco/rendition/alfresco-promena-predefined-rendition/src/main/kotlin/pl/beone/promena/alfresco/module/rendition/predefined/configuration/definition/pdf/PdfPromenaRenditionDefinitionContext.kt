@@ -15,6 +15,6 @@ class PdfPromenaRenditionDefinitionContext {
         @Qualifier("global-properties") properties: Properties
     ) =
         PdfPromenaRenditionDefinition(
-            properties.getRequiredPropertyWithResolvedPlaceholders("promena.predefined.rendition.pdf.not-apply-for-images").toBoolean()
+            properties.getRequiredPropertyWithResolvedPlaceholders("promena.predefined.rendition.pdf.apply-for-images").toBoolean()
         )
 }

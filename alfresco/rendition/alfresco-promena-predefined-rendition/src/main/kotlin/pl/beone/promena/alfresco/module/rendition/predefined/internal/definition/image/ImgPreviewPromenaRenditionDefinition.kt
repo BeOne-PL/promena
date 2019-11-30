@@ -24,7 +24,7 @@ object ImgPreviewPromenaRenditionDefinition : PromenaRenditionDefinition {
                 getTargetMediaType(),
                 imageMagickConverterTransformation(
                     getTargetMediaType(),
-                    imageMagickConverterParameters(width = 960, height = 960, allowEnlargement = false)
+                    imageMagickConverterParameters(width = 960, height = 960, ignoreAspectRatio = false, allowEnlargement = false)
                 )
             )
         } catch (e: TransformationNotSupportedException) {

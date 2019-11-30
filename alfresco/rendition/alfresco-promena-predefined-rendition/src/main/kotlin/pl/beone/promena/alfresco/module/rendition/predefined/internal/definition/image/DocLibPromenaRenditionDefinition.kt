@@ -24,7 +24,7 @@ object DocLibPromenaRenditionDefinition : PromenaRenditionDefinition {
                 getTargetMediaType(),
                 imageMagickConverterTransformation(
                     getTargetMediaType(),
-                    imageMagickConverterParameters(width = 100, height = 100, allowEnlargement = false)
+                    imageMagickConverterParameters(width = 100, height = 100, ignoreAspectRatio = false, allowEnlargement = false)
                 )
             )
         } catch (e: TransformationNotSupportedException) {
