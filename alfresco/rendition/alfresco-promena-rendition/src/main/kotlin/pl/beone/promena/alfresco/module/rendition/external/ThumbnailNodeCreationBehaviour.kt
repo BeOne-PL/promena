@@ -10,7 +10,7 @@ import org.alfresco.repo.policy.PolicyComponent
 import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_RENDITION_NAME
 import java.io.Serializable
 import javax.annotation.PostConstruct
 
@@ -36,7 +36,7 @@ class ThumbnailNodeCreationBehaviour(
     fun onCreateNode(childAssociationRef: ChildAssociationRef) {
         val nodeRef = childAssociationRef.childRef
         if (nodeRef != null && nodeService.exists(nodeRef)) {
-            val renditionName = nodeService.getProperty(nodeRef, PROP_RENDITION_NAME) as String?
+            val renditionName = nodeService.getProperty(nodeRef, PROPERTY_RENDITION_NAME) as String?
             if (renditionName != null) {
                 val parentNodeRef = childAssociationRef.parentRef
                 val lastThumbnailModificationData = determineLastThumbnailModificationData(parentNodeRef, renditionName) as Serializable

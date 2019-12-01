@@ -6,7 +6,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.cmr.repository.NodeService
 import org.alfresco.service.namespace.RegexQNamePattern.MATCH_ALL
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_RENDITION_NAME
 import pl.beone.promena.alfresco.module.rendition.contract.RenditionGetter
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -21,13 +21,13 @@ class PromenaRenditionGetter(
             .filter { childAssociationRef -> isRendition(childAssociationRef.childRef) }
 
     override fun getRendition(nodeRef: NodeRef, renditionName: String): ChildAssociationRef? =
-        nodeService.getChildAssocsByPropertyValue(nodeRef, PROP_RENDITION_NAME, renditionName)
+        nodeService.getChildAssocsByPropertyValue(nodeRef, PROPERTY_RENDITION_NAME, renditionName)
             .map { childAssociationRef -> childAssociationRef to getPropertyModifiedDate(childAssociationRef.childRef) }
             .maxBy { (_, date) -> date.orMinDate() }
             ?.first
 
     private fun isRendition(nodeRef: NodeRef): Boolean =
-        nodeService.getProperty(nodeRef, PROP_RENDITION_NAME) != null
+        nodeService.getProperty(nodeRef, PROPERTY_RENDITION_NAME) != null
 
     private fun getPropertyModifiedDate(nodeRef: NodeRef): LocalDateTime? =
         (nodeService.getProperty(nodeRef, PROP_CREATED) as Date?)?.toLocalDateTime()

@@ -9,7 +9,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_RENDITION_NAME
 import java.time.LocalDateTime
 
 abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
@@ -30,7 +30,7 @@ abstract class AbstractUtilsAlfrescoIT : AbstractAlfrescoIT() {
         )
 
     protected fun ChildAssociationRef.setRenditionName(renditionName: String): ChildAssociationRef =
-        this.also { serviceRegistry.nodeService.setProperty(this.childRef, PROP_RENDITION_NAME, renditionName) }
+        this.also { serviceRegistry.nodeService.setProperty(this.childRef, PROPERTY_RENDITION_NAME, renditionName) }
 
     protected fun createOrGetIntegrationTestsFolder(): NodeRef =
         try {
