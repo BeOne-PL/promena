@@ -16,12 +16,12 @@ import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_ID
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_RENDITION_NAME
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_RENDITION_NAME
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_DATA_INDEX
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_DATA_SIZE
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataSaver
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
@@ -53,13 +53,13 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
             sourceNodeRef: NodeRef,
             transformation: Transformation,
             transformedDataDescriptor: TransformedDataDescriptor,
-            transformedDataNodeRefs: List<NodeRef>
+            transformedNodeRefs: List<NodeRef>
         ) {
             try {
                 val latitude = transformedDataDescriptor.descriptors
                     .mapNotNull {it.metadata.getOrNull(PROP_LATITUDE.localName, Double::class.java)}
                     .firstOrNull() ?: throw NoSuchElementException()
-                serviceRegistry.nodeService.setProperty(transformedDataNodeRefs[0], PROP_LATITUDE, latitude)
+                serviceRegistry.nodeService.setProperty(transformedNodeRefs[0], PROP_LATITUDE, latitude)
             } catch (e: NoSuchElementException) {
             }
         }
@@ -107,14 +107,14 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROP_MODIFIER to currentUserName,
                         PROP_NAME to name,
                         PROP_IS_INDEXED to false,
-                        PROP_TRANSFORMATION to transformationString,
-                        PROP_TRANSFORMATION_ID to transformationIdString,
-                        PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PROP_TRANSFORMATION_DATA_SIZE to 2,
+                        PROPERTY_TRANSFORMATION to transformationString,
+                        PROPERTY_TRANSFORMATION_ID to transformationIdString,
+                        PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
+                        PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
                         PROP_LATITUDE to 5.5
                     )
-                    properties shouldContainKey PROP_ID
-                    properties shouldNotContainKey PROP_RENDITION_NAME
+                    properties shouldContainKey PROPERTY_ID
+                    properties shouldNotContainKey PROPERTY_RENDITION_NAME
                 }
 
                 node2.getType() shouldBe TYPE_THUMBNAIL
@@ -125,17 +125,17 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROP_MODIFIER to currentUserName,
                         PROP_NAME to name,
                         PROP_IS_INDEXED to false,
-                        PROP_TRANSFORMATION to transformationString,
-                        PROP_TRANSFORMATION_ID to transformationIdString,
-                        PROP_TRANSFORMATION_DATA_INDEX to 1,
-                        PROP_TRANSFORMATION_DATA_SIZE to 2
+                        PROPERTY_TRANSFORMATION to transformationString,
+                        PROPERTY_TRANSFORMATION_ID to transformationIdString,
+                        PROPERTY_TRANSFORMATION_DATA_INDEX to 1,
+                        PROPERTY_TRANSFORMATION_DATA_SIZE to 2
                     )
-                    properties shouldContainKey PROP_ID
-                    properties shouldNotContainKey PROP_RENDITION_NAME
+                    properties shouldContainKey PROPERTY_ID
+                    properties shouldNotContainKey PROPERTY_RENDITION_NAME
                     properties shouldNotContainKey PROP_LATITUDE
                 }
 
-                node.getProperty(PROP_ID) shouldBe node2.getProperty(PROP_ID)
+                node.getProperty(PROPERTY_ID) shouldBe node2.getProperty(PROPERTY_ID)
 
                 nodes shouldBe
                         integrationNode.getRenditionAssociations().map { it.childRef }
@@ -181,12 +181,12 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROP_MODIFIER to currentUserName,
                         PROP_NAME to name,
                         PROP_IS_INDEXED to false,
-                        PROP_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PROP_TRANSFORMATION_ID to listOf("transformer"),
-                        PROP_TRANSFORMATION_DATA_INDEX to 0,
-                        PROP_TRANSFORMATION_DATA_SIZE to 1
+                        PROPERTY_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
+                        PROPERTY_TRANSFORMATION_ID to listOf("transformer"),
+                        PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
+                        PROPERTY_TRANSFORMATION_DATA_SIZE to 1
                     )
-                    properties shouldContainKey PROP_ID
+                    properties shouldContainKey PROPERTY_ID
                 }
 
                 nodes shouldBe
@@ -225,14 +225,14 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROP_MODIFIER to currentUserName,
                         PROP_NAME to name,
                         PROP_IS_INDEXED to false,
-                        PROP_TRANSFORMATION to
+                        PROPERTY_TRANSFORMATION to
                                 listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PROP_TRANSFORMATION_ID to listOf("transformer")
+                        PROPERTY_TRANSFORMATION_ID to listOf("transformer")
                     )
-                    properties shouldContainKey PROP_ID
-                    properties shouldNotContainKey PROP_RENDITION_NAME
-                    properties shouldNotContainKey PROP_TRANSFORMATION_DATA_INDEX
-                    properties shouldNotContainKey PROP_TRANSFORMATION_DATA_SIZE
+                    properties shouldContainKey PROPERTY_ID
+                    properties shouldNotContainKey PROPERTY_RENDITION_NAME
+                    properties shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_INDEX
+                    properties shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_SIZE
                 }
 
                 nodes shouldBe

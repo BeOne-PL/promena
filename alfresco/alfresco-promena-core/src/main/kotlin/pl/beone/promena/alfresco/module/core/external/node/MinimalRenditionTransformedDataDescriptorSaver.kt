@@ -6,11 +6,12 @@ import org.alfresco.service.ServiceRegistry
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_ID
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_INDEX
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_DATA_SIZE
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaTransformationModel.PROP_TRANSFORMATION_ID
+import org.alfresco.service.namespace.QName.createQName
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_DATA_INDEX
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_DATA_SIZE
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_ID
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataSaver
@@ -34,7 +35,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
         serviceRegistry.retryingTransactionHelper.doInTransaction {
             val sourceNodeRef = nodeRefs.first()
 
-            val transformedDataNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
+            val transformedNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
                 handle(sourceNodeRef, transformation, transformedDataDescriptor.descriptors)
             } else {
                 if (saveIfZero) {
@@ -45,10 +46,10 @@ class MinimalRenditionTransformedDataDescriptorSaver(
             }
 
             promenaTransformationMetadataSavers.forEach {
-                it.save(sourceNodeRef, transformation, transformedDataDescriptor, transformedDataNodeRefs)
+                it.save(sourceNodeRef, transformation, transformedDataDescriptor, transformedNodeRefs)
             }
 
-            transformedDataNodeRefs
+            transformedNodeRefs
         }
 
     private fun handle(
@@ -103,11 +104,11 @@ class MinimalRenditionTransformedDataDescriptorSaver(
         transformationDataSize: Int? = null
     ): Map<QName, Serializable?> =
         mapOf(
-            PROP_ID to id,
-            PROP_TRANSFORMATION to ArrayList(convertToStringifiedTransformation(transformation)), // must be mutable because Alfresco operates on original List
-            PROP_TRANSFORMATION_ID to ArrayList(convertToStringifiedTransformationId(transformation)), // must be mutable because Alfresco operates on original List
-            PROP_TRANSFORMATION_DATA_INDEX to transformationDataIndex,
-            PROP_TRANSFORMATION_DATA_SIZE to transformationDataSize
+            PROPERTY_ID to id,
+            PROPERTY_TRANSFORMATION to ArrayList(convertToStringifiedTransformation(transformation)), // must be mutable because Alfresco operates on original List
+            PROPERTY_TRANSFORMATION_ID to ArrayList(convertToStringifiedTransformationId(transformation)), // must be mutable because Alfresco operates on original List
+            PROPERTY_TRANSFORMATION_DATA_INDEX to transformationDataIndex,
+            PROPERTY_TRANSFORMATION_DATA_SIZE to transformationDataSize
         ).filterNotNullValues()
 
     private fun convertToStringifiedTransformation(transformation: Transformation): List<String> =
@@ -126,7 +127,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
         serviceRegistry.nodeService.createNode(
             sourceNodeRef,
             ASSOC_RENDITION,
-            QName.createQName(CONTENT_MODEL_1_0_URI, name),
+            createQName(CONTENT_MODEL_1_0_URI, name),
             TYPE_THUMBNAIL,
             properties
         ).childRef

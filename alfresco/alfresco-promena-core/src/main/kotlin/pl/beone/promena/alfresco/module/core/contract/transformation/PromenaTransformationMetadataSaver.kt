@@ -10,6 +10,6 @@ interface PromenaTransformationMetadataSaver {
         sourceNodeRef: NodeRef,
         transformation: Transformation,
         transformedDataDescriptor: TransformedDataDescriptor,
-        transformedDataNodeRefs: List<NodeRef>
+        transformedNodeRefs: List<NodeRef>
     )
 }
