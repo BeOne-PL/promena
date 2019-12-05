@@ -7,7 +7,7 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 interface PromenaTransformationMetadataSaver {
 
     fun save(
-        sourceNodeRef: NodeRef,
+        nodeRefs: List<NodeRef>,
         transformation: Transformation,
         transformedDataDescriptor: TransformedDataDescriptor,
         transformedNodeRefs: List<NodeRef>

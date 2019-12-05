@@ -15,7 +15,7 @@ import org.alfresco.model.RenditionModel.*
 import org.alfresco.rad.test.AlfrescoTestRunner
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
-import org.alfresco.service.namespace.QName
+import org.alfresco.service.namespace.QName.createQName
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_EXECUTION_ID
@@ -56,7 +56,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
     private val promenaTransformationMetadataSaver = object : PromenaTransformationMetadataSaver {
         override fun save(
-            sourceNodeRef: NodeRef,
+            nodeRefs: List<NodeRef>,
             transformation: Transformation,
             transformedDataDescriptor: TransformedDataDescriptor,
             transformedNodeRefs: List<NodeRef>
@@ -65,7 +65,9 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 val latitude = transformedDataDescriptor.descriptors
                     .mapNotNull { it.metadata.getOrNull(PROP_LATITUDE.localName, Double::class.java) }
                     .firstOrNull() ?: throw NoSuchElementException()
-                serviceRegistry.nodeService.setProperty(transformedNodeRefs[0], PROP_LATITUDE, latitude)
+
+                (nodeRefs + transformedNodeRefs).forEach { serviceRegistry.nodeService.setProperty(it, PROP_LATITUDE, latitude) }
+
             } catch (e: NoSuchElementException) {
             }
         }
@@ -77,6 +79,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
         val nodeRef = integrationFolder.createNode()
         val nodeRef2 = integrationFolder.createNode()
         val nodeRefs = listOf(nodeRef, nodeRef2)
+        val latitudeValue = 5.5
 
         val dataConverter = mockk<DataConverter> {
             every { saveDataInContentWriter(data, any()) } just Runs
@@ -90,12 +93,14 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 singleTransformation("transformer", APPLICATION_PDF, emptyParameters()) next
                         singleTransformation("transformer2", "sub", TEXT_PLAIN, emptyParameters() + ("key" to "value")),
                 nodeRefs,
-                singleTransformedDataDescriptor(data, emptyMetadata() + (PROP_LATITUDE.localName to 5.5)) +
+                singleTransformedDataDescriptor(data, emptyMetadata() + (PROP_LATITUDE.localName to latitudeValue)) +
                         singleTransformedDataDescriptor(noData(), emptyMetadata())
             )
             .let { transformedNodeRefs ->
                 nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRef2.getAspects() shouldNotContain ASPECT_RENDITIONED
+                nodeRef.getProperty(PROP_LATITUDE) shouldBe latitudeValue
+                nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
+                nodeRef2.getProperty(PROP_LATITUDE) shouldBe latitudeValue
                 nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
                 transformedNodeRefs shouldHaveSize 2
@@ -105,10 +110,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                     "Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={}))",
                     "Single(transformerId=TransformerId(name=transformer2, subName=sub), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={key=value}))"
                 )
-                val transformationIdString = listOf(
-                    "transformer",
-                    "transformer2-sub"
-                )
+                val transformationIdString = listOf("transformer", "transformer2-sub")
                 val name = "transformer, transformer2-sub"
 
                 transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
@@ -123,7 +125,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROPERTY_TRANSFORMATION_ID to transformationIdString,
                         PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
                         PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
-                        PROP_LATITUDE to 5.5
+                        PROP_LATITUDE to latitudeValue
                     )
                     properties shouldNotContainKey PROPERTY_RENDITION_NAME
                 }
@@ -139,10 +141,10 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                         PROPERTY_TRANSFORMATION to transformationString,
                         PROPERTY_TRANSFORMATION_ID to transformationIdString,
                         PROPERTY_TRANSFORMATION_DATA_INDEX to 1,
-                        PROPERTY_TRANSFORMATION_DATA_SIZE to 2
+                        PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
+                        PROP_LATITUDE to latitudeValue
                     )
                     properties shouldNotContainKey PROPERTY_RENDITION_NAME
-                    properties shouldNotContainKey PROP_LATITUDE
                 }
 
                 transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
@@ -150,12 +152,9 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
                 transformedNodeRef2.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
 
-                nodeRef.getRenditionAssociations().map { it.qName } shouldBe
-                        listOf(
-                            QName.createQName(CONTENT_MODEL_1_0_URI, name),
-                            QName.createQName(CONTENT_MODEL_1_0_URI, name)
-                        )
-                nodeRef2.getRenditionAssociations() shouldHaveSize 0
+                val renditionNames = List(2) { createQName(CONTENT_MODEL_1_0_URI, name) }
+                nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+                nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
 
                 verify(exactly = 1) { dataConverter.saveDataInContentWriter(data, any()) }
             }
@@ -183,7 +182,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
             )
             .let { transformedNodeRefs ->
                 nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRef2.getAspects() shouldNotContain ASPECT_RENDITIONED
+                nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
                 nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
                 transformedNodeRefs shouldHaveSize 1
@@ -207,10 +206,11 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
                 transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
 
-                nodeRef.getRenditionAssociations().map { it.qName } shouldBe
-                        listOf(QName.createQName(CONTENT_MODEL_1_0_URI, name))
+                val renditionNames = listOf(createQName(CONTENT_MODEL_1_0_URI, name))
+                nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+                nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
 
-                nodeRef2.getRenditionAssociations() shouldHaveSize 0
+                verify(exactly = 1) { dataConverter.saveDataInContentWriter(data, any()) }
             }
     }
 
@@ -233,7 +233,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 emptyTransformedDataDescriptor()
             ).let { transformedNodeRefs ->
                 nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRef2.getAspects() shouldNotContain ASPECT_RENDITIONED
+                nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
 
                 transformedNodeRefs shouldHaveSize 1
                 val transformedNodeRef = transformedNodeRefs[0]
@@ -260,10 +260,11 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
                 transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
 
-                nodeRef.getRenditionAssociations().map { it.qName } shouldBe
-                        listOf(QName.createQName(CONTENT_MODEL_1_0_URI, name))
+                val renditionNames = listOf(createQName(CONTENT_MODEL_1_0_URI, name))
+                nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+                nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
 
-                nodeRef2.getRenditionAssociations() shouldHaveSize 0
+                verify(exactly = 0) { dataConverter.saveDataInContentWriter(data, any()) }
             }
     }
 
@@ -290,14 +291,12 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
                 transformedNodeRefs shouldHaveSize 0
-                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations()
-
-                nodeRef2.getRenditionAssociations() shouldHaveSize 0
+                transformedNodeRefs shouldHaveSize 0
+                transformedNodeRefs shouldHaveSize 0
             }
     }
 
     private fun createNodeInIntegrationFolder(): NodeRef =
-        with(createOrGetIntegrationTestsFolder()) {
-            createNode()
-        }
+        createOrGetIntegrationTestsFolder()
+            .also { it.createNode() }
 }

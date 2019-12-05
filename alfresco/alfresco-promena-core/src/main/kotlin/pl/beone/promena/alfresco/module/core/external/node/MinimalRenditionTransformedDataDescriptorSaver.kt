@@ -3,6 +3,7 @@ package pl.beone.promena.alfresco.module.core.external.node
 import org.alfresco.model.ContentModel.*
 import org.alfresco.model.RenditionModel.ASSOC_RENDITION
 import org.alfresco.service.ServiceRegistry
+import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
@@ -39,21 +40,20 @@ class MinimalRenditionTransformedDataDescriptorSaver(
         serviceRegistry.retryingTransactionHelper.doInTransaction {
             nodeRefs.forEach { addExecutionId(it, executionId) }
 
-            val sourceNodeRef = nodeRefs.first()
+            val primaryNodeRef = nodeRefs.first()
+            val theRestNodeRefs = nodeRefs - primaryNodeRef
 
             val transformedNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
-                handle(executionId, sourceNodeRef, transformation, transformedDataDescriptor.descriptors)
+                handle(executionId, primaryNodeRef, theRestNodeRefs, transformation, transformedDataDescriptor.descriptors)
             } else {
                 if (saveIfZero) {
-                    handleZero(executionId, sourceNodeRef, transformation)
+                    handleZero(executionId, primaryNodeRef, theRestNodeRefs, transformation)
                 } else {
                     emptyList()
                 }
             }
 
-            promenaTransformationMetadataSavers.forEach {
-                it.save(sourceNodeRef, transformation, transformedDataDescriptor, transformedNodeRefs)
-            }
+            saveMetadata(nodeRefs, transformation, transformedDataDescriptor, transformedNodeRefs)
 
             transformedNodeRefs
         }
@@ -68,34 +68,34 @@ class MinimalRenditionTransformedDataDescriptorSaver(
 
     private fun handle(
         executionId: String,
-        sourceNodeRef: NodeRef,
+        primaryNodeRef: NodeRef,
+        theRestNodeRefs: List<NodeRef>,
         transformation: Transformation,
         transformedDataDescriptors: List<TransformedDataDescriptor.Single>
     ): List<NodeRef> =
         transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
-            val name = transformation.getTransformerIdsDescription()
+            val name = getTransformerIdsDescription(transformation)
             val properties = determinePromenaProperties(name, executionId, transformation, index, transformedDataDescriptors.size)
 
-            createRenditionNode(sourceNodeRef, name, properties).apply {
-                if (transformedDataDescriptor.hasContent()) {
-                    saveContent(transformation.determineDestinationMediaType(), transformedDataDescriptor.data)
-                }
-            }
+            val qname = name.toContentQName()
+            createRenditionNode(primaryNodeRef, qname, properties)
+                .also {
+                    if (transformedDataDescriptor.hasContent()) {
+                        it.saveContent(transformation.destinationMediaType(), transformedDataDescriptor.data)
+                    }
+                }.also { theRestNodeRefs.addRenditionAssociations(it, qname) }
         }
 
-    private fun handleZero(executionId: String, sourceNodeRef: NodeRef, transformation: Transformation): List<NodeRef> {
-        val name = transformation.getTransformerIdsDescription()
+    private fun handleZero(executionId: String, primaryNodeRef: NodeRef, theRestNodeRefs: List<NodeRef>, transformation: Transformation): List<NodeRef> {
+        val name = getTransformerIdsDescription(transformation)
         val properties = determinePromenaProperties(name, executionId, transformation)
 
-        return listOf(createRenditionNode(sourceNodeRef, name, properties))
+        val qname = name.toContentQName()
+        return listOf(
+            createRenditionNode(primaryNodeRef, qname, properties)
+                .also { theRestNodeRefs.addRenditionAssociations(it, qname) }
+        )
     }
-
-    private fun Transformation.getTransformerIdsDescription(): String =
-        convertToStringifiedTransformationId(this)
-            .joinToString(", ") { it }
-
-    private fun Transformation.determineDestinationMediaType(): MediaType =
-        transformers.last().targetMediaType
 
     private fun determinePromenaProperties(
         name: String,
@@ -113,6 +113,10 @@ class MinimalRenditionTransformedDataDescriptorSaver(
             PROPERTY_TRANSFORMATION_DATA_SIZE to transformationDataSize
         ).filterNotNullValues()
 
+    private fun getTransformerIdsDescription(transformation: Transformation): String =
+        convertToStringifiedTransformationId(transformation)
+            .joinToString(", ") { it }
+
     private fun convertToStringifiedTransformation(transformation: Transformation): List<String> =
         transformation.transformers
             .map(Transformation.Single::toString)
@@ -122,17 +126,19 @@ class MinimalRenditionTransformedDataDescriptorSaver(
             .map(Transformation.Single::transformerId)
             .map { if (it.isSubNameSet()) it.name + "-" + it.subName else it.name }
 
-    private fun <T, U> Map<T, U>.filterNotNullValues(): Map<T, U> =
-        filter { (_, value) -> value != null }
+    private fun createRenditionNode(sourceNodeRef: NodeRef, qname: QName, properties: Map<QName, Serializable?>): NodeRef =
+        serviceRegistry.nodeService.createNode(sourceNodeRef, ASSOC_RENDITION, qname, TYPE_THUMBNAIL, properties).childRef
 
-    private fun createRenditionNode(sourceNodeRef: NodeRef, name: String, properties: Map<QName, Serializable?>): NodeRef =
-        serviceRegistry.nodeService.createNode(
-            sourceNodeRef,
-            ASSOC_RENDITION,
-            createQName(CONTENT_MODEL_1_0_URI, name),
-            TYPE_THUMBNAIL,
-            properties
-        ).childRef
+    private fun saveMetadata(
+        nodeRefs: List<NodeRef>,
+        transformation: Transformation,
+        transformedDataDescriptor: TransformedDataDescriptor,
+        transformedNodeRefs: List<NodeRef>
+    ) {
+        promenaTransformationMetadataSavers.forEach {
+            it.save(nodeRefs, transformation, transformedDataDescriptor, transformedNodeRefs)
+        }
+    }
 
     private fun NodeRef.saveContent(targetMediaType: MediaType, data: Data) {
         serviceRegistry.contentService.getWriter(this, PROP_CONTENT, true).apply {
@@ -141,6 +147,19 @@ class MinimalRenditionTransformedDataDescriptorSaver(
         }
     }
 
+    private fun Transformation.destinationMediaType(): MediaType =
+        transformers.last().targetMediaType
+
     private fun TransformedDataDescriptor.Single.hasContent(): Boolean =
         data !is NoData
+
+    private fun String.toContentQName(): QName =
+        createQName(CONTENT_MODEL_1_0_URI, this)
+
+    // using ACLEntryVoterException addChild with parentRefs as List causes ACLEntryVoterException: 11050020 The specified parameter is not a NodeRef or ChildAssociationRef
+    private fun List<NodeRef>.addRenditionAssociations(nodeRef: NodeRef, qname: QName): List<ChildAssociationRef> =
+        this.map { serviceRegistry.nodeService.addChild(it, nodeRef, ASSOC_RENDITION, qname) }
+
+    private fun <T, U> Map<T, U>.filterNotNullValues(): Map<T, U> =
+        filterValues { it != null }
 }
