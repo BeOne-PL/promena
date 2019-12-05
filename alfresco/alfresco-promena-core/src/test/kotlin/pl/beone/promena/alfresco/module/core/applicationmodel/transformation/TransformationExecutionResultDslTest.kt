@@ -11,7 +11,6 @@ class TransformationExecutionResultDslTest {
         private val nodeRef = NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "7abdf1e2-92f4-47b2-983a-611e42f3555c")
         private val nodeRef2 = NodeRef(STORE_REF_WORKSPACE_SPACESSTORE, "b0bfb14c-be38-48be-90c3-cae4a7fd0c8f")
         private val nodeRefs = listOf(nodeRef, nodeRef2)
-
     }
 
     @Test

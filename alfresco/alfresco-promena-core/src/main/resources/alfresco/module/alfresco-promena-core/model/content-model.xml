@@ -13,6 +13,20 @@
     </namespaces>
 
     <aspects>
+        <aspect name="promena:transformationOwner">
+            <properties>
+                <property name="promena:executionIds">
+                    <type>d:text</type>
+                    <multiple>true</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+            </properties>
+        </aspect>
+
         <aspect name="promena:transformation">
             <properties>
                 <property name="promena:transformation">
@@ -49,7 +63,7 @@
                         <tokenised>false</tokenised>
                     </index>
                 </property>
-                <property name="promena:id">
+                <property name="promena:executionId">
                     <type>d:text</type>
                     <multiple>false</multiple>
                     <index enabled="true">

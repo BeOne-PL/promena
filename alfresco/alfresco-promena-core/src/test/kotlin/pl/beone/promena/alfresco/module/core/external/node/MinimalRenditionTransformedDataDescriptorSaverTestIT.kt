@@ -1,10 +1,12 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package pl.beone.promena.alfresco.module.core.external.node
 
 import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.matchers.collections.shouldNotContain
 import io.kotlintest.matchers.collections.shouldNotContainAll
 import io.kotlintest.matchers.maps.shouldContainAll
-import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.maps.shouldNotContainKey
 import io.kotlintest.shouldBe
 import io.mockk.*
@@ -16,7 +18,8 @@ import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.junit.Test
 import org.junit.runner.RunWith
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_EXECUTION_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_EXECUTION_IDS
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_RENDITION_NAME
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_DATA_INDEX
@@ -41,11 +44,14 @@ import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import pl.beone.promena.transformer.internal.model.parameters.plus
 
+@Suppress("DEPRECATION")
 @RunWith(AlfrescoTestRunner::class)
 class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfrescoIT() {
 
     companion object {
         private val data = "test".toMemoryData()
+
+        private const val executionId = "e5150ff7-0914-4851-941f-0c3b0a4af317"
     }
 
     private val promenaTransformationMetadataSaver = object : PromenaTransformationMetadataSaver {
@@ -57,7 +63,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
         ) {
             try {
                 val latitude = transformedDataDescriptor.descriptors
-                    .mapNotNull {it.metadata.getOrNull(PROP_LATITUDE.localName, Double::class.java)}
+                    .mapNotNull { it.metadata.getOrNull(PROP_LATITUDE.localName, Double::class.java) }
                     .firstOrNull() ?: throw NoSuchElementException()
                 serviceRegistry.nodeService.setProperty(transformedNodeRefs[0], PROP_LATITUDE, latitude)
             } catch (e: NoSuchElementException) {
@@ -67,7 +73,10 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
     @Test
     fun save_manyResults() {
-        val integrationNode = createNodeInIntegrationFolder()
+        val integrationFolder = createNodeInIntegrationFolder()
+        val nodeRef = integrationFolder.createNode()
+        val nodeRef2 = integrationFolder.createNode()
+        val nodeRefs = listOf(nodeRef, nodeRef2)
 
         val dataConverter = mockk<DataConverter> {
             every { saveDataInContentWriter(data, any()) } just Runs
@@ -77,17 +86,20 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         MinimalRenditionTransformedDataDescriptorSaver(true, listOf(promenaTransformationMetadataSaver), dataConverter, serviceRegistry)
             .save(
+                executionId,
                 singleTransformation("transformer", APPLICATION_PDF, emptyParameters()) next
                         singleTransformation("transformer2", "sub", TEXT_PLAIN, emptyParameters() + ("key" to "value")),
-                listOf(integrationNode),
+                nodeRefs,
                 singleTransformedDataDescriptor(data, emptyMetadata() + (PROP_LATITUDE.localName to 5.5)) +
                         singleTransformedDataDescriptor(noData(), emptyMetadata())
             )
-            .let { nodes ->
-                integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
+            .let { transformedNodeRefs ->
+                nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
+                nodeRef2.getAspects() shouldNotContain ASPECT_RENDITIONED
+                nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
-                nodes shouldHaveSize 2
-                val (node, node2) = nodes
+                transformedNodeRefs shouldHaveSize 2
+                val (transformedNodeRef, transformedNodeRef2) = transformedNodeRefs
 
                 val transformationString = listOf(
                     "Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={}))",
@@ -99,51 +111,51 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 )
                 val name = "transformer, transformer2-sub"
 
-                node.getType() shouldBe TYPE_THUMBNAIL
-                node.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                node.getProperties().let { properties ->
+                transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
+                transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+                transformedNodeRef.getProperties().let { properties ->
                     properties shouldContainAll mapOf(
                         PROP_CREATOR to currentUserName,
                         PROP_MODIFIER to currentUserName,
                         PROP_NAME to name,
-                        PROP_IS_INDEXED to false,
+                        PROPERTY_EXECUTION_ID to executionId,
                         PROPERTY_TRANSFORMATION to transformationString,
                         PROPERTY_TRANSFORMATION_ID to transformationIdString,
                         PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
                         PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
                         PROP_LATITUDE to 5.5
                     )
-                    properties shouldContainKey PROPERTY_ID
                     properties shouldNotContainKey PROPERTY_RENDITION_NAME
                 }
 
-                node2.getType() shouldBe TYPE_THUMBNAIL
-                node2.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                node2.getProperties().let { properties ->
+                transformedNodeRef2.getType() shouldBe TYPE_THUMBNAIL
+                transformedNodeRef2.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+                transformedNodeRef2.getProperties().let { properties ->
                     properties shouldContainAll mapOf(
                         PROP_CREATOR to currentUserName,
                         PROP_MODIFIER to currentUserName,
                         PROP_NAME to name,
-                        PROP_IS_INDEXED to false,
+                        PROPERTY_EXECUTION_ID to executionId,
                         PROPERTY_TRANSFORMATION to transformationString,
                         PROPERTY_TRANSFORMATION_ID to transformationIdString,
                         PROPERTY_TRANSFORMATION_DATA_INDEX to 1,
                         PROPERTY_TRANSFORMATION_DATA_SIZE to 2
                     )
-                    properties shouldContainKey PROPERTY_ID
                     properties shouldNotContainKey PROPERTY_RENDITION_NAME
                     properties shouldNotContainKey PROP_LATITUDE
                 }
 
-                node.getProperty(PROPERTY_ID) shouldBe node2.getProperty(PROPERTY_ID)
+                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
+                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe transformedNodeRef2.getProperty(PROPERTY_EXECUTION_ID)
+                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+                transformedNodeRef2.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
 
-                nodes shouldBe
-                        integrationNode.getRenditionAssociations().map { it.childRef }
-                integrationNode.getRenditionAssociations().map { it.qName } shouldBe
+                nodeRef.getRenditionAssociations().map { it.qName } shouldBe
                         listOf(
                             QName.createQName(CONTENT_MODEL_1_0_URI, name),
                             QName.createQName(CONTENT_MODEL_1_0_URI, name)
                         )
+                nodeRef2.getRenditionAssociations() shouldHaveSize 0
 
                 verify(exactly = 1) { dataConverter.saveDataInContentWriter(data, any()) }
             }
@@ -151,7 +163,10 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
     @Test
     fun save_oneResult() {
-        val integrationNode = createNodeInIntegrationFolder()
+        val integrationFolder = createNodeInIntegrationFolder()
+        val nodeRef = integrationFolder.createNode()
+        val nodeRef2 = integrationFolder.createNode()
+        val nodeRefs = listOf(nodeRef, nodeRef2)
 
         val dataConverter = mockk<DataConverter> {
             every { saveDataInContentWriter(any(), any()) } just Runs
@@ -161,44 +176,50 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
             .save(
+                executionId,
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
-                listOf(integrationNode),
+                nodeRefs,
                 singleTransformedDataDescriptor(data, emptyMetadata())
             )
-            .let { nodes ->
-                integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
+            .let { transformedNodeRefs ->
+                nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
+                nodeRef2.getAspects() shouldNotContain ASPECT_RENDITIONED
+                nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
-                nodes shouldHaveSize 1
-                val (node) = nodes
+                transformedNodeRefs shouldHaveSize 1
+                val transformedNodeRef = transformedNodeRefs[0]
 
                 val name = "transformer"
 
-                node.getType() shouldBe TYPE_THUMBNAIL
-                node.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                node.getProperties().let { properties ->
-                    properties shouldContainAll mapOf(
-                        PROP_CREATOR to currentUserName,
-                        PROP_MODIFIER to currentUserName,
-                        PROP_NAME to name,
-                        PROP_IS_INDEXED to false,
-                        PROPERTY_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PROPERTY_TRANSFORMATION_ID to listOf("transformer"),
-                        PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
-                        PROPERTY_TRANSFORMATION_DATA_SIZE to 1
-                    )
-                    properties shouldContainKey PROPERTY_ID
-                }
+                transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
+                transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+                transformedNodeRef.getProperties() shouldContainAll mapOf(
+                    PROP_CREATOR to currentUserName,
+                    PROP_MODIFIER to currentUserName,
+                    PROP_NAME to name,
+                    PROPERTY_EXECUTION_ID to executionId,
+                    PROPERTY_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
+                    PROPERTY_TRANSFORMATION_ID to listOf("transformer"),
+                    PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
+                    PROPERTY_TRANSFORMATION_DATA_SIZE to 1
+                )
 
-                nodes shouldBe
-                        integrationNode.getRenditionAssociations().map { it.childRef }
-                integrationNode.getRenditionAssociations().map { it.qName } shouldBe
+                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
+                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+
+                nodeRef.getRenditionAssociations().map { it.qName } shouldBe
                         listOf(QName.createQName(CONTENT_MODEL_1_0_URI, name))
+
+                nodeRef2.getRenditionAssociations() shouldHaveSize 0
             }
     }
 
     @Test
     fun save_saveOneNodeDespiteNoResults() {
-        val integrationNode = createNodeInIntegrationFolder()
+        val integrationFolder = createNodeInIntegrationFolder()
+        val nodeRef = integrationFolder.createNode()
+        val nodeRef2 = integrationFolder.createNode()
+        val nodeRefs = listOf(nodeRef, nodeRef2)
 
         val dataConverter = mockk<DataConverter>()
 
@@ -206,45 +227,52 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
             .save(
+                executionId,
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
-                listOf(integrationNode),
+                nodeRefs,
                 emptyTransformedDataDescriptor()
-            ).let { nodes ->
-                integrationNode.getAspects() shouldContain ASPECT_RENDITIONED
+            ).let { transformedNodeRefs ->
+                nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
+                nodeRef2.getAspects() shouldNotContain ASPECT_RENDITIONED
 
-                nodes shouldHaveSize 1
-                val (node) = nodes
+                transformedNodeRefs shouldHaveSize 1
+                val transformedNodeRef = transformedNodeRefs[0]
 
                 val name = "transformer"
 
-                node.getType() shouldBe TYPE_THUMBNAIL
-                node.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                node.getProperties().let { properties ->
+                transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
+                transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+                transformedNodeRef.getProperties().let { properties ->
                     properties shouldContainAll mapOf(
                         PROP_CREATOR to currentUserName,
                         PROP_MODIFIER to currentUserName,
                         PROP_NAME to name,
-                        PROP_IS_INDEXED to false,
+                        PROPERTY_EXECUTION_ID to executionId,
                         PROPERTY_TRANSFORMATION to
                                 listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
                         PROPERTY_TRANSFORMATION_ID to listOf("transformer")
                     )
-                    properties shouldContainKey PROPERTY_ID
                     properties shouldNotContainKey PROPERTY_RENDITION_NAME
                     properties shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_INDEX
                     properties shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_SIZE
                 }
 
-                nodes shouldBe
-                        integrationNode.getRenditionAssociations().map { it.childRef }
-                integrationNode.getRenditionAssociations().map { it.qName } shouldBe
+                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
+                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+
+                nodeRef.getRenditionAssociations().map { it.qName } shouldBe
                         listOf(QName.createQName(CONTENT_MODEL_1_0_URI, name))
+
+                nodeRef2.getRenditionAssociations() shouldHaveSize 0
             }
     }
 
     @Test
     fun save_saveNothing() {
-        val integrationNode = createNodeInIntegrationFolder()
+        val integrationFolder = createNodeInIntegrationFolder()
+        val nodeRef = integrationFolder.createNode()
+        val nodeRef2 = integrationFolder.createNode()
+        val nodeRefs = listOf(nodeRef, nodeRef2)
 
         val dataConverter = mockk<DataConverter> {
             every { saveDataInContentWriter(any(), any()) } just Runs
@@ -252,14 +280,19 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         MinimalRenditionTransformedDataDescriptorSaver(false, emptyList(), dataConverter, serviceRegistry)
             .save(
+                executionId,
                 singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
-                listOf(integrationNode),
+                nodeRefs,
                 emptyTransformedDataDescriptor()
             )
-            .let { nodes ->
-                nodes shouldHaveSize 0
-                nodes shouldBe
-                        integrationNode.getRenditionAssociations()
+            .let { transformedNodeRefs ->
+                nodeRefs.forEach { it.getAspects() shouldNotContain ASPECT_RENDITIONED }
+                nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
+
+                transformedNodeRefs shouldHaveSize 0
+                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations()
+
+                nodeRef2.getRenditionAssociations() shouldHaveSize 0
             }
     }
 

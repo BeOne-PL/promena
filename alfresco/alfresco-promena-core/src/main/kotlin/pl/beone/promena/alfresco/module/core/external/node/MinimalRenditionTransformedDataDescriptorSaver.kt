@@ -7,7 +7,8 @@ import org.alfresco.service.cmr.repository.NodeRef
 import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.namespace.QName.createQName
-import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_EXECUTION_ID
+import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_EXECUTION_IDS
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_DATA_INDEX
 import pl.beone.promena.alfresco.module.core.applicationmodel.model.PromenaModel.PROPERTY_TRANSFORMATION_DATA_SIZE
@@ -21,8 +22,6 @@ import pl.beone.promena.transformer.contract.model.data.Data
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.model.data.NoData
 import java.io.Serializable
-import java.util.*
-import kotlin.collections.ArrayList
 
 class MinimalRenditionTransformedDataDescriptorSaver(
     private val saveIfZero: Boolean,
@@ -31,15 +30,22 @@ class MinimalRenditionTransformedDataDescriptorSaver(
     private val serviceRegistry: ServiceRegistry
 ) : TransformedDataDescriptorSaver {
 
-    override fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef> =
+    override fun save(
+        executionId: String,
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        transformedDataDescriptor: TransformedDataDescriptor
+    ): List<NodeRef> =
         serviceRegistry.retryingTransactionHelper.doInTransaction {
+            nodeRefs.forEach { addExecutionId(it, executionId) }
+
             val sourceNodeRef = nodeRefs.first()
 
             val transformedNodeRefs = if (transformedDataDescriptor.descriptors.isNotEmpty()) {
-                handle(sourceNodeRef, transformation, transformedDataDescriptor.descriptors)
+                handle(executionId, sourceNodeRef, transformation, transformedDataDescriptor.descriptors)
             } else {
                 if (saveIfZero) {
-                    handleZero(sourceNodeRef, transformation)
+                    handleZero(executionId, sourceNodeRef, transformation)
                 } else {
                     emptyList()
                 }
@@ -52,37 +58,37 @@ class MinimalRenditionTransformedDataDescriptorSaver(
             transformedNodeRefs
         }
 
+    @Suppress("UNCHECKED_CAST")
+    private fun addExecutionId(sourceNodeRef: NodeRef, executionId: String) {
+        val currentExecutionIds = ((serviceRegistry.nodeService.getProperty(sourceNodeRef, PROPERTY_EXECUTION_ID) as List<String>?) ?: emptyList())
+        val updatedExecutionIds = currentExecutionIds + executionId
+
+        serviceRegistry.nodeService.setProperty(sourceNodeRef, PROPERTY_EXECUTION_IDS, updatedExecutionIds.toMutableList() as Serializable)
+    }
+
     private fun handle(
+        executionId: String,
         sourceNodeRef: NodeRef,
         transformation: Transformation,
         transformedDataDescriptors: List<TransformedDataDescriptor.Single>
-    ): List<NodeRef> {
-        val id = generateId()
+    ): List<NodeRef> =
+        transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
+            val name = transformation.getTransformerIdsDescription()
+            val properties = determinePromenaProperties(name, executionId, transformation, index, transformedDataDescriptors.size)
 
-        return transformedDataDescriptors.mapIndexed { index, transformedDataDescriptor ->
-            val dataSize = transformedDataDescriptors.size
-            val properties = createGeneralAndThumbnailProperties(transformation.getTransformerIdsDescription()) +
-                    determinePromenaProperties(id, transformation, index, dataSize)
-
-            createRenditionNode(sourceNodeRef, transformation.getTransformerIdsDescription(), properties).apply {
+            createRenditionNode(sourceNodeRef, name, properties).apply {
                 if (transformedDataDescriptor.hasContent()) {
                     saveContent(transformation.determineDestinationMediaType(), transformedDataDescriptor.data)
                 }
             }
         }
-    }
 
-    private fun handleZero(sourceNodeRef: NodeRef, transformation: Transformation): List<NodeRef> {
+    private fun handleZero(executionId: String, sourceNodeRef: NodeRef, transformation: Transformation): List<NodeRef> {
         val name = transformation.getTransformerIdsDescription()
-
-        val properties = createGeneralAndThumbnailProperties(name) +
-                determinePromenaProperties(generateId(), transformation)
+        val properties = determinePromenaProperties(name, executionId, transformation)
 
         return listOf(createRenditionNode(sourceNodeRef, name, properties))
     }
-
-    private fun generateId(): String =
-        UUID.randomUUID().toString()
 
     private fun Transformation.getTransformerIdsDescription(): String =
         convertToStringifiedTransformationId(this)
@@ -91,22 +97,18 @@ class MinimalRenditionTransformedDataDescriptorSaver(
     private fun Transformation.determineDestinationMediaType(): MediaType =
         transformers.last().targetMediaType
 
-    private fun createGeneralAndThumbnailProperties(nodeName: String): Map<QName, Serializable?> =
-        mapOf(
-            PROP_NAME to nodeName,
-            PROP_IS_INDEXED to false
-        )
-
     private fun determinePromenaProperties(
-        id: String,
+        name: String,
+        executionId: String,
         transformation: Transformation,
         transformationDataIndex: Int? = null,
         transformationDataSize: Int? = null
     ): Map<QName, Serializable?> =
         mapOf(
-            PROPERTY_ID to id,
-            PROPERTY_TRANSFORMATION to ArrayList(convertToStringifiedTransformation(transformation)), // must be mutable because Alfresco operates on original List
-            PROPERTY_TRANSFORMATION_ID to ArrayList(convertToStringifiedTransformationId(transformation)), // must be mutable because Alfresco operates on original List
+            PROP_NAME to name,
+            PROPERTY_EXECUTION_ID to executionId,
+            PROPERTY_TRANSFORMATION to convertToStringifiedTransformation(transformation).toMutableList() as Serializable, // must be mutable because Alfresco operates on original List
+            PROPERTY_TRANSFORMATION_ID to convertToStringifiedTransformationId(transformation).toMutableList() as Serializable, // must be mutable because Alfresco operates on original List
             PROPERTY_TRANSFORMATION_DATA_INDEX to transformationDataIndex,
             PROPERTY_TRANSFORMATION_DATA_SIZE to transformationDataSize
         ).filterNotNullValues()

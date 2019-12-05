@@ -8,6 +8,7 @@
         <property name="models">
             <list>
                 <value>alfresco/module/${project.artifactId}/model/content-model.xml</value>
+                <value>alfresco/module/${project.artifactId}/model/content-manager-model.xml</value>
             </list>
         </property>
     </bean>

@@ -6,5 +6,10 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 
 interface TransformedDataDescriptorSaver {
 
-    fun save(transformation: Transformation, nodeRefs: List<NodeRef>, transformedDataDescriptor: TransformedDataDescriptor): List<NodeRef>
+    fun save(
+        executionId: String,
+        transformation: Transformation,
+        nodeRefs: List<NodeRef>,
+        transformedDataDescriptor: TransformedDataDescriptor
+    ): List<NodeRef>
 }

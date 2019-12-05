@@ -15,6 +15,10 @@ start() {
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
+start_acs() {
+    docker-compose -f $COMPOSE_FILE_PATH up --build -d alfresco-promena-core-acs
+}
+
 down() {
     if [ -f $COMPOSE_FILE_PATH ]; then
         docker-compose -f $COMPOSE_FILE_PATH down -v
@@ -61,6 +65,12 @@ case "$1" in
     start
     tail
     ;;
+  reload)
+    build
+    prepare_test
+    start_acs
+    tail
+    ;;
   start)
     start
     tail
@@ -88,5 +98,5 @@ case "$1" in
     test
     ;;
   *)
-    echo "Usage: $0 {build_start|build_start_it_supported|start|stop|purge|tail|build_test|test}"
+    echo "Usage: $0 {build_start|build_start_it_supported|reload|start|stop|purge|tail|build_test|test}"
 esac

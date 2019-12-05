@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="promenaManager:contentModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <author>Promena</author>
+    <version>1.0.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.beone.pl/promena/manager/model/content/1.0" prefix="promenaManager"/>
+    </namespaces>
+
+    <types>
+        <type name="promenaManager:coordinator">
+            <parent>sys:base</parent>
+
+            <associations>
+                <child-association name="promenaManager:transformations">
+                    <source>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>promenaManager:transformation</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </type>
+
+        <type name="promenaManager:transformation">
+            <parent>sys:base</parent>
+
+            <properties>
+                <property name="promenaManager:executionId">
+                    <type>d:text</type>
+                    <multiple>false</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+                <property name="promenaManager:startDate">
+                    <type>d:datetime</type>
+                    <multiple>false</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+                <property name="promenaManager:finishDate">
+                    <type>d:datetime</type>
+                    <multiple>false</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+                <property name="promenaManager:nodeRefs">
+                    <type>d:text</type>
+                    <multiple>true</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+                <property name="promenaManager:throwable">
+                    <type>d:int</type>
+                    <multiple>true</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+            </properties>
+        </type>
+    </types>
+</model>
