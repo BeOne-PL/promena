@@ -12,7 +12,7 @@ class RenditionPromenaTransformationMetadataSaver(
 ) : PromenaTransformationMetadataSaver {
 
     override fun save(
-        sourceNodeRef: NodeRef,
+        nodeRefs: List<NodeRef>,
         transformation: Transformation,
         transformedDataDescriptor: TransformedDataDescriptor,
         transformedNodeRefs: List<NodeRef>
@@ -26,7 +26,8 @@ class RenditionPromenaTransformationMetadataSaver(
     }
 
     private fun getRenditionNameFromMetadata(transformedDataDescriptors: List<TransformedDataDescriptor.Single>): String =
-        transformedDataDescriptors.mapNotNull { it.metadata.getOrNull(PROPERTY_RENDITION_NAME.localName, String::class.java) }
+        transformedDataDescriptors
+            .mapNotNull { it.metadata.getOrNull(PROPERTY_RENDITION_NAME.localName, String::class.java) }
             .distinct()
             .also { if(it.size > 1) error("Transformed data contain more than <1> rendition name: $it") }
             .firstOrNull() ?: throw NoSuchElementException()
