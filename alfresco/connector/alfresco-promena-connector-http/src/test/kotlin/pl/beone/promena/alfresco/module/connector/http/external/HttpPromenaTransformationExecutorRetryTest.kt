@@ -38,7 +38,7 @@ import pl.beone.promena.alfresco.module.core.contract.node.DataDescriptorGetter
 import pl.beone.promena.alfresco.module.core.contract.node.NodeInCurrentTransactionVerifier
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorValidator
-import pl.beone.promena.alfresco.module.core.internal.transformation.ConcurrentPromenaMutableTransformationManager
+import pl.beone.promena.alfresco.module.core.external.transformation.manager.MemoryWithAlfrescoPersistencePromenaMutableTransformationManager
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
@@ -58,7 +58,8 @@ class HttpPromenaTransformationExecutorRetryTest {
         private val exceptionBytes = "exception to deserialize".toByteArray()
     }
 
-    private val promenaMutableTransformationManager = ConcurrentPromenaMutableTransformationManager(100, Duration.ofMinutes(1))
+    private val promenaMutableTransformationManager =
+        MemoryWithAlfrescoPersistencePromenaMutableTransformationManager(false, 100, Duration.ofMinutes(1), mockk(), mockk())
 
     private lateinit var mockServer: ClientAndServer
 

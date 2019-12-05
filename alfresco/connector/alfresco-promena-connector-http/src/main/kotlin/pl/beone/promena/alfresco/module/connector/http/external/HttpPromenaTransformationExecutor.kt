@@ -152,6 +152,7 @@ class HttpPromenaTransformationExecutor(
         val transformationExecutionResult = authorizationService.runAs(userName) {
             serviceRegistry.retryingTransactionHelper.doInTransaction({
                 transformedDataDescriptorSaver.save(
+                    parameters.transformationExecution.id,
                     transformation,
                     nodeDescriptor.toNodeRefs(),
                     performedTransformationDescriptor.transformedDataDescriptor

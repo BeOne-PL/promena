@@ -36,7 +36,7 @@ import pl.beone.promena.alfresco.module.core.contract.node.DataDescriptorGetter
 import pl.beone.promena.alfresco.module.core.contract.node.NodeInCurrentTransactionVerifier
 import pl.beone.promena.alfresco.module.core.contract.node.NodesChecksumGenerator
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorValidator
-import pl.beone.promena.alfresco.module.core.internal.transformation.ConcurrentPromenaMutableTransformationManager
+import pl.beone.promena.alfresco.module.core.external.transformation.manager.MemoryWithAlfrescoPersistencePromenaMutableTransformationManager
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_OCTET_STREAM
@@ -45,7 +45,8 @@ import java.time.Duration
 
 class HttpPromenaTransformationExecutorTest {
 
-    private val promenaMutableTransformationManager = ConcurrentPromenaMutableTransformationManager(100, Duration.ofSeconds(10))
+    private val promenaMutableTransformationManager =
+        MemoryWithAlfrescoPersistencePromenaMutableTransformationManager(false, 100, Duration.ofSeconds(10), mockk(), mockk())
 
     private lateinit var mockServer: ClientAndServer
 
