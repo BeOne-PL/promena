@@ -38,23 +38,23 @@ class JmsUtils(
     }
 
     fun sendResponseMessage(
-        id: String,
+        executionId: String,
         performedTransformationDescriptor: PerformedTransformationDescriptor,
         transformationParameters: TransformationParameters
     ) {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueResponse), performedTransformationDescriptor) {
-            it.setCommonHeaders(id, transformationParameters)
+            it.setCommonHeaders(executionId, transformationParameters)
         }
     }
 
-    fun sendResponseErrorMessage(id: String, exception: Exception, transformationParameters: TransformationParameters) {
+    fun sendResponseErrorMessage(executionId: String, exception: Exception, transformationParameters: TransformationParameters) {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueResponseError), exception) {
-            it.setCommonHeaders(id, transformationParameters)
+            it.setCommonHeaders(executionId, transformationParameters)
         }
     }
 
-    private fun Message.setCommonHeaders(id: String, transformationParameters: TransformationParameters): Message {
-        jmsCorrelationID = id
+    private fun Message.setCommonHeaders(executionId: String, transformationParameters: TransformationParameters): Message {
+        jmsCorrelationID = executionId
         setLongProperty(TRANSFORMATION_START_TIMESTAMP, System.currentTimeMillis())
         setLongProperty(TRANSFORMATION_END_TIMESTAMP, System.currentTimeMillis() + Duration.ofDays(1).toMillis())
 

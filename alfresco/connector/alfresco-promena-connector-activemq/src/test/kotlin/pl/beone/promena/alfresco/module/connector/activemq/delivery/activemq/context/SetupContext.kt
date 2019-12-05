@@ -20,6 +20,7 @@ import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTr
 @Configuration
 @ComponentScan(
     "pl.beone.promena.alfresco.module.core.configuration.internal",
+    "pl.beone.promena.alfresco.module.core.configuration.external.transformation",
     "pl.beone.promena.alfresco.module.connector.activemq.configuration.autoconfigure",
     "pl.beone.promena.alfresco.module.connector.activemq.configuration.internal",
     "pl.beone.promena.alfresco.module.connector.activemq.configuration.framework",

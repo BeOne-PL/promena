@@ -73,13 +73,13 @@ class ActiveMQPromenaTransformationExecutor(
     }
 
     internal fun execute(
-        id: String,
+        executionId: String,
         transformation: Transformation,
         dataDescriptor: DataDescriptor,
         transformationParameters: TransformationParameters
     ) {
         transformerSender.send(
-            id,
+            executionId,
             transformationDescriptor(transformation, dataDescriptor, externalCommunicationParameters),
             transformationParameters
         )

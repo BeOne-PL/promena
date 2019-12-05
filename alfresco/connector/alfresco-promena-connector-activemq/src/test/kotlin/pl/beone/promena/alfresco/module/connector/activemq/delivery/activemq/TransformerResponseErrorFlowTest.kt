@@ -7,10 +7,12 @@ import io.mockk.every
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
@@ -38,6 +40,7 @@ import java.util.concurrent.TimeoutException
     ContextConfiguration(classes = [ActiveMQContainerContext::class, GlobalPropertiesContext::class]),
     ContextConfiguration(classes = [SetupContext::class])
 )
+@RunWith(SpringRunner::class)
 class TransformerResponseErrorFlowTest {
 
     @Autowired

@@ -16,3 +16,9 @@ COPY disable-webscript-caching-context.xml $TOMCAT_DIR/shared/classes/alfresco/e
 
 # Copy Dockerfile to avoid an error if no license file exists
 COPY Dockerfile license/*.* $TOMCAT_DIR/webapps/alfresco/WEB-INF/classes/alfresco/extension/license/
+
+# alfresco-jvm-console
+RUN echo $' \n\
+grant { \n\
+    permission java.security.AllPermission; \n\
+}; ' >> /usr/local/tomcat/conf/catalina.policy

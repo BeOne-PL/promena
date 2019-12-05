@@ -36,13 +36,13 @@ class TransformerResponseConsumer(
 
     @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.response}")
     fun receiveQueue(
-        @Header(CORRELATION_ID) correlationId: String,
+        @Header(CORRELATION_ID) executionId: String,
         @Header(TRANSFORMATION_START_TIMESTAMP) startTimestamp: Long,
         @Header(TRANSFORMATION_END_TIMESTAMP) endTimestamp: Long,
         @Header(SEND_BACK_TRANSFORMATION_PARAMETERS) transformationParameters: String,
         @Payload performedTransformationDescriptor: PerformedTransformationDescriptor
     ) {
-        val transformationExecution = transformationExecution(correlationId)
+        val transformationExecution = transformationExecution(executionId)
 
         val (transformation, nodeDescriptor, postTransformationExecutor, _, _, nodesChecksum, _, userName) =
             transformationParametersSerializationService.deserialize(transformationParameters)
@@ -51,7 +51,7 @@ class TransformerResponseConsumer(
         transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum, userName) {
             val transformationExecutionResult = authorizationService.runAs(userName) {
                 serviceRegistry.retryingTransactionHelper.doInTransaction({
-                    transformedDataDescriptorSaver.save(transformation, nodeRefs, performedTransformationDescriptor.transformedDataDescriptor)
+                    transformedDataDescriptorSaver.save(executionId, transformation, nodeRefs, performedTransformationDescriptor.transformedDataDescriptor)
                         .let(::transformationExecutionResult)
                         .also { result ->
                             postTransformationExecutor

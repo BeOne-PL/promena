@@ -22,10 +22,10 @@ class TransformerSender(
     private val jmsTemplate: JmsTemplate
 ) {
 
-    fun send(id: String, transformationDescriptor: TransformationDescriptor, transformationParameters: TransformationParameters) {
+    fun send(executionId: String, transformationDescriptor: TransformationDescriptor, transformationParameters: TransformationParameters) {
         jmsTemplate.convertAndSend(queueRequest, transformationDescriptor) { message ->
             message.apply {
-                jmsCorrelationID = id
+                jmsCorrelationID = executionId
 
                 setStringProperty(TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(getTransformationIds(transformationDescriptor)))
 

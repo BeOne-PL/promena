@@ -10,12 +10,14 @@ import org.fusesource.hawtbuf.UTF8Buffer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.ContextHierarchy
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit4.SpringRunner
 import pl.beone.promena.alfresco.module.connector.activemq.GlobalPropertiesContext
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.attempt
 import pl.beone.promena.alfresco.module.connector.activemq.TestConstants.dataDescriptor
@@ -43,6 +45,7 @@ import pl.beone.promena.core.applicationmodel.transformation.transformationDescr
     ContextConfiguration(classes = [ActiveMQContainerContext::class, GlobalPropertiesContext::class]),
     ContextConfiguration(classes = [SetupContext::class])
 )
+@RunWith(SpringRunner::class)
 class TransformerSenderTest {
 
     @Autowired

@@ -33,11 +33,11 @@ class TransformerResponseErrorConsumer(
         selector = "\${promena.connector.activemq.consumer.queue.response.error.selector}"
     )
     fun receiveQueue(
-        @Header(CORRELATION_ID) correlationId: String,
+        @Header(CORRELATION_ID) executionId: String,
         @Header(SEND_BACK_TRANSFORMATION_PARAMETERS) transformationParametersString: String,
         @Payload transformationException: TransformationException
     ) {
-        val transformationExecution = transformationExecution(correlationId)
+        val transformationExecution = transformationExecution(executionId)
 
         val transformationParameters = transformationParametersSerializationService.deserialize(transformationParametersString)
         val (transformation, nodeDescriptor, _, retry, dataDescriptor, nodesChecksum, attempt, userName) = transformationParameters
@@ -54,7 +54,7 @@ class TransformerResponseErrorConsumer(
 
                 authorizationService.runAs(userName) {
                     activeMQPromenaTransformer.execute(
-                        correlationId,
+                        executionId,
                         transformation,
                         dataDescriptor,
                         transformationParameters.copy(attempt = currentAttempt)
