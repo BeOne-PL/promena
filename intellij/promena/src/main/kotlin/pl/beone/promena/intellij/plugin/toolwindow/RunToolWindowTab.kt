@@ -84,7 +84,7 @@ internal class RunToolWindowTab(
 
     private fun getToolWindow(): ToolWindow =
         ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)
-            ?: throw IllegalStateException("Tool window <${ToolWindowId.RUN}> isn't available")
+            ?: error("Tool window <${ToolWindowId.RUN}> isn't available")
 
     private fun createConsoleView(): ConsoleView =
         TextConsoleBuilderFactory.getInstance()

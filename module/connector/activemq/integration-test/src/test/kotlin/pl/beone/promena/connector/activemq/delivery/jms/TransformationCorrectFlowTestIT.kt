@@ -103,14 +103,14 @@ class TransformationCorrectFlowTestIT {
         }
         val endTimestamp = getTimestamp()
 
-        headers.let {
-            it shouldContainAll mapOf(
+        with(headers) {
+            this shouldContainAll mapOf(
                 CORRELATION_ID to correlationId,
                 PROPERTY_SERIALIZATION_CLASS to "pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor",
                 TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds)
             )
-            it shouldContainKey TRANSFORMATION_START_TIMESTAMP
-            it shouldContainKey TRANSFORMATION_END_TIMESTAMP
+            this shouldContainKey TRANSFORMATION_START_TIMESTAMP
+            this shouldContainKey TRANSFORMATION_END_TIMESTAMP
         }
 
         val transformationStartTimestamp = headers[TRANSFORMATION_START_TIMESTAMP] as Long
@@ -118,13 +118,11 @@ class TransformationCorrectFlowTestIT {
         validateTimestamps(transformationStartTimestamp, transformationEndTimestamp, startTimestamp, endTimestamp)
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
-        performedTransformationDescriptor.transformedDataDescriptor.descriptors.let {
-            it shouldHaveSize 1
-            it[0].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data.getBytes() shouldBe
-                        transformedData.getBytes()
-                transformedDataDescriptor.metadata.getAll() shouldBe
-                        emptyMap()
+        with(performedTransformationDescriptor.transformedDataDescriptor.descriptors) {
+            this shouldHaveSize 1
+            with(this[0]) {
+                data.getBytes() shouldBe transformedData.getBytes()
+                metadata.getAll() shouldBe emptyMap()
             }
         }
     }

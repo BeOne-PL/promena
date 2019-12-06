@@ -9,9 +9,9 @@ class DefaultFileCommunicationParametersDslTest {
     @Test
     fun fileCommunicationParameters() {
         val directory = createTempDir()
-        fileCommunicationParameters(directory).let {
-            it.getId() shouldBe FileCommunicationParameters.ID
-            it.getDirectory() shouldBe directory
+        with(fileCommunicationParameters(directory)) {
+            getId() shouldBe FileCommunicationParameters.ID
+            getDirectory() shouldBe directory
         }
     }
 }

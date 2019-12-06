@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 @Component
 class TransformationResponseConsumer {
@@ -25,8 +26,8 @@ class TransformationResponseConsumer {
     }
 
     fun getMessage(maxWait: Long): HeadersWithPayload<PerformedTransformationDescriptor> =
-        messages.poll(maxWait, TimeUnit.MILLISECONDS) ?: throw  IllegalStateException()
+        messages.poll(maxWait, TimeUnit.MILLISECONDS) ?: throw TimeoutException()
 
     fun getErrorMessage(maxWait: Long): HeadersWithPayload<Exception> =
-        errorMessages.poll(maxWait, TimeUnit.MILLISECONDS) ?: throw  IllegalStateException()
+        errorMessages.poll(maxWait, TimeUnit.MILLISECONDS) ?: throw TimeoutException()
 }

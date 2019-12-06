@@ -43,9 +43,9 @@ class PropertiesTransformerConfigTestIT {
 
     @Test
     fun getTransformationId() {
-        propertiesTransformerConfig.getTransformerId(TransformerWithProperties).let {
-            it.name shouldBe "transformer-name"
-            it.subName shouldBe "transformer-sub-name"
+        with(propertiesTransformerConfig.getTransformerId(TransformerWithProperties)) {
+            name shouldBe "transformer-name"
+            subName shouldBe "transformer-sub-name"
         }
     }
 

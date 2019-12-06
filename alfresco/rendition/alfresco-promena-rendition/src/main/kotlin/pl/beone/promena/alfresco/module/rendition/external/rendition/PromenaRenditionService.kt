@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package pl.beone.promena.alfresco.module.rendition.external.rendition
 
 import org.alfresco.model.RenditionModel.ASPECT_RENDITION

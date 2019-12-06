@@ -102,11 +102,11 @@ class FileDataTest {
         val data = FileData.of(createTempFile())
             .also { it.delete() }
 
-        shouldThrow<DataDeleteException> {
+        with(shouldThrow<DataDeleteException> {
             data.delete()
-        }.let {
-            it.message shouldBe "Couldn't delete <${data.getLocation().toFile()}> file"
-            it.cause!!.message shouldBe "File <${data.getLocation().toFile()}> wasn't successfully deleted. Maybe file doesn't exist"
+        }) {
+            message shouldBe "Couldn't delete <${data.getLocation().toFile()}> file"
+            cause!!.message shouldBe "File <${data.getLocation().toFile()}> wasn't successfully deleted. Maybe file doesn't exist"
         }
     }
 

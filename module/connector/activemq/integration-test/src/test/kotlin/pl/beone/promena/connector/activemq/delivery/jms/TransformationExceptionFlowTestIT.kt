@@ -94,8 +94,8 @@ class TransformationExceptionFlowTestIT {
         }
         val endTimestamp = getTimestamp()
 
-        headers.let {
-            it shouldContainAll mapOf(
+        with(headers) {
+            this shouldContainAll mapOf(
                 CORRELATION_ID to correlationId,
                 PROPERTY_SERIALIZATION_CLASS to "pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException",
                 TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds),
@@ -104,8 +104,8 @@ class TransformationExceptionFlowTestIT {
                     "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"
                 )
             )
-            it shouldContainKey TRANSFORMATION_START_TIMESTAMP
-            it shouldContainKey TRANSFORMATION_END_TIMESTAMP
+            this shouldContainKey TRANSFORMATION_START_TIMESTAMP
+            this shouldContainKey TRANSFORMATION_END_TIMESTAMP
         }
 
         val transformationStartTimestamp = headers[TRANSFORMATION_START_TIMESTAMP] as Long
@@ -113,11 +113,11 @@ class TransformationExceptionFlowTestIT {
         validateTimestamps(transformationStartTimestamp, transformationEndTimestamp, startTimestamp, endTimestamp)
         (transformationEndTimestamp - transformationStartTimestamp) shouldBeGreaterThanOrEqual 300
 
-        exception.let {
-            it should beInstanceOf(expectedException::class)
-            it.message shouldBe expectedException.message
-            it.localizedMessage shouldBe expectedException.localizedMessage
-            it.cause shouldBe expectedException.cause
+        with(exception) {
+            this should beInstanceOf(expectedException::class)
+            message shouldBe expectedException.message
+            localizedMessage shouldBe expectedException.localizedMessage
+            cause shouldBe expectedException.cause
         }
     }
 

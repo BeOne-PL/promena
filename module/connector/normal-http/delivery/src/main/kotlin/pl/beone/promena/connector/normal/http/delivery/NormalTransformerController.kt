@@ -42,7 +42,7 @@ class NormalTransformerController(
     @PostMapping("/normal/transform", consumes = [org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE])
     fun transform(@RequestHeader headers: HttpHeaders, @RequestBody parts: Flux<Part>): Mono<ResponseEntity<ByteArray>> =
         parts
-            .flatMap { reduceToMono(it.content()).zipWith(MediaTypeDeterminer.determine(it.name(), it.headers()).toMono()) }
+            .flatMap { reduceToMono(it.content()).zipWith(MediaTypeDeterminer.determine(it.name(), it.headers()).let { Mono.just(it) }) }
             .map { singleDataDescriptor(it.t1.readBytes().toMemoryData(), it.t2, emptyMetadata()) }
             .reduce(emptyList<DataDescriptor.Single>()) { accumulator, element -> accumulator + element }
             .map(::dataDescriptor)

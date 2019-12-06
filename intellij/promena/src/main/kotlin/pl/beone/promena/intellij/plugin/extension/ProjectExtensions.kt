@@ -12,11 +12,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 
 fun Project.getActiveFile(): VirtualFile =
-    getEditor().file ?: throw IllegalStateException("No file open")
+    getEditor().file ?: error("No file open")
 
 fun Project.getEditor(): FileEditor =
     FileEditorManager.getInstance(this).selectedEditors.firstOrNull { it is TextEditor }
-        ?: throw IllegalStateException("No text editor or file opened")
+        ?: error("No text editor or file opened")
 
 fun Project.getCompilerOutputFolders(): List<VirtualFile> =
     allModules().flatMap {

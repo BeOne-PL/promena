@@ -54,19 +54,21 @@ class TransformationParametersSerializationServiceTest : AbstractUtilsAlfrescoIT
             userName
         )
 
-        serializationService.deserialize(
-            serializationService.serialize(transformationParameters)
-        ).let {
-            it.nodeDescriptor shouldBe transformationParameters.nodeDescriptor
-            it.retry shouldBe transformationParameters.retry
-            it.dataDescriptor shouldBe transformationParameters.dataDescriptor
-            it.nodesChecksum shouldBe transformationParameters.nodesChecksum
-            it.attempt shouldBe transformationParameters.attempt
-            it.userName shouldBe transformationParameters.userName
+        with(
+            serializationService.deserialize(
+                serializationService.serialize(transformationParameters)
+            )
+        ) {
+            nodeDescriptor shouldBe transformationParameters.nodeDescriptor
+            retry shouldBe transformationParameters.retry
+            dataDescriptor shouldBe transformationParameters.dataDescriptor
+            nodesChecksum shouldBe transformationParameters.nodesChecksum
+            attempt shouldBe transformationParameters.attempt
+            userName shouldBe transformationParameters.userName
 
-            it.postTransformationExecutor shouldNotBe null
-            postTransformationExecutorInjector.inject(it.postTransformationExecutor!!)
-            it.postTransformationExecutor!!.execute(mockk(), mockk(), transformationExecutionResult(nodeRef))
+            postTransformationExecutor shouldNotBe null
+            postTransformationExecutorInjector.inject(postTransformationExecutor!!)
+            postTransformationExecutor!!.execute(mockk(), mockk(), transformationExecutionResult(nodeRef))
             nodeRef.getProperty(PROP_NAME) shouldBe "changed"
         }
     }

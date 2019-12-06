@@ -81,7 +81,7 @@ internal class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, Abstrac
         try {
             function.containingKtFile.name
         } catch (e: Exception) {
-            throw IllegalStateException("Couldn't get class name")
+            error("Couldn't get class name")
         }.removeSuffix(".kt") + "Kt"
 
     private fun getFunctionName(function: KtNamedFunction): String =

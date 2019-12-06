@@ -11,7 +11,6 @@ import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTra
 import pl.beone.promena.connector.normal.http.PromenaNormalHttpHeaders.createTransformationTransformerIdSubNameHeader
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
-import pl.beone.promena.transformer.applicationmodel.mediatype.mediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.withCharset
 import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.contract.transformer.transformerId
@@ -32,17 +31,19 @@ class TransformationDeterminerTest {
         val transformerId3 = transformerId("converter")
         val mediaType3 = TEXT_PLAIN.withCharset(UTF_16)
 
-        TransformationDeterminer.determine(
-            createHeaders(1, transformerId.name, transformerId.subName, mediaType.mimeType, mediaType.charset.name()) +
-                    createHeaders(2, transformerId2.name, null, mediaType2.mimeType, null) +
-                    createHeaders(3, transformerId3.name, null, mediaType3.mimeType, mediaType3.charset.name()) +
-                    additionalHeaders
-        ).let {
-            val transformers = it.transformers
-            transformers shouldHaveSize 3
-            transformers[0] shouldBe singleTransformation(transformerId, mediaType, emptyParameters())
-            transformers[1] shouldBe singleTransformation(transformerId2, mediaType2, emptyParameters())
-            transformers[2] shouldBe singleTransformation(transformerId3, mediaType3, emptyParameters())
+        with(
+            TransformationDeterminer
+                .determine(
+                    createHeaders(1, transformerId.name, transformerId.subName, mediaType.mimeType, mediaType.charset.name()) +
+                            createHeaders(2, transformerId2.name, null, mediaType2.mimeType, null) +
+                            createHeaders(3, transformerId3.name, null, mediaType3.mimeType, mediaType3.charset.name()) +
+                            additionalHeaders
+                ).transformers
+        ) {
+            this shouldHaveSize 3
+            this[0] shouldBe singleTransformation(transformerId, mediaType, emptyParameters())
+            this[1] shouldBe singleTransformation(transformerId2, mediaType2, emptyParameters())
+            this[2] shouldBe singleTransformation(transformerId3, mediaType3, emptyParameters())
         }
     }
 
@@ -51,12 +52,13 @@ class TransformationDeterminerTest {
         val transformerId = transformerId("digital signature", "digiSeal")
         val mediaType = APPLICATION_PDF
 
-        TransformationDeterminer.determine(
-            createHeaders(1, transformerId.name, transformerId.subName, mediaType.mimeType, null) + additionalHeaders
-        ).let {
-            val transformers = it.transformers
-            transformers shouldHaveSize 1
-            transformers[0] shouldBe singleTransformation(transformerId, mediaType, emptyParameters())
+        with(
+            TransformationDeterminer
+                .determine(createHeaders(1, transformerId.name, transformerId.subName, mediaType.mimeType, null) + additionalHeaders)
+                .transformers
+        ) {
+            this shouldHaveSize 1
+            this[0] shouldBe singleTransformation(transformerId, mediaType, emptyParameters())
         }
     }
 

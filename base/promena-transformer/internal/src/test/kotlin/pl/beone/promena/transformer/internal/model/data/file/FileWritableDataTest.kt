@@ -36,9 +36,9 @@ internal class FileWritableDataTest {
     @Test
     fun ofDirectory() {
         val directory = createTempDir()
-        FileWritableData.ofDirectory(directory).let {
-            it.getBytes() shouldBe emptyByteArray
-            it.getFile().path shouldStartWith directory.path
+        with(FileWritableData.ofDirectory(directory)) {
+            getBytes() shouldBe emptyByteArray
+            getFile().path shouldStartWith directory.path
         }
     }
 

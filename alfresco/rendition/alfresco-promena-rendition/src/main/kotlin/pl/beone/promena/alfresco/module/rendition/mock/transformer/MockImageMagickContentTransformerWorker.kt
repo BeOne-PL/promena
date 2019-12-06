@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package pl.beone.promena.alfresco.module.rendition.mock.transformer
 
 import org.alfresco.repo.content.transform.ExplictTransformationDetails

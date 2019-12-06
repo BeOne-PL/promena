@@ -45,33 +45,35 @@ class FileDescriptorConverterTest {
         val mediaType3 = APPLICATION_PDF
         val metadata3 = mockk<Metadata>()
 
-        FileDescriptorConverter(directory).convert(
-            singleDataDescriptor(data, mediaType, metadata) +
-                    singleDataDescriptor(data2, mediaType2, metadata2) +
-                    singleDataDescriptor(data3, mediaType3, metadata3)
-        ).let {
-            it.descriptors shouldHaveSize 3
+        with(
+            FileDescriptorConverter(directory).convert(
+                singleDataDescriptor(data, mediaType, metadata) +
+                        singleDataDescriptor(data2, mediaType2, metadata2) +
+                        singleDataDescriptor(data3, mediaType3, metadata3)
+            )
+        ) {
+            descriptors shouldHaveSize 3
 
-            it.descriptors[0].let { dataDescriptor ->
-                dataDescriptor.data shouldBe instanceOf(FileData::class)
-                dataDescriptor.data shouldBe data2
-                dataDescriptor.mediaType shouldBe mediaType2
-                dataDescriptor.metadata shouldBe metadata2
+            with(descriptors[0]) {
+                this.data shouldBe instanceOf(FileData::class)
+                this.data shouldBe data2
+                this.mediaType shouldBe mediaType2
+                this.metadata shouldBe metadata2
             }
             data2.exists() shouldBe true
 
-            it.descriptors[1].let { dataDescriptor ->
-                dataDescriptor.data shouldBe instanceOf(FileData::class)
-                dataDescriptor.data.getBytes() shouldBe dataContent
-                dataDescriptor.mediaType shouldBe mediaType
-                dataDescriptor.metadata shouldBe metadata
+            with(descriptors[1]) {
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent
+                this.mediaType shouldBe mediaType
+                this.metadata shouldBe metadata
             }
 
-            it.descriptors[2].let { dataDescriptor ->
-                dataDescriptor.data shouldBe instanceOf(FileData::class)
-                dataDescriptor.data.getBytes() shouldBe dataContent3
-                dataDescriptor.mediaType shouldBe mediaType3
-                dataDescriptor.metadata shouldBe metadata3
+            with(descriptors[2]) {
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent3
+                this.mediaType shouldBe mediaType3
+                this.metadata shouldBe metadata3
             }
             data3.exists() shouldBe false
         }
@@ -96,30 +98,32 @@ class FileDescriptorConverterTest {
         val data3 = createFileData(dataContent3)
         val metadata3 = mockk<Metadata>()
 
-        FileDescriptorConverter(directory).convert(
-            singleTransformedDataDescriptor(data, metadata) +
-                    singleTransformedDataDescriptor(data2, metadata2) +
-                    singleTransformedDataDescriptor(data3, metadata3)
-        ).let {
-            it.descriptors shouldHaveSize 3
+        with(
+            FileDescriptorConverter(directory).convert(
+                singleTransformedDataDescriptor(data, metadata) +
+                        singleTransformedDataDescriptor(data2, metadata2) +
+                        singleTransformedDataDescriptor(data3, metadata3)
+            )
+        ) {
+            descriptors shouldHaveSize 3
 
-            it.descriptors[0].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data shouldBe instanceOf(FileData::class)
-                transformedDataDescriptor.data shouldBe data2
-                transformedDataDescriptor.metadata shouldBe metadata2
+            with(descriptors[0]) {
+                this.data shouldBe instanceOf(FileData::class)
+                this.data shouldBe data2
+                this.metadata shouldBe metadata2
             }
             data2.exists() shouldBe true
 
-            it.descriptors[1].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data shouldBe instanceOf(FileData::class)
-                transformedDataDescriptor.data.getBytes() shouldBe dataContent
-                transformedDataDescriptor.metadata shouldBe metadata
+            with(descriptors[1]) {
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent
+                this.metadata shouldBe metadata
             }
 
-            it.descriptors[2].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data shouldBe instanceOf(FileData::class)
-                transformedDataDescriptor.data.getBytes() shouldBe dataContent3
-                transformedDataDescriptor.metadata shouldBe metadata3
+            with(descriptors[2]) {
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent3
+                this.metadata shouldBe metadata3
             }
             data3.exists() shouldBe false
         }

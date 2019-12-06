@@ -40,7 +40,7 @@ class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreatorContext {
                 .methods
                 .firstOrNull { it.name == methodName && it.parameterCount == 0 }
                 ?.let { it.invoke(null) as MetricsSelector }
-                ?: throw IllegalStateException("Class <$className> doesn't contain <$methodName> method")
+                ?: error("Class <$className> doesn't contain <$methodName> method")
         } catch (e: Exception) {
             throw IllegalStateException("Couldn't create MetricsSelector using <$property>. It must be static method without arguments!", e)
         }

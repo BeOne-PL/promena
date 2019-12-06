@@ -85,12 +85,12 @@ class AkkaTransformationServiceTestIT {
 
         val transformerService = prepareTransformationService()
 
-        transformerService.transform(transformation, dataDescriptor).descriptors.let { transformedDataDescriptors ->
-            transformedDataDescriptors shouldHaveSize 1
+        with(transformerService.transform(transformation, dataDescriptor).descriptors) {
+            this shouldHaveSize 1
 
-            transformedDataDescriptors[0].let {
-                it.data.getString() shouldBe "test$"
-                it.metadata shouldBe (emptyMetadata() + ("begin" to true) + ("text appender-transformer" to true))
+            with(this[0]) {
+                data.getString() shouldBe "test$"
+                metadata shouldBe (emptyMetadata() + ("begin" to true) + ("text appender-transformer" to true))
             }
         }
     }
@@ -99,21 +99,20 @@ class AkkaTransformationServiceTestIT {
     fun `transform _ single transformation with sub name`() {
         val dataDescriptor = singleDataDescriptor("test".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
 
-        val transformation =
-            singleTransformation(
-                (textAppenderTransformerName to javaTextAppenderTransformerSubName).toTransformerId(),
-                TEXT_PLAIN,
-                emptyParameters() + ("append" to "$")
-            )
+        val transformation = singleTransformation(
+            (textAppenderTransformerName to javaTextAppenderTransformerSubName).toTransformerId(),
+            TEXT_PLAIN,
+            emptyParameters() + ("append" to "$")
+        )
 
         val transformerService = prepareTransformationService()
 
-        transformerService.transform(transformation, dataDescriptor).descriptors.let { transformedDataDescriptors ->
-            transformedDataDescriptors shouldHaveSize 1
+        with(transformerService.transform(transformation, dataDescriptor).descriptors) {
+            this shouldHaveSize 1
 
-            transformedDataDescriptors[0].let {
-                it.data.getString() shouldBe "test$"
-                it.metadata shouldBe (emptyMetadata() + ("begin" to true) + ("java-text appender-transformer" to true))
+            with(this[0]) {
+                data.getString() shouldBe "test$"
+                metadata shouldBe (emptyMetadata() + ("begin" to true) + ("java-text appender-transformer" to true))
             }
         }
     }
@@ -129,18 +128,18 @@ class AkkaTransformationServiceTestIT {
 
         val transformerService = prepareTransformationService()
 
-        transformerService.transform(transformation, dataDescriptor).descriptors.let { transformedDataDescriptors ->
-            transformedDataDescriptors shouldHaveSize 2
+        with(transformerService.transform(transformation, dataDescriptor).descriptors) {
+            this shouldHaveSize 2
 
-            transformedDataDescriptors[0].let {
-                it.data.getString() shouldBe "<root>test$</root>"
-                it.metadata shouldBe
+            with(this[0]) {
+                data.getString() shouldBe "<root>test$</root>"
+                metadata shouldBe
                         (emptyMetadata() + ("begin" to true) + ("text appender-transformer" to true) + ("from&text*to(xml)appender-transformer" to true))
             }
 
-            transformedDataDescriptors[1].let {
-                it.data.getString() shouldBe "<root>test2$</root>"
-                it.metadata shouldBe
+            with(this[1]) {
+                data.getString() shouldBe "<root>test2$</root>"
+                metadata shouldBe
                         (emptyMetadata() + ("begin2" to true) + ("text appender-transformer" to true) + ("from&text*to(xml)appender-transformer" to true))
             }
         }
@@ -154,11 +153,11 @@ class AkkaTransformationServiceTestIT {
 
         val transformerService = prepareTransformationService()
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
-        }.let {
-            it.message shouldBe "There is no <absentTransformer> transformer"
-            it.causeClass shouldBe TransformerNotFoundException::class.java
+        }) {
+            message shouldBe "There is no <absentTransformer> transformer"
+            causeClass shouldBe TransformerNotFoundException::class.java
         }
     }
 
@@ -170,16 +169,16 @@ class AkkaTransformationServiceTestIT {
 
         val transformerService = prepareTransformationService()
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
-        }.let {
-            it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Transformation isn't supported | There is no transformer in group <text appender> that support this transformation"
-                messages[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin): Only the transformation from text/plain to text/plain is supported"
-                messages[2] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer(text appender, Kotlin useless): I can't transform nothing. I'm useless"
-                messages[3] shouldBe "> pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(text appender, java): Only the transformation from text/plain to text/plain is supported"
+        }) {
+            with(message!!.split("\n")) {
+                this[0] shouldBe "Transformation isn't supported | There is no transformer in group <text appender> that support this transformation"
+                this[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin): Only the transformation from text/plain to text/plain is supported"
+                this[2] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer(text appender, Kotlin useless): I can't transform nothing. I'm useless"
+                this[3] shouldBe "> pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(text appender, java): Only the transformation from text/plain to text/plain is supported"
             }
-            it.causeClass shouldBe TransformationNotSupportedException::class.java
+            causeClass shouldBe TransformationNotSupportedException::class.java
         }
     }
 
@@ -191,11 +190,11 @@ class AkkaTransformationServiceTestIT {
 
         val transformerService = prepareTransformationService()
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
-        }.let {
-            it.message shouldBe "Transformation isn't supported | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin) doesn't support this transformation: Only the transformation from text/plain to text/plain is supported"
-            it.causeClass shouldBe TransformationNotSupportedException::class.java
+        }) {
+            message shouldBe "Transformation isn't supported | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin) doesn't support this transformation: Only the transformation from text/plain to text/plain is supported"
+            causeClass shouldBe TransformationNotSupportedException::class.java
         }
     }
 
@@ -208,11 +207,11 @@ class AkkaTransformationServiceTestIT {
 
         val transformerService = prepareTransformationService()
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
-        }.let {
-            it.message shouldBe "Transformer <timeout> timeout <1ms> has been reached"
-            it.causeClass shouldBe TransformerTimeoutException::class.java
+        }) {
+            message shouldBe "Transformer <timeout> timeout <1ms> has been reached"
+            causeClass shouldBe TransformerTimeoutException::class.java
         }
     }
 
@@ -226,11 +225,11 @@ class AkkaTransformationServiceTestIT {
             every { materialize<Any>(any()) } throws AskTimeoutException("")
         })
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
-        }.let {
-            it.message shouldBe "Transformation timeout has been reached"
-            it.causeClass shouldBe AskTimeoutException::class.java
+        }) {
+            message shouldBe "Transformation timeout has been reached"
+            causeClass shouldBe AskTimeoutException::class.java
         }
     }
 
@@ -244,11 +243,11 @@ class AkkaTransformationServiceTestIT {
             every { materialize<Any>(any()) } throws AbruptStageTerminationException(null)
         })
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
-        }.let {
-            it.message shouldBe "Transformation was abruptly terminated"
-            it.causeClass shouldBe AbruptStageTerminationException::class.java
+        }) {
+            message shouldBe "Transformation was abruptly terminated"
+            causeClass shouldBe AbruptStageTerminationException::class.java
         }
     }
 

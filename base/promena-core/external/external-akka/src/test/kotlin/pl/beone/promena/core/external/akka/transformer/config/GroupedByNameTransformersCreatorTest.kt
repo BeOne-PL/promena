@@ -74,7 +74,7 @@ class GroupedByNameTransformersCreatorTest {
             every { getTransformerId(dssDocumentSigner2Transformer) } returns ("document-signer" to "dss").toTransformerId()
         }
 
-        shouldThrow<IllegalStateException> {
+        with(shouldThrow<IllegalStateException> {
             GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
                 .create(
                     listOf(
@@ -86,11 +86,11 @@ class GroupedByNameTransformersCreatorTest {
                         dssDocumentSigner2Transformer
                     )
                 )
-        }.let {
-            it.message!!.split("\n").let { messages ->
-                messages[0] shouldContain "Detected <2> transformers with duplicated id:"
-                messages[1] shouldContain "> (converter, libre-office): "
-                messages[2] shouldContain "> (document-signer, dss): "
+        }) {
+            with(message!!.split("\n")) {
+                this[0] shouldContain "Detected <2> transformers with duplicated id:"
+                this[1] shouldContain "> (converter, libre-office): "
+                this[2] shouldContain "> (document-signer, dss): "
             }
         }
     }
@@ -120,20 +120,22 @@ class GroupedByNameTransformersCreatorTest {
             every { getPriority(zxingBarcodeTransformer) } returns 1
         }
 
-        shouldThrow<IllegalStateException> {
-            GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
-                .create(
-                    listOf(
-                        libreOfficeConverterTransformer,
-                        msOfficeConverterTransformer,
-                        zxingBarcodeTransformer,
-                        imageMagickSignerTransformer
+        with(
+            shouldThrow<IllegalStateException> {
+                GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
+                    .create(
+                        listOf(
+                            libreOfficeConverterTransformer,
+                            msOfficeConverterTransformer,
+                            zxingBarcodeTransformer,
+                            imageMagickSignerTransformer
+                        )
                     )
-                )
-        }.let {
-            it.message!!.split("\n").let { messages ->
-                messages[0] shouldContain "Detected <1> transformers with duplicated priority:"
-                messages[1] shouldContain "> (converter) [priority: 1]: "
+            }
+        ) {
+            with(message!!.split("\n")) {
+                this[0] shouldContain "Detected <1> transformers with duplicated priority:"
+                this[1] shouldContain "> (converter) [priority: 1]: "
             }
         }
     }

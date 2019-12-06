@@ -9,9 +9,9 @@ class MemoryCommunicationWritableDataCreatorTest {
 
     @Test
     fun create() {
-        MemoryCommunicationWritableDataCreator.create(memoryCommunicationParameters()).let {
-            it shouldBe instanceOf(MemoryWritableData::class)
-            it.getBytes() shouldBe ByteArray(0)
+        with(MemoryCommunicationWritableDataCreator.create(memoryCommunicationParameters())) {
+            this shouldBe instanceOf(MemoryWritableData::class)
+            getBytes() shouldBe ByteArray(0)
         }
     }
 }

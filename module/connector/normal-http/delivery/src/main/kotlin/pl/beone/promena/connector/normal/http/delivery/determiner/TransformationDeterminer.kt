@@ -42,11 +42,11 @@ internal object TransformationDeterminer {
 
     private fun determineTransformation(transformationPrefix: String, arguments: Map<String, String>): Transformation.Single {
         val name = arguments[TRANSFORMATION_TRANSFORMER_ID_NAME_SUFFIX]
-            ?: throw IllegalStateException("There is no header <$transformationPrefix$TRANSFORMATION_TRANSFORMER_ID_NAME_SUFFIX>")
+            ?: error("There is no header <$transformationPrefix$TRANSFORMATION_TRANSFORMER_ID_NAME_SUFFIX>")
         val subName = arguments[TRANSFORMATION_TRANSFORMER_ID_SUB_NAME_SUFFIX]
 
         val mimeType = arguments[TRANSFORMATION_MEDIA_TYPE_MIME_TYPE_SUFFIX]
-            ?: throw IllegalStateException("There is no header <$transformationPrefix$TRANSFORMATION_MEDIA_TYPE_MIME_TYPE_SUFFIX>")
+            ?: error("There is no header <$transformationPrefix$TRANSFORMATION_MEDIA_TYPE_MIME_TYPE_SUFFIX>")
         val charset = arguments[TRANSFORMATION_MEDIA_TYPE_CHARSET_SUFFIX] ?: UTF_8.name()
 
         return singleTransformation(transformerId(name, subName), mediaType(mimeType, charset), emptyParameters())

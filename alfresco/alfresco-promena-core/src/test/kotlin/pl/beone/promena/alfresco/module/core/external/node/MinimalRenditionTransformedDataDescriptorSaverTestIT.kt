@@ -87,77 +87,78 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(true, listOf(promenaTransformationMetadataSaver), dataConverter, serviceRegistry)
-            .save(
-                executionId,
-                singleTransformation("transformer", APPLICATION_PDF, emptyParameters()) next
-                        singleTransformation("transformer2", "sub", TEXT_PLAIN, emptyParameters() + ("key" to "value")),
-                nodeRefs,
-                singleTransformedDataDescriptor(data, emptyMetadata() + (PROP_LATITUDE.localName to latitudeValue)) +
-                        singleTransformedDataDescriptor(noData(), emptyMetadata())
-            )
-            .let { transformedNodeRefs ->
-                nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRef.getProperty(PROP_LATITUDE) shouldBe latitudeValue
-                nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRef2.getProperty(PROP_LATITUDE) shouldBe latitudeValue
-                nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
-
-                transformedNodeRefs shouldHaveSize 2
-                val (transformedNodeRef, transformedNodeRef2) = transformedNodeRefs
-
-                val transformationString = listOf(
-                    "Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={}))",
-                    "Single(transformerId=TransformerId(name=transformer2, subName=sub), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={key=value}))"
+        with(
+            MinimalRenditionTransformedDataDescriptorSaver(true, listOf(promenaTransformationMetadataSaver), dataConverter, serviceRegistry)
+                .save(
+                    executionId,
+                    singleTransformation("transformer", APPLICATION_PDF, emptyParameters()) next
+                            singleTransformation("transformer2", "sub", TEXT_PLAIN, emptyParameters() + ("key" to "value")),
+                    nodeRefs,
+                    singleTransformedDataDescriptor(data, emptyMetadata() + (PROP_LATITUDE.localName to latitudeValue)) +
+                            singleTransformedDataDescriptor(noData(), emptyMetadata())
                 )
-                val transformationIdString = listOf("transformer", "transformer2-sub")
-                val name = "transformer, transformer2-sub"
+        ) {
+            nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
+            nodeRef.getProperty(PROP_LATITUDE) shouldBe latitudeValue
+            nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
+            nodeRef2.getProperty(PROP_LATITUDE) shouldBe latitudeValue
+            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
-                transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
-                transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                transformedNodeRef.getProperties().let { properties ->
-                    properties shouldContainAll mapOf(
-                        PROP_CREATOR to currentUserName,
-                        PROP_MODIFIER to currentUserName,
-                        PROP_NAME to name,
-                        PROPERTY_EXECUTION_ID to executionId,
-                        PROPERTY_TRANSFORMATION to transformationString,
-                        PROPERTY_TRANSFORMATION_ID to transformationIdString,
-                        PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
-                        PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
-                        PROP_LATITUDE to latitudeValue
-                    )
-                    properties shouldNotContainKey PROPERTY_RENDITION_NAME
-                }
+            this shouldHaveSize 2
+            val (transformedNodeRef, transformedNodeRef2) = this
 
-                transformedNodeRef2.getType() shouldBe TYPE_THUMBNAIL
-                transformedNodeRef2.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                transformedNodeRef2.getProperties().let { properties ->
-                    properties shouldContainAll mapOf(
-                        PROP_CREATOR to currentUserName,
-                        PROP_MODIFIER to currentUserName,
-                        PROP_NAME to name,
-                        PROPERTY_EXECUTION_ID to executionId,
-                        PROPERTY_TRANSFORMATION to transformationString,
-                        PROPERTY_TRANSFORMATION_ID to transformationIdString,
-                        PROPERTY_TRANSFORMATION_DATA_INDEX to 1,
-                        PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
-                        PROP_LATITUDE to latitudeValue
-                    )
-                    properties shouldNotContainKey PROPERTY_RENDITION_NAME
-                }
+            val transformationString = listOf(
+                "Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=application/pdf, charset=UTF-8), parameters=MapParameters(parameters={}))",
+                "Single(transformerId=TransformerId(name=transformer2, subName=sub), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={key=value}))"
+            )
+            val transformationIdString = listOf("transformer", "transformer2-sub")
+            val name = "transformer, transformer2-sub"
 
-                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
-                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe transformedNodeRef2.getProperty(PROPERTY_EXECUTION_ID)
-                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
-                transformedNodeRef2.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
-
-                val renditionNames = List(2) { createQName(CONTENT_MODEL_1_0_URI, name) }
-                nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
-                nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
-
-                verify(exactly = 1) { dataConverter.saveDataInContentWriter(data, any()) }
+            transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
+            transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+            with(transformedNodeRef.getProperties()) {
+                this shouldContainAll mapOf(
+                    PROP_CREATOR to currentUserName,
+                    PROP_MODIFIER to currentUserName,
+                    PROP_NAME to name,
+                    PROPERTY_EXECUTION_ID to executionId,
+                    PROPERTY_TRANSFORMATION to transformationString,
+                    PROPERTY_TRANSFORMATION_ID to transformationIdString,
+                    PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
+                    PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
+                    PROP_LATITUDE to latitudeValue
+                )
+                this shouldNotContainKey PROPERTY_RENDITION_NAME
             }
+
+            transformedNodeRef2.getType() shouldBe TYPE_THUMBNAIL
+            transformedNodeRef2.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+            with(transformedNodeRef2.getProperties()) {
+                this shouldContainAll mapOf(
+                    PROP_CREATOR to currentUserName,
+                    PROP_MODIFIER to currentUserName,
+                    PROP_NAME to name,
+                    PROPERTY_EXECUTION_ID to executionId,
+                    PROPERTY_TRANSFORMATION to transformationString,
+                    PROPERTY_TRANSFORMATION_ID to transformationIdString,
+                    PROPERTY_TRANSFORMATION_DATA_INDEX to 1,
+                    PROPERTY_TRANSFORMATION_DATA_SIZE to 2,
+                    PROP_LATITUDE to latitudeValue
+                )
+                this shouldNotContainKey PROPERTY_RENDITION_NAME
+            }
+
+            this shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
+            transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe transformedNodeRef2.getProperty(PROPERTY_EXECUTION_ID)
+            transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+            transformedNodeRef2.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+
+            val renditionNames = List(2) { createQName(CONTENT_MODEL_1_0_URI, name) }
+            nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+            nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+
+            verify(exactly = 1) { dataConverter.saveDataInContentWriter(data, any()) }
+        }
     }
 
     @Test
@@ -173,45 +174,46 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
-            .save(
-                executionId,
-                singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
-                nodeRefs,
-                singleTransformedDataDescriptor(data, emptyMetadata())
-            )
-            .let { transformedNodeRefs ->
-                nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
-
-                transformedNodeRefs shouldHaveSize 1
-                val transformedNodeRef = transformedNodeRefs[0]
-
-                val name = "transformer"
-
-                transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
-                transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                transformedNodeRef.getProperties() shouldContainAll mapOf(
-                    PROP_CREATOR to currentUserName,
-                    PROP_MODIFIER to currentUserName,
-                    PROP_NAME to name,
-                    PROPERTY_EXECUTION_ID to executionId,
-                    PROPERTY_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                    PROPERTY_TRANSFORMATION_ID to listOf("transformer"),
-                    PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
-                    PROPERTY_TRANSFORMATION_DATA_SIZE to 1
+        with(
+            MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
+                .save(
+                    executionId,
+                    singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
+                    nodeRefs,
+                    singleTransformedDataDescriptor(data, emptyMetadata())
                 )
+        ) {
+            nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
+            nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
+            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
-                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
-                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+            this shouldHaveSize 1
+            val transformedNodeRef = this[0]
 
-                val renditionNames = listOf(createQName(CONTENT_MODEL_1_0_URI, name))
-                nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
-                nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+            val name = "transformer"
 
-                verify(exactly = 1) { dataConverter.saveDataInContentWriter(data, any()) }
-            }
+            transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
+            transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+            transformedNodeRef.getProperties() shouldContainAll mapOf(
+                PROP_CREATOR to currentUserName,
+                PROP_MODIFIER to currentUserName,
+                PROP_NAME to name,
+                PROPERTY_EXECUTION_ID to executionId,
+                PROPERTY_TRANSFORMATION to listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
+                PROPERTY_TRANSFORMATION_ID to listOf("transformer"),
+                PROPERTY_TRANSFORMATION_DATA_INDEX to 0,
+                PROPERTY_TRANSFORMATION_DATA_SIZE to 1
+            )
+
+            this shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
+            transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+
+            val renditionNames = listOf(createQName(CONTENT_MODEL_1_0_URI, name))
+            nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+            nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+
+            verify(exactly = 1) { dataConverter.saveDataInContentWriter(data, any()) }
+        }
     }
 
     @Test
@@ -225,47 +227,49 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
 
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
-        MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
-            .save(
-                executionId,
-                singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
-                nodeRefs,
-                emptyTransformedDataDescriptor()
-            ).let { transformedNodeRefs ->
-                nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
-                nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
+        with(
+            MinimalRenditionTransformedDataDescriptorSaver(true, emptyList(), dataConverter, serviceRegistry)
+                .save(
+                    executionId,
+                    singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
+                    nodeRefs,
+                    emptyTransformedDataDescriptor()
+                )
+        ) {
+            nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
+            nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
 
-                transformedNodeRefs shouldHaveSize 1
-                val transformedNodeRef = transformedNodeRefs[0]
+            this shouldHaveSize 1
+            val transformedNodeRef = this[0]
 
-                val name = "transformer"
+            val name = "transformer"
 
-                transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
-                transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
-                transformedNodeRef.getProperties().let { properties ->
-                    properties shouldContainAll mapOf(
-                        PROP_CREATOR to currentUserName,
-                        PROP_MODIFIER to currentUserName,
-                        PROP_NAME to name,
-                        PROPERTY_EXECUTION_ID to executionId,
-                        PROPERTY_TRANSFORMATION to
-                                listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
-                        PROPERTY_TRANSFORMATION_ID to listOf("transformer")
-                    )
-                    properties shouldNotContainKey PROPERTY_RENDITION_NAME
-                    properties shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_INDEX
-                    properties shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_SIZE
-                }
-
-                transformedNodeRefs shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
-                transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
-
-                val renditionNames = listOf(createQName(CONTENT_MODEL_1_0_URI, name))
-                nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
-                nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
-
-                verify(exactly = 0) { dataConverter.saveDataInContentWriter(data, any()) }
+            transformedNodeRef.getType() shouldBe TYPE_THUMBNAIL
+            transformedNodeRef.getAspects() shouldNotContainAll listOf(ASPECT_RENDITION2, ASPECT_HIDDEN_RENDITION)
+            with(transformedNodeRef.getProperties()) {
+                this shouldContainAll mapOf(
+                    PROP_CREATOR to currentUserName,
+                    PROP_MODIFIER to currentUserName,
+                    PROP_NAME to name,
+                    PROPERTY_EXECUTION_ID to executionId,
+                    PROPERTY_TRANSFORMATION to
+                            listOf("Single(transformerId=TransformerId(name=transformer, subName=null), targetMediaType=MediaType(mimeType=text/plain, charset=UTF-8), parameters=MapParameters(parameters={}))"),
+                    PROPERTY_TRANSFORMATION_ID to listOf("transformer")
+                )
+                this shouldNotContainKey PROPERTY_RENDITION_NAME
+                this shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_INDEX
+                this shouldNotContainKey PROPERTY_TRANSFORMATION_DATA_SIZE
             }
+
+            this shouldBe nodeRef.getRenditionAssociations().map { it.childRef }
+            transformedNodeRef.getProperty(PROPERTY_EXECUTION_ID) shouldBe executionId
+
+            val renditionNames = listOf(createQName(CONTENT_MODEL_1_0_URI, name))
+            nodeRef.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+            nodeRef2.getRenditionAssociations().map { it.qName } shouldBe renditionNames
+
+            verify(exactly = 0) { dataConverter.saveDataInContentWriter(data, any()) }
+        }
     }
 
     @Test
@@ -279,21 +283,20 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
             every { saveDataInContentWriter(any(), any()) } just Runs
         }
 
-        MinimalRenditionTransformedDataDescriptorSaver(false, emptyList(), dataConverter, serviceRegistry)
-            .save(
-                executionId,
-                singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
-                nodeRefs,
-                emptyTransformedDataDescriptor()
-            )
-            .let { transformedNodeRefs ->
-                nodeRefs.forEach { it.getAspects() shouldNotContain ASPECT_RENDITIONED }
-                nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
+        with(
+            MinimalRenditionTransformedDataDescriptorSaver(false, emptyList(), dataConverter, serviceRegistry)
+                .save(
+                    executionId,
+                    singleTransformation("transformer", TEXT_PLAIN, emptyParameters()),
+                    nodeRefs,
+                    emptyTransformedDataDescriptor()
+                )
+        ) {
+            nodeRefs.forEach { it.getAspects() shouldNotContain ASPECT_RENDITIONED }
+            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
 
-                transformedNodeRefs shouldHaveSize 0
-                transformedNodeRefs shouldHaveSize 0
-                transformedNodeRefs shouldHaveSize 0
-            }
+            this shouldHaveSize 0
+        }
     }
 
     private fun createNodeInIntegrationFolder(): NodeRef =

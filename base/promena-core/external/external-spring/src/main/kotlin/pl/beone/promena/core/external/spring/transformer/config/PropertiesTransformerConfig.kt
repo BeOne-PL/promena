@@ -32,7 +32,7 @@ class PropertiesTransformerConfig(private val environment: Environment) : Transf
             environment.getRequiredProperty(key, clazz)
         } else {
             if (default == null) {
-                throw IllegalStateException("There is no <$key> property")
+                error("There is no <$key> property")
             } else {
                 logger.warn { "There is no <$key> property. Set $keyElement to <$default>" }
                 default

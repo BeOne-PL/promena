@@ -37,7 +37,7 @@ class ExternalCommunicationParametersContext {
                 fileCommunicationParameters(directory)
             }
             else ->
-                throw IllegalStateException("External communication must be <${MemoryCommunicationParameters.ID}> or <${FileCommunicationParameters.ID}>")
+                error("External communication must be <${MemoryCommunicationParameters.ID}> or <${FileCommunicationParameters.ID}>")
         }
 
     fun determineDirectory(path: String): File =

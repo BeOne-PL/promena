@@ -17,40 +17,40 @@ internal class NodeDescriptorTest {
 
     @Test
     fun `single _ of`() {
-        NodeDescriptor.Single.of(nodeRef).let { nodeDescriptor ->
-            nodeDescriptor.descriptors shouldHaveSize 1
+        with(NodeDescriptor.Single.of(nodeRef)) {
+            descriptors shouldHaveSize 1
 
-            nodeDescriptor.descriptors[0].let {
-                it.nodeRef shouldBe nodeRef
-                it.metadata shouldBe emptyMetadata()
+            with(descriptors[0]) {
+                nodeRef shouldBe nodeRef
+                metadata shouldBe emptyMetadata()
             }
         }
     }
 
     @Test
     fun `single _ of with metadata`() {
-        NodeDescriptor.Single.of(nodeRef, metadata).let { nodeDescriptor ->
-            nodeDescriptor.descriptors shouldHaveSize 1
+        with(NodeDescriptor.Single.of(nodeRef, metadata)) {
+            descriptors shouldHaveSize 1
 
-            nodeDescriptor.descriptors[0].let {
-                it.nodeRef shouldBe nodeRef
-                it.metadata shouldBe metadata
+            with(descriptors[0]) {
+                nodeRef shouldBe nodeRef
+                metadata shouldBe metadata
             }
         }
     }
 
     @Test
     fun `multi _ of`() {
-        NodeDescriptor.Multi.of(listOf(NodeDescriptor.Single.of(nodeRef), NodeDescriptor.Single.of(nodeRef, metadata))).let { nodeDescriptor ->
-            nodeDescriptor.descriptors shouldHaveSize 2
+        with(NodeDescriptor.Multi.of(listOf(NodeDescriptor.Single.of(nodeRef), NodeDescriptor.Single.of(nodeRef, metadata)))) {
+            descriptors shouldHaveSize 2
 
-            nodeDescriptor.descriptors[0].let {
-                it.nodeRef shouldBe nodeRef
-                it.metadata shouldBe emptyMetadata()
+            with(descriptors[0]) {
+                nodeRef shouldBe nodeRef
+                metadata shouldBe emptyMetadata()
             }
-            nodeDescriptor.descriptors[1].let {
-                it.nodeRef shouldBe nodeRef
-                it.metadata shouldBe metadata
+            with(descriptors[1]) {
+                nodeRef shouldBe nodeRef
+                metadata shouldBe metadata
             }
         }
     }

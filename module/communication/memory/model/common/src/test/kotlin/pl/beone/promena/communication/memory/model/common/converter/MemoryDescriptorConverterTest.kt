@@ -34,24 +34,25 @@ class MemoryDescriptorConverterTest {
         val mediaType2 = APPLICATION_PDF
         val metadata2 = mockk<Metadata>()
 
-        MemoryDescriptorConverter.convert(
-            singleDataDescriptor(data, mediaType, metadata) +
-                    singleDataDescriptor(data2, mediaType2, metadata2)
-        ).let {
-            it.descriptors shouldHaveSize 2
+        with(
+            MemoryDescriptorConverter.convert(
+                singleDataDescriptor(data, mediaType, metadata) + singleDataDescriptor(data2, mediaType2, metadata2)
+            )
+        ) {
+            descriptors shouldHaveSize 2
 
-            it.descriptors[0].let { dataDescriptor ->
-                dataDescriptor.data shouldBe instanceOf(MemoryData::class)
-                dataDescriptor.data shouldBe data2
-                dataDescriptor.mediaType shouldBe mediaType2
-                dataDescriptor.metadata shouldBe metadata2
+            with(descriptors[0]) {
+                this.data shouldBe instanceOf(MemoryData::class)
+                this.data shouldBe data2
+                this.mediaType shouldBe mediaType2
+                this.metadata shouldBe metadata2
             }
 
-            it.descriptors[1].let { dataDescriptor ->
-                dataDescriptor.data shouldBe instanceOf(MemoryData::class)
-                dataDescriptor.data.getBytes() shouldBe dataBytes
-                dataDescriptor.mediaType shouldBe mediaType
-                dataDescriptor.metadata shouldBe metadata
+            with(descriptors[1]) {
+                this.data shouldBe instanceOf(MemoryData::class)
+                this.data.getBytes() shouldBe dataBytes
+                this.mediaType shouldBe mediaType
+                this.metadata shouldBe metadata
             }
         }
     }
@@ -68,22 +69,23 @@ class MemoryDescriptorConverterTest {
         val data2 = "".toMemoryData()
         val metadata2 = mockk<Metadata>()
 
-        MemoryDescriptorConverter.convert(
-            singleTransformedDataDescriptor(data, metadata) +
-                    singleTransformedDataDescriptor(data2, metadata2)
-        ).let {
-            it.descriptors shouldHaveSize 2
+        with(
+            MemoryDescriptorConverter.convert(
+                singleTransformedDataDescriptor(data, metadata) + singleTransformedDataDescriptor(data2, metadata2)
+            )
+        ) {
+            descriptors shouldHaveSize 2
 
-            it.descriptors[0].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data shouldBe instanceOf(MemoryData::class)
-                transformedDataDescriptor.data shouldBe data2
-                transformedDataDescriptor.metadata shouldBe metadata2
+            with(descriptors[0]) {
+                this.data shouldBe instanceOf(MemoryData::class)
+                this.data shouldBe data2
+                this.metadata shouldBe metadata2
             }
 
-            it.descriptors[1].let { transformedDataDescriptor ->
-                transformedDataDescriptor.data shouldBe instanceOf(MemoryData::class)
-                transformedDataDescriptor.data.getBytes() shouldBe dataBytes
-                transformedDataDescriptor.metadata shouldBe metadata
+            with(descriptors[1]) {
+                this.data shouldBe instanceOf(MemoryData::class)
+                this.data.getBytes() shouldBe dataBytes
+                this.metadata shouldBe metadata
             }
         }
     }

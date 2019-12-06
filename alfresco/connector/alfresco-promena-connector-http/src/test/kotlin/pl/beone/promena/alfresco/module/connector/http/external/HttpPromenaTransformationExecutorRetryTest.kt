@@ -181,17 +181,11 @@ class HttpPromenaTransformationExecutorRetryTest {
         val transformationExecution = httpPromenaTransformationExecutor.execute(transformation, nodeDescriptor, postTransformationExecutor)
 
         shouldThrowExactly<TimeoutException> {
-            promenaMutableTransformationManager.getResult(
-                transformationExecution,
-                ofSeconds(5)
-            )
+            promenaMutableTransformationManager.getResult(transformationExecution, ofSeconds(5))
         }
 
         shouldThrowExactly<TransformationException> {
-            promenaMutableTransformationManager.getResult(
-                transformationExecution,
-                ofSeconds(2)
-            )
+            promenaMutableTransformationManager.getResult(transformationExecution, ofSeconds(2))
         }.message shouldBe exception.message
     }
 
@@ -214,16 +208,13 @@ class HttpPromenaTransformationExecutorRetryTest {
             httpPromenaTransformationExecutor.execute(transformation, nodeDescriptor, postTransformationExecutor, customRetry(4, ofSeconds(1)))
 
         shouldThrowExactly<TimeoutException> {
-            promenaMutableTransformationManager.getResult(
-                transformationExecution,
-                ofSeconds(3)
-            )
+            promenaMutableTransformationManager.getResult(transformationExecution, ofSeconds(3))
         }
 
-        promenaMutableTransformationManager.getResult(
-            transformationExecution,
-            ofSeconds(2)
-        ) shouldBe transformationExecutionResult
+        promenaMutableTransformationManager
+            .getResult(
+                transformationExecution, ofSeconds(2)
+            ) shouldBe transformationExecutionResult
     }
 
     @Test
@@ -281,17 +272,11 @@ class HttpPromenaTransformationExecutorRetryTest {
         ).execute(transformation, nodeDescriptor, postTransformationExecutor, customRetry(4, ofSeconds(1)))
 
         shouldThrowExactly<TimeoutException> {
-            promenaMutableTransformationManager.getResult(
-                transformationExecution,
-                ofSeconds(3)
-            )
+            promenaMutableTransformationManager.getResult(transformationExecution, ofSeconds(3))
         }
 
         shouldThrowExactly<HttpException> {
-            promenaMutableTransformationManager.getResult(
-                transformationExecution,
-                ofSeconds(2)
-            )
+            promenaMutableTransformationManager.getResult(transformationExecution, ofSeconds(2))
         }
     }
 }

@@ -80,7 +80,7 @@ class TransformerControllerTestIT {
         every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters) } returns transformedDataDescriptor
 
         webTestClient.post().uri(transformEndpoint)
-            .body(BodyInserters.fromObject(requestBody))
+            .body(BodyInserters.fromValue(requestBody))
             .exchange()
             .expectStatus().isOk
             .expectBody<ByteArray>().isEqualTo(responseBody)
@@ -97,7 +97,7 @@ class TransformerControllerTestIT {
         every { transformationUseCase.transform(transformation, dataDescriptor, communicationParameters) } throws exception
 
         webTestClient.post().uri(transformEndpoint)
-            .body(BodyInserters.fromObject(requestBody))
+            .body(BodyInserters.fromValue(requestBody))
             .exchange()
             .expectHeader()
             .valueEquals(SERIALIZATION_CLASS, "pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException")
@@ -108,7 +108,7 @@ class TransformerControllerTestIT {
     @Test
     fun `transform _ bad url _ should return NotFound`() {
         webTestClient.post().uri("/absent")
-            .body(BodyInserters.fromObject(requestBody))
+            .body(BodyInserters.fromValue(requestBody))
             .exchange()
             .expectStatus().isNotFound
             .expectBody()

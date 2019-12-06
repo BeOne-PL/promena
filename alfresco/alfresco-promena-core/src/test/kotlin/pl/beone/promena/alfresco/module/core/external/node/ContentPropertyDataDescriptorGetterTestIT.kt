@@ -36,9 +36,7 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
         }
 
         ContentPropertyDataDescriptorGetter(dataConverter, serviceRegistry)
-            .get(nodeRef.toSingleNodeDescriptor(metadata)).let {
-                it shouldBe singleDataDescriptor(data, mediaType, metadata)
-            }
+            .get(nodeRef.toSingleNodeDescriptor(metadata)) shouldBe singleDataDescriptor(data, mediaType, metadata)
     }
 
     @Test

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package pl.beone.promena.alfresco.module.rendition.external.thumbnail
 
 import mu.KotlinLogging

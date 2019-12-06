@@ -15,10 +15,10 @@ class TransformationDescriptorDslTest {
         val dataDescriptor = mockk<DataDescriptor>()
         val communicationParameters = mockk<CommunicationParameters>()
 
-        transformationDescriptor(transformation, dataDescriptor, communicationParameters).let {
-            it.transformation shouldBe transformation
-            it.dataDescriptor shouldBe dataDescriptor
-            it.communicationParameters shouldBe communicationParameters
+        with(transformationDescriptor(transformation, dataDescriptor, communicationParameters)) {
+            transformation shouldBe transformation
+            dataDescriptor shouldBe dataDescriptor
+            communicationParameters shouldBe communicationParameters
         }
     }
 }

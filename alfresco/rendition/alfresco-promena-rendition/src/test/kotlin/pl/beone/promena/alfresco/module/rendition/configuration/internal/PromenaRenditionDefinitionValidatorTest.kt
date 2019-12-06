@@ -53,14 +53,14 @@ class PromenaRenditionDefinitionValidatorTest {
             every { getAll() } returns listOf(doclib, doclib2, pdf, pdf2, avatar)
         }
 
-        shouldThrow<IllegalStateException> {
+        with(shouldThrow<IllegalStateException> {
             PromenaRenditionDefinitionValidator(promenaRenditionDefinitionGetter)
                 .validateUniqueDefinitions()
-        }.let {
-            it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Detected <2> definitions with duplicated rendition name:"
-                messages[1] shouldStartWith "> doclib: "
-                messages[2] shouldStartWith "> pdf: "
+        }) {
+            with(message!!.split("\n")) {
+                this[0] shouldBe "Detected <2> definitions with duplicated rendition name:"
+                this[1] shouldStartWith "> doclib: "
+                this[2] shouldStartWith "> pdf: "
             }
         }
     }

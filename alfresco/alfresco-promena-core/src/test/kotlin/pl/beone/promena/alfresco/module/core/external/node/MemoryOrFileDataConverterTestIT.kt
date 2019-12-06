@@ -22,11 +22,12 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
             saveContent(TEXT_PLAIN, "test")
         }
 
-        MemoryOrFileDataConverter(MemoryCommunicationParameters.ID).createData(node.getContentReader()).let {
-            it.getBytes() shouldBe "test".toByteArray()
-            shouldThrow<UnsupportedOperationException> {
-                it.getLocation()
-            }
+        with(
+            MemoryOrFileDataConverter(MemoryCommunicationParameters.ID)
+                .createData(node.getContentReader())
+        ) {
+            getBytes() shouldBe "test".toByteArray()
+            shouldThrow<UnsupportedOperationException> { getLocation() }
         }
     }
 
@@ -39,11 +40,13 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
                 saveContent(TEXT_PLAIN, "test")
             }
 
-            MemoryOrFileDataConverter(FileCommunicationParameters.ID, tmpDir)
-                .createData(node.getContentReader()).let {
-                    it.getBytes() shouldBe "test".toByteArray()
-                    it.getLocation().toString() shouldContain tmpDir.toString()
-                }
+            with(
+                MemoryOrFileDataConverter(FileCommunicationParameters.ID, tmpDir)
+                    .createData(node.getContentReader())
+            ) {
+                getBytes() shouldBe "test".toByteArray()
+                getLocation().toString() shouldContain tmpDir.toString()
+            }
         } finally {
             tmpDir.delete()
         }
@@ -58,8 +61,7 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
         MemoryOrFileDataConverter(MemoryCommunicationParameters.ID, null)
             .saveDataInContentWriter(data, node.getContentWriter())
 
-        node.readContent() shouldBe
-                "test".toByteArray()
+        node.readContent() shouldBe "test".toByteArray()
     }
 
     @Test
@@ -72,7 +74,6 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
             .saveDataInContentWriter(data, node.getContentWriter())
 
         java.io.File(data.getLocation()).exists() shouldBe false
-        node.readContent() shouldBe
-                "test".toByteArray()
+        node.readContent() shouldBe "test".toByteArray()
     }
 }

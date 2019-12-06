@@ -77,16 +77,16 @@ class DefaultTransformationUseCaseTest {
                     ExternalCommunicationManagerValidationException("Exception occurred", RuntimeException("Stack exception"))
         }
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, mockk())
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
-        }.let {
-            it.message!!.split("\n").let { messages ->
-                messages[0] shouldBe "Couldn't transform because an error occurred. Check Promena logs for more details"
-                messages[1] shouldBe "# Exception occurred"
+        }) {
+            with(message!!.split("\n")) {
+                this[0] shouldBe "Couldn't transform because an error occurred. Check Promena logs for more details"
+                this[1] shouldBe "# Exception occurred"
             }
-            it.causeClass shouldBe ExternalCommunicationManagerValidationException::class.java
-            it.cause shouldBe null
+            causeClass shouldBe ExternalCommunicationManagerValidationException::class.java
+            cause shouldBe null
         }
     }
 
@@ -117,13 +117,13 @@ class DefaultTransformationUseCaseTest {
                     TransformationException("Transformation isn't supported", TransformationNotSupportedException::class.java)
         }
 
-        shouldThrow<TransformationException> {
+        with(shouldThrow<TransformationException> {
             DefaultTransformationUseCase(externalCommunicationManager, transformerService)
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
-        }.let {
-            it.message shouldBe "Transformation isn't supported"
-            it.causeClass shouldBe TransformationNotSupportedException::class.java
-            it.cause shouldBe null
+        }) {
+            message shouldBe "Transformation isn't supported"
+            causeClass shouldBe TransformationNotSupportedException::class.java
+            cause shouldBe null
         }
     }
 }

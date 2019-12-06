@@ -40,18 +40,17 @@ class MemoryPromenaRenditionDefinitionGetterTest {
 
     @Test
     fun getByRenditionName() {
-        promenaRenditionDefinitionGetter.getByRenditionName("doclib") shouldBe
-                doclib
+        promenaRenditionDefinitionGetter.getByRenditionName("doclib") shouldBe doclib
     }
 
     @Test
     fun `getByRenditionName _ absent rendition _ should throw NoSuchPromenaRenditionDefinitionException`() {
-        shouldThrow<NoSuchPromenaRenditionDefinitionException> {
+        with(shouldThrow<NoSuchPromenaRenditionDefinitionException> {
             promenaRenditionDefinitionGetter.getByRenditionName("absent")
-        }.let {
-            it.renditionName shouldBe "absent"
-            it.promenaRenditionDefinitions shouldBe definitions
-            it.message shouldStartWith "There is no <absent> Promena rendition definition. Available renditions:"
+        }) {
+            renditionName shouldBe "absent"
+            promenaRenditionDefinitions shouldBe definitions
+            message shouldStartWith "There is no <absent> Promena rendition definition. Available renditions:"
         }
     }
 }

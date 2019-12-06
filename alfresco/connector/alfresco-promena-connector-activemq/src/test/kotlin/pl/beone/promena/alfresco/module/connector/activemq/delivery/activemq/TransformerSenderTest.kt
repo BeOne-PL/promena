@@ -119,10 +119,9 @@ class TransformerSenderTest {
                 fail("No messages available in queue")
             }
 
-            messages.first().let { message ->
-                val activeMQMessage = message as ActiveMQMessage
-                activeMQMessage.jmsCorrelationID shouldBe transformationExecution.id
-                activeMQMessage.properties shouldContainAll headers
+            with(messages.first() as ActiveMQMessage) {
+                jmsCorrelationID shouldBe transformationExecution.id
+                properties shouldContainAll headers
             }
         }
     }

@@ -40,14 +40,14 @@ internal object MediaTypeDeterminer {
 
         return (contentTypeRegEx.find(contentType)?.groupValues ?: contentTypeOnlyMimeTypeRegEx.find(contentType)?.groupValues)
             ?.let { groupValues -> mediaType(groupValues[1], groupValues.getOrNull(2) ?: UTF_8.name()) }
-            ?: throw IllegalStateException("Part header <$CONTENT_TYPE> has incorrect format <$contentType>. Acceptable formats: (<mime type>; charset=<charset>) or (<mime type>)")
+            ?: error("Part header <$CONTENT_TYPE> has incorrect format <$contentType>. Acceptable formats: (<mime type>; charset=<charset>) or (<mime type>)")
     }
 
     private fun <T> Map<String, T>.getValueCaseInsensitive(key: String): T? =
         entries.firstOrNull { (key_) -> key_.compareTo(key, true) == 0 }?.value
 
     private fun createIllegalStateException(fieldName: String?): IllegalStateException =
-        throw IllegalStateException(
+        error(
             if (fieldName != null) {
                 "Part <$fieldName> headers don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
             } else {

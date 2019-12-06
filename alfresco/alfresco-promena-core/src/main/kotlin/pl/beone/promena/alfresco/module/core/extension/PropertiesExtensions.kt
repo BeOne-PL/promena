@@ -11,7 +11,7 @@ fun Properties.getPropertyWithResolvedPlaceholders(key: String): String? {
 }
 
 fun Properties.getRequiredPropertyWithResolvedPlaceholders(key: String): String {
-    val property = getPropertyWithEmptySupport(key) ?: throw IllegalStateException("Required key '$key' not found")
+    val property = getPropertyWithEmptySupport(key) ?: error("Required key '$key' not found")
 
     return PropertyPlaceholderHelper("\${", "}")
         .replacePlaceholders(property, this)

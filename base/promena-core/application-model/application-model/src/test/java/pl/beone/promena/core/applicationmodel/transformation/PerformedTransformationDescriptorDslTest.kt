@@ -11,8 +11,6 @@ class PerformedTransformationDescriptorDslTest {
     fun performedTransformationDescriptor() {
         val transformedDataDescriptor = mockk<TransformedDataDescriptor>()
 
-        performedTransformationDescriptor(transformedDataDescriptor).let {
-            it.transformedDataDescriptor shouldBe transformedDataDescriptor
-        }
+        performedTransformationDescriptor(transformedDataDescriptor).transformedDataDescriptor shouldBe transformedDataDescriptor
     }
 }

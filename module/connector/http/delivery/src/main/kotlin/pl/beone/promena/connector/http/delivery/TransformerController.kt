@@ -39,7 +39,7 @@ class TransformerController(
             .map(::createResponse)
             .onErrorResume({ it !is ResponseStatusException }) {
                 logUnknownException(it)
-                createInternalServerErrorResponse(it).toMono()
+                createInternalServerErrorResponse(it).let { Mono.just(it) }
             }
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
