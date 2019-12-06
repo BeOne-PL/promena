@@ -55,8 +55,9 @@ class PromenaRenditionService(
     override fun getRenditionByName(node: NodeRef, renditionName: QName): ChildAssociationRef? =
         renditionGetter.getRendition(node, renditionName.localName)
 
-    override fun getSourceNode(renditionNode: NodeRef?): ChildAssociationRef =
-        TODO("not implemented")
+    override fun getSourceNode(renditionNode: NodeRef?): ChildAssociationRef {
+        throw UnsupportedOperationException()
+    }
 
     override fun render(sourceNode: NodeRef, renditionDefinition: RenditionDefinition): ChildAssociationRef =
         promenaRenditionTransformationExecutor.transform(sourceNode, renditionDefinition.renditionName.localName)

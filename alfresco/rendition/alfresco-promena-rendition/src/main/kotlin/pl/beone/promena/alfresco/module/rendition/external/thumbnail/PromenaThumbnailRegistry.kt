@@ -86,7 +86,7 @@ internal class PromenaThumbnailRegistry(
     }
 
     override fun getThumbnailRenditionConvertor(): ThumbnailRenditionConvertor {
-        TODO("implement")
+        throw UnsupportedOperationException()
     }
 
     override fun redeploy(): Boolean =
