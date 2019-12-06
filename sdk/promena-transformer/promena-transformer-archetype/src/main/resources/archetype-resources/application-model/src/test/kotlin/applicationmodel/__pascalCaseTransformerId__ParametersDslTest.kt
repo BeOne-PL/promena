@@ -14,35 +14,35 @@ class ${pascalCaseTransformerId}ParametersDslTest {
 
     @Test
     fun `${camelCaseTransformerId}Parameters _ default parameters`() {
-        ${camelCaseTransformerId}Parameters(
-            mandatory = mandatory
-        ).let {
-            it.getMandatory() shouldBe mandatory
+        with(
+            ${camelCaseTransformerId}Parameters(
+                mandatory = mandatory
+            )
+        ) {
+            getMandatory() shouldBe mandatory
 
-            shouldThrow<NoSuchElementException> {
-                it.getOptional()
-            }
-            it.getOptionalOrNull() shouldBe null
-            it.getOptionalOrDefault(optional) shouldBe optional
+            shouldThrow<NoSuchElementException> { getOptional() }
+            getOptionalOrNull() shouldBe null
+            getOptionalOrDefault(optional) shouldBe optional
 
-            shouldThrow<NoSuchElementException> {
-                it.getOptionalLimitedValue()
-            }
-            it.getOptionalLimitedValueOrNull() shouldBe null
-            it.getOptionalLimitedValueOrDefault(optionalLimitedValue) shouldBe optionalLimitedValue
+            shouldThrow<NoSuchElementException> { getOptionalLimitedValue() }
+            getOptionalLimitedValueOrNull() shouldBe null
+            getOptionalLimitedValueOrDefault(optionalLimitedValue) shouldBe optionalLimitedValue
         }
     }
 
     @Test
     fun `${camelCaseTransformerId}Parameters _ all parameters`() {
-        ${camelCaseTransformerId}Parameters(
-            mandatory = mandatory,
-            optional = optional,
-            optionalLimitedValue = optionalLimitedValue
-        ).let {
-            it.getMandatory() shouldBe mandatory
-            it.getOptional() shouldBe optional
-            it.getOptionalLimitedValue() shouldBe optionalLimitedValue
+        with(
+            ${camelCaseTransformerId}Parameters(
+                mandatory = mandatory,
+                optional = optional,
+                optionalLimitedValue = optionalLimitedValue
+            )
+        ) {
+            getMandatory() shouldBe mandatory
+            getOptional() shouldBe optional
+            getOptionalLimitedValue() shouldBe optionalLimitedValue
         }
     }
 }

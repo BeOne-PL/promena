@@ -1,7 +1,7 @@
 package ${package}.configuration
 
 import io.kotlintest.shouldBe
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.mock.env.MockEnvironment
@@ -12,7 +12,7 @@ import ${package}.${pascalCaseTransformerId}TransformerSettings
 class ${pascalCaseTransformerId}TransformerConfigurationContextTest {
 
     @Test
-    fun `setting context _ default parameters`() {
+    fun `setting context _ default`() {
         val environment = createEnvironment(
             mapOf(
                 "transformer.${package}.settings.hostname" to "localhost",
@@ -25,19 +25,19 @@ class ${pascalCaseTransformerId}TransformerConfigurationContextTest {
         )
 
         val applicationContext = createConfigApplicationContext(environment, ${pascalCaseTransformerId}TransformerConfigurationContext::class.java)
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java).let {
-            it.hostname shouldBe "localhost"
-            it.port shouldBe 8080
+        with(applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java)) {
+            hostname shouldBe "localhost"
+            port shouldBe 8080
         }
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
-            it.optional shouldBe null
-            it.optionalLimitedValue shouldBe null
-            it.timeout shouldBe null
+        with(applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java)) {
+            optional shouldBe null
+            optionalLimitedValue shouldBe null
+            timeout shouldBe null
         }
     }
 
     @Test
-    fun `setting context _ all values`() {
+    fun `setting context _ all`() {
         val environment = createEnvironment(
             mapOf(
                 "transformer.${package}.settings.hostname" to "localhost",
@@ -50,14 +50,14 @@ class ${pascalCaseTransformerId}TransformerConfigurationContextTest {
         )
 
         val applicationContext = createConfigApplicationContext(environment, ${pascalCaseTransformerId}TransformerConfigurationContext::class.java)
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java).let {
-            it.hostname shouldBe "localhost"
-            it.port shouldBe 8080
+        with(applicationContext.getBean(${pascalCaseTransformerId}TransformerSettings::class.java)) {
+            hostname shouldBe "localhost"
+            port shouldBe 8080
         }
-        applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java).let {
-            it.optional shouldBe "value"
-            it.optionalLimitedValue shouldBe 1
-            it.timeout shouldBe Duration.ofMinutes(5)
+        with(applicationContext.getBean(${pascalCaseTransformerId}TransformerDefaultParameters::class.java)) {
+            optional shouldBe "value"
+            optionalLimitedValue shouldBe 1
+            timeout shouldBe Duration.ofMinutes(5)
         }
     }
 
