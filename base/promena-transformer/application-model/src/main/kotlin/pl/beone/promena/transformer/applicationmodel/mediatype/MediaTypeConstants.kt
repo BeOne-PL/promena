@@ -135,6 +135,8 @@ object MediaTypeConstants {
     @JvmField
     val IMAGE_TIFF = mediaType("image/tiff")
     @JvmField
+    val IMAGE_BMP = mediaType("image/bmp")
+    @JvmField
     val IMAGE_WEBP = mediaType("image/webp")
     @JvmField
     val IMAGE_X_ICON = mediaType("image/x-icon")
