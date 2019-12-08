@@ -2,6 +2,7 @@ package pl.beone.promena.alfresco.module.core.external.node
 
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
+import io.kotlintest.shouldThrowExactly
 import io.mockk.every
 import io.mockk.mockk
 import org.alfresco.rad.test.AlfrescoTestRunner
@@ -37,6 +38,16 @@ class ContentPropertyDataDescriptorGetterTestIT : AbstractUtilsAlfrescoIT() {
 
         ContentPropertyDataDescriptorGetter(dataConverter, serviceRegistry)
             .get(nodeRef.toSingleNodeDescriptor(metadata)) shouldBe singleDataDescriptor(data, mediaType, metadata)
+    }
+
+    @Test
+    fun get_shouldThrowIllegalStateException() {
+        val nodeRef = createOrGetIntegrationTestsFolder().createNode()
+
+        shouldThrowExactly<IllegalStateException> {
+            ContentPropertyDataDescriptorGetter(mockk(), serviceRegistry)
+                .get(nodeRef.toSingleNodeDescriptor())
+        }.message shouldBe "Node <$nodeRef> has no content"
     }
 
     @Test

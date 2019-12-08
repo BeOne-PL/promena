@@ -2,6 +2,7 @@ package pl.beone.promena.alfresco.module.core.external.node
 
 import org.alfresco.model.ContentModel.PROP_CONTENT
 import org.alfresco.service.ServiceRegistry
+import org.alfresco.service.cmr.repository.ContentReader
 import org.alfresco.service.cmr.repository.InvalidNodeRefException
 import org.alfresco.service.cmr.repository.NodeRef
 import pl.beone.promena.alfresco.module.core.applicationmodel.node.NodeDescriptor
@@ -31,8 +32,15 @@ class ContentPropertyDataDescriptorGetter(
 
     private fun convertToSingleDataDescriptor(nodeDescriptor: NodeDescriptor.Single): DataDescriptor.Single {
         val contentReader = serviceRegistry.contentService.getReader(nodeDescriptor.nodeRef, PROP_CONTENT)
+            .also { checkIfNodeHasContent(nodeDescriptor.nodeRef, it) }
         val mediaType = mediaType(contentReader.mimetype, contentReader.encoding)
 
         return singleDataDescriptor(dataConverter.createData(contentReader), mediaType, nodeDescriptor.metadata)
+    }
+
+    private fun checkIfNodeHasContent(nodeRef: NodeRef, contentReader: ContentReader?) {
+        if (contentReader == null) {
+            error("Node <$nodeRef> has no content")
+        }
     }
 }
