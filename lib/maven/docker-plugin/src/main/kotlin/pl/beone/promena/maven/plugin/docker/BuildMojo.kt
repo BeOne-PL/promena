@@ -53,7 +53,7 @@ class BuildMojo : AbstractMojo() {
         if (log.isDebugEnabled) {
             log.debug(" Jar: ${File(outputDirectory, appJar).path}")
             log.debug(" Dockerfile: ${File(context, dockerfile).path}")
-            log.debug(" Replacing <\${DOCKERFILE-FRAGMENT}> in Dockerfile using <$dockerfileFragment> files from transformer artificials")
+            log.debug(" Replacing <\${DOCKERFILE-FRAGMENT}> in Dockerfile using <$dockerfileFragment> files from transformer artifacts")
         }
 
         val tmpDirectory = createTempDir()
@@ -64,7 +64,7 @@ class BuildMojo : AbstractMojo() {
             tmpDirectory
                 .also(::copyDockerDirectory)
                 .also(::copyApplicationJar)
-                .also { copyArtificialPaths(transformerArtifactDescriptor, it) }
+                .also { copyArtifactsPaths(transformerArtifactDescriptor, it) }
             log.info("Finished copying application jar and Docker files")
 
             log.info("Processing Dockerfile...")
@@ -124,13 +124,13 @@ class BuildMojo : AbstractMojo() {
         log.debug("Finished copying application jar from <$applicationJarFile> to <$destinationApplicationJarFile>")
     }
 
-    private fun copyArtificialPaths(artifactDescriptors: List<ArtifactDescriptor>, destinationDirectory: File) {
+    private fun copyArtifactsPaths(artifactDescriptors: List<ArtifactDescriptor>, destinationDirectory: File) {
         artifactDescriptors.flatMap { it.paths }
             .forEach {
-                val artificialAbsolutePath = it.fileSystem.toString() + it
-                val artificialRelativePath = it.toRealPath().toString().removePrefix("/$dockerResourcePath/")
+                val artifactsAbsolutePath = it.fileSystem.toString() + it
+                val artifactsRelativePath = it.toRealPath().toString().removePrefix("/$dockerResourcePath/")
 
-                val destinationFile = File(destinationDirectory, artificialRelativePath)
+                val destinationFile = File(destinationDirectory, artifactsRelativePath)
                 val destinationPath = destinationFile.path
 
                 if (Files.isDirectory(it)) {
@@ -138,19 +138,19 @@ class BuildMojo : AbstractMojo() {
                     destinationFile.mkdir()
                     log.debug("Finished creating directory: $destinationPath")
                 } else {
-                    if (isNotDockerFileFragment(artificialRelativePath)) {
-                        log.debug("Copying file from <$artificialAbsolutePath> to <$destinationPath>...")
+                    if (isNotDockerFileFragment(artifactsRelativePath)) {
+                        log.debug("Copying file from <$artifactsAbsolutePath> to <$destinationPath>...")
                         Files.newInputStream(it).copyTo(destinationFile.outputStream())
-                        log.debug("Finished copying file from <$artificialAbsolutePath> to <$destinationPath>")
+                        log.debug("Finished copying file from <$artifactsAbsolutePath> to <$destinationPath>")
                     } else {
-                        log.debug("Skipped $artificialAbsolutePath file")
+                        log.debug("Skipped $artifactsAbsolutePath file")
                     }
                 }
             }
     }
 
-    private fun isNotDockerFileFragment(artificialRelativePath: String): Boolean =
-        artificialRelativePath != dockerfileFragment
+    private fun isNotDockerFileFragment(artifactsRelativePath: String): Boolean =
+        artifactsRelativePath != dockerfileFragment
 
     private fun concatDockerfileFragments(artifactDescriptors: List<ArtifactDescriptor>): String =
         artifactDescriptors.joinToString("\n\n")
