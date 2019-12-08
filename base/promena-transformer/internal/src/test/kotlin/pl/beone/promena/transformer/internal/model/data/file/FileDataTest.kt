@@ -26,7 +26,7 @@ class FileDataTest {
     fun `of _ non-existent file _ should throw IllegalArgumentException`() {
         shouldThrow<IllegalArgumentException> {
             FileData.of(File("/notExists")).getBytes()
-        }.message shouldBe "File </notExists> doesn't exist or isn't a file"
+        }.message shouldBe "File </notExists> doesn't exist or isn't file"
     }
 
     @Test
@@ -35,7 +35,7 @@ class FileDataTest {
 
         shouldThrow<IllegalArgumentException> {
             FileData.of(directory).getBytes()
-        }.message shouldBe "File <$directory> doesn't exist or isn't a file"
+        }.message shouldBe "File <$directory> doesn't exist or isn't file"
     }
 
     @Test
@@ -47,14 +47,14 @@ class FileDataTest {
     fun `of _ input stream and non-existent directory _ should throw IllegalArgumentException`() {
         shouldThrow<IllegalArgumentException> {
             FileData.of(fileString.byteInputStream(), File("/notExists")).getBytes()
-        }.message shouldBe "Directory </notExists> doesn't exist or isn't a directory"
+        }.message shouldBe "Directory </notExists> doesn't exist or isn't directory"
     }
 
     @Test
     fun `of _ input stream and directory is file _ should throw IllegalArgumentException`() {
         shouldThrow<IllegalArgumentException> {
             FileData.of(fileString.byteInputStream(), file).getBytes()
-        }.message shouldBe "Directory <$file> doesn't exist or isn't a directory"
+        }.message shouldBe "Directory <$file> doesn't exist or isn't directory"
     }
 
     @Test

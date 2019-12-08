@@ -11,7 +11,7 @@ class FileWritableData internal constructor(
     companion object {
         @JvmStatic
         fun ofEmptyFile(file: File): FileWritableData {
-            require(file.exists() && file.isFile) { "File <$file> doesn't exist or isn't a file" }
+            require(file.exists() && file.isFile) { "File <$file> doesn't exist or isn't file" }
             require(file.length() == 0L) { "File <$file> isn't empty" }
 
             return FileWritableData(file)
@@ -19,7 +19,7 @@ class FileWritableData internal constructor(
 
         @JvmStatic
         fun ofDirectory(directory: File): FileWritableData {
-            require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't a directory" }
+            require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't directory" }
 
             return FileWritableData(createTempFile(directory = directory))
         }

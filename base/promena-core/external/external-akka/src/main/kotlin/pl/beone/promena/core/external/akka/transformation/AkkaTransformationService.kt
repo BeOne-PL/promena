@@ -168,7 +168,7 @@ class AkkaTransformationService(
             is AskTimeoutException ->
                 TransformationException("Transformation timeout has been reached", e.javaClass)
             is AbruptStageTerminationException ->
-                TransformationTerminationException("Transformation was abruptly terminated", e.javaClass)
+                TransformationTerminationException("Transformation has been abruptly terminated", e.javaClass)
             else ->
                 e
         }

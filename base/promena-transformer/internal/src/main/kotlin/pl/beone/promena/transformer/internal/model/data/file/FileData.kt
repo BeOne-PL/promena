@@ -17,14 +17,14 @@ open class FileData internal constructor(
     companion object {
         @JvmStatic
         fun of(file: File): FileData {
-            require(file.exists() && file.isFile) { "File <$file> doesn't exist or isn't a file" }
+            require(file.exists() && file.isFile) { "File <$file> doesn't exist or isn't file" }
 
             return FileData(file)
         }
 
         @JvmStatic
         fun of(inputStream: InputStream, directory: File): FileData {
-            require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't a directory" }
+            require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't directory" }
 
             return FileWritableData(createTempFile(directory = directory))
                 .also { it.copy(inputStream) }

@@ -19,6 +19,6 @@ class FileInternalCommunicationParametersContext {
         )
 
     private fun validate(directory: File) {
-        require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't a directory" }
+        require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't directory" }
     }
 }

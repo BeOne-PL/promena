@@ -82,7 +82,7 @@ class DefaultTransformationUseCaseTest {
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }) {
             with(message!!.split("\n")) {
-                this[0] shouldBe "Couldn't transform because an error occurred. Check Promena logs for more details"
+                this[0] shouldBe "Couldn't transform because error occurred. Check Promena logs for more details"
                 this[1] shouldBe "# Exception occurred"
             }
             causeClass shouldBe ExternalCommunicationManagerValidationException::class.java

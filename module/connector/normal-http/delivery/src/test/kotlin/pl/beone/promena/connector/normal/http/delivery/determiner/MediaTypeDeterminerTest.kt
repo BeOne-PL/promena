@@ -70,7 +70,7 @@ class MediaTypeDeterminerTest {
             MediaTypeDeterminer.determine(
                 null, createHeaders(null, null, null) + additionalHeaders
             )
-        }.message shouldBe "Headers of one of the parts don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
+        }.message shouldBe "None of header parts contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
     }
 
     @Test

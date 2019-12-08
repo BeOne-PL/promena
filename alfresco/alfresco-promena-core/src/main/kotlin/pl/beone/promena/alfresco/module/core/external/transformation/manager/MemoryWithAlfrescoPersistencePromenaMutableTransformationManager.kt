@@ -65,7 +65,7 @@ class MemoryWithAlfrescoPersistencePromenaMutableTransformationManager(
                     .also { logger.debug { "Got transformation <$executionId> from Alfresco" } }
             } catch (e: Throwable) {
                 TransformationDescription(lock, throwable = e)
-                    .also { logger.debug { "Got transformation <$executionId> with an error from Alfresco" } }
+                    .also { logger.debug { "Got transformation <$executionId> with error from Alfresco" } }
             }
         }
 
@@ -114,9 +114,9 @@ class MemoryWithAlfrescoPersistencePromenaMutableTransformationManager(
             val inAlfresco = completeErrorTransformationInAlfresco(transformationExecution, throwable)
             val inMemory = executeAndUnlock(executionId) { it.throwable = throwable }
             if (inAlfresco || inMemory) {
-                logger.debug(throwable) { "Completed <$executionId> transformation with the error" }
+                logger.debug(throwable) { "Completed <$executionId> transformation with error" }
             } else {
-                logger.warn(throwable) { "Couldn't complete transformation with an error. There is no <$executionId> transformation in progress" }
+                logger.warn(throwable) { "Couldn't complete transformation with error. There is no <$executionId> transformation in progress" }
             }
         }
     }

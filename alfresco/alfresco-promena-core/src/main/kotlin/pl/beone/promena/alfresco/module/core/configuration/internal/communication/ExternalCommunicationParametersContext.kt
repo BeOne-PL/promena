@@ -42,5 +42,5 @@ class ExternalCommunicationParametersContext {
 
     fun determineDirectory(path: String): File =
         File(path)
-            .also { require(it.exists() && it.isDirectory) { "Directory <$it> doesn't exist or isn't a directory" } }
+            .also { require(it.exists() && it.isDirectory) { "Directory <$it> doesn't exist or isn't directory" } }
 }

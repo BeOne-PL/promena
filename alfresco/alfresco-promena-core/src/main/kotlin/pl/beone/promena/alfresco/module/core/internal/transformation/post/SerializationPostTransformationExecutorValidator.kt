@@ -34,7 +34,7 @@ class SerializationPostTransformationExecutorValidator(
 
     private fun validateAnonymousClass(postTransformationExecutor: PostTransformationExecutor) {
         if (postTransformationExecutor.javaClass.isAnonymousClass) {
-            throw PostTransformationExecutorValidationException("PostTransformationExecutor implementation can't be an anonymous class")
+            throw PostTransformationExecutorValidationException("PostTransformationExecutor implementation can't be anonymous class")
         }
     }
 

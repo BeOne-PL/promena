@@ -93,7 +93,7 @@ class GroupedByNameTransformerActor(
                 .also { transformer.isSupported(dataDescriptor, targetMediaType, parameters) }
         } catch (e: TransformationNotSupportedException) {
             throw TransformationNotSupportedException.custom(
-                "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) doesn't support this transformation: ${e.message}"
+                "Transformer ${transformer.javaClass.canonicalName}(${transformationTransformerId.name}, ${transformationTransformerId.subName}) doesn't support given transformation: ${e.message}"
             )
         }
     }
@@ -119,7 +119,7 @@ class GroupedByNameTransformerActor(
 
     private fun createGeneralException(transformerExceptionsAccumulator: TransformerExceptionsAccumulator): TransformationNotSupportedException =
         TransformationNotSupportedException.custom(
-            "There is no transformer in group <$transformerName> that support this transformation\n" +
+            "There is no transformer in group <$transformerName> that support given transformation\n" +
                     transformerExceptionsAccumulator.generateDescription()
         )
 

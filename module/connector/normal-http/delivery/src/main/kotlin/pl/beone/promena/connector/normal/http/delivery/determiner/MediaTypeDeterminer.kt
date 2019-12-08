@@ -22,7 +22,7 @@ internal object MediaTypeDeterminer {
             singleValueHeaders.containsHeaderCaseInsensitive(CONTENT_TYPE) ->
                 determineBasedOnContentTypeHeader(singleValueHeaders)
             else ->
-                throw createIllegalStateException(fieldName)
+                throw createException(fieldName)
         }
     }
 
@@ -46,12 +46,12 @@ internal object MediaTypeDeterminer {
     private fun <T> Map<String, T>.getValueCaseInsensitive(key: String): T? =
         entries.firstOrNull { (key_) -> key_.compareTo(key, true) == 0 }?.value
 
-    private fun createIllegalStateException(fieldName: String?): IllegalStateException =
+    private fun createException(fieldName: String?): IllegalStateException =
         error(
             if (fieldName != null) {
                 "Part <$fieldName> headers don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
             } else {
-                "Headers of one of the parts don't contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
+                "None of header parts contain <$DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE> or <$CONTENT_TYPE> header"
             }
         )
 }

@@ -55,5 +55,5 @@ class AkkaKryoSerializationServiceContext {
 
     private fun determineNumberOfActors(transformerActorDescriptors: List<TransformerActorDescriptor>): Int =
         determine(transformerActorDescriptors)
-            .also { logger.info { "Property <core.serializer.actors> isn't set. Created serializer actors (the sum of given transformer actors): <$it>" } }
+            .also { logger.info { "Property <core.serializer.actors> isn't set. Created serializer actors (sum of transformer actors): <$it>" } }
 }

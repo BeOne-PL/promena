@@ -50,7 +50,7 @@ class TransformerController(
 
     private fun logUnknownException(exception: Throwable) {
         if (exception !is TransformationException) {
-            logger.error(exception) { "An error occurred before starting given transformation" }
+            logger.error(exception) { "Error occurred before starting transformation" }
         }
     }
 

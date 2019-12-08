@@ -160,7 +160,7 @@ internal abstract class AbstractRelatedItemLineMarkerProvider {
     private fun handleFailedTransformation(runToolWindowTab: RunToolWindowTab, exception: Throwable) {
         invokeLater {
             if (exception is HttpException && checkIfIndicatesCorrectPromenaServer(exception)) {
-                runToolWindowTab.logFailureThrowable("Promena not found. Check if the given parameters point to the running server")
+                runToolWindowTab.logFailureThrowable("Promena not found. Check if given parameters point to running server")
             } else {
                 runToolWindowTab.logFailureThrowable(determineExceptionString(exception))
             }

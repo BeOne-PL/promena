@@ -70,6 +70,6 @@ public class JavaTextAppenderTransformer implements Transformer {
     }
 
     private void throwException() {
-        throw new TransformationNotSupportedException("Only the transformation from text/plain to text/plain is supported");
+        throw new TransformationNotSupportedException("Only transformation from text/plain to text/plain is supported");
     }
 }

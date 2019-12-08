@@ -54,7 +54,7 @@ class SerializationPostTransformationExecutorValidatorTest : AbstractAlfrescoIT(
                     }
                 }
             )
-        }.message shouldBe "PostTransformationExecutor implementation can't be an anonymous class"
+        }.message shouldBe "PostTransformationExecutor implementation can't be anonymous class"
     }
 
     @Test

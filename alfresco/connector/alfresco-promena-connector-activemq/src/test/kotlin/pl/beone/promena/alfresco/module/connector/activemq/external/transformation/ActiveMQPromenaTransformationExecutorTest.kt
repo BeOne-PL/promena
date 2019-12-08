@@ -152,7 +152,7 @@ class ActiveMQPromenaTransformationExecutorTest {
                 nodeDescriptor,
                 postTransformationExecutor
             )
-        }.message shouldBe "Node <${nodeRefs[0]}> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
+        }.message shouldBe "Node <${nodeRefs[0]}> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing transformation"
     }
 
     @Test

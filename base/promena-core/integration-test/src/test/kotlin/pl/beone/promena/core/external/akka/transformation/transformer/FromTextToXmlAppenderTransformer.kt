@@ -44,7 +44,7 @@ object FromTextToXmlAppenderTransformer : Transformer {
     }
 
     private fun throwException() {
-        throw TransformationNotSupportedException.custom("Only a transformation from text/plain to text/xml is supported")
+        throw TransformationNotSupportedException.custom("Only transformation from text/plain to text/xml is supported")
     }
 
 }

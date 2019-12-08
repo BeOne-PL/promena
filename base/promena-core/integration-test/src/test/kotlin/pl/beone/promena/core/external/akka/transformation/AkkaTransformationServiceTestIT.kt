@@ -173,10 +173,10 @@ class AkkaTransformationServiceTestIT {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             with(message!!.split("\n")) {
-                this[0] shouldBe "Transformation isn't supported | There is no transformer in group <text appender> that support this transformation"
-                this[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin): Only the transformation from text/plain to text/plain is supported"
+                this[0] shouldBe "Transformation isn't supported | There is no transformer in group <text appender> that support given transformation"
+                this[1] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin): Only transformation from text/plain to text/plain is supported"
                 this[2] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer(text appender, Kotlin useless): I can't transform nothing. I'm useless"
-                this[3] shouldBe "> pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(text appender, java): Only the transformation from text/plain to text/plain is supported"
+                this[3] shouldBe "> pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(text appender, java): Only transformation from text/plain to text/plain is supported"
             }
             causeClass shouldBe TransformationNotSupportedException::class.java
         }
@@ -193,7 +193,7 @@ class AkkaTransformationServiceTestIT {
         with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
-            message shouldBe "Transformation isn't supported | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin) doesn't support this transformation: Only the transformation from text/plain to text/plain is supported"
+            message shouldBe "Transformation isn't supported | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin) doesn't support given transformation: Only transformation from text/plain to text/plain is supported"
             causeClass shouldBe TransformationNotSupportedException::class.java
         }
     }
@@ -246,7 +246,7 @@ class AkkaTransformationServiceTestIT {
         with(shouldThrow<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
-            message shouldBe "Transformation was abruptly terminated"
+            message shouldBe "Transformation has been abruptly terminated"
             causeClass shouldBe AbruptStageTerminationException::class.java
         }
     }

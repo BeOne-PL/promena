@@ -48,7 +48,7 @@ class HttpPromenaTransformer(
     @Suppress("UNCHECKED_CAST")
     private fun <T> Headers.getSerializationClass(): Class<T> {
         if (!containsKey(SERIALIZATION_CLASS)) {
-            throw NoSuchElementException("Headers don't contain <$SERIALIZATION_CLASS> entry. An unknown error occurred")
+            throw NoSuchElementException("Headers don't contain <$SERIALIZATION_CLASS> entry. Unknown error occurred")
         }
 
         return try {

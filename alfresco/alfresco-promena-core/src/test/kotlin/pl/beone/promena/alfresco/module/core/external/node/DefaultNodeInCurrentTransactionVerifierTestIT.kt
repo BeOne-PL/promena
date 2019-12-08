@@ -46,7 +46,7 @@ class DefaultNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() 
 
         shouldThrowExactly<PotentialConcurrentModificationException> {
             nodeInCurrentTransactionVerifier.verify(nodeRef)
-        }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
+        }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing transformation"
     }
 
     // It should pass but the nature of Alfresco IT test causes an error (node doesn't exist in the second transaction)
@@ -61,7 +61,7 @@ class DefaultNodeInCurrentTransactionVerifierTestIT : AbstractUtilsAlfrescoIT() 
 //
 //            shouldThrowExactly<PotentialConcurrentModificationException> {
 //                nodeInCurrentTransactionVerifier.verify(nodeRef)
-//            }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing the transformation"
+//            }.message shouldBe "Node <$nodeRef> has been modified in this transaction. It's highly probable that it may cause concurrency problems. Complete this transaction before executing transformation"
 //        }, false, true)
 //    }
 }
