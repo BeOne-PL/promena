@@ -14,6 +14,13 @@ import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 fun Project.getActiveFile(): VirtualFile =
     getEditor().file ?: error("No file open")
 
+fun Project.getActiveFileOrNull(): VirtualFile? =
+    try {
+        getActiveFile()
+    } catch (e: IllegalStateException) {
+        null
+    }
+
 fun Project.getEditor(): FileEditor =
     FileEditorManager.getInstance(this).selectedEditors.firstOrNull { it is TextEditor }
         ?: error("No text editor or file opened")

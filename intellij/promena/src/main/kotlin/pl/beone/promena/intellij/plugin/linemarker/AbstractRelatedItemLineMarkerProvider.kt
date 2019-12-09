@@ -32,6 +32,7 @@ import pl.beone.promena.lib.connector.http.applicationmodel.exception.HttpExcept
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
+import pl.skotar.intellij.plugin.alfrescojvmconsole.dialog.ErrorDialog
 import java.lang.System.currentTimeMillis
 import java.net.ConnectException
 import java.net.HttpURLConnection.*
@@ -51,26 +52,31 @@ internal abstract class AbstractRelatedItemLineMarkerProvider {
         getClassDescriptor: () -> ClassDescriptor
     ): () -> Unit =
         {
-            val runManager = RunManager.getInstance(project)
-            val runnerAndConfigurationSettings =
-                (runManager.getSelectedPromenaRunnerAndConfigurationSettings() ?: showDialogToUseSelectedOrCreateNew(project, runManager))
-
             try {
-                runnerAndConfigurationSettings.checkSettings()
+                val runManager = RunManager.getInstance(project)
+                val runnerAndConfigurationSettings =
+                    (runManager.getSelectedPromenaRunnerAndConfigurationSettings() ?: showDialogToUseSelectedOrCreateNew(project, runManager))
 
-                val classDescriptor = getClassDescriptor()
-                val httpConfigurationParameters =
-                    createHttpConfigurationParameters(runnerAndConfigurationSettings.configuration as PromenaRunConfiguration)
+                try {
+                    runnerAndConfigurationSettings.checkSettings()
 
-                CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
-                    if (successfulCompilation(aborted, errors)) {
-                        project.getActiveModule().getCompilerOutputFolder().refresh(true, true) {
-                            transform(project, getComments(), classDescriptor, httpConfigurationParameters)
+                    val classDescriptor = getClassDescriptor()
+                    val httpConfigurationParameters =
+                        createHttpConfigurationParameters(runnerAndConfigurationSettings.configuration as PromenaRunConfiguration)
+
+                    CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
+                        if (successfulCompilation(aborted, errors)) {
+                            project.getActiveModule().getCompilerOutputFolder().refresh(true, true) {
+                                transform(project, getComments(), classDescriptor, httpConfigurationParameters)
+                            }
                         }
                     }
+                } catch (e: RuntimeConfigurationException) {
+                    project.editConfiguration(runnerAndConfigurationSettings)
                 }
-            } catch (e: RuntimeConfigurationException) {
-                project.editConfiguration(runnerAndConfigurationSettings)
+            } catch (e: Exception) {
+                ErrorDialog(project, e)
+                    .also(ErrorDialog::show)
             }
         }
 

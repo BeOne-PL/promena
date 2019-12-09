@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import pl.beone.promena.intellij.plugin.applicationmodel.ClassDescriptor
-import pl.beone.promena.intellij.plugin.extension.getActiveFile
+import pl.beone.promena.intellij.plugin.extension.getActiveFileOrNull
 import pl.beone.promena.intellij.plugin.extension.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
@@ -21,27 +21,26 @@ internal class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, Abstrac
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project
+        val activeFile = project.getActiveFileOrNull() ?: return null
 
         if (isKtNamedFunction(element)) {
             val ktNamedFunction = (element as KtNamedFunction)
 
             if (
-                project.isFileInAnyModule(project.getActiveFile()) &&
+                project.isFileInAnyModule(activeFile) &&
                 startsWithPromena(ktNamedFunction) &&
                 isNotInClass(ktNamedFunction) &&
                 isPublic(ktNamedFunction) &&
                 hasNoParameters(ktNamedFunction) &&
                 isTransformationReturnType(ktNamedFunction)
             ) {
-                val packageName = element.containingKtFile.packageFqName.asString()
-                val className = element.containingClass()?.name
-                return PromenaLineMarkerInfo(element, createOnClickHandler(project, { getMethodComments(ktNamedFunction) }) {
-                    ClassDescriptor(
-                        getPackageName(ktNamedFunction, packageName),
-                        getClassName(ktNamedFunction),
-                        getFunctionName(ktNamedFunction)
-                    )
-                })
+                return PromenaLineMarkerInfo(
+                    element,
+                    createOnClickHandler(
+                        project,
+                        { getMethodComments(ktNamedFunction) },
+                        { ClassDescriptor(getPackageName(ktNamedFunction), getClassName(ktNamedFunction), getFunctionName(ktNamedFunction)) })
+                )
             }
         }
 
@@ -70,12 +69,8 @@ internal class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, Abstrac
     private fun isTransformationReturnType(function: KtNamedFunction): Boolean =
         function.type()?.getJetTypeFqName(false) == Transformation::class.java.canonicalName
 
-    private fun getPackageName(function: KtNamedFunction, fallbackPackageName: String): String =
-        try {
-            (function.containingFile as KtFile).packageFqName.asString()
-        } catch (e: Exception) {
-            fallbackPackageName
-        }
+    private fun getPackageName(function: KtNamedFunction): String =
+        (function.containingFile as KtFile).packageFqName.asString()
 
     private fun getClassName(function: KtNamedFunction): String =
         try {
@@ -88,7 +83,11 @@ internal class KotlinRelatedItemLineMarkerProvider : LineMarkerProvider, Abstrac
         function.name!!
 
     private fun getMethodComments(function: KtNamedFunction): List<String> =
-        (function.bodyBlockExpression!! as ASTNode).children()
-            .filterIsInstance<PsiComment>().map(PsiElement::getText)
-            .toList()
+        try {
+            (function.bodyBlockExpression!! as ASTNode).children()
+                .filterIsInstance<PsiComment>().map(PsiElement::getText)
+                .toList()
+        } catch (e: KotlinNullPointerException) {
+            emptyList()
+        }
 }

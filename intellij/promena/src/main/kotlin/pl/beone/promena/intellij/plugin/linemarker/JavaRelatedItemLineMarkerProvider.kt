@@ -6,7 +6,7 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiJavaFileImpl
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import pl.beone.promena.intellij.plugin.applicationmodel.ClassDescriptor
-import pl.beone.promena.intellij.plugin.extension.getActiveFile
+import pl.beone.promena.intellij.plugin.extension.getActiveFileOrNull
 import pl.beone.promena.intellij.plugin.extension.isFileInAnyModule
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
@@ -14,7 +14,7 @@ internal class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractR
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val project = element.project
-        val activeFile = project.getActiveFile()
+        val activeFile = project.getActiveFileOrNull() ?: return null
 
         if (isMethod(element)) {
             val psiMethod = (element.parent as PsiMethod)
@@ -27,9 +27,14 @@ internal class JavaRelatedItemLineMarkerProvider : LineMarkerProvider, AbstractR
                 hasNoParameters(psiMethod) &&
                 isTransformationReturnType(psiMethod)
             ) {
-                return PromenaLineMarkerInfo(element, createOnClickHandler(project, { getMethodComments(psiMethod) }) {
-                    ClassDescriptor(getPackageName(psiMethod), getClassName(psiMethod), getFunctionName(psiMethod))
-                })
+                return PromenaLineMarkerInfo(
+                    element,
+                    createOnClickHandler(
+                        project,
+                        { getMethodComments(psiMethod) },
+                        { ClassDescriptor(getPackageName(psiMethod), getClassName(psiMethod), getFunctionName(psiMethod)) }
+                    )
+                )
             }
         }
 
