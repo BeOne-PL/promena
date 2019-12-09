@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.communication.memory.external.internal.converter.MemoryIncomingExternalCommunicationConverter
 import pl.beone.promena.communication.memory.external.internal.converter.MemoryOutgoingExternalCommunicationConverter
-import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
+import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParametersConstants
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 
 @Configuration
@@ -16,7 +16,7 @@ class MemoryExternalCommunicationContext {
         memoryOutgoingExternalCommunicationConverter: MemoryOutgoingExternalCommunicationConverter
     ) =
         ExternalCommunication(
-            MemoryCommunicationParameters.ID,
+            MemoryCommunicationParametersConstants.ID,
             memoryIncomingExternalCommunicationConverter,
             memoryOutgoingExternalCommunicationConverter
         )

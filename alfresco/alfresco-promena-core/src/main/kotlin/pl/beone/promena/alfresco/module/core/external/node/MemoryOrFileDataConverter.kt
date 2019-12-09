@@ -5,8 +5,8 @@ import org.alfresco.service.cmr.repository.ContentReader
 import org.alfresco.service.cmr.repository.ContentWriter
 import org.alfresco.service.cmr.repository.FileContentReader
 import pl.beone.promena.alfresco.module.core.contract.node.DataConverter
-import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
-import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
+import pl.beone.promena.communication.file.model.contract.FileCommunicationParametersConstants
+import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParametersConstants
 import pl.beone.promena.transformer.applicationmodel.exception.data.DataDeleteException
 import pl.beone.promena.transformer.contract.model.data.Data
 import pl.beone.promena.transformer.internal.model.data.file.FileData
@@ -24,17 +24,17 @@ class MemoryOrFileDataConverter(
     }
 
     override fun createData(contentReader: ContentReader): Data =
-        if (externalCommunicationId == FileCommunicationParameters.ID) {
+        if (externalCommunicationId == FileCommunicationParametersConstants.ID) {
             if (contentReader is FileContentReader) {
                 FileData.of(contentReader.contentInputStream, externalCommunicationDirectory!!)
             } else {
                 logger.warn { "Content reader type isn't FileContentReader (<${contentReader::class.java.simpleName}>). Implementation <MemoryData> will be use as back pressure" }
                 contentReader.toMemoryData()
             }
-        } else if (externalCommunicationId == MemoryCommunicationParameters.ID) {
+        } else if (externalCommunicationId == MemoryCommunicationParametersConstants.ID) {
             contentReader.toMemoryData()
         } else {
-            throw UnsupportedOperationException("External communication must be <${MemoryCommunicationParameters.ID}> or <${FileCommunicationParameters.ID}>")
+            throw UnsupportedOperationException("External communication must be <${MemoryCommunicationParametersConstants.ID}> or <${FileCommunicationParametersConstants.ID}>")
         }
 
     override fun saveDataInContentWriter(data: Data, contentWriter: ContentWriter) {

@@ -5,10 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.core.extension.getRequiredPropertyWithResolvedPlaceholders
-import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
-import pl.beone.promena.communication.file.model.internal.DefaultFileCommunicationParameters
+import pl.beone.promena.communication.file.model.contract.FileCommunicationParametersConstants
 import pl.beone.promena.communication.file.model.internal.fileCommunicationParameters
-import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
+import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParametersConstants
 import pl.beone.promena.communication.memory.model.internal.memoryCommunicationParameters
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.io.File
@@ -26,18 +25,18 @@ class ExternalCommunicationParametersContext {
         @Qualifier("global-properties") properties: Properties
     ): CommunicationParameters =
         when (properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.communication.external.id")) {
-            MemoryCommunicationParameters.ID -> {
-                logger.info { "Promena external communication: <${MemoryCommunicationParameters.ID}>" }
+            MemoryCommunicationParametersConstants.ID -> {
+                logger.info { "Promena external communication: <${MemoryCommunicationParametersConstants.ID}>" }
                 memoryCommunicationParameters()
             }
-            FileCommunicationParameters.ID -> {
+            FileCommunicationParametersConstants.ID -> {
                 val directory =
                     determineDirectory(properties.getRequiredPropertyWithResolvedPlaceholders("promena.core.communication.external.file.directory.path"))
-                logger.info { "Promena external communication: <${FileCommunicationParameters.ID}, ${DefaultFileCommunicationParameters.DIRECTORY}: ${directory}>" }
+                logger.info { "Promena external communication: <${FileCommunicationParametersConstants.ID}, ${FileCommunicationParametersConstants.DIRECTORY_KEY}: ${directory}>" }
                 fileCommunicationParameters(directory)
             }
             else ->
-                error("External communication must be <${MemoryCommunicationParameters.ID}> or <${FileCommunicationParameters.ID}>")
+                error("External communication must be <${MemoryCommunicationParametersConstants.ID}> or <${FileCommunicationParametersConstants.ID}>")
         }
 
     fun determineDirectory(path: String): File =

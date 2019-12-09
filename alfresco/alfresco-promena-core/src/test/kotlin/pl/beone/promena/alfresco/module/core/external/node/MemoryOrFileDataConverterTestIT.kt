@@ -7,8 +7,8 @@ import org.alfresco.rad.test.AlfrescoTestRunner
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.beone.promena.alfresco.module.core.external.AbstractUtilsAlfrescoIT
-import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
-import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
+import pl.beone.promena.communication.file.model.contract.FileCommunicationParametersConstants
+import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParametersConstants
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.TEXT_PLAIN
 import pl.beone.promena.transformer.internal.model.data.file.FileData
 import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
@@ -23,7 +23,7 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
         }
 
         with(
-            MemoryOrFileDataConverter(MemoryCommunicationParameters.ID)
+            MemoryOrFileDataConverter(MemoryCommunicationParametersConstants.ID)
                 .createData(node.getContentReader())
         ) {
             getBytes() shouldBe "test".toByteArray()
@@ -41,7 +41,7 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
             }
 
             with(
-                MemoryOrFileDataConverter(FileCommunicationParameters.ID, tmpDir)
+                MemoryOrFileDataConverter(FileCommunicationParametersConstants.ID, tmpDir)
                     .createData(node.getContentReader())
             ) {
                 getBytes() shouldBe "test".toByteArray()
@@ -58,7 +58,7 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
 
         val data = "test".toMemoryData()
 
-        MemoryOrFileDataConverter(MemoryCommunicationParameters.ID, null)
+        MemoryOrFileDataConverter(MemoryCommunicationParametersConstants.ID, null)
             .saveDataInContentWriter(data, node.getContentWriter())
 
         node.readContent() shouldBe "test".toByteArray()
@@ -70,7 +70,7 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
 
         val data = FileData.of("test".byteInputStream(), createTempDir())
 
-        MemoryOrFileDataConverter(MemoryCommunicationParameters.ID, null)
+        MemoryOrFileDataConverter(MemoryCommunicationParametersConstants.ID, null)
             .saveDataInContentWriter(data, node.getContentWriter())
 
         java.io.File(data.getLocation()).exists() shouldBe false

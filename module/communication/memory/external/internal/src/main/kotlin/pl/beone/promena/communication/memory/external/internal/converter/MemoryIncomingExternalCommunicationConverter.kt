@@ -2,7 +2,7 @@ package pl.beone.promena.communication.memory.external.internal.converter
 
 import mu.KotlinLogging
 import pl.beone.promena.communication.common.extension.warnIfCommunicationsAreDifferent
-import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParameters
+import pl.beone.promena.communication.memory.model.contract.MemoryCommunicationParametersConstants
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
@@ -20,7 +20,7 @@ class MemoryIncomingExternalCommunicationConverter(
     override fun convert(dataDescriptor: DataDescriptor, externalCommunicationParameters: CommunicationParameters): DataDescriptor {
         logger.warnIfCommunicationsAreDifferent(
             internalCommunicationParameters.getId(),
-            (externalCommunicationParameters as MemoryCommunicationParameters).getId()
+            MemoryCommunicationParametersConstants.ID
         )
         return internalCommunicationConverter.convert(dataDescriptor)
     }

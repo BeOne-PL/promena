@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.communication.file.external.internal.converter.FileIncomingExternalCommunicationConverter
 import pl.beone.promena.communication.file.external.internal.converter.FileOutgoingExternalCommunicationConverter
-import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
+import pl.beone.promena.communication.file.model.contract.FileCommunicationParametersConstants
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 
 @Configuration
@@ -16,7 +16,7 @@ class FileExternalCommunicationContext {
         fileOutgoingExternalCommunicationConverter: FileOutgoingExternalCommunicationConverter
     ) =
         ExternalCommunication(
-            FileCommunicationParameters.ID,
+            FileCommunicationParametersConstants.ID,
             fileIncomingExternalCommunicationConverter,
             fileOutgoingExternalCommunicationConverter
         )

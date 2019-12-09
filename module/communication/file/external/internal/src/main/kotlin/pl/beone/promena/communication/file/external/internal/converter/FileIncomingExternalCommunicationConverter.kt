@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import pl.beone.promena.communication.common.extension.warnIfCommunicationsAreDifferent
 import pl.beone.promena.communication.file.model.common.extension.isSubPath
 import pl.beone.promena.communication.file.model.common.extension.notIncludedInPath
-import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
+import pl.beone.promena.communication.file.model.internal.getDirectory
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
@@ -20,10 +20,8 @@ class FileIncomingExternalCommunicationConverter(
     }
 
     override fun convert(dataDescriptor: DataDescriptor, externalCommunicationParameters: CommunicationParameters): DataDescriptor {
-        val externalFileCommunicationParameters = externalCommunicationParameters as FileCommunicationParameters
-
         if (bothCommunicationsAreFile(externalCommunicationParameters)) {
-            logFileCommunicationsPotentialProblems(externalFileCommunicationParameters)
+            logFileCommunicationsPotentialProblems(externalCommunicationParameters)
         }
 
         logger.warnIfCommunicationsAreDifferent(internalCommunicationParameters.getId(), externalCommunicationParameters.getId())
@@ -31,16 +29,16 @@ class FileIncomingExternalCommunicationConverter(
         return internalCommunicationConverter.convert(dataDescriptor)
     }
 
-    private fun bothCommunicationsAreFile(externalCommunicationParameters: FileCommunicationParameters): Boolean =
+    private fun bothCommunicationsAreFile(externalCommunicationParameters: CommunicationParameters): Boolean =
         internalCommunicationParameters.getId() == externalCommunicationParameters.getId()
 
-    private fun logFileCommunicationsPotentialProblems(externalFileCommunicationParameters: FileCommunicationParameters) {
+    private fun logFileCommunicationsPotentialProblems(externalFileCommunicationParameters: CommunicationParameters) {
         val id = externalFileCommunicationParameters.getId()
-        val internalCommunicationDirectory = (internalCommunicationParameters as FileCommunicationParameters).getDirectory()
+        val internalCommunicationDirectory = internalCommunicationParameters.getDirectory()
         val externalCommunicationDirectory = externalFileCommunicationParameters.getDirectory()
 
         when {
-            externalCommunicationDirectory.isSubPath(internalCommunicationDirectory)         ->
+            externalCommunicationDirectory.isSubPath(internalCommunicationDirectory) ->
                 logger.warn { "Communication <$id>: you should use the same communication directories for performance reasons. Now external communication directory <$externalCommunicationDirectory> is a subpath of internal communication directory <$internalCommunicationDirectory>. It causes one more conversion" }
 
             externalCommunicationDirectory.notIncludedInPath(internalCommunicationDirectory) ->

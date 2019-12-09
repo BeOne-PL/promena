@@ -4,7 +4,7 @@ import pl.beone.promena.communication.common.converter.AbstractDescriptorConvert
 import pl.beone.promena.communication.file.model.common.extension.isSubPath
 import pl.beone.promena.communication.file.model.common.extension.isTheSamePath
 import pl.beone.promena.communication.file.model.common.extension.toFile
-import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
+import pl.beone.promena.communication.file.model.contract.FileCommunicationParametersConstants
 import pl.beone.promena.transformer.contract.model.data.Data
 import pl.beone.promena.transformer.internal.model.data.file.FileData
 import pl.beone.promena.transformer.internal.model.data.file.toFileData
@@ -15,7 +15,7 @@ class FileDescriptorConverter(
 ) : AbstractDescriptorConverter<FileData>() {
 
     override fun communicationDescriptor(): String =
-        "${FileCommunicationParameters.ID} (directory=$directory)"
+        "${FileCommunicationParametersConstants.ID} (${FileCommunicationParametersConstants.DIRECTORY_KEY}=$directory)"
 
     override fun isCompatible(data: Data): Boolean =
         data is FileData &&

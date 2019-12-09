@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.core.external.node.MemoryOrFileDataConverter
-import pl.beone.promena.communication.file.model.contract.FileCommunicationParameters
+import pl.beone.promena.communication.file.model.contract.FileCommunicationParametersConstants
+import pl.beone.promena.communication.file.model.internal.getDirectory
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import java.io.File
 
@@ -21,8 +22,8 @@ class MemoryOrFileDataConverterContext {
         )
 
     private fun getDirectoryIfFileOrNull(externalCommunicationParameters: CommunicationParameters): File? =
-        if (externalCommunicationParameters.getId() == FileCommunicationParameters.ID) {
-            (externalCommunicationParameters as FileCommunicationParameters).getDirectory()
+        if (externalCommunicationParameters.getId() == FileCommunicationParametersConstants.ID) {
+            externalCommunicationParameters.getDirectory()
         } else {
             null
         }

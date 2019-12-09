@@ -21,12 +21,10 @@
             <artifactId>promena-communication-file-model-common</artifactId>
             <version>${promena-communication-file-model.version}</version>
         </dependency>
-
         <dependency>
             <groupId>pl.beone.promena.communication.file.model</groupId>
             <artifactId>promena-communication-file-model-internal</artifactId>
             <version>${promena-communication-file-model.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
