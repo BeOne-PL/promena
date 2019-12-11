@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'pl.beone.promena.intellij.plugin'
-version '0.9.0'
+version '1.0.0'
 
 sourceCompatibility = JavaVersion.VERSION_11
 

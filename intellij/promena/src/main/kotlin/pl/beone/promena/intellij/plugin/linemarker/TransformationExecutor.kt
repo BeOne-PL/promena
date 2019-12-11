@@ -32,53 +32,38 @@ import pl.beone.promena.lib.connector.http.applicationmodel.exception.HttpExcept
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.data.dataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
-import pl.skotar.intellij.plugin.alfrescojvmconsole.dialog.ErrorDialog
 import java.lang.System.currentTimeMillis
 import java.net.ConnectException
 import java.net.HttpURLConnection.*
 import java.net.UnknownHostException
 
-internal abstract class AbstractRelatedItemLineMarkerProvider {
+internal object TransformationExecutor {
 
-    companion object {
-        private val kryoLockObject = Object()
-    }
-
+    private val kryoLockObject = Object()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    protected fun createOnClickHandler(
-        project: Project,
-        getComments: () -> List<String>,
-        getClassDescriptor: () -> ClassDescriptor
-    ): () -> Unit =
-        {
-            try {
-                val runManager = RunManager.getInstance(project)
-                val runnerAndConfigurationSettings =
-                    (runManager.getSelectedPromenaRunnerAndConfigurationSettings() ?: showDialogToUseSelectedOrCreateNew(project, runManager))
+    fun execute(project: Project, classDescriptor: ClassDescriptor, comments: List<String>) {
+        val runManager = RunManager.getInstance(project)
+        val runnerAndConfigurationSettings =
+            (runManager.getSelectedPromenaRunnerAndConfigurationSettings() ?: showDialogToUseSelectedOrCreateNew(project, runManager))
 
-                try {
-                    runnerAndConfigurationSettings.checkSettings()
+        try {
+            runnerAndConfigurationSettings.checkSettings()
 
-                    val classDescriptor = getClassDescriptor()
-                    val httpConfigurationParameters =
-                        createHttpConfigurationParameters(runnerAndConfigurationSettings.configuration as PromenaRunConfiguration)
+            val httpConfigurationParameters =
+                createHttpConfigurationParameters(runnerAndConfigurationSettings.configuration as PromenaRunConfiguration)
 
-                    CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
-                        if (successfulCompilation(aborted, errors)) {
-                            project.getActiveModule().getCompilerOutputFolder().refresh(true, true) {
-                                transform(project, getComments(), classDescriptor, httpConfigurationParameters)
-                            }
-                        }
+            CompilerManager.getInstance(project).make(project, project.allModules().toTypedArray()) { aborted, errors, _, _ ->
+                if (successfulCompilation(aborted, errors)) {
+                    project.getActiveModule().getCompilerOutputFolder().refresh(true, true) {
+                        transform(project, comments, classDescriptor, httpConfigurationParameters)
                     }
-                } catch (e: RuntimeConfigurationException) {
-                    project.editConfiguration(runnerAndConfigurationSettings)
                 }
-            } catch (e: Exception) {
-                ErrorDialog(project, e)
-                    .also(ErrorDialog::show)
             }
+        } catch (e: RuntimeConfigurationException) {
+            project.editConfiguration(runnerAndConfigurationSettings)
         }
+    }
 
     private fun showDialogToUseSelectedOrCreateNew(project: Project, runManager: RunManager): RunnerAndConfigurationSettings {
         val configurations = runManager.getPromenaRunnerAndConfigurationSettings()
