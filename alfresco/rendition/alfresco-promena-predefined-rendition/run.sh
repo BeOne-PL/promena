@@ -11,8 +11,8 @@ fi
 start() {
     docker volume create alfresco-promena-predefined-rendition-acs-volume
     docker volume create alfresco-promena-predefined-rendition-db-volume
-    docker volume create alfresco-promena-predefined-rendition-ass-volume
-    docker volume create alfresco-promena-predefined-rendition-activemq-volume
+    docker volume create alfresco-promena-predefined-rendition-ass-data-volume
+    docker volume create alfresco-promena-predefined-rendition-ass-conf-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
@@ -34,8 +34,8 @@ purge() {
     docker-compose -f $COMPOSE_FILE_PATH rm -v -s -f
     docker volume rm -f alfresco-promena-predefined-rendition-acs-volume
     docker volume rm -f alfresco-promena-predefined-rendition-db-volume
-    docker volume rm -f alfresco-promena-predefined-rendition-ass-volume
-    docker volume rm -f alfresco-promena-predefined-rendition-activemq-volume
+    docker volume rm -f alfresco-promena-predefined-rendition-ass-data-volume
+    docker volume rm -f alfresco-promena-predefined-rendition-ass-conf-volume
 }
 
 build_acs() {
@@ -43,7 +43,7 @@ build_acs() {
 }
 
 build_promena() {
-    $MVN_EXEC -DskipTests=true -f docker-img/promena-predefined-rendition-executable/pom.xml clean package
+    $MVN_EXEC -DskipTests=true -f promena/pom.xml clean package
 }
 
 tail() {

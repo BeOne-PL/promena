@@ -11,7 +11,8 @@ fi
 start() {
     docker volume create alfresco-promena-connector-activemq-acs-volume
     docker volume create alfresco-promena-connector-activemq-db-volume
-    docker volume create alfresco-promena-connector-activemq-ass-volume
+    docker volume create alfresco-promena-connector-activemq-ass-data-volume
+    docker volume create alfresco-promena-connector-activemq-ass-conf-volume
     docker volume create alfresco-promena-connector-activemq-activemq-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
@@ -29,7 +30,8 @@ down() {
 purge() {
     docker volume rm -f alfresco-promena-connector-activemq-acs-volume
     docker volume rm -f alfresco-promena-connector-activemq-db-volume
-    docker volume rm -f alfresco-promena-connector-activemq-ass-volume
+    docker volume rm -f alfresco-promena-connector-activemq-ass-data-volume
+    docker volume rm -f alfresco-promena-connector-activemq-ass-conf-volume
     docker volume rm -f alfresco-promena-connector-activemq-activemq-volume
 }
 
@@ -38,7 +40,7 @@ build_acs() {
 }
 
 build_promena() {
-    $MVN_EXEC -DskipTests=true -f docker-img/promena-connector-activemq-executable/pom.xml clean package
+    $MVN_EXEC -DskipTests=true -f promena/pom.xml clean package
 }
 
 tail() {

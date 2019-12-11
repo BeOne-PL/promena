@@ -13,7 +13,7 @@
     </parent>
 
     <groupId>pl.beone.promena.executable</groupId>
-    <artifactId>promena-predefined-rendition-executable</artifactId>
+    <artifactId>promena-connector-http-executable</artifactId>
     <version>1.0.0</version>
 
     <repositories>
@@ -52,16 +52,11 @@
         <promena-communication-memory-external.version>1.0.0</promena-communication-memory-external.version>
         <promena-communication-file-external.version>1.0.0</promena-communication-file-external.version>
         <promena-communication-memory-internal.version>1.0.0</promena-communication-memory-internal.version>
-        <promena-communication-file-internal.version>1.0.0</promena-communication-file-internal.version>
 
         <promena-connector-http.version>1.0.0</promena-connector-http.version>
-        <promena-connector-activemq.version>1.0.0</promena-connector-activemq.version>
-
-        <promena-cluster-management-kubernetes.version>1.0.0</promena-cluster-management-kubernetes.version>
 
         <!-- Put TRANSFORMERS versions here -->
-        <converter-imagemagick.version>1.0.0</converter-imagemagick.version>
-        <converter-libreoffice.version>1.0.0</converter-libreoffice.version>
+        <mirror-jdk-transformer.version>1.0.0</mirror-jdk-transformer.version>
         <!-- /Put -->
 
         <promena-docker-maven-plugin.version>1.0.0</promena-docker-maven-plugin.version>
@@ -107,11 +102,6 @@
             <artifactId>promena-communication-memory-internal-configuration</artifactId>
             <version>${promena-communication-memory-internal.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>pl.beone.promena.communication.file.internal</groupId>-->
-<!--            <artifactId>promena-communication-file-internal-configuration</artifactId>-->
-<!--            <version>${promena-communication-file-internal.version}</version>-->
-<!--        </dependency>-->
 
         <!-- Connector -->
         <dependency>
@@ -119,29 +109,12 @@
             <artifactId>promena-connector-http-configuration</artifactId>
             <version>${promena-connector-http.version}</version>
         </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.connector</groupId>
-            <artifactId>promena-connector-activemq-configuration</artifactId>
-            <version>${promena-connector-activemq.version}</version>
-        </dependency>
-
-        <!-- Management -->
-<!--        <dependency>-->
-<!--            <groupId>pl.beone.promena.cluster.management</groupId>-->
-<!--            <artifactId>promena-cluster-management-kubernetes-configuration</artifactId>-->
-<!--            <version>${promena-cluster-management-kubernetes.version}</version>-->
-<!--        </dependency>-->
 
         <!-- Put TRANSFORMERS configuration dependencies here -->
         <dependency>
             <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>converter-imagemagick-configuration</artifactId>
-            <version>${converter-imagemagick.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>pl.beone.promena.transformer</groupId>
-            <artifactId>converter-libreoffice-configuration</artifactId>
-            <version>${converter-libreoffice.version}</version>
+            <artifactId>mirror-jdk-configuration</artifactId>
+            <version>${mirror-jdk-transformer.version}</version>
         </dependency>
         <!-- /Put -->
     </dependencies>
@@ -223,13 +196,8 @@
                     <!-- Put TRANSFORMERS dependencies here -->
                     <dependency>
                         <groupId>pl.beone.promena.transformer</groupId>
-                        <artifactId>converter-imagemagick</artifactId>
-                        <version>${converter-imagemagick.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>pl.beone.promena.transformer</groupId>
-                        <artifactId>converter-libreoffice</artifactId>
-                        <version>${converter-libreoffice.version}</version>
+                        <artifactId>mirror-jdk</artifactId>
+                        <version>${mirror-jdk-transformer.version}</version>
                     </dependency>
                     <!-- /Put -->
                 </dependencies>

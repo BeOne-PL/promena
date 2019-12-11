@@ -11,7 +11,8 @@ fi
 start() {
     docker volume create alfresco-promena-connector-http-acs-volume
     docker volume create alfresco-promena-connector-http-db-volume
-    docker volume create alfresco-promena-connector-http-ass-volume
+    docker volume create alfresco-promena-connector-http-ass-data-volume
+    docker volume create alfresco-promena-connector-http-ass-conf-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
@@ -28,7 +29,8 @@ down() {
 purge() {
     docker volume rm -f alfresco-promena-connector-http-acs-volume
     docker volume rm -f alfresco-promena-connector-http-db-volume
-    docker volume rm -f alfresco-promena-connector-http-ass-volume
+    docker volume rm -f alfresco-promena-connector-http-ass-data-volume
+    docker volume rm -f alfresco-promena-connector-http-ass-conf-volume
 }
 
 build_acs() {
@@ -36,7 +38,7 @@ build_acs() {
 }
 
 build_promena() {
-    $MVN_EXEC -DskipTests=true -f docker-img/promena-connector-http-executable/pom.xml clean package
+    $MVN_EXEC -DskipTests=true -f promena/pom.xml clean package
 }
 
 tail() {
