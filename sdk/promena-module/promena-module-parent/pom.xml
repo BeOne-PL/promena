@@ -16,31 +16,6 @@
 
     <name>[SDK][POM] Parent - module</name>
 
-    <repositories>
-        <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>beone-snapshots</id>
-            <url>http://nexus.office.beone.pl/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
