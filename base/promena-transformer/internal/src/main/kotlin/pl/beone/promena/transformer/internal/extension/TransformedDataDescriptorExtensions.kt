@@ -6,7 +6,7 @@ fun TransformedDataDescriptor.toPrettyString(): String =
     "[" + descriptors.joinToString(", ", transform = TransformedDataDescriptor.Single::toPrettyString) + "]"
 
 fun TransformedDataDescriptor.Single.toPrettyString(): String =
-    "<data=${data.getBytes().toMB().format(2)} MB, metadata=${metadata.toPrettyString()}>"
+    "<data=${data.toBytesPrettyString()}, metadata=${metadata.toPrettyString()}>"
 
 fun TransformedDataDescriptor.toSimplePrettyString(): String =
     "[" + descriptors.joinToString(", ", transform = TransformedDataDescriptor.Single::toSimplePrettyString) + "]"
