@@ -3,6 +3,7 @@ package pl.beone.promena.communication.file.model.common.converter
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.instanceOf
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -49,7 +50,8 @@ class FileDescriptorConverterTest {
             FileDescriptorConverter(directory).convert(
                 singleDataDescriptor(data, mediaType, metadata) +
                         singleDataDescriptor(data2, mediaType2, metadata2) +
-                        singleDataDescriptor(data3, mediaType3, metadata3)
+                        singleDataDescriptor(data3, mediaType3, metadata3),
+                false
             )
         ) {
             descriptors shouldHaveSize 3
@@ -63,6 +65,7 @@ class FileDescriptorConverterTest {
             data2.exists() shouldBe true
 
             with(descriptors[1]) {
+                this.data shouldNotBe data
                 this.data shouldBe instanceOf(FileData::class)
                 this.data.getBytes() shouldBe dataContent
                 this.mediaType shouldBe mediaType
@@ -70,12 +73,72 @@ class FileDescriptorConverterTest {
             }
 
             with(descriptors[2]) {
+                this.data shouldNotBe data3
                 this.data shouldBe instanceOf(FileData::class)
                 this.data.getBytes() shouldBe dataContent3
                 this.mediaType shouldBe mediaType3
                 this.metadata shouldBe metadata3
             }
             data3.exists() shouldBe false
+        }
+    }
+
+    @Test
+    fun `convert _ dataDescriptor _ requireNewInstance`() {
+        val dataContent = "data".toByteArray()
+        val data = mockk<Data> {
+            every { getInputStream() } returns dataContent.inputStream()
+            every { delete() } just Runs
+        }
+        val mediaType = TEXT_PLAIN
+        val metadata = mockk<Metadata>()
+
+        val directory = createTempDir().toURI().toFile()
+
+        val dataContent2 = "data2".toByteArray()
+        val data2 = createFileData(dataContent2, directory)
+        val mediaType2 = APPLICATION_PDF
+        val metadata2 = mockk<Metadata>()
+
+        val dataContent3 = "data3".toByteArray()
+        val data3 = createFileData(dataContent3)
+        val mediaType3 = APPLICATION_PDF
+        val metadata3 = mockk<Metadata>()
+
+        with(
+            FileDescriptorConverter(directory).convert(
+                singleDataDescriptor(data, mediaType, metadata) +
+                        singleDataDescriptor(data2, mediaType2, metadata2) +
+                        singleDataDescriptor(data3, mediaType3, metadata3),
+                true
+            )
+        ) {
+            descriptors shouldHaveSize 3
+
+            with(descriptors[0]) {
+                this.data shouldNotBe data
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent
+                this.mediaType shouldBe mediaType
+                this.metadata shouldBe metadata
+            }
+
+            with(descriptors[1]) {
+                this.data shouldNotBe data2
+                this.data shouldBe instanceOf(FileData::class)
+                this.mediaType shouldBe mediaType2
+                this.metadata shouldBe metadata2
+            }
+            data2.exists() shouldBe true
+
+            with(descriptors[2]) {
+                this.data shouldNotBe data3
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent3
+                this.mediaType shouldBe mediaType3
+                this.metadata shouldBe metadata3
+            }
+            data3.exists() shouldBe true
         }
     }
 
@@ -102,30 +165,86 @@ class FileDescriptorConverterTest {
             FileDescriptorConverter(directory).convert(
                 singleTransformedDataDescriptor(data, metadata) +
                         singleTransformedDataDescriptor(data2, metadata2) +
-                        singleTransformedDataDescriptor(data3, metadata3)
+                        singleTransformedDataDescriptor(data3, metadata3),
+                false
             )
         ) {
             descriptors shouldHaveSize 3
 
             with(descriptors[0]) {
-                this.data shouldBe instanceOf(FileData::class)
                 this.data shouldBe data2
+                this.data shouldBe instanceOf(FileData::class)
                 this.metadata shouldBe metadata2
             }
             data2.exists() shouldBe true
 
             with(descriptors[1]) {
+                this.data shouldNotBe data
                 this.data shouldBe instanceOf(FileData::class)
                 this.data.getBytes() shouldBe dataContent
                 this.metadata shouldBe metadata
             }
 
             with(descriptors[2]) {
+                this.data shouldNotBe data3
                 this.data shouldBe instanceOf(FileData::class)
                 this.data.getBytes() shouldBe dataContent3
                 this.metadata shouldBe metadata3
             }
             data3.exists() shouldBe false
+        }
+    }
+
+    @Test
+    fun `convert _ transformedDataDescriptor _ requireNewInstance`() {
+        val dataContent = "data".toByteArray()
+        val data = mockk<Data> {
+            every { getInputStream() } returns dataContent.inputStream()
+            every { delete() } just Runs
+        }
+        val metadata = mockk<Metadata>()
+
+        val directory = createTempDir().toURI().toFile()
+
+        val dataContent2 = "data2".toByteArray()
+        val data2 = createFileData(dataContent2, directory)
+        val metadata2 = mockk<Metadata>()
+
+        val dataContent3 = "data3".toByteArray()
+        val data3 = createFileData(dataContent3)
+        val metadata3 = mockk<Metadata>()
+
+        with(
+            FileDescriptorConverter(directory).convert(
+                singleTransformedDataDescriptor(data, metadata) +
+                        singleTransformedDataDescriptor(data2, metadata2) +
+                        singleTransformedDataDescriptor(data3, metadata3),
+                true
+            )
+        ) {
+            descriptors shouldHaveSize 3
+
+            with(descriptors[0]) {
+                this.data shouldNotBe data
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent
+                this.metadata shouldBe metadata
+            }
+
+            with(descriptors[1]) {
+                this.data shouldNotBe data2
+                this.data shouldBe instanceOf(FileData::class)
+                this.metadata shouldBe metadata2
+            }
+            data2.exists() shouldBe true
+
+            with(descriptors[2]) {
+                this.data shouldNotBe data3
+                this.data shouldBe instanceOf(FileData::class)
+                this.data.getBytes() shouldBe dataContent3
+                this.metadata shouldBe metadata3
+            }
+            data3.exists() shouldBe true
         }
     }
 

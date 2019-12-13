@@ -13,6 +13,6 @@ object FileOutgoingExternalCommunicationConverter : OutgoingExternalCommunicatio
         externalCommunicationParameters: CommunicationParameters
     ): TransformedDataDescriptor =
         FileDescriptorConverter(externalCommunicationParameters.getDirectory())
-            .convert(transformedDataDescriptor)
+            .convert(transformedDataDescriptor, false)
 }
 

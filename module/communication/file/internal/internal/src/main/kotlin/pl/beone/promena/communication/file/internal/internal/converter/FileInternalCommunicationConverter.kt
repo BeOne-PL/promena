@@ -12,9 +12,9 @@ class FileInternalCommunicationConverter(
 
     private val fileDescriptorConverter = FileDescriptorConverter(directory)
 
-    override fun convert(dataDescriptor: DataDescriptor): DataDescriptor =
-        fileDescriptorConverter.convert(dataDescriptor)
+    override fun convert(dataDescriptor: DataDescriptor, requireNewInstance: Boolean): DataDescriptor =
+        fileDescriptorConverter.convert(dataDescriptor, requireNewInstance)
 
-    override fun convert(transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
-        fileDescriptorConverter.convert(transformedDataDescriptor)
+    override fun convert(transformedDataDescriptor: TransformedDataDescriptor, requireNewInstance: Boolean): TransformedDataDescriptor =
+        fileDescriptorConverter.convert(transformedDataDescriptor, requireNewInstance)
 }

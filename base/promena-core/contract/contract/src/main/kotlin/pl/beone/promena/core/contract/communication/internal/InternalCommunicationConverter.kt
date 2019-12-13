@@ -5,7 +5,7 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 interface InternalCommunicationConverter {
 
-    fun convert(dataDescriptor: DataDescriptor): DataDescriptor
+    fun convert(dataDescriptor: DataDescriptor, requireNewInstance: Boolean): DataDescriptor
 
-    fun convert(transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor
+    fun convert(transformedDataDescriptor: TransformedDataDescriptor, requireNewInstance: Boolean): TransformedDataDescriptor
 }

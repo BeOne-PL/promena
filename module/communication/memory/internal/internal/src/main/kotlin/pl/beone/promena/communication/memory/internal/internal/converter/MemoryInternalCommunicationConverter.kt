@@ -7,9 +7,9 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 object MemoryInternalCommunicationConverter : InternalCommunicationConverter {
 
-    override fun convert(dataDescriptor: DataDescriptor): DataDescriptor =
-        MemoryDescriptorConverter.convert(dataDescriptor)
+    override fun convert(dataDescriptor: DataDescriptor, requireNewInstance: Boolean): DataDescriptor =
+        MemoryDescriptorConverter.convert(dataDescriptor, requireNewInstance)
 
-    override fun convert(transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
-        MemoryDescriptorConverter.convert(transformedDataDescriptor)
+    override fun convert(transformedDataDescriptor: TransformedDataDescriptor, requireNewInstance: Boolean): TransformedDataDescriptor =
+        MemoryDescriptorConverter.convert(transformedDataDescriptor, requireNewInstance)
 }

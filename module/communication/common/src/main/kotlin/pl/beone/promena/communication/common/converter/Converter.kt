@@ -18,7 +18,22 @@ internal class Converter<T : Data, D>(
         private val logger = KotlinLogging.logger {}
     }
 
-    fun convert(descriptors: List<D>): List<D> {
+    fun convert(descriptors: List<D>, requireNewInstance: Boolean): List<D> =
+        if (requireNewInstance) {
+            convertToNewInstances(descriptors)
+        } else {
+            convertToNewInstancesOnlyIfDataIsNotCompatible(descriptors)
+        }
+
+    private fun convertToNewInstances(descriptors: List<D>): List<D> {
+        logger.debug { "Converting to new instances..." }
+        return descriptors
+            .map { descriptor -> createData(getData(descriptor)) to descriptor }
+            .map { (newData, descriptor) -> createDescriptor(newData, descriptor) }
+            .also { logger.debug { "Finished converting to new instances" } }
+    }
+
+    private fun convertToNewInstancesOnlyIfDataIsNotCompatible(descriptors: List<D>): List<D> {
         val notCompatibleDescriptors = filterNotCompatibleDescriptors(descriptors)
         val compatibleDescriptors = descriptors - notCompatibleDescriptors
 
@@ -28,7 +43,7 @@ internal class Converter<T : Data, D>(
                 logger.debug { "Converting..." }
                 notCompatibleDescriptors
                     .map { descriptor -> processData(getData(descriptor)) to descriptor }
-                    .map { (newData, oldDescriptor) -> createDescriptor(newData, oldDescriptor) }
+                    .map { (newData, descriptor) -> createDescriptor(newData, descriptor) }
                     .also { logger.debug { "Finished converting" } }
             } else {
                 emptyList()

@@ -11,6 +11,6 @@ object MemoryOutgoingExternalCommunicationConverter : OutgoingExternalCommunicat
         transformedDataDescriptor: TransformedDataDescriptor,
         externalCommunicationParameters: CommunicationParameters
     ): TransformedDataDescriptor =
-        MemoryDescriptorConverter.convert(transformedDataDescriptor)
+        MemoryDescriptorConverter.convert(transformedDataDescriptor, false)
 }
 

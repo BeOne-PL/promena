@@ -44,7 +44,7 @@ class TransformerResponseConsumer(
     ) {
         val transformationExecution = transformationExecution(executionId)
 
-        val (transformation, nodeDescriptor, postTransformationExecutor, _, _, nodesChecksum, _, userName) =
+        val (transformation, nodeDescriptor, postTransformationExecutor, _, dataDescriptor, nodesChecksum, _, userName) =
             transformationParametersSerializationService.deserialize(transformationParameters)
         val nodeRefs = nodeDescriptor.toNodeRefs()
 
@@ -57,6 +57,9 @@ class TransformerResponseConsumer(
                             postTransformationExecutor
                                 ?.also(postTransformationExecutorInjector::inject)
                                 ?.execute(transformation, nodeDescriptor, result)
+
+                            // TODO
+                            dataDescriptor.descriptors.forEach { it.data.delete() }
                         }
                 }, false, true)
             }

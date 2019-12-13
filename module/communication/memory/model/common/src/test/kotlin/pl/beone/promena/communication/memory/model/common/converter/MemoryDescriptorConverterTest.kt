@@ -36,7 +36,7 @@ class MemoryDescriptorConverterTest {
 
         with(
             MemoryDescriptorConverter.convert(
-                singleDataDescriptor(data, mediaType, metadata) + singleDataDescriptor(data2, mediaType2, metadata2)
+                singleDataDescriptor(data, mediaType, metadata) + singleDataDescriptor(data2, mediaType2, metadata2), false
             )
         ) {
             descriptors shouldHaveSize 2
@@ -71,7 +71,7 @@ class MemoryDescriptorConverterTest {
 
         with(
             MemoryDescriptorConverter.convert(
-                singleTransformedDataDescriptor(data, metadata) + singleTransformedDataDescriptor(data2, metadata2)
+                singleTransformedDataDescriptor(data, metadata) + singleTransformedDataDescriptor(data2, metadata2), false
             )
         ) {
             descriptors shouldHaveSize 2

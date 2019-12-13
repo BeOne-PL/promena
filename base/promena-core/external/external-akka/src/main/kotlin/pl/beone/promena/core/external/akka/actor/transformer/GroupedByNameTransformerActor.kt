@@ -65,7 +65,7 @@ class GroupedByNameTransformerActor(
             )
         }
 
-        return internalCommunicationConverter.convert(transformedDataDescriptor)
+        return internalCommunicationConverter.convert(transformedDataDescriptor, false)
             .also { internalCommunicationCleaner.clean(dataDescriptor, it) }
     }
 

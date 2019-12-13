@@ -26,7 +26,7 @@ class FileIncomingExternalCommunicationConverter(
 
         logger.warnIfCommunicationsAreDifferent(internalCommunicationParameters.getId(), externalCommunicationParameters.getId())
 
-        return internalCommunicationConverter.convert(dataDescriptor)
+        return internalCommunicationConverter.convert(dataDescriptor, true)
     }
 
     private fun bothCommunicationsAreFile(externalCommunicationParameters: CommunicationParameters): Boolean =

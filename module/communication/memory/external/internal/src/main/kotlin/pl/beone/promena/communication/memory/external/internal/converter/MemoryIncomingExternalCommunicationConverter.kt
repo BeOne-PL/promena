@@ -22,6 +22,6 @@ class MemoryIncomingExternalCommunicationConverter(
             internalCommunicationParameters.getId(),
             MemoryCommunicationParametersConstants.ID
         )
-        return internalCommunicationConverter.convert(dataDescriptor)
+        return internalCommunicationConverter.convert(dataDescriptor, false)
     }
 }

@@ -27,9 +27,10 @@ abstract class AbstractDescriptorConverter<T : Data> {
 
     protected abstract fun isCompatible(data: Data): Boolean
 
-    fun convert(dataDescriptor: DataDescriptor): DataDescriptor =
-        dataDescriptorConverter.convert(dataDescriptor.descriptors).toDataDescriptor()
 
-    fun convert(transformedDataDescriptor: TransformedDataDescriptor): TransformedDataDescriptor =
-        transformedDataDescriptorConverter.convert(transformedDataDescriptor.descriptors).toTransformedDataDescriptor()
+    fun convert(dataDescriptor: DataDescriptor, requireNewInstance: Boolean): DataDescriptor =
+        dataDescriptorConverter.convert(dataDescriptor.descriptors, requireNewInstance).toDataDescriptor()
+
+    fun convert(transformedDataDescriptor: TransformedDataDescriptor, requireNewInstance: Boolean): TransformedDataDescriptor =
+        transformedDataDescriptorConverter.convert(transformedDataDescriptor.descriptors, requireNewInstance).toTransformedDataDescriptor()
 }
