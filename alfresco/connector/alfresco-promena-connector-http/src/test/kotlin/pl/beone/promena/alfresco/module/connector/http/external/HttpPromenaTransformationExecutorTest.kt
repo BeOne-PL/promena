@@ -99,6 +99,7 @@ class HttpPromenaTransformationExecutorTest {
             dataDescriptorGetter,
             mockk(),
             mockk(),
+            mockk(),
             authorizationService,
             mockk(),
             serializationService

@@ -12,6 +12,7 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.node.toNodeRefs
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.data.DataCleaner
 import pl.beone.promena.alfresco.module.core.contract.node.TransformedDataDescriptorSaver
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager.PromenaMutableTransformationManager
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorInjector
@@ -19,11 +20,14 @@ import pl.beone.promena.alfresco.module.core.extension.transformedSuccessfully
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
+import pl.beone.promena.transformer.contract.data.DataDescriptor
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 class TransformerResponseConsumer(
     private val promenaMutableTransformationManager: PromenaMutableTransformationManager,
     private val transformerResponseProcessor: TransformerResponseProcessor,
     private val transformedDataDescriptorSaver: TransformedDataDescriptorSaver,
+    private val dataCleaner: DataCleaner,
     private val transformationParametersSerializationService: TransformationParametersSerializationService,
     private val postTransformationExecutorInjector: PostTransformationExecutorInjector,
     private val authorizationService: AuthorizationService,
@@ -46,20 +50,23 @@ class TransformerResponseConsumer(
 
         val (transformation, nodeDescriptor, postTransformationExecutor, _, dataDescriptor, nodesChecksum, _, userName) =
             transformationParametersSerializationService.deserialize(transformationParameters)
+        val transformedDataDescriptor = performedTransformationDescriptor.transformedDataDescriptor
         val nodeRefs = nodeDescriptor.toNodeRefs()
 
         transformerResponseProcessor.process(transformation, nodeDescriptor, transformationExecution, nodesChecksum, userName) {
             val transformationExecutionResult = authorizationService.runAs(userName) {
                 serviceRegistry.retryingTransactionHelper.doInTransaction({
-                    transformedDataDescriptorSaver.save(executionId, transformation, nodeRefs, performedTransformationDescriptor.transformedDataDescriptor)
+                    transformedDataDescriptorSaver.save(executionId, transformation, nodeRefs, transformedDataDescriptor)
                         .let(::transformationExecutionResult)
                         .also { result ->
                             postTransformationExecutor
                                 ?.also(postTransformationExecutorInjector::inject)
                                 ?.execute(transformation, nodeDescriptor, result)
 
-                            // TODO
-                            dataDescriptor.descriptors.forEach { it.data.delete() }
+                            dataCleaner.clean(
+                                dataDescriptor.descriptors.map(DataDescriptor.Single::data) +
+                                        transformedDataDescriptor.descriptors.map(TransformedDataDescriptor.Single::data)
+                            )
                         }
                 }, false, true)
             }

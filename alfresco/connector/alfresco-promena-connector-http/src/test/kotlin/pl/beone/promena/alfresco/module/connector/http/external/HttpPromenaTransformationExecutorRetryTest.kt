@@ -113,6 +113,7 @@ class HttpPromenaTransformationExecutorRetryTest {
             dataDescriptorGetter,
             mockk(),
             mockk(),
+            mockk(),
             authorizationService,
             mockk(),
             serializationService
@@ -264,6 +265,7 @@ class HttpPromenaTransformationExecutorRetryTest {
             nodesChecksumGenerator,
             mockk(),
             dataDescriptorGetter,
+            mockk(),
             mockk(),
             mockk(),
             authorizationService,

@@ -14,6 +14,7 @@ import pl.beone.promena.alfresco.module.core.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.TransformationExecution
 import pl.beone.promena.alfresco.module.core.applicationmodel.transformation.transformationExecutionResult
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.data.DataCleaner
 import pl.beone.promena.alfresco.module.core.contract.node.*
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager
@@ -21,11 +22,12 @@ import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTr
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorInjector
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorValidator
 import pl.beone.promena.alfresco.module.core.extension.*
-import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.transformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.lib.connector.http.external.HttpPromenaTransformer
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
+import pl.beone.promena.transformer.contract.data.DataDescriptor
+import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 import java.util.concurrent.Executors
 
@@ -41,6 +43,7 @@ class HttpPromenaTransformationExecutor(
     private val nodesExistenceVerifier: NodesExistenceVerifier,
     private val dataDescriptorGetter: DataDescriptorGetter,
     private val transformedDataDescriptorSaver: TransformedDataDescriptorSaver,
+    private val dataCleaner: DataCleaner,
     private val postTransformationExecutorInjector: PostTransformationExecutorInjector,
     private val authorizationService: AuthorizationService,
     private val serviceRegistry: ServiceRegistry,
@@ -106,7 +109,7 @@ class HttpPromenaTransformationExecutor(
             val endTimestamp = getTimestamp()
 
             process(parameters) {
-                processTransformedData(parameters, performedTransformationDescriptor, startTimestamp, endTimestamp)
+                processTransformedData(parameters, performedTransformationDescriptor.transformedDataDescriptor, startTimestamp, endTimestamp)
             }
         } catch (e: Exception) {
             process(parameters) {
@@ -143,11 +146,11 @@ class HttpPromenaTransformationExecutor(
 
     private fun processTransformedData(
         parameters: Parameters,
-        performedTransformationDescriptor: PerformedTransformationDescriptor,
+        transformedDataDescriptor: TransformedDataDescriptor,
         startTimestamp: Long,
         endTimestamp: Long
     ) {
-        val (transformation, nodeDescriptor, postTransformationExecutor, _, _, transformationExecution, _, userName) = parameters
+        val (transformation, nodeDescriptor, postTransformationExecutor, _, dataDescriptor, transformationExecution, _, userName) = parameters
 
         val transformationExecutionResult = authorizationService.runAs(userName) {
             serviceRegistry.retryingTransactionHelper.doInTransaction({
@@ -155,13 +158,18 @@ class HttpPromenaTransformationExecutor(
                     parameters.transformationExecution.id,
                     transformation,
                     nodeDescriptor.toNodeRefs(),
-                    performedTransformationDescriptor.transformedDataDescriptor
+                    transformedDataDescriptor
                 )
                     .let(::transformationExecutionResult)
                     .also { result ->
                         postTransformationExecutor
                             ?.also(postTransformationExecutorInjector::inject)
                             ?.execute(transformation, nodeDescriptor, result)
+
+                        dataCleaner.clean(
+                            dataDescriptor.descriptors.map(DataDescriptor.Single::data) +
+                                    transformedDataDescriptor.descriptors.map(TransformedDataDescriptor.Single::data)
+                        )
                     }
             }, false, true)
         }

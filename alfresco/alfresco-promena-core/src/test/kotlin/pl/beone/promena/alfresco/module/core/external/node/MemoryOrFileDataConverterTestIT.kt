@@ -73,7 +73,7 @@ class MemoryOrFileDataConverterTestIT : AbstractUtilsAlfrescoIT() {
         MemoryOrFileDataConverter(MemoryCommunicationParametersConstants.ID, null)
             .saveDataInContentWriter(data, node.getContentWriter())
 
-        java.io.File(data.getLocation()).exists() shouldBe false
+        java.io.File(data.getLocation()).exists() shouldBe true
         node.readContent() shouldBe "test".toByteArray()
     }
 }

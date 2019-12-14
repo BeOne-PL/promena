@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 import pl.beone.promena.alfresco.module.connector.http.external.HttpPromenaTransformationExecutor
 import pl.beone.promena.alfresco.module.core.applicationmodel.retry.Retry
 import pl.beone.promena.alfresco.module.core.contract.AuthorizationService
+import pl.beone.promena.alfresco.module.core.contract.data.DataCleaner
 import pl.beone.promena.alfresco.module.core.contract.node.*
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationManager
 import pl.beone.promena.alfresco.module.core.contract.transformation.post.PostTransformationExecutorInjector
@@ -31,6 +32,7 @@ class HttpPromenaTransformationExecutorContext {
         nodesExistenceVerifier: NodesExistenceVerifier,
         dataDescriptorGetter: DataDescriptorGetter,
         transformedDataDescriptorSaver: TransformedDataDescriptorSaver,
+        dataCleaner: DataCleaner,
         postTransformationExecutorInjector: PostTransformationExecutorInjector,
         authorizationService: AuthorizationService,
         serviceRegistry: ServiceRegistry,
@@ -50,6 +52,7 @@ class HttpPromenaTransformationExecutorContext {
             nodesExistenceVerifier,
             dataDescriptorGetter,
             transformedDataDescriptorSaver,
+            dataCleaner,
             postTransformationExecutorInjector,
             authorizationService,
             serviceRegistry,
