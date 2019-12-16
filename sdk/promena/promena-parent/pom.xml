@@ -27,8 +27,8 @@
 
         <kotlin-logging.version>1.7.6</kotlin-logging.version>
         <kryo.version>4.0.2</kryo.version>
-        <akka.version>2.5.23</akka.version>
-        <akka-kryo-serialization.version>0.5.2</akka-kryo-serialization.version>
+        <akka.version>2.5.26</akka.version>
+        <akka-kryo-serialization.version>1.1.0</akka-kryo-serialization.version>
         <kryo-serializers.version>0.45</kryo-serializers.version>
 
         <kotlintest-runner-junit5.version>3.4.2</kotlintest-runner-junit5.version>
@@ -74,7 +74,7 @@
                 <version>${akka.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.romix.akka</groupId>
+                <groupId>io.altoo</groupId>
                 <artifactId>akka-kryo-serialization_2.12</artifactId>
                 <version>${akka-kryo-serialization.version}</version>
                 <exclusions>
