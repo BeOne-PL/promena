@@ -19,24 +19,14 @@ class ActorSystemContext {
 
     @Bean
     @ConditionalOnMissingBean(ActorSystem::class)
-    fun actorSystem(environment: Environment): ActorSystem {
-        setAkkaProperties(getAkkaProperties(environment))
+    fun actorSystem(environment: Environment) =
+        ActorSystem.create("Promena", ConfigFactory.parseMap(getAkkaProperties(environment)))
 
-        return ActorSystem.create("Promena", ConfigFactory.load("kryo-mapping.conf"))
-    }
-
-    private fun getAkkaProperties(environment: Environment): List<Pair<String, String>> =
+    private fun getAkkaProperties(environment: Environment): Map<String, String> =
         (environment as StandardEnvironment).propertySources
             .filterIsInstance<MapPropertySource>()
             .flatMap { it.source.keys }
-            .filter { key -> key.startsWith("akka.") }
+            .filter { key -> key.contains("akka", ignoreCase = true) }
             .map { key -> key to environment.getRequiredProperty(key) }
-
-    private fun setAkkaProperties(akkaProperties: List<Pair<String, String>>) {
-        logger.info { "Found <${akkaProperties.size}> AKKA property(ies)" }
-        akkaProperties.forEach { (key, value) ->
-            System.setProperty(key, value)
-            logger.debug { "> Set <$key=$value>" }
-        }
-    }
+            .toMap()
 }
