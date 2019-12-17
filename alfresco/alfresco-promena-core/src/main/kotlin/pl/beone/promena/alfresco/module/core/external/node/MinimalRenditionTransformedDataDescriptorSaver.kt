@@ -60,7 +60,7 @@ class MinimalRenditionTransformedDataDescriptorSaver(
 
     @Suppress("UNCHECKED_CAST")
     private fun addExecutionId(sourceNodeRef: NodeRef, executionId: String) {
-        val currentExecutionIds = ((serviceRegistry.nodeService.getProperty(sourceNodeRef, PROPERTY_EXECUTION_ID) as List<String>?) ?: emptyList())
+        val currentExecutionIds = ((serviceRegistry.nodeService.getProperty(sourceNodeRef, PROPERTY_EXECUTION_IDS) as List<String>?) ?: emptyList())
         val updatedExecutionIds = currentExecutionIds + executionId
 
         serviceRegistry.nodeService.setProperty(sourceNodeRef, PROPERTY_EXECUTION_IDS, updatedExecutionIds.toMutableList() as Serializable)

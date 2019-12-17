@@ -43,6 +43,7 @@ import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.metadata.plus
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
 import pl.beone.promena.transformer.internal.model.parameters.plus
+import java.io.Serializable
 
 @Suppress("DEPRECATION")
 @RunWith(AlfrescoTestRunner::class)
@@ -85,6 +86,9 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
             every { saveDataInContentWriter(data, any()) } just Runs
         }
 
+        val additionalExecutionId = "7abdf1e2-92f4-47b2-983a-611e42f3555c"
+        nodeRefs.forEach { serviceRegistry.nodeService.setProperty(it, PROPERTY_EXECUTION_IDS, listOf(additionalExecutionId) as Serializable) }
+
         val currentUserName = serviceRegistry.authenticationService.currentUserName
 
         with(
@@ -102,7 +106,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
             nodeRef.getProperty(PROP_LATITUDE) shouldBe latitudeValue
             nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
             nodeRef2.getProperty(PROP_LATITUDE) shouldBe latitudeValue
-            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
+            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) shouldBe listOf(additionalExecutionId, executionId) }
 
             this shouldHaveSize 2
             val (transformedNodeRef, transformedNodeRef2) = this
@@ -185,7 +189,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
         ) {
             nodeRef.getAspects() shouldContain ASPECT_RENDITIONED
             nodeRef2.getAspects() shouldContain ASPECT_RENDITIONED
-            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
+            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) shouldBe listOf(executionId) }
 
             this shouldHaveSize 1
             val transformedNodeRef = this[0]
@@ -293,7 +297,7 @@ class MinimalRenditionTransformedDataDescriptorSaverTestIT : AbstractUtilsAlfres
                 )
         ) {
             nodeRefs.forEach { it.getAspects() shouldNotContain ASPECT_RENDITIONED }
-            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) as List<String> shouldContain executionId }
+            nodeRefs.forEach { it.getProperty(PROPERTY_EXECUTION_IDS) shouldBe listOf(executionId) }
 
             this shouldHaveSize 0
         }
