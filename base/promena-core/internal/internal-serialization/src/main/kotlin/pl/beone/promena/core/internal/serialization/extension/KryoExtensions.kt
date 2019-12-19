@@ -3,6 +3,8 @@ package pl.beone.promena.core.internal.serialization.extension
 import com.esotericsoftware.kryo.Kryo
 import de.javakaffee.kryoserializers.*
 import org.objenesis.strategy.StdInstantiatorStrategy
+import org.springframework.integration.codec.kryo.FileSerializer
+import java.io.File
 import java.lang.reflect.InvocationHandler
 import java.net.URI
 import java.util.*
@@ -27,6 +29,7 @@ fun Kryo.registerSerializers(): Kryo {
     SynchronizedCollectionsSerializer.registerSerializers(this)
 
     register(URI::class.java, URISerializer())
+    register(File::class.java, FileSerializer())
 
     return this
 }
