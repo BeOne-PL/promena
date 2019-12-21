@@ -15,6 +15,7 @@ import pl.beone.promena.core.external.akka.extension.toCorrectActorName
 import pl.beone.promena.transformer.contract.Transformer
 
 class GroupedByNameTransformersCreator(
+    private val actorClusterAware: Boolean,
     private val transformerConfig: TransformerConfig,
     private val internalCommunicationConverter: InternalCommunicationConverter,
     private val internalCommunicationCleaner: InternalCommunicationCleaner,
@@ -98,7 +99,8 @@ class GroupedByNameTransformersCreator(
             Props.create(GroupedByNameTransformerActor::class.java) {
                 GroupedByNameTransformerActor(transformerName, transformerDescriptors, internalCommunicationConverter, internalCommunicationCleaner)
             },
-            maxActors
+            maxActors,
+            actorClusterAware
         )
 
     private fun logSuccessfulActorCreation(transformerName: String, transformers: List<Transformer>) {

@@ -15,6 +15,10 @@ import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 class GroupedByNameTransformersCreatorTest {
 
+    companion object {
+        private val clusterAware = true
+    }
+
     @Test
     fun create() {
         val libreOfficeConverterTransformer = mockk<Transformer>()
@@ -43,11 +47,11 @@ class GroupedByNameTransformersCreatorTest {
         val actorRef2 = mockk<ActorRef>()
 
         val actorCreator = mockk<ActorCreator> {
-            every { create("converter", any(), 2) } returns actorRef
-            every { create("barcode", any(), 3) } returns actorRef2
+            every { create("converter", any(), 2, clusterAware) } returns actorRef
+            every { create("barcode", any(), 3, clusterAware) } returns actorRef2
         }
 
-        GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), actorCreator)
+        GroupedByNameTransformersCreator(clusterAware, transformerConfig, mockk(), mockk(), actorCreator)
             .create(listOf(libreOfficeConverterTransformer, msOfficeConverterTransformer, zxingBarcodeTransformer)) shouldBe
                 listOf(
                     TransformerActorDescriptor(libreOfficeConverterTransformerId, actorRef, 2),
@@ -75,7 +79,7 @@ class GroupedByNameTransformersCreatorTest {
         }
 
         with(shouldThrow<IllegalStateException> {
-            GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
+            GroupedByNameTransformersCreator(clusterAware, transformerConfig, mockk(), mockk(), mockk())
                 .create(
                     listOf(
                         libreOfficeConverterTransformer,
@@ -122,7 +126,7 @@ class GroupedByNameTransformersCreatorTest {
 
         with(
             shouldThrow<IllegalStateException> {
-                GroupedByNameTransformersCreator(transformerConfig, mockk(), mockk(), mockk())
+                GroupedByNameTransformersCreator(clusterAware, transformerConfig, mockk(), mockk(), mockk())
                     .create(
                         listOf(
                             libreOfficeConverterTransformer,
@@ -143,7 +147,7 @@ class GroupedByNameTransformersCreatorTest {
     @Test
     fun `create _ no transformer _ should throw IllegalStateException`() {
         shouldThrow<IllegalStateException> {
-            GroupedByNameTransformersCreator(mockk(), mockk(), mockk(), mockk())
+            GroupedByNameTransformersCreator(clusterAware, mockk(), mockk(), mockk(), mockk())
                 .create(emptyList())
         }.message shouldContain "No transformer was found. You must add at least <1> transformer"
     }

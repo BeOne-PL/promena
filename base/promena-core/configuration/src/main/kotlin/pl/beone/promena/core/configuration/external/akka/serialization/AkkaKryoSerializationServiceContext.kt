@@ -25,8 +25,8 @@ class AkkaKryoSerializationServiceContext {
     @Bean
     @ConditionalOnMissingBean(SerializationService::class)
     fun akkaKryoSerializationService(
-        actorMaterializer: ActorMaterializer,
         environment: Environment,
+        actorMaterializer: ActorMaterializer,
         actorCreator: ActorCreator,
         transformerActorDescriptors: List<TransformerActorDescriptor>
     ) =
@@ -43,7 +43,8 @@ class AkkaKryoSerializationServiceContext {
         actorCreator.create(
             KryoSerializerActor.actorName,
             Props.create(KryoSerializerActor::class.java) { KryoSerializerActor(createSerializationService(environment)) },
-            getNumberOfActors(environment) ?: determineNumberOfActors(transformerActorDescriptors)
+            getNumberOfActors(environment) ?: determineNumberOfActors(transformerActorDescriptors),
+            environment.getRequiredProperty("core.serializer.actor.cluster-aware", Boolean::class.java)
         )
 
     private fun createSerializationService(environment: Environment): KryoSerializationService =

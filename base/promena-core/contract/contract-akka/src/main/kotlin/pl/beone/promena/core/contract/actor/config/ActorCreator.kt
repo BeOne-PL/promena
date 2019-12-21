@@ -5,5 +5,5 @@ import akka.actor.Props
 
 interface ActorCreator {
 
-    fun create(name: String, props: Props, actors: Int): ActorRef
+    fun create(name: String, props: Props, actors: Int, clusterAware: Boolean): ActorRef
 }
