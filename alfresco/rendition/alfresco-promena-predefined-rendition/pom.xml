@@ -18,7 +18,7 @@
 
         <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
         <alfresco-promena-connector-http.version>1.0.0</alfresco-promena-connector-http.version>
-        <alfresco-promena-rendition.version>1.0.0</alfresco-promena-rendition.version>
+        <alfresco-promena-rendition_6.1.2.version>1.0.0</alfresco-promena-rendition_6.1.2.version>
 
         <converter-imagemagick.version>1.0.0</converter-imagemagick.version>
         <converter-libreoffice.version>1.0.0</converter-libreoffice.version>
@@ -71,8 +71,8 @@
     <dependencies>
         <dependency>
             <groupId>pl.beone.promena.alfresco.module.rendition</groupId>
-            <artifactId>alfresco-promena-rendition</artifactId>
-            <version>${alfresco-promena-rendition.version}</version>
+            <artifactId>alfresco-promena-rendition_6.1.2</artifactId>
+            <version>${alfresco-promena-rendition_6.1.2.version}</version>
         </dependency>
 
         <dependency>
@@ -98,8 +98,8 @@
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.alfresco.module.rendition</groupId>
-            <artifactId>alfresco-promena-rendition</artifactId>
-            <version>${alfresco-promena-rendition.version}</version>
+            <artifactId>alfresco-promena-rendition_6.1.2</artifactId>
+            <version>${alfresco-promena-rendition_6.1.2.version}</version>
             <type>amp</type>
             <scope>provided</scope>
         </dependency>
