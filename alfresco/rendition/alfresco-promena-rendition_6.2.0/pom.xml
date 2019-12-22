@@ -14,6 +14,7 @@
         <kotlin.version>1.3.50</kotlin.version>
         <java.version>11</java.version>
 
+        <alfresco-promena-lib-rendition.version>1.0.0</alfresco-promena-lib-rendition.version>
         <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
         <alfresco-promena-connector-http.version>1.0.0</alfresco-promena-connector-http.version>
         <alfresco-promena-connector-activemq.version>1.0.0</alfresco-promena-connector-activemq.version>
@@ -41,7 +42,7 @@
 
         <!-- Environment configuration properties -->
         <share.port>8180</share.port>
-        <acs.host>alfresco-promena-rendition-acs</acs.host>
+        <acs.host>alfresco-promena-rendition-6-2-0-acs</acs.host>
         <acs.port>8080</acs.port>
         <acs.debug.port>8888</acs.debug.port>
         <postgres.port>5555</postgres.port>
@@ -62,6 +63,11 @@
     <!-- IMPORTANT - Test dependencies need to be here in the top parent POM as
                      the Alfresco Maven IT Mojo runs as part of the parent project ... -->
     <dependencies>
+        <dependency>
+            <groupId>pl.beone.promena.alfresco.lib.rendition</groupId>
+            <artifactId>alfresco-promena-lib-rendition</artifactId>
+            <version>${alfresco-promena-lib-rendition.version}</version>
+        </dependency>
         <dependency>
             <groupId>pl.beone.promena.alfresco.module</groupId>
             <artifactId>alfresco-promena-core</artifactId>

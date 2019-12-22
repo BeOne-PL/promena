@@ -1,7 +1,7 @@
 package pl.beone.promena.alfresco.module.rendition.predefined.internal.definition.image
 
-import pl.beone.promena.alfresco.module.rendition.applicationmodel.exception.PromenaRenditionTransformationNotSupportedException
-import pl.beone.promena.alfresco.module.rendition.contract.definition.PromenaRenditionDefinition
+import pl.beone.promena.alfresco.lib.rendition.applicationmodel.exception.PromenaRenditionTransformationNotSupportedException
+import pl.beone.promena.alfresco.lib.rendition.contract.definition.PromenaRenditionDefinition
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.IMAGE_PNG

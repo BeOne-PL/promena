@@ -62,7 +62,7 @@
             <outputDirectory>lib</outputDirectory>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <excludes>
-                <exclude>pl.beone.promena.alfresco.module.rendition:alfresco-promena-rendition</exclude>
+                <exclude>pl.beone.promena.alfresco.lib.rendition:alfresco-promena-lib-rendition</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

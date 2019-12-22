@@ -9,15 +9,15 @@ else
 fi
 
 start() {
-    docker volume create alfresco-promena-rendition-acs-volume
-    docker volume create alfresco-promena-rendition-db-volume
-    docker volume create alfresco-promena-rendition-ass-data-volume
-    docker volume create alfresco-promena-rendition-ass-conf-volume
+    docker volume create alfresco-promena-rendition-6-2-0-acs-volume
+    docker volume create alfresco-promena-rendition-6-2-0-db-volume
+    docker volume create alfresco-promena-rendition-6-2-0-ass-data-volume
+    docker volume create alfresco-promena-rendition-6-2-0-ass-conf-volume
     docker-compose -f $COMPOSE_FILE_PATH up --build -d
 }
 
 start_acs() {
-    docker-compose -f $COMPOSE_FILE_PATH up --build -d alfresco-promena-rendition-acs
+    docker-compose -f $COMPOSE_FILE_PATH up --build -d alfresco-promena-rendition-6-2-0-acs
 }
 
 down() {
@@ -27,15 +27,15 @@ down() {
 }
 
 purge() {
-    docker volume rm -f alfresco-promena-rendition-acs-volume
-    docker volume rm -f alfresco-promena-rendition-db-volume
-    docker volume rm -f alfresco-promena-rendition-ass-data-volume
-    docker volume rm -f alfresco-promena-rendition-ass-conf-volume
+    docker volume rm -f alfresco-promena-rendition-6-2-0-acs-volume
+    docker volume rm -f alfresco-promena-rendition-6-2-0-db-volume
+    docker volume rm -f alfresco-promena-rendition-6-2-0-ass-data-volume
+    docker volume rm -f alfresco-promena-rendition-6-2-0-ass-conf-volume
 }
 
 build() {
-    docker-compose -f $COMPOSE_FILE_PATH kill alfresco-promena-rendition-acs
-    yes | docker-compose -f $COMPOSE_FILE_PATH rm -f alfresco-promena-rendition-acs
+    docker-compose -f $COMPOSE_FILE_PATH kill alfresco-promena-rendition-6-2-0-acs
+    yes | docker-compose -f $COMPOSE_FILE_PATH rm -f alfresco-promena-rendition-6-2-0-acs
     $MVN_EXEC -DskipTests=true clean package
 }
 
