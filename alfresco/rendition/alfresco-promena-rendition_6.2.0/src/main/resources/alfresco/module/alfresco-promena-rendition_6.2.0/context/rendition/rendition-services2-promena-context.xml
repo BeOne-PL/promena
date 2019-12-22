@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="renditionService2" class="pl.beone.promena.alfresco.module.rendition.external.rendition2.PromenaRenditionService2">
+        <constructor-arg index="0" ref="promenaRenditionGetter"/>
+        <constructor-arg index="1" ref="defaultPromenaRenditionTransformationExecutor"/>
+        <constructor-arg index="2" ref="renditionDefinitionRegistry2"/>
+    </bean>
+
+    <bean id="renditionDefinitionRegistry2" class="pl.beone.promena.alfresco.module.rendition.external.rendition2.PromenaRenditionDefinitionRegistry2">
+        <constructor-arg index="0" ref="memoryPromenaRenditionDefinitionGetter"/>
+    </bean>
+</beans>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="thumbnailRenditionConvertor" class="kotlin.Unit"/>
+
+    <bean id="baseThumbnailDefinition" class="kotlin.Unit"/>
+
+    <bean id="defaultImageResizeOptions" class="kotlin.Unit"/>
+
+    <bean id="defaultImageTransformationOptions" class="kotlin.Unit"/>
+
+    <bean id="thumbnailDefinitionMedium" class="kotlin.Unit"/>
+
+    <bean id="thumbnailDefinitionDoclib" class="kotlin.Unit"/>
+
+    <bean id="thumbnailDefinitionImgpreview" class="kotlin.Unit"/>
+
+    <bean id="thumbnailDefinitionAvatar" class="kotlin.Unit"/>
+
+    <bean id="thumbnailDefinitionAvatar32" class="kotlin.Unit"/>
+
+    <bean id="thumbnailDefinitionWebpreview" class="kotlin.Unit"/>
+
+    <bean id="thumbnailDefinitionPDFpreview" class="kotlin.Unit"/>
+
+    <bean id="baseThumbnailRegistry" class="kotlin.Unit"/>
+
+    <bean id="standardFailureOptions" class="kotlin.Unit"/>
+
+    <bean id="create-thumbnail" class="kotlin.Unit"/>
+
+    <bean id="update-thumbnail" class="kotlin.Unit"/>
+
+    <bean id="createThumbnailActionFilter" class="kotlin.Unit"/>
+
+    <bean id="add-failed-thumbnail" class="kotlin.Unit"/>
+
+    <bean id="node-eligible-for-rethumbnailing-evaluator" class="kotlin.Unit"/>
+
+    <bean id="failedThumbnailAspect" class="kotlin.Unit"/>
+</beans>

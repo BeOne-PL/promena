@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="renditionRequestSheduler" class="kotlin.Unit"/>
+
+    <bean id="transformClient" class="kotlin.Unit"/>
+
+    <bean id="localTransformClient" class="kotlin.Unit"/>
+
+    <bean id="localTransformClientImpl" class="kotlin.Unit"/>
+
+    <bean id="legacyTransformClient" class="kotlin.Unit"/>
+
+    <bean id="transformOptionsConverter" class="kotlin.Unit"/>
+
+    <bean id="transformServiceRegistry" class="kotlin.Unit"/>
+
+    <bean id="localTransformServiceRegistry" class="kotlin.Unit"/>
+
+    <!-- Required by Messaging subsystem -->
+    <bean id="renditionEventProcessor" class="pl.beone.promena.alfresco.module.rendition.mock.rendition.RenditionEventProcessor"/>
+
+    <bean id="localTransformServiceRegistryImpl" class="kotlin.Unit"/>
+
+    <bean id="localTransformServiceRegistryJsonObjectMapper" class="kotlin.Unit"/>
+
+    <bean id="legacyTransformServiceRegistry" class="kotlin.Unit"/>
+
+    <bean id="renditionDefinitionRegistry2JsonObjectMapper" class="kotlin.Unit"/>
+</beans>
