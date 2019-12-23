@@ -30,9 +30,6 @@ import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.publisher.toMono
-import java.util.concurrent.TimeoutException
-import kotlin.reflect.full.isSubclassOf
 
 @RestController
 class NormalTransformerController(
@@ -83,7 +80,6 @@ class NormalTransformerController(
                 e is TransformationException && e.causeClass == TransformationNotSupportedException::class.java -> BAD_REQUEST
                 e is TransformationException && e.causeClass == TransformerNotFoundException::class.java -> BAD_REQUEST
                 e is TransformationException && e.causeClass == TransformerTimeoutException::class.java -> REQUEST_TIMEOUT
-                e is TransformationException && e.causeClass.kotlin.isSubclassOf(TimeoutException::class) -> REQUEST_TIMEOUT
                 else -> INTERNAL_SERVER_ERROR
             },
             e.message

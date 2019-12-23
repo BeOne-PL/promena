@@ -42,7 +42,6 @@ import pl.beone.promena.transformer.contract.transformation.singleTransformation
 import pl.beone.promena.transformer.internal.model.data.memory.toMemoryData
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
 import pl.beone.promena.transformer.internal.model.parameters.emptyParameters
-import java.util.concurrent.TimeoutException
 import kotlin.text.Charsets.ISO_8859_1
 
 @EnableAutoConfiguration
@@ -235,28 +234,6 @@ class NormalTransformerControllerTestIT {
         every {
             transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
         } throws TransformationException("Exception", TransformerTimeoutException::class.java)
-
-        val body = MultipartBodyBuilder().apply {
-            part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
-        }.build()
-
-        webTestClient.post().uri(normalTransformEndpoint)
-            .body(BodyInserters.fromMultipartData(body))
-            .header(createTransformationTransformerIdNameHeader(1), transformation.transformerId.name)
-            .header(createTransformationTransformerIdSubNameHeader(1), transformation.transformerId.subName)
-            .header(createTransformationMediaTypeMimeType(1), transformation.targetMediaType.mimeType)
-            .header(createTransformationMediaTypeCharset(1), transformation.targetMediaType.charset.name())
-            .exchange()
-            .expectStatus().isEqualTo(REQUEST_TIMEOUT)
-            .expectBody()
-            .jsonPath(jsonMessagePath).isEqualTo("Exception")
-    }
-
-    @Test
-    fun `transform _ TransformationException with causeClass subclass of TimeoutException _ should return RequestException`() {
-        every {
-            transformationUseCase.transform(transformation, dataDescriptor, communicationParameters)
-        } throws TransformationException("Exception", (object : TimeoutException() {})::class.java)
 
         val body = MultipartBodyBuilder().apply {
             part("1", dataDescriptor.data.getBytes()).header(DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE, dataDescriptor.mediaType.mimeType)
