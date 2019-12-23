@@ -11,12 +11,12 @@ import org.springframework.web.server.ResponseStatusException
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.contract.transformation.TransformationUseCase
 import reactor.core.publisher.Mono
-import reactor.core.publisher.toMono
 
 @RestController
 class TransformerController(
@@ -41,6 +41,7 @@ class TransformerController(
                 logUnknownException(it)
                 createInternalServerErrorResponse(it).let { Mono.just(it) }
             }
+            .onErrorReturn(createOnShutdownReponse())
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
         serializationService.deserialize(byteArray, getClazz())
@@ -59,4 +60,6 @@ class TransformerController(
             .header(SERIALIZATION_CLASS, exception.javaClass.name)
             .body(serializationService.serialize(exception))
 
+    private fun createOnShutdownReponse(): ResponseEntity<ByteArray> =
+        createInternalServerErrorResponse(TransformationTerminationException("Transformation has been terminated because Promena has been shutdown"))
 }
