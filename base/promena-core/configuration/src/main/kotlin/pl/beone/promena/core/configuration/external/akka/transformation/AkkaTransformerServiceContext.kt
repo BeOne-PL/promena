@@ -22,6 +22,7 @@ class AkkaTransformerServiceContext {
         transformerActorGetter: TransformerActorGetter
     ) =
         AkkaTransformationService(
+            environment.getRequiredProperty("core.transformation.timeout").toDuration(),
             environment.getRequiredProperty("core.transformation.interruption-timeout-delay").toDuration(),
             actorMaterializer,
             transformerActorGetter

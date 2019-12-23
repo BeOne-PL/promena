@@ -2,5 +2,5 @@ package pl.beone.promena.core.applicationmodel.exception.transformation
 
 open class TransformationException(
     message: String,
-    val causeClass: Class<*>
+    val causeClass: Class<*>? = null
 ) : RuntimeException(message)

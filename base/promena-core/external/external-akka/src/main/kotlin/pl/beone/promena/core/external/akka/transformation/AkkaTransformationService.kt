@@ -8,7 +8,6 @@ import akka.stream.ActorMaterializer
 import akka.stream.javadsl.Flow
 import akka.stream.javadsl.Sink
 import akka.stream.javadsl.Source
-import akka.util.Timeout
 import mu.KotlinLogging
 import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
@@ -18,7 +17,7 @@ import pl.beone.promena.core.contract.actor.TransformerActorGetter
 import pl.beone.promena.core.contract.transformation.TransformationService
 import pl.beone.promena.core.external.akka.actor.transformer.message.ToTransformMessage
 import pl.beone.promena.core.external.akka.actor.transformer.message.TransformedMessage
-import pl.beone.promena.core.external.akka.extension.getTimeoutOrInfiniteIfNotFound
+import pl.beone.promena.core.external.akka.extension.toTimeout
 import pl.beone.promena.core.external.akka.util.measureTimeMillisWithContent
 import pl.beone.promena.core.external.akka.util.unwrapExecutionException
 import pl.beone.promena.transformer.applicationmodel.exception.transformer.TransformationNotSupportedException
@@ -44,6 +43,7 @@ private data class ActorTransformerDescriptor(
 )
 
 class AkkaTransformationService(
+    private val timeout: Duration,
     private val interruptionTimeoutDelay: Duration,
     private val actorMaterializer: ActorMaterializer,
     private val transformerActorGetter: TransformerActorGetter
@@ -128,15 +128,12 @@ class AkkaTransformationService(
     ): Flow<DataDescriptor, TransformedDataDescriptor, NotUsed> =
         Flow.of(getClazz<DataDescriptor>())
             .map { dataDescriptor -> ToTransformMessage(transformerId, dataDescriptor, mediaType, parameters) }
-            .ask(transformerActorRef, TransformedMessage::class.java, parameters.getTimeoutOrInfiniteIfNotFound(interruptionTimeoutDelay).toTimeout())
+            .ask(transformerActorRef, TransformedMessage::class.java, (parameters.getTimeoutOrDefault(timeout) + interruptionTimeoutDelay).toTimeout())
             .map { (transformedDataDescriptor) -> transformedDataDescriptor }
 
     private fun TransformedDataDescriptor.toSequentialDataDescriptors(mediaType: MediaType): DataDescriptor =
         descriptors.map { (data, metadata) -> singleDataDescriptor(data, mediaType, metadata) }
             .toDataDescriptor()
-
-    private fun Duration.toTimeout(): Timeout =
-        Timeout.create(this)
 
     private fun logAfterTransformation(
         transformation: Transformation,
@@ -166,9 +163,9 @@ class AkkaTransformationService(
             is TransformationNotSupportedException ->
                 TransformationException("Transformation isn't supported | ${e.message}", e.javaClass)
             is AskTimeoutException ->
-                TransformationException("Transformation timeout has been reached", e.javaClass)
+                TransformationTerminationException("Transformation timeout has been reached. It's highly likely that Promena performing transformation has been shutdown")
             is AbruptStageTerminationException ->
-                TransformationTerminationException("Transformation has been abruptly terminated", e.javaClass)
+                TransformationTerminationException("Transformation has been abruptly terminated")
             else ->
                 e
         }

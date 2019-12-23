@@ -10,7 +10,7 @@ import akka.testkit.javadsl.TestKit
 import com.typesafe.config.ConfigFactory
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.shouldBe
-import io.kotlintest.shouldThrow
+import io.kotlintest.shouldThrowExactly
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
+import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerTimeoutException
 import pl.beone.promena.core.external.akka.actor.GroupedByNameTransformerActorGetter
@@ -146,14 +147,14 @@ class AkkaTransformationServiceTestIT {
     }
 
     @Test
-    fun `transform _ no transformer with given id _ should throw TransformationException(created from TransformerNotFoundException)`() {
+    fun `transform _ no transformer with given id _ should throw TransformationException - created from TransformerNotFoundException`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation("absentTransformer", TEXT_PLAIN, emptyParameters())
 
         val transformerService = prepareTransformationService()
 
-        with(shouldThrow<TransformationException> {
+        with(shouldThrowExactly<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "There is no <absentTransformer> transformer"
@@ -162,14 +163,14 @@ class AkkaTransformationServiceTestIT {
     }
 
     @Test
-    fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException (created from TransformationNotSupportedException)`() {
+    fun `transform _ target media type that isn't supported by transformer _ should throw TransformationException - created from TransformationNotSupportedException`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation(textAppenderTransformerName, APPLICATION_EPUB_ZIP, emptyParameters())
 
         val transformerService = prepareTransformationService()
 
-        with(shouldThrow<TransformationException> {
+        with(shouldThrowExactly<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             with(message!!.split("\n")) {
@@ -183,14 +184,14 @@ class AkkaTransformationServiceTestIT {
     }
 
     @Test
-    fun `transform _ target media type that isn't supported by transformer and detailed transformer id _ should throw TransformationException (created from TransformationNotSupportedException)`() {
+    fun `transform _ target media type that isn't supported by transformer and detailed transformer id _ should throw TransformationException - created from TransformationNotSupportedException`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation(textAppenderTransformerName, "kotlin", APPLICATION_EPUB_ZIP, emptyParameters())
 
         val transformerService = prepareTransformationService()
 
-        with(shouldThrow<TransformationException> {
+        with(shouldThrowExactly<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "Transformation isn't supported | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin) doesn't support given transformation: Only transformation from text/plain to text/plain is supported"
@@ -199,7 +200,7 @@ class AkkaTransformationServiceTestIT {
     }
 
     @Test
-    fun `transform _ transformer timeout has been reached _ should throw TransformationException (created from TransformerTimeoutException)`() {
+    fun `transform _ transformer timeout has been reached _ should throw TransformationException - created from TransformerTimeoutException`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata() + ("begin" to true))
 
         val transformation = singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters() + ("append" to "$")) next
@@ -207,7 +208,7 @@ class AkkaTransformationServiceTestIT {
 
         val transformerService = prepareTransformationService()
 
-        with(shouldThrow<TransformationException> {
+        with(shouldThrowExactly<TransformationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "Transformer <timeout> timeout <1ms> has been reached"
@@ -216,7 +217,7 @@ class AkkaTransformationServiceTestIT {
     }
 
     @Test
-    fun `transform _ akka ask timeout has been reached _ should throw TransformationException (created from AskTimeoutException)`() {
+    fun `transform _ akka ask timeout has been reached _ should throw TransformationException - created from AskTimeoutException`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters())
@@ -225,16 +226,16 @@ class AkkaTransformationServiceTestIT {
             every { materialize<Any>(any()) } throws AskTimeoutException("")
         })
 
-        with(shouldThrow<TransformationException> {
+        with(shouldThrowExactly<TransformationTerminationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
-            message shouldBe "Transformation timeout has been reached"
-            causeClass shouldBe AskTimeoutException::class.java
+            message shouldBe "Transformation timeout has been reached. It's highly likely that Promena performing transformation has been shutdown"
+            causeClass shouldBe null
         }
     }
 
     @Test
-    fun `transform _ unexpected abrupt stage exception (generally caused by closing server suddenly) _ should throw TransformationException (created from AbruptStageTerminationException)`() {
+    fun `transform _ unexpected abrupt stage exception (generally caused by closing server suddenly) _ should throw TransformationException - created from AbruptStageTerminationException`() {
         val dataDescriptor = singleDataDescriptor("".toMemoryData(), TEXT_PLAIN, emptyMetadata())
 
         val transformation = singleTransformation(textAppenderTransformerName, TEXT_PLAIN, emptyParameters())
@@ -243,11 +244,11 @@ class AkkaTransformationServiceTestIT {
             every { materialize<Any>(any()) } throws AbruptStageTerminationException(null)
         })
 
-        with(shouldThrow<TransformationException> {
+        with(shouldThrowExactly<TransformationTerminationException> {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "Transformation has been abruptly terminated"
-            causeClass shouldBe AbruptStageTerminationException::class.java
+            causeClass shouldBe null
         }
     }
 
@@ -261,7 +262,7 @@ class AkkaTransformationServiceTestIT {
             every { materialize<Any>(any()) } throws BufferOverflowException("Bytes... Bytes everywhere")
         })
 
-        shouldThrow<BufferOverflowException> {
+        shouldThrowExactly<BufferOverflowException> {
             transformerService.transform(transformation, dataDescriptor)
         }.message shouldBe "Bytes... Bytes everywhere"
     }
@@ -320,7 +321,7 @@ class AkkaTransformationServiceTestIT {
             )
         )
 
-        return AkkaTransformationService(Duration.ofSeconds(3), actorMaterializer, actorService)
+        return AkkaTransformationService(Duration.ofSeconds(3), Duration.ofSeconds(3), actorMaterializer, actorService)
     }
 
     private fun Data.getString(): String =
