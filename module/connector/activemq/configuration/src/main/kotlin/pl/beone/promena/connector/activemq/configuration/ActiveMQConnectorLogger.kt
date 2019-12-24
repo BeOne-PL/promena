@@ -3,6 +3,8 @@ package pl.beone.promena.connector.activemq.configuration
 import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.jms.JmsProperties
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties
+import org.springframework.boot.logging.LogLevel.OFF
+import org.springframework.boot.logging.LoggingSystem
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.core.env.Environment
@@ -13,7 +15,8 @@ import javax.annotation.PostConstruct
 class ActiveMQConnectorLogger(
     private val environment: Environment,
     private val activeMQProperties: ActiveMQProperties,
-    private val jmsProperties: JmsProperties
+    private val jmsProperties: JmsProperties,
+    private val loggingSystem: LoggingSystem
 ) {
 
     companion object {
@@ -28,6 +31,9 @@ class ActiveMQConnectorLogger(
                     "queue: <request: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.request")}, " +
                     "response: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")}, " +
                     "response.error: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")}>]"
+
+            // Disable standard logging. Exceptions are handled in NormalTransformerController so there is no need to print exception to logs
+            loggingSystem.setLogLevel("org.springframework.jms.listener.DefaultMessageListenerContainer", OFF)
         }
     }
 }
