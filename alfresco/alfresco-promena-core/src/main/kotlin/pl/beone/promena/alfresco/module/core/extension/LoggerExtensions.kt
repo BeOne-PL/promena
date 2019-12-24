@@ -69,7 +69,7 @@ fun Logger.couldNotTransform(transformation: Transformation, nodeDescriptor: Nod
         "Couldn't transform\n" +
                 "> Transformation <${transformation.transformers.size}>: ${transformation.toPrettyString()}\n" +
                 "> Node descriptor <${nodeDescriptor.descriptors.size}>: ${nodeDescriptor.toPrettyString()}\n" +
-                exception.toString().addHashAtTheBeggingOfEachLine()
+                exception.causeClass + ": " + exception.toString().addHashAtTheBeggingOfEachLine()
     )
 }
 
