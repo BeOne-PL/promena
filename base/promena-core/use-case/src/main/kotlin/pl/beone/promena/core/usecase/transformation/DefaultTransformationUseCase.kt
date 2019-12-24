@@ -49,7 +49,7 @@ class DefaultTransformationUseCase(
                 // unwrap expected exception to hide unnecessary information from user
                 throw TransformationException(
                     "Couldn't transform because error occurred. Check Promena logs for more details" + "\n" + processExceptionMessage(e),
-                    e.javaClass
+                    e.javaClass.canonicalName
                 )
             }
         }

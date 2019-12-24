@@ -77,9 +77,9 @@ class NormalTransformerController(
         ResponseStatusException(
             when {
                 e is IllegalStateException -> BAD_REQUEST
-                e is TransformationException && e.causeClass == TransformationNotSupportedException::class.java -> BAD_REQUEST
-                e is TransformationException && e.causeClass == TransformerNotFoundException::class.java -> BAD_REQUEST
-                e is TransformationException && e.causeClass == TransformerTimeoutException::class.java -> REQUEST_TIMEOUT
+                e is TransformationException && e.causeClass == TransformationNotSupportedException::class.java.canonicalName -> BAD_REQUEST
+                e is TransformationException && e.causeClass == TransformerNotFoundException::class.java.canonicalName -> BAD_REQUEST
+                e is TransformationException && e.causeClass == TransformerTimeoutException::class.java.canonicalName -> REQUEST_TIMEOUT
                 else -> INTERNAL_SERVER_ERROR
             },
             e.message

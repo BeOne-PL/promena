@@ -64,7 +64,7 @@ class TransformerResponseErrorFlowTest {
             userName
         )
 
-        private val exception = TransformationException("Exception", TimeoutException::class.java)
+        private val exception = TransformationException("Exception", TimeoutException::class.java.canonicalName)
     }
 
     @Before

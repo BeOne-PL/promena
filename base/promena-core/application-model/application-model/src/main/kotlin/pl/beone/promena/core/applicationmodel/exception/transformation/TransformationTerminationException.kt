@@ -1,5 +1,6 @@
 package pl.beone.promena.core.applicationmodel.exception.transformation
 
 class TransformationTerminationException(
-    message: String
-) : TransformationException(message)
+    message: String,
+    causeClass: String? = null
+) : TransformationException(message, causeClass)

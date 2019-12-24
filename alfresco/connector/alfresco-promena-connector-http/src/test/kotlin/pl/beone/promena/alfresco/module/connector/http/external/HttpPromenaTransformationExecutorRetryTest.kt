@@ -54,7 +54,7 @@ import java.util.concurrent.TimeoutException
 class HttpPromenaTransformationExecutorRetryTest {
 
     companion object {
-        private val exception = TransformationException("exception", RuntimeException::class.java)
+        private val exception = TransformationException("exception", RuntimeException::class.java.canonicalName)
         private val exceptionBytes = "exception to deserialize".toByteArray()
     }
 

@@ -49,7 +49,7 @@ class TransformationExceptionFlowTestIT {
     companion object {
         private val transformerIds = listOf(TestTransformerMockContext.TRANSFORMER_ID)
         private val correlationId = UUID.randomUUID().toString()
-        private val expectedException = TransformationException("Time expired", TimeoutException::class.java)
+        private val expectedException = TransformationException("Time expired", TimeoutException::class.java.canonicalName)
     }
 
     @Autowired

@@ -159,11 +159,14 @@ class AkkaTransformationService(
     private fun convertException(e: Exception): Exception =
         when (e) {
             is TransformerException ->
-                TransformationException(e.message!!, e.javaClass)
+                TransformationException(e.message!!, e.javaClass.canonicalName)
             is TransformationNotSupportedException ->
-                TransformationException("Transformation isn't supported | ${e.message}", e.javaClass)
+                TransformationException("Transformation isn't supported | ${e.message}", e.javaClass.canonicalName)
             is AskTimeoutException ->
-                TransformationTerminationException("Transformation timeout has been reached. It's highly likely that Promena performing transformation has been shutdown")
+                TransformationTerminationException(
+                    "Transformation timeout has been reached. It's highly likely that Promena performing transformation has been shutdown",
+                    AskTimeoutException::class.java.canonicalName
+                )
             is AbruptStageTerminationException ->
                 TransformationTerminationException("Transformation has been abruptly terminated")
             else ->

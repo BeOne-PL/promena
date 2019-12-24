@@ -88,7 +88,7 @@ class TransformerControllerTestIT {
 
     @Test
     fun `transform _ should throw TransformationException and return InternalServerError with serialized exception`() {
-        val exception = TransformationException("exception", RuntimeException::class.java)
+        val exception = TransformationException("exception", RuntimeException::class.java.canonicalName)
         val messageByteArray = exception.message!!.toByteArray()
 
         every { serializationService.deserialize(requestBody, getClazz<TransformationDescriptor>()) } returns transformationDescriptor

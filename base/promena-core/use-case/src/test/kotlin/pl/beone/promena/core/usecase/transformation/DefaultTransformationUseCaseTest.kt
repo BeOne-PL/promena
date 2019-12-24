@@ -85,7 +85,7 @@ class DefaultTransformationUseCaseTest {
                 this[0] shouldBe "Couldn't transform because error occurred. Check Promena logs for more details"
                 this[1] shouldBe "# Exception occurred"
             }
-            causeClass shouldBe ExternalCommunicationManagerValidationException::class.java
+            causeClass shouldBe ExternalCommunicationManagerValidationException::class.java.canonicalName
             cause shouldBe null
         }
     }
@@ -114,7 +114,7 @@ class DefaultTransformationUseCaseTest {
 
         val transformerService = mockk<TransformationService> {
             every { transform(transformation, dataDescriptor) } throws
-                    TransformationException("Transformation isn't supported", TransformationNotSupportedException::class.java)
+                    TransformationException("Transformation isn't supported", TransformationNotSupportedException::class.java.canonicalName)
         }
 
         with(shouldThrow<TransformationException> {
@@ -122,7 +122,7 @@ class DefaultTransformationUseCaseTest {
                 .transform(transformation, dataDescriptor, externalCommunicationParameters)
         }) {
             message shouldBe "Transformation isn't supported"
-            causeClass shouldBe TransformationNotSupportedException::class.java
+            causeClass shouldBe TransformationNotSupportedException::class.java.canonicalName
             cause shouldBe null
         }
     }
