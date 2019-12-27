@@ -6,10 +6,10 @@ import pl.beone.promena.transformer.applicationmodel.exception.transformer.Trans
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaTypeConstants.APPLICATION_PDF
 import pl.beone.promena.transformer.contract.transformation.Transformation
+import pl.beone.promena.transformer.converter.libreoffice.applicationmodel.LibreOfficeConverterSupport
+import pl.beone.promena.transformer.converter.libreoffice.applicationmodel.libreOfficeConverterTransformation
 
-class PdfPromenaRenditionDefinition(
-    private val applyForImages: Boolean
-) : PromenaRenditionDefinition {
+class PdfPromenaRenditionDefinition() : PromenaRenditionDefinition {
 
     override fun getRenditionName(): String =
         "pdf"
@@ -18,12 +18,12 @@ class PdfPromenaRenditionDefinition(
         APPLICATION_PDF
 
     override fun getTransformation(mediaType: MediaType): Transformation {
-        if (!applyForImages) {
-            throwIfMimeTypePrimaryTypeIsImage(mediaType)
-        }
+        throwIfMimeTypePrimaryTypeIsImage(mediaType)
 
         return try {
-            determineTransformation(mediaType, getTargetMediaType())
+            LibreOfficeConverterSupport.MediaTypeSupport.isSupported(mediaType, getTargetMediaType())
+
+            libreOfficeConverterTransformation()
         } catch (e: TransformationNotSupportedException) {
             throw PromenaRenditionTransformationNotSupportedException.unsupportedMediaType(getRenditionName(), mediaType, getTargetMediaType())
         }
