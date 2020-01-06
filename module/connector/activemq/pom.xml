@@ -55,7 +55,7 @@
     <properties>
         <promena-connector-activemq.version>1.0.0</promena-connector-activemq.version>
 
-        <javax.jms-api.version>2.0.1</javax.jms-api.version>
+        <jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
         <commons-math3.version>3.6.1</commons-math3.version>
 
         <testcontainers.version>1.12.3</testcontainers.version>
