@@ -27,12 +27,8 @@
         <promena-communication-memory-external.version>1.0.0</promena-communication-memory-external.version>
         <promena-communication-file-external.version>1.0.0</promena-communication-file-external.version>
         <promena-communication-memory-internal.version>1.0.0</promena-communication-memory-internal.version>
-        <promena-communication-file-internal.version>1.0.0</promena-communication-file-internal.version>
 
         <promena-connector-http.version>1.0.0</promena-connector-http.version>
-        <promena-connector-activemq.version>1.0.0</promena-connector-activemq.version>
-
-        <promena-cluster-management-kubernetes.version>1.0.0</promena-cluster-management-kubernetes.version>
 
         <!-- Put TRANSFORMERS versions here -->
 
@@ -81,11 +77,6 @@
             <artifactId>promena-communication-memory-internal-configuration</artifactId>
             <version>${promena-communication-memory-internal.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>pl.beone.promena.communication.file.internal</groupId>-->
-<!--            <artifactId>promena-communication-file-internal-configuration</artifactId>-->
-<!--            <version>${promena-communication-file-internal.version}</version>-->
-<!--        </dependency>-->
 
         <!-- Connector -->
         <dependency>
@@ -93,18 +84,6 @@
             <artifactId>promena-connector-http-configuration</artifactId>
             <version>${promena-connector-http.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>pl.beone.promena.connector</groupId>-->
-<!--            <artifactId>promena-connector-activemq-configuration</artifactId>-->
-<!--            <version>${promena-connector-activemq.version}</version>-->
-<!--        </dependency>-->
-
-        <!-- Management -->
-<!--        <dependency>-->
-<!--            <groupId>pl.beone.promena.cluster.management</groupId>-->
-<!--            <artifactId>promena-cluster-management-kubernetes-configuration</artifactId>-->
-<!--            <version>${promena-cluster-management-kubernetes.version}</version>-->
-<!--        </dependency>-->
 
         <!-- Put TRANSFORMERS configuration dependencies here -->
 
