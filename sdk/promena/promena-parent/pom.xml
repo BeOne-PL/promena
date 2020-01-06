@@ -80,7 +80,7 @@
                 <exclusions>
                     <exclusion>
                         <groupId>com.esotericsoftware</groupId>
-                        <artifactId>kryo</artifactId>
+                        <artifactId>kryo-shaded</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>com.typesafe.akka</groupId>
