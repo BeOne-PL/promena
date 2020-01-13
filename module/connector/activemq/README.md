@@ -21,7 +21,7 @@ Visit [Sample#Alfresco/Connector](https://gitlab.office.beone.pl/promena/promena
 <dependency>
     <groupId>pl.beone.promena.connector</groupId>
     <artifactId>promena-connector-activemq-internal</artifactId>
-    <version>${promena-connector-activemq.version}</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 3. Send the request message to `${promena.connector.activemq.consumer.queue.request}` queue:
