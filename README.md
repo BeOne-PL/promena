@@ -1,4 +1,4 @@
-# <img src="./logo.svg" width="300" />
+# <img src="https://gitlab.office.beone.pl/promena/promena/raw/master/logo.svg" width="300"/>
 The general-purpose transformation system, perfectly suited to Alfresco.
 
 ##  Motivation
@@ -17,7 +17,8 @@ There are samples of:
 This repository contains Alfresco Content Services modules that are required to integrate Alfresco with Promena.
 
 ## Flow
-![Flow scheme](./README-flow.png)
+<img src="./README-flow.png" width="800"/>
+
 A connector module doesn't have to be implemented directly on Promena. It can be, for example, a message broker which is a layer between an application and Promena connector module.
 
 ### Application
