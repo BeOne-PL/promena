@@ -1,7 +1,7 @@
 # Promena communication module - `promena-communication-file`
 
 ## Description
-This communication module provides implementation based on file for internal and external communication. The data is shared using file.
+This communication module provides implementation based on file for internal and external communication. Data is shared using files.
 
 **It is very important to choose a path that is available on every Promena node in the same location.**
 
@@ -28,6 +28,6 @@ Visit [Sample#Deployment/Manual](https://gitlab.office.beone.pl/promena/promena-
 
 ## Properties
 ```properties
-# The directory where data is persisted and shared across Promena nodes
+# Directory where data is persisted and shared across Promena nodes
 communication.file.internal.directory.path=/tmp
 ```
