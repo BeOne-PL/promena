@@ -1,5 +1,8 @@
 package pl.beone.promena.transformer.applicationmodel.mediatype
 
+/**
+ * Contains the predefined set of [MediaType].
+ */
 object MediaTypeConstants {
 
     @JvmField

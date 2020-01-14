@@ -9,11 +9,21 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URI
 
+/**
+ * The implementation based on [File].
+ *
+ * @property file indicates the resource
+ *
+ * @see FileDataDsl
+ */
 open class FileData internal constructor(
     protected val file: File
 ) : Data {
 
     companion object {
+        /**
+         * @throws IllegalArgumentException if the [file] doesn't exist or isn't a file
+         */
         @JvmStatic
         fun of(file: File): FileData {
             require(file.exists() && file.isFile) { "File <$file> doesn't exist or isn't file" }
@@ -21,6 +31,11 @@ open class FileData internal constructor(
             return FileData(file)
         }
 
+        /**
+         * Creates a temporary file in [directory] and copies the data from [inputStream] to the file.
+         *
+         * @throws IllegalArgumentException if [directory] doesn't exist or isn't a directory
+         */
         @JvmStatic
         fun of(inputStream: InputStream, directory: File): FileData {
             require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't directory" }

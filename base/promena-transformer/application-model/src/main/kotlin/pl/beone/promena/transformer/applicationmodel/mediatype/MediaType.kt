@@ -2,6 +2,14 @@ package pl.beone.promena.transformer.applicationmodel.mediatype
 
 import java.nio.charset.Charset
 
+/**
+ * Represents a two-part identifier for file formats.
+ *
+ * @property mimeType the name of a type, for example `application/pdf`
+ *
+ * @see MediaTypeConstants
+ * @see MediaTypeDsl
+ */
 data class MediaType internal constructor(
     val mimeType: String,
     val charset: Charset

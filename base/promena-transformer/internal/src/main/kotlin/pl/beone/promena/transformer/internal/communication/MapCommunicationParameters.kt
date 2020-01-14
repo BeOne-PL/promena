@@ -6,6 +6,12 @@ import pl.beone.promena.transformer.internal.model.extensions.get
 import pl.beone.promena.transformer.internal.model.extensions.getOrDefault
 import pl.beone.promena.transformer.internal.model.extensions.getOrNull
 
+/**
+ * The implementation based on [Map].
+ *
+ * @see MapCommunicationParametersDsl
+ * @see MapCommunicationParametersBuilder
+ */
 data class MapCommunicationParameters internal constructor(
     private val parameters: Map<String, Any>
 ) : CommunicationParameters {

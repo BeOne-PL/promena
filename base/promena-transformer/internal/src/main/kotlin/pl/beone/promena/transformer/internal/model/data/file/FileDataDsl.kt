@@ -8,12 +8,18 @@ import java.io.InputStream
 fun fileData(file: File): FileData =
     FileData.of(file)
 
+/**
+ * @see [FileData.of]
+ */
 fun fileData(inputStream: InputStream, directory: File): FileData =
     FileData.of(inputStream, directory)
 
 fun File.toFileData(): FileData =
     FileData.of(this)
 
+/**
+ * @see [FileData.of]
+ */
 fun InputStream.toFileData(directory: File): FileData =
     FileData.of(this, directory)
 

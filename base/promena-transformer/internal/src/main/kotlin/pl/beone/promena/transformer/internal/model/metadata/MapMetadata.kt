@@ -3,6 +3,12 @@ package pl.beone.promena.transformer.internal.model.metadata
 import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.internal.model.extensions.*
 
+/**
+ * The implementation based on [Map].
+ *
+ * @see MapMetadataDsl
+ * @see MapMetadataBuilder
+ */
 data class MapMetadata internal constructor(
     private val metadata: Map<String, Any>
 ) : Metadata {

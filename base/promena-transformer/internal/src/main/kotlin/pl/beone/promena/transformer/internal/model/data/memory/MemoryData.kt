@@ -6,6 +6,13 @@ import pl.beone.promena.transformer.internal.util.createFastByteArrayOutputStrea
 import java.io.InputStream
 import java.net.URI
 
+/**
+ * The implementation based on memory.
+ *
+ * @property fastByteArrayOutputStream indicates the resource
+ *
+ * @see MemoryDataDsl
+ */
 open class MemoryData internal constructor(
     protected val fastByteArrayOutputStream: FastByteArrayOutputStream
 ) : Data {

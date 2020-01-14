@@ -4,11 +4,20 @@ import pl.beone.promena.transformer.contract.model.data.WritableData
 import java.io.File
 import java.io.OutputStream
 
+/**
+ * Extends [FileData] with the ability to operate on [OutputStream].
+ *
+ * @see FileWritableDataDsl
+ */
 class FileWritableData internal constructor(
     file: File
 ) : WritableData, FileData(file) {
 
     companion object {
+        /**
+         * @throws IllegalArgumentException if [file] doesn't exist or isn't a file
+         *                                  or if [file] isn't empty
+         */
         @JvmStatic
         fun ofEmptyFile(file: File): FileWritableData {
             require(file.exists() && file.isFile) { "File <$file> doesn't exist or isn't file" }
@@ -17,6 +26,11 @@ class FileWritableData internal constructor(
             return FileWritableData(file)
         }
 
+        /**
+         * Creates an empty temporary file in [directory].
+         *
+         * @throws IllegalArgumentException if [directory] doesn't exist or isn't a directory
+         */
         @JvmStatic
         fun ofDirectory(directory: File): FileWritableData {
             require(directory.exists() && directory.isDirectory) { "Directory <$directory> doesn't exist or isn't directory" }

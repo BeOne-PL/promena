@@ -10,9 +10,26 @@ fun emptyMetadata(): MapMetadata =
 fun metadata(metadata: Map<String, Any>): MapMetadata =
     MapMetadata.of(metadata)
 
+/**
+ * ```
+ * emptyMetadata()
+ *      + ("width" to 800)
+ * ```
+ *
+ * @return concatenation of `this` and [entry]
+ */
 operator fun Metadata.plus(entry: Pair<String, Any>): MapMetadata =
     MapMetadata.of(getAll() + entry)
 
+/**
+ * ```
+ * emptyMetadata() addIfNotNull
+ *      ("width" to 800) addIfNotNull
+ *      ("height" to null)
+ * ```
+ *
+ * @return concatenation of `this` and [entry] if the value of [entry] isn't `null`
+ */
 infix fun Metadata.addIfNotNull(entry: Pair<String, Any?>): MapMetadata {
     val (key, value) = entry
     return if (value != null) {
@@ -22,5 +39,13 @@ infix fun Metadata.addIfNotNull(entry: Pair<String, Any?>): MapMetadata {
     }
 }
 
+/**
+ * ```
+ * metadata(mapOf("width" to 800)) +
+ *      metadata(mapOf("height" to 600))
+ * ```
+ *
+ * @return concatenation of `this` and [parameters]
+ */
 operator fun Metadata.plus(parameters: Metadata): MapMetadata =
     MapMetadata.of(getAll() + parameters.getAll())

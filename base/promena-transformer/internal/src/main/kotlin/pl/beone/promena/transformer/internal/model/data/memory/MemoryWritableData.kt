@@ -4,6 +4,11 @@ import com.cedarsoftware.util.FastByteArrayOutputStream
 import pl.beone.promena.transformer.contract.model.data.WritableData
 import java.io.OutputStream
 
+/**
+ * Extends [MemoryData] with the ability to operate on [OutputStream].
+ *
+ * @see MemoryWritableDataDsl
+ */
 class MemoryWritableData internal constructor(
     fastByteArrayOutputStream: FastByteArrayOutputStream
 ) : WritableData, MemoryData(fastByteArrayOutputStream) {

@@ -2,6 +2,10 @@ package pl.beone.promena.transformer.applicationmodel.exception.transformer
 
 import pl.beone.promena.transformer.applicationmodel.mediatype.MediaType
 
+/**
+ * Signals that a transformer isn't able to perform a transformation.
+ * Contains detailed information about a cause.
+ */
 class TransformationNotSupportedException internal constructor(
     reason: String
 ) : IllegalArgumentException(reason) {

@@ -5,6 +5,12 @@ import pl.beone.promena.transformer.contract.model.Parameters.Companion.TIMEOUT
 import pl.beone.promena.transformer.internal.model.extensions.*
 import java.time.Duration
 
+/**
+ * The implementation based on [Map].
+ *
+ * @see MapParametersDsl
+ * @see MapParametersBuilder
+ */
 data class MapParameters internal constructor(
     private val parameters: Map<String, Any>
 ) : Parameters {

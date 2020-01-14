@@ -4,6 +4,10 @@ import pl.beone.promena.transformer.contract.model.data.Data
 import java.io.InputStream
 import java.net.URI
 
+/**
+ * Represents a data without any information.
+ * All functions throw [UnsupportedOperationException] exception.
+ */
 object NoData : Data {
 
     override fun getBytes(): ByteArray {

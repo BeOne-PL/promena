@@ -6,20 +6,35 @@ import pl.beone.promena.transformer.applicationmodel.exception.data.DataReadExce
 import java.io.InputStream
 import java.net.URI
 
+/**
+ * Represents a data abstraction participating in a transformation.
+ */
 interface Data {
 
-    @Throws(DataReadException::class, DataAccessibilityException::class)
+    /**
+     * @throws DataReadException if an error has occurred while reading data
+     * @throws DataAccessibilityException if the data isn't accessible
+     */
     fun getBytes(): ByteArray
 
-    @Throws(DataAccessibilityException::class)
+    /**
+     * @throws DataAccessibilityException if the data isn't accessible
+     */
     fun getInputStream(): InputStream
 
-    @Throws(UnsupportedOperationException::class)
+    /**
+     * @throws UnsupportedOperationException if the data can't be represented by URI
+     */
     fun getLocation(): URI
 
-    @Throws(DataAccessibilityException::class)
+    /**
+     * @throws DataAccessibilityException if the data isn't accessible
+     */
     fun isAccessible()
 
-    @Throws(DataDeleteException::class, UnsupportedOperationException::class)
+    /**
+     * @throws DataDeleteException if an error has occurred while deleting data
+     * @throws UnsupportedOperationException if the data isn't a removable resource
+     */
     fun delete()
 }
