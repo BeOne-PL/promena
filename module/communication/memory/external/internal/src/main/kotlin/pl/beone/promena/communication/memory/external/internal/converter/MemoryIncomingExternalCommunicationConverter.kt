@@ -8,6 +8,11 @@ import pl.beone.promena.core.contract.communication.internal.InternalCommunicati
 import pl.beone.promena.transformer.contract.communication.CommunicationParameters
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 
+/**
+ * Converts a data into [MemoryData][pl.beone.promena.transformer.internal.model.data.memory.MemoryData]
+ * if [CommunicationParameters.getId] isn't [MemoryCommunicationParametersConstants.ID].
+ * If a data is the type of [MemoryData][pl.beone.promena.transformer.internal.model.data.memory.MemoryData], it returns the same instance.
+ */
 class MemoryIncomingExternalCommunicationConverter(
     private val internalCommunicationParameters: CommunicationParameters,
     private val internalCommunicationConverter: InternalCommunicationConverter

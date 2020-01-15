@@ -5,6 +5,9 @@ import pl.beone.promena.core.contract.communication.internal.InternalCommunicati
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
+/**
+ * Creates a new instance that is the type of [MemoryData][pl.beone.promena.transformer.internal.model.data.memory.MemoryData].
+ */
 object MemoryInternalCommunicationConverter : InternalCommunicationConverter {
 
     override fun convert(dataDescriptor: DataDescriptor, requireNewInstance: Boolean): DataDescriptor =

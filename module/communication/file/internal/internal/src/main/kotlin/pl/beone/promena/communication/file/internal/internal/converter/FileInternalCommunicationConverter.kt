@@ -6,6 +6,10 @@ import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import java.io.File
 
+/**
+ * Creates a new instance that is the type of [FileData][pl.beone.promena.transformer.internal.model.data.file.FileData]
+ * with a file in [directory].
+ */
 class FileInternalCommunicationConverter(
     directory: File
 ) : InternalCommunicationConverter {

@@ -5,6 +5,9 @@ import pl.beone.promena.core.contract.communication.internal.InternalCommunicati
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
+/**
+ * Memory is managed by Garbage Collector so it just loses the reference to data objects.
+ */
 object MemoryInternalCommunicationCleaner : InternalCommunicationCleaner {
 
     override fun clean(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor) {
