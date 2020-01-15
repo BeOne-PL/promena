@@ -1,7 +1,7 @@
 package pl.beone.promena.core.internal.communication.external.manager
 
 import mu.KotlinLogging
-import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerValidationException
+import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationNotFoundException
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 
@@ -30,6 +30,10 @@ class DefaultExternalCommunicationManager(
         }
     }
 
+    private fun getBackPressureCommunication(externalCommunications: List<ExternalCommunication>, backPressureId: String): ExternalCommunication =
+        externalCommunications.firstOrNull { (id) -> id == backPressureId }
+            ?: error("Couldn't determine back pressure communication. " + createNotFoundExceptionMessage(backPressureId, externalCommunications))
+
     override fun getCommunication(id: String): ExternalCommunication =
         communicationMap[id] ?: determineCommunication(id)
 
@@ -38,16 +42,12 @@ class DefaultExternalCommunicationManager(
             logger.warn { "There is no <$id> external communication. Using <$backPressureId> as back pressure" }
             backPressureCommunication
         } else {
-            throw createException(externalCommunications, id)
+            throw ExternalCommunicationNotFoundException(createNotFoundExceptionMessage(id, externalCommunications))
         }
 
     private fun createCommunicationMap(externalCommunications: List<ExternalCommunication>): Map<String, ExternalCommunication> =
         externalCommunications.map { it.id to it }.toMap()
 
-    private fun getBackPressureCommunication(externalCommunications: List<ExternalCommunication>, backPressureId: String): ExternalCommunication =
-        externalCommunications.firstOrNull { (id) -> id == backPressureId }
-            ?: throw createException(externalCommunications, backPressureId)
-
-    private fun createException(externalCommunications: List<ExternalCommunication>, id: String): ExternalCommunicationManagerValidationException =
-        ExternalCommunicationManagerValidationException("Couldn't determine back pressure communication. There is no <$id> external communication: ${externalCommunications.map { it.id }}")
+    private fun createNotFoundExceptionMessage(id: String, externalCommunications: List<ExternalCommunication>): String =
+        "There is no <$id> external communication: ${externalCommunications.map { it.id }}"
 }

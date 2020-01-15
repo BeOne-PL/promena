@@ -5,7 +5,7 @@ import io.kotlintest.shouldThrow
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationManagerValidationException
+import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationNotFoundException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.external.OutgoingExternalCommunicationConverter
@@ -74,7 +74,7 @@ class DefaultTransformationUseCaseTest {
 
         val externalCommunicationManager = mockk<ExternalCommunicationManager> {
             every { getCommunication(externalCommunicationId) } throws
-                    ExternalCommunicationManagerValidationException("Exception occurred", RuntimeException("Stack exception"))
+                    ExternalCommunicationNotFoundException("Exception occurred")
         }
 
         with(shouldThrow<TransformationException> {
@@ -85,7 +85,7 @@ class DefaultTransformationUseCaseTest {
                 this[0] shouldBe "Couldn't transform because error occurred. Check Promena logs for more details"
                 this[1] shouldBe "# Exception occurred"
             }
-            causeClass shouldBe ExternalCommunicationManagerValidationException::class.java.canonicalName
+            causeClass shouldBe ExternalCommunicationNotFoundException::class.java.canonicalName
             cause shouldBe null
         }
     }

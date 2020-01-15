@@ -3,7 +3,7 @@ package pl.beone.promena.core.applicationmodel.transformation
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 
 /**
- * Porvides a full description of a transformed data.
+ * Provides a full description of a transformed data.
  *
  * @see PerformedTransformationDescriptorDsl
  */
