@@ -4,9 +4,12 @@ import akka.actor.ActorRef
 import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescriptor
 import pl.beone.promena.core.applicationmodel.exception.transformer.TransformerNotFoundException
 import pl.beone.promena.core.contract.actor.TransformerActorGetter
-import pl.beone.promena.transformer.internal.extension.toPrettyString
 import pl.beone.promena.transformer.contract.transformer.TransformerId
+import pl.beone.promena.transformer.internal.extension.toPrettyString
 
+/**
+ * Manages [transformerActorDescriptors] in memory.
+ */
 class GroupedByNameTransformerActorGetter(
     private val transformerActorDescriptors: List<TransformerActorDescriptor>
 ) : TransformerActorGetter {

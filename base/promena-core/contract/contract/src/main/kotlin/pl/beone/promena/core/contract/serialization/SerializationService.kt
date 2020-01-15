@@ -5,9 +5,13 @@ import pl.beone.promena.core.applicationmodel.exception.serializer.Serialization
 
 interface SerializationService {
 
-    @Throws(SerializationException::class)
+    /**
+     * @throws SerializationException if an error has occurred during serialization
+     */
     fun <T> serialize(element: T): ByteArray
 
-    @Throws(DeserializationException::class)
+    /**
+     * @throws DeserializationException if an error has occurred during deserialization
+     */
     fun <T> deserialize(bytes: ByteArray, clazz: Class<T>): T
 }

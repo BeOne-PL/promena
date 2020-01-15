@@ -14,6 +14,17 @@ import pl.beone.promena.core.external.akka.applicationmodel.TransformerDescripto
 import pl.beone.promena.core.external.akka.extension.toCorrectActorName
 import pl.beone.promena.transformer.contract.Transformer
 
+/**
+ * Groups transformers by their [TransformerId.name][pl.beone.promena.transformer.contract.transformer.TransformerId.name] and creates actors.
+ * The number of actor instances of a group is equal to the number of actors of a transformer with the highest value of [actors].
+ * [actorClusterAware] indicates if an actor can delegate a transformation execution to another actor in the cluster.
+ *
+ * This implementations requires at least one transformer.
+ * Each [TransformerId][pl.beone.promena.transformer.contract.transformer.TransformerId] has to be unique.
+ * Each transformer within a group has to have a different priority.
+ *
+ * @see GroupedByNameTransformerActor
+ */
 class GroupedByNameTransformersCreator(
     private val actorClusterAware: Boolean,
     private val transformerConfig: TransformerConfig,

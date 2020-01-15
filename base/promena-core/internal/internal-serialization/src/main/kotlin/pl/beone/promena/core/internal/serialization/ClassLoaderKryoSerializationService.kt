@@ -3,6 +3,13 @@ package pl.beone.promena.core.internal.serialization
 import com.esotericsoftware.kryo.Kryo
 import pl.beone.promena.core.internal.serialization.util.createKryo
 
+/**
+ * The implementation based on Kryo.
+ * It allows to pass a custom [classLoader].
+ * It isn't thread-safe by default so you should synchronize executions using [lockObject] in a concurrent environment.
+ *
+ * @property bufferSize the size of the buffer in bytes
+ */
 class ClassLoaderKryoSerializationService(
     classLoader: ClassLoader? = null,
     private val lockObject: Any? = null,

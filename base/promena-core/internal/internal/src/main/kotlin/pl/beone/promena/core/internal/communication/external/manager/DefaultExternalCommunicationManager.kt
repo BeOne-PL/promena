@@ -5,6 +5,11 @@ import pl.beone.promena.core.applicationmodel.exception.communication.external.m
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunication
 import pl.beone.promena.core.contract.communication.external.manager.ExternalCommunicationManager
 
+/**
+ * Manages [externalCommunications] in memory.
+ * In case of the absence of an instance of *external communication*,
+ * this implementation uses *external communication* associated with [backPressureId] if [backPressureCommunicationEnabled] is `true`.
+ */
 class DefaultExternalCommunicationManager(
     private val externalCommunications: List<ExternalCommunication>,
     private val backPressureCommunicationEnabled: Boolean,

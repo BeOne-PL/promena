@@ -4,6 +4,8 @@ import pl.beone.promena.core.applicationmodel.exception.communication.external.m
 
 interface ExternalCommunicationManager {
 
-    @Throws(ExternalCommunicationManagerValidationException::class)
+    /**
+     * @throws ExternalCommunicationManagerValidationException if there is no [id] *external communication*
+     */
     fun getCommunication(id: String): ExternalCommunication
 }

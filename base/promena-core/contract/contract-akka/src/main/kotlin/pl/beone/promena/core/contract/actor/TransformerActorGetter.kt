@@ -6,6 +6,8 @@ import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 interface TransformerActorGetter {
 
-    @Throws(TransformerNotFoundException::class)
+    /**
+     * @throws TransformerNotFoundException if there is no [transformationTransformerId] transformer actor
+     */
     fun get(transformationTransformerId: TransformerId): ActorRef
 }

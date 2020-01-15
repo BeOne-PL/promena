@@ -5,5 +5,8 @@ import pl.beone.promena.transformer.contract.Transformer
 
 interface TransformersCreator {
 
+    /**
+     * Creates actors from [transformers].
+     */
     fun create(transformers: List<Transformer>): List<TransformerActorDescriptor>
 }

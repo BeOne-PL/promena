@@ -7,7 +7,12 @@ import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 import pl.beone.promena.transformer.contract.transformer.transformerId
 
-class PropertiesTransformerConfig(private val environment: Environment) : TransformerConfig {
+/**
+ * Uses Spring [environment] to get information about a transformer.
+ */
+class PropertiesTransformerConfig(
+    private val environment: Environment
+) : TransformerConfig {
 
     companion object {
         private val logger = KotlinLogging.logger {}

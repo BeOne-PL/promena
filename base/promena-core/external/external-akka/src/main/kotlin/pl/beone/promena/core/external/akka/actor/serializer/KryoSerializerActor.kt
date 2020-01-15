@@ -12,6 +12,9 @@ import pl.beone.promena.transformer.internal.extension.format
 import pl.beone.promena.transformer.internal.extension.toMB
 import pl.beone.promena.transformer.internal.extension.toSeconds
 
+/**
+ * This implementation of an Akka actor uses [serializationService] to serialize and deserialize objects.
+ */
 class KryoSerializerActor(
     private val serializationService: SerializationService
 ) : AbstractLoggingActor() {

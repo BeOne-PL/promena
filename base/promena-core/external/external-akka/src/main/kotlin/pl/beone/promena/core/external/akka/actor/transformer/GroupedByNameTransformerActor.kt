@@ -22,6 +22,14 @@ import pl.beone.promena.transformer.internal.extension.toPrettyString
 import pl.beone.promena.transformer.internal.extension.toSeconds
 import java.util.concurrent.TimeoutException
 
+/**
+ * This implementation of an Akka actor contains all transformers for a given [TransformerId.name].
+ * Before a transformation execution, it asks transformers to find out which ones support a given transformation.
+ * If [TransformerId] of a transformation has [TransformerId.subName], this implementation try to find the specific transformer,
+ * otherwise it gets a transformer with the highest priority.
+ * After a transformation it cleans up ([internalCommunicationCleaner]) and coverts data ([internalCommunicationConverter]).
+ * It also deals with exceptions - translates them to Promena domain classes.
+ */
 class GroupedByNameTransformerActor(
     private val transformerName: String,
     private val transformerDescriptors: List<TransformerDescriptor>,

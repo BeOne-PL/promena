@@ -12,6 +12,14 @@ import pl.beone.promena.transformer.contract.transformation.Transformation
 import pl.beone.promena.transformer.internal.extension.toPrettyString
 import pl.beone.promena.transformer.internal.extension.toSimplePrettyString
 
+/**
+ * It is built around [TransformationService].
+ * The flow of this implementation:
+ * 1. Converts data from *external communication* to *internal communication*
+ * 2. Performs a transformation
+ * 3. Converts data from *internal communication* to *external communication*
+ * 4. Convert exceptions that aren't a part of [TransformationException] hierarchy into [TransformationException]
+ */
 class DefaultTransformationUseCase(
     private val externalCommunicationManager: ExternalCommunicationManager,
     private val transformationService: TransformationService

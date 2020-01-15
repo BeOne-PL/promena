@@ -42,6 +42,13 @@ private data class ActorTransformerDescriptor(
     val parameters: Parameters
 )
 
+/**
+ * Provides the implementation in Akka environment.
+ * Each transformation descriptor is delegated to a transformer actor.
+ * The maximum timeout of one transformation execution is received from parameters ([Parameters.getTimeout]) (if present) or is equal to [timeout].
+ * If [timeout] is reached, it waits additional [interruptionTimeoutDelay] for the end of a transformation execution.
+ * It also deals with exceptions - translates them to Promena domain classes.
+ */
 class AkkaTransformationService(
     private val timeout: Duration,
     private val interruptionTimeoutDelay: Duration,

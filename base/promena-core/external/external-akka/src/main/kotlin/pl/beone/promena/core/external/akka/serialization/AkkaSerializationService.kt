@@ -17,6 +17,10 @@ import pl.beone.promena.core.external.akka.actor.serializer.message.ToSerializeM
 import pl.beone.promena.core.external.akka.util.infiniteTimeout
 import pl.beone.promena.core.external.akka.util.unwrapExecutionException
 
+/**
+ * Provides the implementation in Akka environment.
+ * It delegates serialization to [actorRef].
+ */
 class AkkaSerializationService(
     private val actorMaterializer: ActorMaterializer,
     private val actorRef: ActorRef

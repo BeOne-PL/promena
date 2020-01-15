@@ -4,6 +4,11 @@ import pl.beone.promena.transformer.contract.communication.CommunicationParamete
 import pl.beone.promena.transformer.contract.data.DataDescriptor
 import pl.beone.promena.transformer.contract.transformation.Transformation
 
+/**
+ * Provides a full description necessary to perform a transformation.
+ *
+ * @see TransformationDescriptorDsl
+ */
 data class TransformationDescriptor internal constructor(
     val transformation: Transformation,
     val dataDescriptor: DataDescriptor,
