@@ -6,7 +6,7 @@ import pl.beone.promena.transformer.contract.model.data.Data
 
 /**
  * Provides a full description of data used by transformers to perform a transformation.
- * A data descriptor can consist of many [DataDescriptor.Single]. Many [DataDescriptor.Single] make up [DataDescriptor.Multi].
+ * A data descriptor can be made up of many [DataDescriptor.Single]. Many [DataDescriptor.Single] make up [DataDescriptor.Multi].
  * [DataDescriptor.Empty] represents a data descriptor without any information.
  *
  * @see DataDescriptorDsl

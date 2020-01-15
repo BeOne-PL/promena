@@ -7,7 +7,7 @@ import pl.beone.promena.transformer.contract.transformer.TransformerId
 
 /**
  * Represents a flow of transformations executing by transformers. The order matters.
- * A transformation can consist of many [Transformation.Single]. At least one [Transformation.Single] is required.
+ * A transformation can be made up of many [Transformation.Single]. At least one [Transformation.Single] is required.
  * Many [Transformation.Single] make up [Composite] transformation.
  *
  * @see TransformationDsl

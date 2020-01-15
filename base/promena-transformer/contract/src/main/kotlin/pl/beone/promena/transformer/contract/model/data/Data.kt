@@ -12,7 +12,7 @@ import java.net.URI
 interface Data {
 
     /**
-     * @throws DataReadException if an error has occurred while reading data
+     * @throws DataReadException if an error has occurred during reading of a data
      * @throws DataAccessibilityException if the data isn't accessible
      */
     fun getBytes(): ByteArray
@@ -33,7 +33,7 @@ interface Data {
     fun isAccessible()
 
     /**
-     * @throws DataDeleteException if an error has occurred while deleting data
+     * @throws DataDeleteException if an error has occurred during deletion of a data
      * @throws UnsupportedOperationException if the data isn't a removable resource
      */
     fun delete()
