@@ -19,6 +19,18 @@ class HttpPromenaTransformer(
     private val serializationService: SerializationService
 ) {
 
+    /**
+     * Serializes [transformationDescriptor] using [serializationService] and sends POST request:
+     * - the body with the serialized data
+     * - `Content-Type` header set to `application/octet-stream`
+     * on Promena HTTP connector indicated by [httpAddress].
+     *
+     * There is no time limit of the request. It should be completed by Promena.
+     *
+     * If the response status is:
+     * - `200` - deserialize the body to [PerformedTransformationDescriptor]
+     * - `500` - deserialize the body to the class from `serialization-class` header - it will be a subclass of [Throwable]
+     */
     suspend fun execute(transformationDescriptor: TransformationDescriptor, httpAddress: String): PerformedTransformationDescriptor =
         try {
             Fuel.post("http://$httpAddress/transform")
