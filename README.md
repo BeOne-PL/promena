@@ -81,7 +81,7 @@ Each transformer implements [`Transformer`](./base/promena-transformer/contract/
  
 Promena groups transformers by their name. This means that an application can delegate a task using only *name*. It implicates that an application doesn't have to know transformers implementation details. An application also may pass *sub name* if it wants to perform given transformation on the specific transformer.
 
-It may happen that many transformers can perform given transformation (if you passed only *name*), therefore, you can set the priority of each transformer. A priority is described by the value (lower value indicates higher priority). Visit the transformer repository to see how to set the transformer priority.
+It may happen that many transformers can perform given transformation (if you passed only *name*), therefore, you can set the priority of each transformer. A priority is described by the value (a lower value indicates a higher priority). Visit the transformer repository to see how to set the transformer priority.
 
 Promena can run many instances of transformers within one instance. Promena runs only one instance of each transformer by default but you can change it by increasing the number of actors. Visit the transformer repository to see how to set the number of transformer actors. It isn't the recommended way of scaling Promena. A better idea is to scale out Promena instances.
 
