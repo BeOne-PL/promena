@@ -10,6 +10,11 @@ import akka.cluster.routing.ClusterRouterGroupSettings
 import akka.routing.SmallestMailboxPool
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 
+/**
+ * An actor is created in two stages:
+ * - Cluster level - creates cluster router group of [AdaptiveLoadBalancingGroup] based on [metricsSelector] (if [clusterAware] is `true`)
+ * - Local level - creates [actors] instances in [SmallestMailboxPool]
+ */
 class AdaptiveLoadBalancingGroupOnSmallestMailboxPoolActorCreator(
     private val actorSystem: ActorSystem,
     private val metricsSelector: MetricsSelector
