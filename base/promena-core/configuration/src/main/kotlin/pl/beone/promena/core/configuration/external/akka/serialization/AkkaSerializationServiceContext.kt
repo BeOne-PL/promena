@@ -12,11 +12,11 @@ import pl.beone.promena.core.applicationmodel.akka.actor.TransformerActorDescrip
 import pl.beone.promena.core.contract.actor.config.ActorCreator
 import pl.beone.promena.core.contract.serialization.SerializationService
 import pl.beone.promena.core.external.akka.actor.serializer.KryoSerializerActor
-import pl.beone.promena.core.external.akka.serialization.AkkaKryoSerializationService
+import pl.beone.promena.core.external.akka.serialization.AkkaSerializationService
 import pl.beone.promena.core.internal.serialization.KryoSerializationService
 
 @Configuration
-class AkkaKryoSerializationServiceContext {
+class AkkaSerializationServiceContext {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -24,13 +24,13 @@ class AkkaKryoSerializationServiceContext {
 
     @Bean
     @ConditionalOnMissingBean(SerializationService::class)
-    fun akkaKryoSerializationService(
+    fun akkaSerializationService(
         environment: Environment,
         actorMaterializer: ActorMaterializer,
         actorCreator: ActorCreator,
         transformerActorDescriptors: List<TransformerActorDescriptor>
     ) =
-        AkkaKryoSerializationService(
+        AkkaSerializationService(
             actorMaterializer,
             createSerializerActor(environment, actorCreator, transformerActorDescriptors)
         )

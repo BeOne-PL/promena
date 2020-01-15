@@ -35,10 +35,10 @@ import java.net.URI
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
-class AkkaKryoSerializationServiceTestIT {
+class AkkaSerializationServiceTestIT {
 
     private lateinit var actorSystem: ActorSystem
-    private lateinit var akkaKryoSerializationService: AkkaKryoSerializationService
+    private lateinit var akkaSerializationService: AkkaSerializationService
 
     @BeforeEach
     fun setUp() {
@@ -49,7 +49,7 @@ class AkkaKryoSerializationServiceTestIT {
             Props.create(KryoSerializerActor::class.java) { KryoSerializerActor(KryoSerializationService()) }, "serializer"
         )
 
-        akkaKryoSerializationService = AkkaKryoSerializationService(actorMaterializer, serializerActor)
+        akkaSerializationService = AkkaSerializationService(actorMaterializer, serializerActor)
     }
 
     @AfterEach
@@ -62,7 +62,7 @@ class AkkaKryoSerializationServiceTestIT {
         val uri = URI("file:/tmp/tomcat.7182112197177744335.8010/")
 
         uri shouldBe
-                akkaKryoSerializationService.deserialize(akkaKryoSerializationService.serialize(uri), URI::class.java)
+                akkaSerializationService.deserialize(akkaSerializationService.serialize(uri), URI::class.java)
     }
 
     @Test
@@ -71,8 +71,8 @@ class AkkaKryoSerializationServiceTestIT {
             singleTransformedDataDescriptor("test".toMemoryData(), emptyMetadata() + ("key" to "value")) +
                     singleTransformedDataDescriptor("""{ "key": "value" }""".toMemoryData(), emptyMetadata())
 
-        akkaKryoSerializationService.deserialize(
-            akkaKryoSerializationService.serialize(transformedDataDescriptor),
+        akkaSerializationService.deserialize(
+            akkaSerializationService.serialize(transformedDataDescriptor),
             getClazz<TransformationDescriptor>()
         ) shouldBe
                 transformedDataDescriptor
@@ -87,8 +87,8 @@ class AkkaKryoSerializationServiceTestIT {
             communicationParameters("file") + ("directory" to createTempDir())
         )
 
-        akkaKryoSerializationService.deserialize(
-            akkaKryoSerializationService.serialize(transformationDescriptor),
+        akkaSerializationService.deserialize(
+            akkaSerializationService.serialize(transformationDescriptor),
             getClazz<TransformationDescriptor>()
         ) shouldBe
                 transformationDescriptor
@@ -104,8 +104,8 @@ class AkkaKryoSerializationServiceTestIT {
             communicationParameters("file") + ("directory" to createTempDir())
         )
 
-        akkaKryoSerializationService.deserialize(
-            akkaKryoSerializationService.serialize(transformationDescriptor),
+        akkaSerializationService.deserialize(
+            akkaSerializationService.serialize(transformationDescriptor),
             getClazz<TransformationDescriptor>()
         ) shouldBe
                 transformationDescriptor
@@ -117,7 +117,7 @@ class AkkaKryoSerializationServiceTestIT {
 
         (1..10).map {
             executor.submit(Callable<String> {
-                akkaKryoSerializationService.deserialize(akkaKryoSerializationService.serialize("test"), String::class.java)
+                akkaSerializationService.deserialize(akkaSerializationService.serialize("test"), String::class.java)
             })
         }
             .map { it.get() }
@@ -127,7 +127,7 @@ class AkkaKryoSerializationServiceTestIT {
     @Test
     fun `deserialize _ incorrect serialization data _ should throw DeserializationException`() {
         shouldThrow<DeserializationException> {
-            akkaKryoSerializationService.deserialize("incorrect data".toByteArray(), getClazz<String>())
+            akkaSerializationService.deserialize("incorrect data".toByteArray(), getClazz<String>())
         }.message shouldBe "Couldn't deserialize"
     }
 
@@ -138,8 +138,8 @@ class AkkaKryoSerializationServiceTestIT {
                     singleTransformedDataDescriptor("test2".toMemoryData(), emptyMetadata())
         )
 
-        akkaKryoSerializationService.deserialize(
-            akkaKryoSerializationService.serialize(transformedDataDescriptor),
+        akkaSerializationService.deserialize(
+            akkaSerializationService.serialize(transformedDataDescriptor),
             getClazz<PerformedTransformationDescriptor>()
         ) shouldBe
                 transformedDataDescriptor
@@ -154,8 +154,8 @@ class AkkaKryoSerializationServiceTestIT {
             communicationParameters("file") + ("directory" to createTempDir())
         )
 
-        akkaKryoSerializationService.deserialize(
-            akkaKryoSerializationService.serialize(transformationDescriptor),
+        akkaSerializationService.deserialize(
+            akkaSerializationService.serialize(transformationDescriptor),
             getClazz<PerformedTransformationDescriptor>()
         ) shouldBe
                 transformationDescriptor
