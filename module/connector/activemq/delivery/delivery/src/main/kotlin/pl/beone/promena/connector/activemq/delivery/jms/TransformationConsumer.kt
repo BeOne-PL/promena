@@ -25,7 +25,7 @@ class TransformationConsumer(
     private val transformerProducer = TransformationProducer(jmsTemplate)
 
     /**
-     * Serialization and deserialization is executed by
+     * Serialization and deserialization of the body is executed by
      * [KryoMessageConverter][pl.beone.promena.connector.activemq.delivery.jms.message.converter.KryoMessageConverter] automatically.
      *
      * The flow:
@@ -35,8 +35,11 @@ class TransformationConsumer(
      *    [TransformationHashFunctionMessageSelectorDeterminer][pl.beone.promena.connector.activemq.configuration.delivery.jms.TransformationHashFunctionMessageSelectorDeterminer])
      * 2. Deserializes to [TransformationDescriptor]
      * 3. Performs a transformation
-     * 4. Determines headers to send: [TRANSFORMATION_HASH_CODE], [TRANSFORMATION_START_TIMESTAMP], [TRANSFORMATION_END_TIMESTAMP],
-     *    headers returned by [HeadersToSentBackDeterminer],
+     * 4. Determines headers to send:
+     *    [TRANSFORMATION_HASH_CODE],
+     *    [TRANSFORMATION_START_TIMESTAMP],
+     *    [TRANSFORMATION_END_TIMESTAMP],
+     *    headers returned by [HeadersToSentBackDeterminer]
      *    and [KryoMessageConverter.PROPERTY_SERIALIZATION_CLASS][pl.beone.promena.connector.activemq.delivery.jms.message.converter.KryoMessageConverter.PROPERTY_SERIALIZATION_CLASS]
      * 5. Serializes to [PerformedTransformationDescriptor]
      * 6. Sends a message with serialized data as the body and [correlationId] id to [responseQueue] queue using [transformerProducer]
