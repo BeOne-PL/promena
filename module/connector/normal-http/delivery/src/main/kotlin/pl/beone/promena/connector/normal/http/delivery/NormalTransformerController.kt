@@ -3,6 +3,7 @@ package pl.beone.promena.connector.normal.http.delivery
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpHeaders.CONTENT_TYPE
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 import org.springframework.http.codec.multipart.Part
@@ -36,6 +37,23 @@ class NormalTransformerController(
     private val transformationUseCase: TransformationUseCase
 ) {
 
+    /**
+     * The flow:
+     * 1. Receives `multipart/form-data` `POST` request on `/normal/transform`
+     * 2. Converts `transformation{NUMBER}-transformerId-name`, `transformation{NUMBER}-transformerId-subName`,
+     *    `transformation{NUMBER}-mediaType-mimeType`, `transformation{NUMBER}-mediaType-charset` headers
+     *    into [Transformation] ([TransformationDeterminer.determine]) in the order determined by `{NUMBER}`
+     * 3. Converts all `Form-Data` into [DataDescriptor]
+     * 4. Performs a transformation
+     * 5. Returns data as the body with [HttpStatus.OK] response status
+     * 6. In case of an error, it converts an exception using [mapException]:
+     *
+     * It doesn't support:
+     * - Passing [Parameters][pl.beone.promena.transformer.contract.model.Parameters] of [Transformation]
+     * - Passing [Metadata] of [DataDescriptor]
+     * - Passing external [CommunicationParameters][pl.beone.promena.transformer.contract.communication.CommunicationParameters]
+     * - Returning more than 1 [TransformedDataDescriptor]
+     */
     @PostMapping("/normal/transform", consumes = [org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE])
     fun transform(@RequestHeader headers: HttpHeaders, @RequestBody parts: Flux<Part>): Mono<ResponseEntity<ByteArray>> =
         parts

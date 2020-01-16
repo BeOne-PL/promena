@@ -18,6 +18,11 @@ internal object TransformationDeterminer {
 
     private val numberRegEx = """\d+""".toRegex()
 
+    /**
+     * Groups `transformation{NUMBER}-transformerId-name`, `transformation{NUMBER}-transformerId-subName`,
+     * `transformation{NUMBER}-mediaType-mimeType`, `transformation{NUMBER}-mediaType-charset` headers and creates [Transformation.Single].
+     * Then, it creates [Transformation.Composite] from all of them in the order determined by `{NUMBER}`.
+     */
     fun determine(headers: HttpHeaders): Transformation =
         headers.toSingleValueMap().toList()
             .filter { (key) -> TRANSFORMATION_PREFIX_REGEX.containsMatchIn(key) }

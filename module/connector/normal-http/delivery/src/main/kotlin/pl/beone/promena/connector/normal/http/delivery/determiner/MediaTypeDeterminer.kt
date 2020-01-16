@@ -13,6 +13,11 @@ internal object MediaTypeDeterminer {
     private val contentTypeRegEx = """^(\w+/[-+.\w]+);\s*charset=(.*)$""".toRegex()
     private val contentTypeOnlyMimeTypeRegEx = """^(\w+/[-+.\w]+)$""".toRegex()
 
+    /**
+     *  Converts a media type from [headers] into [MediaType]. It supports two cases:
+     *  - [DATA_DESCRIPTOR_MEDIA_TYPE_MIME_TYPE] and/or [DATA_DESCRIPTOR_MEDIA_TYPE_CHARSET] headers is set
+     *  - [CONTENT_TYPE] header is set. Acceptable formats: `<mime type>; charset=<charset>` or `<mime type>`
+     */
     fun determine(fieldName: String?, headers: HttpHeaders): MediaType {
         val singleValueHeaders = headers.toSingleValueMap()
 
