@@ -28,8 +28,8 @@ class HttpPromenaTransformer(
      * There is no time limit of the request. It should be completed by Promena.
      *
      * If the response status is:
-     * - `200` - deserialize the body to [PerformedTransformationDescriptor]
-     * - `500` - deserialize the body to the class from `serialization-class` header - it will be a subclass of [Throwable]
+     * - [HTTP_OK] - deserialize the body to [PerformedTransformationDescriptor]
+     * - [HTTP_INTERNAL_ERROR] - deserialize the body to the class from [SERIALIZATION_CLASS] header - it will be a subclass of [Throwable]
      */
     suspend fun execute(transformationDescriptor: TransformationDescriptor, httpAddress: String): PerformedTransformationDescriptor =
         try {
