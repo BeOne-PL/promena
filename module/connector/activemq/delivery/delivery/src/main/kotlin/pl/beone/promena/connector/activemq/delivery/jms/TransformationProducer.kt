@@ -4,8 +4,13 @@ import org.apache.activemq.command.ActiveMQQueue
 import org.springframework.jms.core.JmsTemplate
 import javax.jms.Message
 
-internal class TransformationProducer(private val jmsTemplate: JmsTemplate) {
+internal class TransformationProducer(
+    private val jmsTemplate: JmsTemplate
+) {
 
+    /**
+     * @see TransformationConsumer
+     */
     fun send(queue: ActiveMQQueue, correlationId: String, headers: Map<String, Any>, payload: Any) {
         jmsTemplate.convertAndSend(queue, payload) { message ->
             message.apply {

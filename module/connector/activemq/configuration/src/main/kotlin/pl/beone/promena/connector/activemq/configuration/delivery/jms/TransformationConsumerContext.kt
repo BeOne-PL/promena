@@ -31,7 +31,7 @@ class TransformationConsumerContext {
         transformationUseCase: TransformationUseCase
     ): TransformationConsumer {
         val messageSelector =
-            TransformationHashCodeMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
+            TransformationHashFunctionMessageSelectorDeterminer.determine(transformerConfig, transformers, transformationHashFunctionDeterminer)
 
         logger.debug { "Set message selector for TransformationConsumer on <$TRANSFORMATION_HASH_CODE>: <$messageSelector>" }
 

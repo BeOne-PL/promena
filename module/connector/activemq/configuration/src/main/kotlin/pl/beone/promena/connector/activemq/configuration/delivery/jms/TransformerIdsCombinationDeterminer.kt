@@ -6,6 +6,9 @@ import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
 internal object TransformerIdsCombinationDeterminer {
 
+    /**
+     * Generates all possible combinations of [TransformerId] in any configuration (with [TransformerId.subName] and without [TransformerId.subName].
+     */
     fun determine(transformerIds: List<TransformerId>): List<List<TransformerId>> {
         val generalTransformerIds = createGeneralTransformerIds(transformerIds)
         val allTransformersIds = (generalTransformerIds + transformerIds).distinct()

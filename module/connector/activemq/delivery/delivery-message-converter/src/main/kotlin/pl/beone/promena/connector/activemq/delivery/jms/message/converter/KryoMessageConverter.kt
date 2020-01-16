@@ -7,18 +7,26 @@ import javax.jms.BytesMessage
 import javax.jms.Message
 import javax.jms.Session
 
-class KryoMessageConverter(private val serializationService: SerializationService) : MessageConverter {
+class KryoMessageConverter(
+    private val serializationService: SerializationService
+) : MessageConverter {
 
     companion object {
         const val PROPERTY_SERIALIZATION_CLASS = "serialization_class"
     }
 
+    /**
+     * Serializes [obj] and adds [PROPERTY_SERIALIZATION_CLASS] property with the type of [obj].
+     */
     override fun toMessage(obj: Any, session: Session): Message =
         session.createBytesMessage().apply {
             writeBytes(serializationService.serialize(obj))
             setStringProperty(PROPERTY_SERIALIZATION_CLASS, obj.javaClass.name)
         }
 
+    /**
+     * Deserializes [message] to the type from [PROPERTY_SERIALIZATION_CLASS] property.
+     */
     override fun fromMessage(message: Message): Any {
         require(message is BytesMessage) {
             "Implementation supports only <javax.jms.BytesMessage> but it received <${message.javaClass.canonicalName}>"

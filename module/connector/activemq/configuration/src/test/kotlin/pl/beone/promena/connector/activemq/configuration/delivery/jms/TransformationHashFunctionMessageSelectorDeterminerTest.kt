@@ -10,7 +10,7 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.toTransformerId
 
-class TransformationHashCodeMessageSelectorDeterminerTest {
+class TransformationHashFunctionMessageSelectorDeterminerTest {
 
     @Test
     fun determine() {
@@ -30,7 +30,7 @@ class TransformationHashCodeMessageSelectorDeterminerTest {
             every { determine(listOf(converterTransformerId, barcodeTransformerId)) } returns "3"
         }
 
-        TransformationHashCodeMessageSelectorDeterminer.determine(
+        TransformationHashFunctionMessageSelectorDeterminer.determine(
             transformerConfig,
             listOf(converterTransformer, barcodeTransformer),
             transformationHashFunctionDeterminer

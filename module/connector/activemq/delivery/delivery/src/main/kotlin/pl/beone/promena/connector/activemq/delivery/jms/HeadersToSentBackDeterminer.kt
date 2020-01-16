@@ -4,6 +4,9 @@ import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.SE
 
 internal object HeadersToSentBackDeterminer {
 
+    /**
+     * @return [headers] whose keys start with [SEND_BACK_PREFIX].
+     */
     fun determine(headers: Map<String, Any>): Map<String, Any> =
         headers.filter { (key) -> key.startsWith(SEND_BACK_PREFIX) }.toMap()
 }

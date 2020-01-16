@@ -6,8 +6,11 @@ import pl.beone.promena.core.contract.transformer.config.TransformerConfig
 import pl.beone.promena.transformer.contract.Transformer
 import pl.beone.promena.transformer.contract.transformer.TransformerId
 
-internal object TransformationHashCodeMessageSelectorDeterminer {
+internal object TransformationHashFunctionMessageSelectorDeterminer {
 
+    /**
+     * @return [TRANSFORMATION_HASH_CODE] queue selector to ensure that messages are listened to by the transformers that are included in Promena
+     */
     fun determine(
         transformerConfig: TransformerConfig,
         transformers: List<Transformer>,
