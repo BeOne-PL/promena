@@ -1,6 +1,7 @@
 package pl.beone.promena.connector.http.delivery
 
 import mu.KotlinLogging
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE
 import org.springframework.http.ResponseEntity
@@ -12,6 +13,7 @@ import pl.beone.lib.typeconverter.internal.getClazz
 import pl.beone.promena.connector.http.applicationmodel.PromenaHttpHeaders.SERIALIZATION_CLASS
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException
 import pl.beone.promena.core.applicationmodel.exception.transformation.TransformationTerminationException
+import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.performedTransformationDescriptor
 import pl.beone.promena.core.contract.serialization.SerializationService
@@ -28,6 +30,17 @@ class TransformerController(
         private val logger = KotlinLogging.logger {}
     }
 
+    /**
+     * The flow:
+     * 1. Receives a serialized data on `/transform` as [body]
+     * 2. Deserializes to [TransformationDescriptor]
+     * 3. Performs a transformation
+     * 4. Serializes to [PerformedTransformationDescriptor]
+     * 5. Returns serialized data as the body with [HttpStatus.OK] response status
+     * 6. In case of an error:
+     * - Serializes an exception and returns as the body with [HttpStatus.INTERNAL_SERVER_ERROR] response status
+     * - Adds [SERIALIZATION_CLASS] header with the name of an exception class
+     */
     @PostMapping("/transform", consumes = [APPLICATION_OCTET_STREAM_VALUE])
     fun handle(@RequestBody body: Mono<ByteArray>): Mono<ResponseEntity<ByteArray>> =
         body
@@ -41,7 +54,7 @@ class TransformerController(
                 logUnknownException(it)
                 createInternalServerErrorResponse(it).let { Mono.just(it) }
             }
-            .onErrorReturn(createOnShutdownReponse())
+            .onErrorReturn(createOnShutdownResponse())
 
     private fun deserializeTransformationDescriptor(byteArray: ByteArray): TransformationDescriptor =
         serializationService.deserialize(byteArray, getClazz())
@@ -60,6 +73,6 @@ class TransformerController(
             .header(SERIALIZATION_CLASS, exception.javaClass.name)
             .body(serializationService.serialize(exception))
 
-    private fun createOnShutdownReponse(): ResponseEntity<ByteArray> =
+    private fun createOnShutdownResponse(): ResponseEntity<ByteArray> =
         createInternalServerErrorResponse(TransformationTerminationException("Transformation has been terminated because Promena has been shutdown"))
 }
