@@ -55,9 +55,9 @@ under the License.
             </fileSets>
         </module>
 
-        <module id="${rootArtifactId}-internal"
-                dir="internal"
-                name="${rootArtifactId}-internal">
+        <module id="${rootArtifactId}"
+                dir="implementation"
+                name="${rootArtifactId}">
             <fileSets>
                 <fileSet filtered="true" packaged="true">
                     <directory>src/main/kotlin</directory>

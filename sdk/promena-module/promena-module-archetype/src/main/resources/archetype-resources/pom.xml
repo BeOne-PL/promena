@@ -11,11 +11,11 @@
     </parent>
 
     <groupId>${groupId}</groupId>
-    <artifactId>${artifactId}</artifactId>
+    <artifactId>${artifactId}-root</artifactId>
     <version>${version}</version>
 
     <modules>
-        <module>internal</module>
+        <module>implementation</module>
         <module>configuration</module>
     </modules>
     <packaging>pom</packaging>
