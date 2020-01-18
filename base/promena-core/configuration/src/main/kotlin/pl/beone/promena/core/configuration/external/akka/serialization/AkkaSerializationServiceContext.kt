@@ -51,10 +51,19 @@ class AkkaSerializationServiceContext {
         KryoSerializationService(environment.getRequiredProperty("core.serializer.kryo.buffer-size", Int::class.java))
 
     private fun getNumberOfActors(environment: Environment): Int? =
-        environment.getProperty("core.serializer.actors", Int::class.java)
+        environment.getNotBlankProperty("core.serializer.actors")?.toInt()
             ?.also { logger.info { "Created serializer actors: <$it>" } }
 
     private fun determineNumberOfActors(transformerActorDescriptors: List<TransformerActorDescriptor>): Int =
         determine(transformerActorDescriptors)
             .also { logger.info { "Property <core.serializer.actors> isn't set. Created serializer actors (sum of transformer actors): <$it>" } }
+
+    private fun Environment.getNotBlankProperty(key: String): String? {
+        val value = getRequiredProperty(key)
+        return if (value.isNotBlank()) {
+            value
+        } else {
+            null
+        }
+    }
 }
