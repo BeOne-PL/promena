@@ -77,14 +77,14 @@
             <testResource>
                 <directory>src/test/resources</directory>
                 <excludes>
-                    <exclude>base-docker-test.properties</exclude>
+                    <exclude>docker-extension.properties</exclude>
                 </excludes>
             </testResource>
             <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>base-docker-test.properties</include>
+                    <include>docker-extension.properties</include>
                 </includes>
             </testResource>
         </testResources>
