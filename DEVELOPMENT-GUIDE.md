@@ -108,7 +108,7 @@ Visit [Promena#Modele/Connector](./README.md#connector) to find out the role of 
 
 [Promena#Flow/Promena](./README.md#promena) presents typical steps that a connector module has to make.
 * steps 2-4 can be done using [`TransformationUseCase`](./base/promena-core/contract/contract/src/main/kotlin/pl/beone/promena/core/contract/transformation/TransformationUseCase.kt) ([`DefaultTransformationUseCase`](./base/promena-core/use-case/src/main/kotlin/pl/beone/promena/core/usecase/transformation/DefaultTransformationUseCase.kt) implementation, `defaultTransformationUseCase` bean name).
-* steps 1 (deserialization) and 5 (serialization) can be done using [`SerializationService`](./base/promena-core/contract/contract/src/main/kotlin/pl/beone/promena/core/contract/serialization/SerializationService.kt) ([`AkkaSerializationService`](./base/promena-core/external/external-akka/src/main/kotlin/pl/beone/promena/core/external/akka/serialization/AkkaSerializationService.kt) implementation, `akkaSerializationService` bean name)
+* step 1 (deserialization) and 5 (serialization) can be done using [`SerializationService`](./base/promena-core/contract/contract/src/main/kotlin/pl/beone/promena/core/contract/serialization/SerializationService.kt) ([`AkkaSerializationService`](./base/promena-core/external/external-akka/src/main/kotlin/pl/beone/promena/core/external/akka/serialization/AkkaSerializationService.kt) implementation, `akkaSerializationService` bean name)
 
 ## Changing default implementations
 By default, Promena registers the following implementations of the core interfaces:

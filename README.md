@@ -1,8 +1,8 @@
 # <img src="https://gitlab.office.beone.pl/promena/promena/raw/master/logo.svg" width="300"/>
-The general-purpose transformation system, perfectly suited to Alfresco.
+The modular general-purpose transformation system, perfectly suited to Alfresco.
 
 ##  Motivation
-As one of the steps in task execution, applications sometimes have to perform "heavy" long-running operations such as document converting, OCR, report generating or email sending. Executing such tasks within an application cause increase in its responsibility and consequently code complexity, 3rd party tools integration, error handling, scalability problem, queuing etc.
+As one of the steps in a task execution, applications sometimes have to perform "heavy" long-running operations such as document converting, OCR, report generating or email sending. Executing such tasks within an application cause increase in its responsibility and consequently code complexity, 3rd party tools integration, error handling, scalability problem, queuing etc.
 
 Promena is the transformation system that allows to delegate a task and receive the result of its execution. 
 
@@ -85,7 +85,7 @@ It may happen that many transformers can perform given transformation (if you pa
 
 Promena can run many instances of transformers within one instance. Promena runs only one instance of each transformer by default but you can change it by increasing the number of actors. Visit the transformer repository to see how to set the number of transformer actors. It isn't the recommended way of scaling Promena. A better idea is to scale out Promena instances.
 
-Promena resolves transformations. An application doesn't know if given transformation is included in Promena - it will get appropriate information as the response. If you want to find it out on an application side, you can do it using `application-model` dependency. Each transformer contains `application-model`. It includes transformer constants, you can check if the transformer supports given media type and parameters before sending the transformation. Unfortunately, it has disadvantages. It decreases the level of loose coupling and you don't know if given transformer is included in Promena.
+Promena resolves transformations. An application doesn't know if given transformation is included in Promena - it will get appropriate information as the response. If you want to find it out on an application side, you can do it using `application-model` dependency. Each transformer contains `application-model`. It includes transformer constants, you can check if the transformer supports given media type and parameters before sending a transformation. Unfortunately, it has disadvantages. It decreases the level of loose coupling and you don't know if given transformer is included in Promena.
  
 Each transformer can by tweaked by parameters. Parameters describe a transformation. In case of lack of parameters, a transformer should use default parameters. Visit a transformer repository (Properties section) to find out how to set default parameters.
  
@@ -180,9 +180,9 @@ Promena can be run in every environment with Docker support or in every environm
 Visit [Sample#Deployment](https://gitlab.office.beone.pl/promena/promena-sample#deployment) to see the example configurations of `manual`, `Kubernetes` and `OpenShift` deployment.
 
 ## IntelliJ plugin
-It allows you to execute a transformation directly from IntelliJ on Promena. This plugin uses [`promena-connector-http`](./module/connector/http) connector module so it's required to include its on Promena.
+It allows you to execute a transformation directly from IntelliJ on Promena. This plugin uses [`promena-connector-http`](./module/connector/http) connector module so it's required to include it on Promena.
 
-Available on: https://plugins.jetbrains.com/plugin/TODO/. 
+Available on: https://plugins.jetbrains.com/plugin/13689-promena/. 
 
 Visit [`mirror-jdk/example`](https://gitlab.office.beone.pl/promena/promena-sample/tree/master/transformer/mirror-jdk/example) to see Java and Kotlin examples.
 
