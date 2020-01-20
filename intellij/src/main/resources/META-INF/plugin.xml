@@ -1,6 +1,7 @@
 <idea-plugin>
-    <id>pl.beone.promena.intellijj.plugin.Promena</id>
+    <id>pl.beone.promena.intellij.plugin.Promena</id>
     <name>Promena</name>
+    <description>Executes a transformation directly from IntelliJ on Promena. This plugin uses "promena-connector-http" connector module so it's required to include it on Promena.</description>
     <version>1.0.0</version>
     <vendor>BeOne</vendor>
 
