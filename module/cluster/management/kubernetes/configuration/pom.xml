@@ -60,7 +60,7 @@
 
         <dependency>
             <groupId>com.github.TanUkkii007</groupId>
-            <artifactId>akka-cluster-custom-downing</artifactId>
+            <artifactId>akka-cluster-custom-downing_2.12</artifactId>
             <version>${akka-cluster-custom-downing.version}</version>
             <exclusions>
                 <exclusion>

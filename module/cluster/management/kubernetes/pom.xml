@@ -23,40 +23,17 @@
 
     <repositories>
         <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-
-        <repository>
-            <id>mulesoft</id>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+            <id>JCenter - TanUkkii007</id>
+            <url>https://dl.bintray.com/tanukkii007/maven/</url>
         </repository>
     </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>beone-snapshots</id>
-            <url>http://nexus.office.beone.pl/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <properties>
         <promena-discovery-kubernetes.version>1.0.0</promena-discovery-kubernetes.version>
 
         <akka-management.version>1.0.5</akka-management.version>
         <akka-discovery-kubernetes-api.version>1.0.5</akka-discovery-kubernetes-api.version>
-        <akka-cluster-custom-downing.version>0.0.12</akka-cluster-custom-downing.version>
+        <akka-cluster-custom-downing.version>0.0.13</akka-cluster-custom-downing.version>
     </properties>
 
     <dependencies>
