@@ -158,7 +158,7 @@ class AkkaTransformationServiceTestIT {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "There is no <absentTransformer> transformer"
-            causeClass shouldBe TransformerNotFoundException::class.java
+            causeClass shouldBe TransformerNotFoundException::class.java.canonicalName
         }
     }
 
@@ -179,7 +179,7 @@ class AkkaTransformationServiceTestIT {
                 this[2] shouldBe "> pl.beone.promena.core.external.akka.transformation.transformer.UselessTextAppenderTransformer(text appender, Kotlin useless): I can't transform nothing. I'm useless"
                 this[3] shouldBe "> pl.beone.promena.core.external.akka.transformation.JavaTextAppenderTransformer(text appender, java): Only transformation from text/plain to text/plain is supported"
             }
-            causeClass shouldBe TransformationNotSupportedException::class.java
+            causeClass shouldBe TransformationNotSupportedException::class.java.canonicalName
         }
     }
 
@@ -195,7 +195,7 @@ class AkkaTransformationServiceTestIT {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "Transformation isn't supported | Transformer pl.beone.promena.core.external.akka.transformation.transformer.TextAppenderTransformer(text appender, kotlin) doesn't support given transformation: Only transformation from text/plain to text/plain is supported"
-            causeClass shouldBe TransformationNotSupportedException::class.java
+            causeClass shouldBe TransformationNotSupportedException::class.java.canonicalName
         }
     }
 
@@ -212,7 +212,7 @@ class AkkaTransformationServiceTestIT {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "Transformer <timeout> timeout <1ms> has been reached"
-            causeClass shouldBe TransformerTimeoutException::class.java
+            causeClass shouldBe TransformerTimeoutException::class.java.canonicalName
         }
     }
 
@@ -230,7 +230,7 @@ class AkkaTransformationServiceTestIT {
             transformerService.transform(transformation, dataDescriptor)
         }) {
             message shouldBe "Transformation timeout has been reached. It's highly likely that Promena performing transformation has been shutdown"
-            causeClass shouldBe null
+            causeClass shouldBe AskTimeoutException::class.java.canonicalName
         }
     }
 
