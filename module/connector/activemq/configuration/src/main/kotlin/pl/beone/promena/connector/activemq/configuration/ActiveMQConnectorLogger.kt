@@ -31,9 +31,9 @@ class ActiveMQConnectorLogger(
                     "queue: <request: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.request")}, " +
                     "response: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response")}, " +
                     "response.error: ${environment.getRequiredProperty("promena.connector.activemq.consumer.queue.response.error")}>]"
-
-            // Disable standard logging. Exceptions are handled in NormalTransformerController so there is no need to print exception to logs
-            loggingSystem.setLogLevel("org.springframework.jms.listener.DefaultMessageListenerContainer", OFF)
         }
+
+        // Disable standard logging. Exceptions are handled in NormalTransformerController so there is no need to print exception to logs
+        loggingSystem.setLogLevel("org.springframework.jms.listener.DefaultMessageListenerContainer", OFF)
     }
 }
