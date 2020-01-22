@@ -3,7 +3,7 @@
 ## Description
 This communication module provides implementation based on memory for internal and external communication. Data is shared using memory. 
 
-Visit [Sample#Alfresco/Communication/Memory](https://gitlab.office.beone.pl/promena/promena-sample#memory) and [Sample#Alfresco/Connector](https://gitlab.office.beone.pl/promena/promena-sample#connector) to find out how to set the deployment properties of this communication module.
+Visit [Sample#Alfresco/Communication/Memory](https://github.com/BeOne-PL/promena-sample#memory) and [Sample#Alfresco/Connector](https://github.com/BeOne-PL/promena-sample#connector) to find out how to set the deployment properties of this communication module.
 
 ## Dependency
 ### Internal

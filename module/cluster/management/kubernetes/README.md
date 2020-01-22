@@ -5,7 +5,7 @@ This module enables The Kubernetes API to discover peers and form an Akka Cluste
 
 Additionally, it uses [akka-cluster-custom-downing](https://github.com/TanUkkii007/akka-cluster-custom-downing) to provide a configurable auto-downing strategy that you can choose based on your distributed application design.
 
-Visit [Sample#Kubernetes & OpenShift](https://gitlab.office.beone.pl/promena/promena-sample#kubernetes-openshift) to find out how to set the deployment properties of `Kubernetes` and `OpenShift`.
+Visit [Sample#Kubernetes & OpenShift](https://github.com/BeOne-PL/promena-sample#kubernetes-openshift) to find out how to set the deployment properties of `Kubernetes` and `OpenShift`.
 
 ## Dependency
 ```xml

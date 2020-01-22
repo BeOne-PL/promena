@@ -5,7 +5,7 @@ This communication module provides implementation based on file for internal and
 
 **It is very important to choose a path that is available on every Promena node in the same location.**
 
-Visit [Sample#Deployment/Manual](https://gitlab.office.beone.pl/promena/promena-sample#manual) and [Sample#Alfresco/Communication/File](https://gitlab.office.beone.pl/promena/promena-sample#file) to find out how to set the deployment properties of this communication module and how to integrate with an application.
+Visit [Sample#Deployment/Manual](https://github.com/BeOne-PL/promena-sample#manual) and [Sample#Alfresco/Communication/File](https://github.com/BeOne-PL/promena-sample#file) to find out how to set the deployment properties of this communication module and how to integrate with an application.
 
 ## Dependency
 ### Internal

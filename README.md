@@ -1,4 +1,4 @@
-# <img src="https://gitlab.office.beone.pl/promena/promena/raw/master/logo.svg" width="300"/>
+# <img src="https://raw.githubusercontent.com/BeOne-PL/promena/master/logo.svg?sanitize=true" width="300"/>
 The modular general-purpose transformation system, perfectly suited to Alfresco.
 
 ##  Motivation
@@ -6,14 +6,14 @@ As one of the steps in a task execution, applications sometimes have to perform 
 
 Promena is the transformation system that allows to delegate a task and receive the result of its execution. 
 
-## [Sample](https://gitlab.office.beone.pl/promena/promena-sample)
+## [Sample](https://github.com/BeOne-PL/promena-sample)
 There are samples of:
 * building Promena
 * deployment
 * transformers and modules
 * integration with Alfresco
 
-## [Alfresco](https://gitlab.office.beone.pl/promena/promena-alfresco)
+## [Alfresco](https://github.com/BeOne-PL/promena-alfresco)
 This repository contains Alfresco Content Services modules that are required to integrate Alfresco with Promena.
 
 ## Flow
@@ -46,7 +46,7 @@ The functionality of Promena can be extended by modules. Modules are added in th
 
 Special cases of modules are, as mentioned earlier, connector module, communication module and actor creator module.
 
-Visit [Sample#Module](https://gitlab.office.beone.pl/promena/promena-sample#module) to see examples of modules and [Development Guide](./DEVELOPMENT-GUIDE.md) to implement a custom module.
+Visit [Sample#Module](https://github.com/BeOne-PL/promena-sample#module) to see examples of modules and [Development Guide](./DEVELOPMENT-GUIDE.md) to implement a custom module.
 
 ### Actor creator
 Promena is based on Akka so it's required to specify the way of creating actors. The presence of exactly one [`ActorCreator`](./base/promena-core/application-model/application-model/src/main/kotlin/pl/beone/promena/core/applicationmodel/transformation/PerformedTransformationDescriptor.kt) implementation is required.
@@ -93,16 +93,16 @@ Each transformer repository contains `example` module. It contains the examples 
 
 Transformation character is often associated with the use of 3rd party tools. Additionally, each transformer may contain `Dockerfile-fragment` that is used to build Promena.
 
-Visit [Sample#Transformer](https://gitlab.office.beone.pl/promena/promena-sample#transformer) to see the examples of transformers and [Development Guide](./DEVELOPMENT-GUIDE.md) to implement a custom transformer.
+Visit [Sample#Transformer](https://github.com/BeOne-PL/promena-sample#transformer) to see the examples of transformers and [Development Guide](./DEVELOPMENT-GUIDE.md) to implement a custom transformer.
 
 | Name | Description |
 |----------|---------|
-| [`converter-libreoffice`](https://gitlab.office.beone.pl/promena/promena-transformer-converter-libreoffice) | Based on LibreOffice - converts documents |
-| [`converter-imagemagick`](https://gitlab.office.beone.pl/promena/promena-transformer-converter-imagemagick) | Based on ImageMagick - converts images |
-| [`ocr-ocrmypdf`](https://gitlab.office.beone.pl/promena/promena-transformer-ocr-ocrmypdf) | Based on OCRmyPDF - OCR documents |
-| [`barcode-detector-zxing-opencv`](https://gitlab.office.beone.pl/promena/promena-transformer-barcode-detector-zxing-opencv) | Based on ZXing & OpenCV - detects barcodes in documents and returns information about them |
-| [`page-extractor-pdfbox`](https://gitlab.office.beone.pl/promena/promena-transformer-page-extractor-pdfbox) | Based on PDFBox - extract pages from documents |
-| [`report-generator-jasperreport`](https://gitlab.office.beone.pl/promena/promena-transformer-report-generator-jasperreports) | Based on JasperReports - generates reports |
+| [`converter-libreoffice`](https://github.com/BeOne-PL/promena-transformer-converter-libreoffice) | Based on LibreOffice - converts documents |
+| [`converter-imagemagick`](https://github.com/BeOne-PL/promena-transformer-converter-imagemagick) | Based on ImageMagick - converts images |
+| [`ocr-ocrmypdf`](https://github.com/BeOne-PL/promena-transformer-ocr-ocrmypdf) | Based on OCRmyPDF - OCR documents |
+| [`barcode-detector-zxing-opencv`](https://github.com/BeOne-PL/promena-transformer-barcode-detector-zxing-opencv) | Based on ZXing & OpenCV - detects barcodes in documents and returns information about them |
+| [`page-extractor-pdfbox`](https://github.com/BeOne-PL/promena-transformer-page-extractor-pdfbox) | Based on PDFBox - extract pages from documents |
+| [`report-generator-jasperreport`](https://github.com/BeOne-PL/promena-transformer-report-generator-jasperreports) | Based on JasperReports - generates reports |
 
 ## Building
 A base project to build Promena you can generate by executing: 
@@ -134,7 +134,7 @@ The default name of Docker image is `${promena-executable}:${project.version}` (
 
 Promena image provides the complete running environment (Promena executable jar and all 3rd party tools). Executable jar contains only the application.
 
-Visit [Sample#Image](https://gitlab.office.beone.pl/promena/promena-sample#image) to see the examples of Promena Docker images.
+Visit [Sample#Image](https://github.com/BeOne-PL/promena-sample#image) to see the examples of Promena Docker images.
 
 ## Properties
 Properties can be set using environment variables. Promena is based on Spring Boot so many properties are common - [Spring Appendix - Core properties](https://docs.spring.io/spring-boot/docs/2.2.1.RELEASE/reference/html/appendix-application-properties.html#core-properties).
@@ -177,14 +177,14 @@ communication.external.manager.back-pressure.id=memory
 ## Deployment
 Promena can be run in every environment with Docker support or in every environment with Java 11 JRE if you want to deploy Promena executable jar manually. 
 
-Visit [Sample#Deployment](https://gitlab.office.beone.pl/promena/promena-sample#deployment) to see the example configurations of `manual`, `Kubernetes` and `OpenShift` deployment.
+Visit [Sample#Deployment](https://github.com/BeOne-PL/promena-sample#deployment) to see the example configurations of `manual`, `Kubernetes` and `OpenShift` deployment.
 
 ## IntelliJ plugin
 It allows you to execute a transformation directly from IntelliJ on Promena. This plugin uses [`promena-connector-http`](./module/connector/http) connector module so it's required to include it on Promena.
 
 Available on: https://plugins.jetbrains.com/plugin/13689-promena/. 
 
-Visit [`mirror-jdk/example`](https://gitlab.office.beone.pl/promena/promena-sample/tree/master/transformer/mirror-jdk/example) to see Java and Kotlin examples.
+Visit [`mirror-jdk/example`](https://github.com/BeOne-PL/promena-sample/tree/master/transformer/mirror-jdk/example) to see Java and Kotlin examples.
 
 ![Demo](./README-IntelliJ-plugin.gif)
 

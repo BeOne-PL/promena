@@ -2,7 +2,7 @@
 ## Transformer
 Visit [Promena#Transformer](./README.md#transformer) to find out the role of transformers and to see the list of production-ready implementations. 
 
-Visit [Promena Sample#Transformer](https://gitlab.office.beone.pl/promena/promena-sample#transformer) to see example implementations of transformers. 
+Visit [Promena Sample#Transformer](https://github.com/BeOne-PL/promena-sample#transformer) to see example implementations of transformers. 
 
 ### Base project
 A base project of Promena transformer you can generate by executing: 
@@ -50,16 +50,16 @@ Contains examples of [`Transformation`](./base/promena-transformer/contract/src/
 These examples can be run on Promena using [Promena IntelliJ plugin](./README.md#intellij-plugin).
 
 ### Test
-If [`DockerExtension`](https://gitlab.office.beone.pl/library/docker-extension-junit5/blob/master/src/main/kotlin/pl/beone/lib/junit/jupiter/external/DockerExtension.kt) is used, tests are run in Docker container on Docker image created from `implementation/src/docker/Dockerfile` and `implementation/src/main/resources/docker/Dockerfile-fragment` files.
+If [`DockerExtension`](https://github.com/BeOne-PL/lib-docker-extension-junit5/blob/master/src/main/kotlin/pl/beone/lib/junit/jupiter/external/DockerExtension.kt) is used, tests are run in Docker container on Docker image created from `implementation/src/docker/Dockerfile` and `implementation/src/main/resources/docker/Dockerfile-fragment` files.
   
-Visit [DockerExtension JUnit5](https://gitlab.office.beone.pl/library/docker-extension-junit5) to find out how it works.
+Visit [DockerExtension JUnit5](https://github.com/BeOne-PL/lib-docker-extension-junit5) to find out how it works.
  
 See examples of tests in the generated project (`implementation` folder).
 
 ## Module
 Visit [Promena#Module](./README.md#module) to find out the role of modules and to see the list of production-ready implementations of transformers. 
 
-Visit [Promena Sample#Module](https://gitlab.office.beone.pl/promena/promena-sample#module) to see example implementations of modules. 
+Visit [Promena Sample#Module](https://github.com/BeOne-PL/promena-sample#module) to see example implementations of modules. 
 
 ### Base project
 A base project of Promena module you can generate by executing: 

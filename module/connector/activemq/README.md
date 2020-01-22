@@ -5,7 +5,7 @@ This connector module provides the possibility to transfer data using ActiveMQ b
 
 It gets only messages for the transformers that are included in Promena.  
 
-Visit [Sample#Alfresco/Connector](https://gitlab.office.beone.pl/promena/promena-sample#connector) and [Sample#Alfresco/Rendition](https://gitlab.office.beone.pl/promena/promena-sample#rendition) to find out how to set the deployment properties of this connector module.
+Visit [Sample#Alfresco/Connector](https://github.com/BeOne-PL/promena-sample#connector) and [Sample#Alfresco/Rendition](https://github.com/BeOne-PL/promena-sample#rendition) to find out how to set the deployment properties of this connector module.
 
 ## Flow
 1. Serialize [`TransformationDescriptor`](./../../../base/promena-core/application-model/application-model/src/main/kotlin/pl/beone/promena/core/applicationmodel/transformation/TransformationDescriptor.kt). If you program in a JVM language, you can use [`KryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/KryoSerializationService.kt) or [`ClassLoaderKryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/ClassLoaderKryoSerializationService.kt) from the following dependency:
@@ -34,9 +34,9 @@ Visit [Sample#Alfresco/Connector](https://gitlab.office.beone.pl/promena/promena
     * `promena.connector.activemq.consumer.queue.response.error` queue - deserialize the body to the class from `serialization-class` property - it will be a subclass of `Throwable`
 
 ## Client implementation
-See [`TransformerSender`](https://gitlab.office.beone.pl/promena/promena-alfresco/blob/master/connector/alfresco-promena-connector-activemq/src/main/kotlin/pl/beone/promena/alfresco/module/connector/activemq/delivery/activemq/TransformerSender.kt) and [`TransformerResponseConsumer`](https://gitlab.office.beone.pl/promena/promena-alfresco/blob/master/connector/alfresco-promena-connector-activemq/src/main/kotlin/pl/beone/promena/alfresco/module/connector/activemq/delivery/activemq/TransformerResponseConsumer.kt) example implementation.
+See [`TransformerSender`](https://github.com/BeOne-PL/promena-alfresco/blob/master/connector/alfresco-promena-connector-activemq/src/main/kotlin/pl/beone/promena/alfresco/module/connector/activemq/delivery/activemq/TransformerSender.kt) and [`TransformerResponseConsumer`](https://github.com/BeOne-PL/promena-alfresco/blob/master/connector/alfresco-promena-connector-activemq/src/main/kotlin/pl/beone/promena/alfresco/module/connector/activemq/delivery/activemq/TransformerResponseConsumer.kt) example implementation.
 
-The implementation for Alfresco is available (see [`alfresco-promena-activemq`](https://gitlab.office.beone.pl/promena/promena-alfresco/tree/master/connector/alfresco-promena-connector-activemq) for more details).
+The implementation for Alfresco is available (see [`alfresco-promena-activemq`](https://github.com/BeOne-PL/promena-alfresco/tree/master/connector/alfresco-promena-connector-activemq) for more details).
 
 ## Dependency
 ```xml

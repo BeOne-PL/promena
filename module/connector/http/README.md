@@ -3,7 +3,7 @@
 ## Description
 This connector module provides the possibility to transfer data using HTTP based on serialization.
 
-Visit [Sample#Deployment](https://gitlab.office.beone.pl/promena/promena-sample#communication), [Sample#Alfresco/Communication](https://gitlab.office.beone.pl/promena/promena-sample#communication) and [Sample#Alfresco/Rendition](https://gitlab.office.beone.pl/promena/promena-sample#rendition) to see find out how to set the deployment properties of this connector module.
+Visit [Sample#Deployment](https://github.com/BeOne-PL/promena-sample#communication), [Sample#Alfresco/Communication](https://github.com/BeOne-PL/promena-sample#communication) and [Sample#Alfresco/Rendition](https://github.com/BeOne-PL/promena-sample#rendition) to see find out how to set the deployment properties of this connector module.
 
 ## Flow
 1. Serialize [`TransformationDescriptor`](./../../../base/promena-core/application-model/application-model/src/main/kotlin/pl/beone/promena/core/applicationmodel/transformation/TransformationDescriptor.kt). If you program in a JVM language, you can use [`KryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/KryoSerializationService.kt) or [`ClassLoaderKryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/ClassLoaderKryoSerializationService.kt) from the following dependency:
@@ -24,7 +24,7 @@ Visit [Sample#Deployment](https://gitlab.office.beone.pl/promena/promena-sample#
 ## Client implementation
 See [`HttpPromenaTransformer`](./../../../lib/connector/http/src/main/kotlin/pl/beone/promena/lib/connector/http/external/HttpPromenaTransformer.kt) example implementation.
 
-The implementation for Alfresco is available (see [`alfresco-promena-http`](https://gitlab.office.beone.pl/promena/promena-alfresco/tree/master/connector/alfresco-promena-connector-http) for more details).
+The implementation for Alfresco is available (see [`alfresco-promena-http`](https://github.com/BeOne-PL/promena-alfresco/tree/master/connector/alfresco-promena-connector-http) for more details).
 
 ## Dependency
 ```xml
