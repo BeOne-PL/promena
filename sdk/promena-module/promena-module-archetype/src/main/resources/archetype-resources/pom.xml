@@ -13,12 +13,12 @@
     <groupId>${groupId}</groupId>
     <artifactId>${artifactId}-root</artifactId>
     <version>${version}</version>
+    <packaging>pom</packaging>
 
     <modules>
         <module>implementation</module>
         <module>configuration</module>
     </modules>
-    <packaging>pom</packaging>
 
     <properties>
         <${rootArtifactId}.version>${version}</${rootArtifactId}.version>
@@ -62,7 +62,6 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

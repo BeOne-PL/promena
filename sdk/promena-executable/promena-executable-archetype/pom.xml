@@ -9,11 +9,15 @@
     <version>1.0.0</version>
     <packaging>maven-archetype</packaging>
 
-    <name>[SDK][ARCHETYPE] Promena executable</name>
+    <name>pl.beone.promena.sdk.maven.archetype:promena-executable-archetype</name>
 
     <properties>
         <maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
+        <maven-archetype-plugin.version>3.1.2</maven-archetype-plugin.version>
         <archetype-packaging.version>3.0.1</archetype-packaging.version>
+
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     </properties>
 
     <build>
@@ -22,6 +26,43 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${maven-resources-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-archetype-plugin</artifactId>
+                <version>${maven-archetype-plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
             </plugin>
         </plugins>
         <extensions>
@@ -32,4 +73,30 @@
             </extension>
         </extensions>
     </build>
+
+    <description>pl.beone.promena.sdk.maven.archetype:promena-executable-archetype</description>
+    <url>https://beone.pl</url>
+
+    <organization>
+        <name>BeOne Sp. z o.o.</name>
+        <url>https://beone.pl</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>BeOne Team</name>
+            <url>https://beone.pl</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/BeOne-PL/promena</url>
+    </scm>
 </project>

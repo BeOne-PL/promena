@@ -13,39 +13,14 @@
     <groupId>pl.beone.promena.communication.file.external</groupId>
     <artifactId>promena-communication-file-external</artifactId>
     <version>1.0.0</version>
-
-    <name>[MODULE][COMMUNICATION][EXTERNAL] File</name>
-
     <packaging>pom</packaging>
+
+    <name>pl.beone.promena.communication.file.external:promena-communication-file-external</name>
+
     <modules>
         <module>internal</module>
         <module>configuration</module>
     </modules>
-
-    <repositories>
-        <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>beone-snapshots</id>
-            <url>http://nexus.office.beone.pl/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <properties>
         <promena-communication-file-external.version>1.0.0</promena-communication-file-external.version>
@@ -95,10 +70,13 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
 
             <plugin>
@@ -109,10 +87,57 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
+            <!-- Generating empty javadoc.jar because Dokka isn't compatible with JDK 11 (https://github.com/Kotlin/dokka/issues/294) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                            <classesDirectory>${basedir}/javadoc</classesDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
+    <url>https://beone.pl</url>
+
+    <organization>
+        <name>BeOne Sp. z o.o.</name>
+        <url>https://beone.pl</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>BeOne Team</name>
+            <url>https://beone.pl</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/BeOne-PL/promena</url>
+    </scm>
 </project>

@@ -13,8 +13,9 @@
     <groupId>pl.beone.promena.connector</groupId>
     <artifactId>promena-connector-normal-http</artifactId>
     <version>0.1.0</version>
+    <packaging>pom</packaging>
 
-    <name>[MODULE][CONNECTOR] Normal HTTP</name>
+    <name>pl.beone.promena.connector:promena-connector-normal-http</name>
 
     <modules>
         <module>application-model</module>
@@ -22,7 +23,6 @@
         <module>configuration</module>
         <module>integration-test</module>
     </modules>
-    <packaging>pom</packaging>
 
     <properties>
         <promena-connector-normal-http.version>0.1.0</promena-connector-normal-http.version>
@@ -68,10 +68,16 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
 
             <plugin>
@@ -82,9 +88,57 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
+            <!-- Generating empty javadoc.jar because Dokka isn't compatible with JDK 11 (https://github.com/Kotlin/dokka/issues/294) -->
             <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                            <classesDirectory>${basedir}/javadoc</classesDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
+    <url>https://beone.pl</url>
+
+    <organization>
+        <name>BeOne Sp. z o.o.</name>
+        <url>https://beone.pl</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>BeOne Team</name>
+            <url>https://beone.pl</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/BeOne-PL/promena</url>
+    </scm>
 </project>

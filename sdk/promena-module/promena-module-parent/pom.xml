@@ -14,7 +14,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>[SDK][POM] Parent - module</name>
+    <name>pl.beone.promena.sdk.maven.parent:promena-module-parent</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -93,4 +93,45 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <inherited>false</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <inherited>false</inherited>
+            </plugin>
+        </plugins>
+    </build>
+
+    <description>pl.beone.promena.sdk.maven.parent:promena-module-parent</description>
+    <url>https://beone.pl</url>
+
+    <organization>
+        <name>BeOne Sp. z o.o.</name>
+        <url>https://beone.pl</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>BeOne Team</name>
+            <url>https://beone.pl</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/BeOne-PL/promena</url>
+    </scm>
 </project>

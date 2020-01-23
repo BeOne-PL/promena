@@ -10,32 +10,7 @@
     <version>1.0.0</version>
     <packaging>maven-plugin</packaging>
 
-    <name>[LIB][MAVEN][PLUGIN] Docker</name>
-
-    <repositories>
-        <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>beone-snapshots</id>
-            <url>http://nexus.office.beone.pl/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>beone-releases</id>
-            <url>http://nexus.office.beone.pl/repository/releases</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <name>pl.beone.promena.maven.plugin:promena-docker-maven-plugin</name>
 
     <prerequisites>
         <maven>${maven.version}</maven>
@@ -54,10 +29,14 @@
         <maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
 
+        <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
+
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
         <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
     </properties>
 
@@ -133,17 +112,9 @@
                     <args>
                         <arg>-Xjsr305=strict</arg>
                     </args>
+
                     <jvmTarget>${java.version}</jvmTarget>
                 </configuration>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-maven-allopen</artifactId>
-                        <version>${kotlin.version}</version>
-                    </dependency>
-                </dependencies>
-
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -171,7 +142,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -242,6 +212,56 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Generating empty javadoc.jar because Dokka isn't compatible with JDK 11 (https://github.com/Kotlin/dokka/issues/294) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                            <classesDirectory>${basedir}/javadoc</classesDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -268,4 +288,31 @@
             </plugin>
         </plugins>
     </build>
+
+    <description>pl.beone.promena.maven.plugin:promena-docker-maven-plugin</description>
+    <url>https://beone.pl</url>
+
+    <organization>
+        <name>BeOne Sp. z o.o.</name>
+        <url>https://beone.pl</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>BeOne Team</name>
+            <url>https://beone.pl</url>
+        </developer>
+    </developers>
+
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/BeOne-PL/promena</url>
+    </scm>
 </project>
