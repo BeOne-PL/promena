@@ -136,6 +136,17 @@ Promena image provides the complete running environment (Promena executable jar 
 
 Visit [Sample#Image](https://github.com/BeOne-PL/promena-sample#image) to see the examples of Promena Docker images.
 
+### Run environment variables
+Default `docker-entrypoint.sh` runs Promena with the following JVM parameters:
+* `JAVA_OPTS_MEMORY` = `-XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80`
+* `JAVA_OPTS_GC` = ` `
+* `JAVA_OPTS_DEBUG_ENABLED` = `false`
+* `JAVA_OPTS_DEBUG` = `-agentlib:jdwp=transport=dt_socket,address=*:9999,suspend=n,server=y`
+* `JAVA_OPTS_ADDITIONAL` = `-Dfile.encoding=UTF-8 -Djava.security.egd=file:/dev/./urandom`
+* `JAVA_OPTS_CUSTOM` = ` `
+
+If `JAVA_OPTS_DEBUG_ENABLED` is `true`, Promena is run with `JAVA_OPTS_DEBUG` parameter.
+
 ## Properties
 Properties can be set using environment variables. Promena is based on Spring Boot so many properties are common - [Spring Appendix - Core properties](https://docs.spring.io/spring-boot/docs/2.2.1.RELEASE/reference/html/appendix-application-properties.html#core-properties).
 
