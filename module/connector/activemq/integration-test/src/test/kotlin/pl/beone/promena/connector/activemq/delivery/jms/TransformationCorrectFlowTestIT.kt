@@ -19,9 +19,7 @@ import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.test.context.TestPropertySource
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
-import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.activemq.delivery.jms.message.converter.KryoMessageConverter.Companion.PROPERTY_SERIALIZATION_CLASS
 import pl.beone.promena.connector.activemq.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
@@ -67,9 +65,6 @@ class TransformationCorrectFlowTestIT {
     @Autowired
     private lateinit var transformationResponseConsumer: TransformationResponseConsumer
 
-    @Autowired
-    private lateinit var transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer
-
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
 
@@ -106,8 +101,7 @@ class TransformationCorrectFlowTestIT {
         with(headers) {
             this shouldContainAll mapOf(
                 CORRELATION_ID to correlationId,
-                PROPERTY_SERIALIZATION_CLASS to "pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor",
-                TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds)
+                PROPERTY_SERIALIZATION_CLASS to "pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor"
             )
             this shouldContainKey TRANSFORMATION_START_TIMESTAMP
             this shouldContainKey TRANSFORMATION_END_TIMESTAMP
@@ -131,7 +125,6 @@ class TransformationCorrectFlowTestIT {
         jmsTemplate.convertAndSend(ActiveMQQueue(queueRequest), transformationDescriptor) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
             }
         }
     }

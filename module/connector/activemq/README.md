@@ -16,20 +16,11 @@ Visit [Sample#Alfresco/Connector](https://github.com/BeOne-PL/promena-sample#con
     <version>1.0.0</version>
 </dependency>
 ```
-2. Calculate the transformation hash code. If you program in a JVM language, you can use [`HashCodeTransformationHashFunctionDeterminer`](./../../../module/connector/activemq/internal/src/main/kotlin/pl/beone/promena/connector/activemq/internal/HashCodeTransformationHashFunctionDeterminer.kt) from the following dependency:
-```xml
-<dependency>
-    <groupId>pl.beone.promena.connector</groupId>
-    <artifactId>promena-connector-activemq-internal</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-3. Send the request message to `${promena.connector.activemq.consumer.queue.request}` queue:
+2. Send the request message to `${promena.connector.activemq.consumer.queue.request}` queue:
     * The body with the serialized data
-    * `promena_transformation_hash_code` property set to the calculated transformation hash code
     * `serialization_class` property set to `pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor`
-4. Remember `correlationId` in order to associate a response message with the request message 
-5. The response message contains `promena_transformation_timestamp_start` and `promena_transformation_timestamp_end` properties with the execution timestamp and it may appear in:
+3. Remember `correlationId`, in order to associate a response message with the request message 
+4. The response message contains `promena_transformation_timestamp_start` and `promena_transformation_timestamp_end` properties with the execution timestamp and it may appear in:
     * `promena.connector.activemq.consumer.queue.response` queue - deserialize the body to [`PerformedTransformationDescriptor`](./../../../base/promena-core/application-model/application-model/src/main/kotlin/pl/beone/promena/core/applicationmodel/transformation/PerformedTransformationDescriptor.kt)
     * `promena.connector.activemq.consumer.queue.response.error` queue - deserialize the body to the class from `serialization-class` property - it will be a subclass of `Throwable`
 
@@ -43,7 +34,7 @@ The implementation for Alfresco is available (see [`alfresco-promena-activemq`](
 <dependency>
     <groupId>pl.beone.promena.connector</groupId>
     <artifactId>promena-connector-activemq-configuration</artifactId>
-    <version>${promena-connector-activemq.version}</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 

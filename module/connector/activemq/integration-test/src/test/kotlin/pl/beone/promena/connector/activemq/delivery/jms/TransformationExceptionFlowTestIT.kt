@@ -20,9 +20,7 @@ import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.support.JmsHeaders.CORRELATION_ID
 import org.springframework.test.context.TestPropertySource
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
-import pl.beone.promena.connector.activemq.contract.TransformationHashFunctionDeterminer
 import pl.beone.promena.connector.activemq.delivery.jms.message.converter.KryoMessageConverter.Companion.PROPERTY_SERIALIZATION_CLASS
 import pl.beone.promena.connector.activemq.integrationtest.IntegrationTestApplication
 import pl.beone.promena.connector.activemq.integrationtest.test.QueueClearer
@@ -64,9 +62,6 @@ class TransformationExceptionFlowTestIT {
     @Autowired
     private lateinit var transformationResponseConsumer: TransformationResponseConsumer
 
-    @Autowired
-    private lateinit var transformationHashFunctionDeterminer: TransformationHashFunctionDeterminer
-
     @MockBean
     private lateinit var transformationUseCase: TransformationUseCase
 
@@ -98,7 +93,6 @@ class TransformationExceptionFlowTestIT {
             this shouldContainAll mapOf(
                 CORRELATION_ID to correlationId,
                 PROPERTY_SERIALIZATION_CLASS to "pl.beone.promena.core.applicationmodel.exception.transformation.TransformationException",
-                TRANSFORMATION_HASH_CODE to transformationHashFunctionDeterminer.determine(transformerIds),
                 "send_back_nodeRefs" to listOf(
                     "workspace://SpacesStore/b0bfb14c-be38-48be-90c3-cae4a7fd0c8f",
                     "workspace://SpacesStore/7abdf1e2-92f4-47b2-983a-611e42f3555c"
@@ -132,7 +126,6 @@ class TransformationExceptionFlowTestIT {
         ) { message ->
             message.apply {
                 jmsCorrelationID = correlationId
-                setStringProperty(TRANSFORMATION_HASH_CODE, transformationHashFunctionDeterminer.determine(transformerIds))
 
                 setObjectProperty(
                     "send_back_nodeRefs",

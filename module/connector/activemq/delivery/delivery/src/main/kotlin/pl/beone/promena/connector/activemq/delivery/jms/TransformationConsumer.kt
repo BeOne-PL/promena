@@ -8,7 +8,6 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.Payload
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_END_TIMESTAMP
-import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_HASH_CODE
 import pl.beone.promena.connector.activemq.applicationmodel.PromenaJmsHeaders.TRANSFORMATION_START_TIMESTAMP
 import pl.beone.promena.core.applicationmodel.transformation.PerformedTransformationDescriptor
 import pl.beone.promena.core.applicationmodel.transformation.TransformationDescriptor
@@ -30,13 +29,9 @@ class TransformationConsumer(
      *
      * The flow:
      * 1. Receives a message with serialized data from `${promena.connector.activemq.consumer.queue.request}` queue.
-     *    It gets only messages for the transformers that are included in Promena
-     *    ([transformationHashCode] is one of `${promena.connector.activemq.consumer.queue.request.message-selector}` values determined by
-     *    [TransformationHashFunctionMessageSelectorDeterminer][pl.beone.promena.connector.activemq.configuration.delivery.jms.TransformationHashFunctionMessageSelectorDeterminer])
      * 2. Deserializes to [TransformationDescriptor]
      * 3. Performs a transformation
      * 4. Determines headers to send:
-     *    [TRANSFORMATION_HASH_CODE],
      *    [TRANSFORMATION_START_TIMESTAMP],
      *    [TRANSFORMATION_END_TIMESTAMP],
      *    headers returned by [HeadersToSentBackDeterminer]
@@ -46,13 +41,9 @@ class TransformationConsumer(
      * 7. In case of an error, it serializes an exception and sends a message with serialized data as the body and [correlationId] id
      *    to [errorResponseQueue] queue using [transformerProducer].
      */
-    @JmsListener(
-        destination = "\${promena.connector.activemq.consumer.queue.request}",
-        selector = "\${promena.connector.activemq.consumer.queue.request.message-selector}"
-    )
+    @JmsListener(destination = "\${promena.connector.activemq.consumer.queue.request}")
     fun receiveQueue(
         @Header(CORRELATION_ID) correlationId: String,
-        @Header(TRANSFORMATION_HASH_CODE) transformationHashCode: String,
         @Headers headers: Map<String, Any>,
         @Payload transformationDescriptor: TransformationDescriptor
     ) {
@@ -61,13 +52,18 @@ class TransformationConsumer(
         val (transformation, dataDescriptor, communicationParameters) = transformationDescriptor
 
         val (queue, payload) = try {
-            responseQueue to performedTransformationDescriptor(transformationUseCase.transform(transformation, dataDescriptor, communicationParameters))
+            responseQueue to performedTransformationDescriptor(
+                transformationUseCase.transform(
+                    transformation,
+                    dataDescriptor,
+                    communicationParameters
+                )
+            )
         } catch (e: Exception) {
             errorResponseQueue to e
         }
 
         val headersToSend = HeadersToSentBackDeterminer.determine(headers) +
-                (TRANSFORMATION_HASH_CODE to transformationHashCode) +
                 determineTimestampHeaders(startTimestamp, getTimestamp())
 
         transformerProducer.send(queue, correlationId, headersToSend, payload)

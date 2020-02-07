@@ -12,7 +12,7 @@
 
     <groupId>pl.beone.promena.connector</groupId>
     <artifactId>promena-connector-activemq</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>pl.beone.promena.connector:promena-connector-activemq</name>
@@ -20,7 +20,6 @@
     <modules>
         <module>application-model</module>
         <module>contract</module>
-        <module>internal</module>
         <module>delivery/delivery</module>
         <module>delivery/delivery-message-converter</module>
         <module>configuration</module>
@@ -28,7 +27,7 @@
     </modules>
 
     <properties>
-        <promena-connector-activemq.version>1.0.0</promena-connector-activemq.version>
+        <promena-connector-activemq.version>1.0.1</promena-connector-activemq.version>
 
         <jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
         <commons-math3.version>3.6.1</commons-math3.version>
