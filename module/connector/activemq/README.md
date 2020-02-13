@@ -5,7 +5,8 @@ This connector module provides the possibility to transfer data using ActiveMQ b
 
 It gets only messages for the transformers that are included in Promena.  
 
-Visit [Sample#Alfresco/Connector](https://github.com/BeOne-PL/promena-sample#connector) and [Sample#Alfresco/Rendition](https://github.com/BeOne-PL/promena-sample#rendition) to find out how to set the deployment properties of this connector module.
+TODO
+Visit [Sample#Alfresco/Connector](https://github.com/BeOne-PL/promena-sample#connector) and [Sample#Alfresco/Transformer & Rendition](https://github.com/BeOne-PL/promena-sample#transformer--rendition) to find out how to set the deployment properties of this connector module.
 
 ## Flow
 1. Serialize [`TransformationDescriptor`](./../../../base/promena-core/application-model/application-model/src/main/kotlin/pl/beone/promena/core/applicationmodel/transformation/TransformationDescriptor.kt). If you program in a JVM language, you can use [`KryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/KryoSerializationService.kt) or [`ClassLoaderKryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/ClassLoaderKryoSerializationService.kt) from the following dependency:

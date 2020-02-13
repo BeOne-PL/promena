@@ -99,6 +99,7 @@ Visit [Sample#Transformer](https://github.com/BeOne-PL/promena-sample#transforme
 |----------|---------|
 | [`converter-libreoffice`](https://github.com/BeOne-PL/promena-transformer-converter-libreoffice) | Based on LibreOffice - converts documents |
 | [`converter-imagemagick`](https://github.com/BeOne-PL/promena-transformer-converter-imagemagick) | Based on ImageMagick - converts images |
+| [`converter-pdfbox`](https://github.com/BeOne-PL/promena-transformer-converter-pdfbox) | Based on PDFBox - converts documents |
 | [`ocr-ocrmypdf`](https://github.com/BeOne-PL/promena-transformer-ocr-ocrmypdf) | Based on OCRmyPDF - OCR documents |
 | [`barcode-detector-zxing-opencv`](https://github.com/BeOne-PL/promena-transformer-barcode-detector-zxing-opencv) | Based on ZXing & OpenCV - detects barcodes in documents and returns information about them |
 | [`page-extractor-pdfbox`](https://github.com/BeOne-PL/promena-transformer-page-extractor-pdfbox) | Based on PDFBox - extract pages from documents |

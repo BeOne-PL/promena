@@ -3,7 +3,7 @@
 ## Description
 This connector module provides the possibility to transfer data using HTTP based on serialization.
 
-Visit [Sample#Deployment](https://github.com/BeOne-PL/promena-sample#communication), [Sample#Alfresco/Communication](https://github.com/BeOne-PL/promena-sample#communication) and [Sample#Alfresco/Rendition](https://github.com/BeOne-PL/promena-sample#rendition) to see find out how to set the deployment properties of this connector module.
+Visit [Sample#Deployment](https://github.com/BeOne-PL/promena-sample#communication), [Sample#Alfresco/Communication](https://github.com/BeOne-PL/promena-sample#communication) and [Sample#Alfresco/Transformer & Rendition](https://github.com/BeOne-PL/promena-sample#transformer--rendition) to see find out how to set the deployment properties of this connector module.
 
 ## Flow
 1. Serialize [`TransformationDescriptor`](./../../../base/promena-core/application-model/application-model/src/main/kotlin/pl/beone/promena/core/applicationmodel/transformation/TransformationDescriptor.kt). If you program in a JVM language, you can use [`KryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/KryoSerializationService.kt) or [`ClassLoaderKryoSerializationService`](./../../../base/promena-core/internal/internal-serialization/src/main/kotlin/pl/beone/promena/core/internal/serialization/ClassLoaderKryoSerializationService.kt) from the following dependency:
