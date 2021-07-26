@@ -10,7 +10,7 @@ A base project of Promena transformer you can generate by executing:
 mvn archetype:generate -B \
     -DarchetypeGroupId=pl.beone.promena.sdk.maven.archetype \
     -DarchetypeArtifactId=promena-transformer-archetype \
-    -DarchetypeVersion=1.0.0 \
+    -DarchetypeVersion=1.0.1 \
     -DgroupId=<group id> \
     -Dpackage=<package> \
     -DartifactId=<artifact id> \

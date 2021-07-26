@@ -18,6 +18,7 @@ RUN yum install -y wget && \
 
 ENV JRE_HOME /usr/lib/jvm/zulu-11
 ENV JAVA_HOME /usr/lib/jvm/zulu-11
+ENV JDK_JAVA_OPTIONS -Djdk.attach.allowAttachSelf=true -XX:+StartAttachListener
 ENV M2_HOME /opt/apache-maven-$MAVEN_VERSION
 ENV PATH ${M2_HOME}/bin:${PATH}
 
