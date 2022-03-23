@@ -13,16 +13,16 @@ class FileIncomingExternalCommunicationConverterTest {
     fun `convert _ should log that external communication contains directory that is a subpath of internal directory`() {
         val directory = createTempDir()
         FileIncomingExternalCommunicationConverter(
-            fileCommunicationParameters(directory),
-            mockk { every { convert(any<DataDescriptor>(), true) } returns emptyDataDescriptor() }
-        ).convert(emptyDataDescriptor(), fileCommunicationParameters(directory.resolve("sub")))
+            fileCommunicationParameters(directory, directory, directory, false),
+            mockk { every { convert(any<DataDescriptor>(), true) } returns emptyDataDescriptor() } // TODO update
+        ).convert(emptyDataDescriptor(), fileCommunicationParameters(directory.resolve("sub"), directory, directory, false))
     }
 
     @Test
     fun `convert _ should log that external communication contains directory that ins't included in internal directory`() {
         FileIncomingExternalCommunicationConverter(
-            fileCommunicationParameters(createTempDir()),
+            fileCommunicationParameters(createTempDir(), createTempDir(), createTempDir(), false),
             mockk { every { convert(any<DataDescriptor>(), true) } returns emptyDataDescriptor() }
-        ).convert(emptyDataDescriptor(), fileCommunicationParameters(createTempDir()))
+        ).convert(emptyDataDescriptor(), fileCommunicationParameters(createTempDir(), createTempDir(), createTempDir(), false))
     }
 }

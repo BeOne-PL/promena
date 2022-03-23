@@ -15,7 +15,11 @@ class FileInternalCommunicationParametersContext {
     ) =
         fileCommunicationParameters(
             File(environment.getRequiredProperty("communication.file.internal.directory.path"))
-                .also { validate(it) }
+                .also { validate(it) },
+            File(environment.getRequiredProperty("communication.file.alfdata.mount.path"))
+                .also { validate(it) },
+            File(environment.getRequiredProperty("communication.file.alfdata.alfresco.mount.path")),
+            environment.getRequiredProperty("communication.file.alfdata.mounted").toBoolean()
         )
 
     private fun validate(directory: File) {

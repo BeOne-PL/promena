@@ -5,7 +5,7 @@
     <parent>
         <groupId>pl.beone.promena.communication.file.internal</groupId>
         <artifactId>promena-communication-file-internal</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>pl.beone.promena.communication.file.internal</groupId>
             <artifactId>promena-communication-file-internal-internal</artifactId>
-            <version>${promena-communication-file-interal.version}</version>
+            <version>${promena-communication-file-internal.version}</version>
         </dependency>
         <dependency>
             <groupId>pl.beone.promena.communication.file.model</groupId>

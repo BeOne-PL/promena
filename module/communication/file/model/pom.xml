@@ -12,7 +12,7 @@
 
     <groupId>pl.beone.promena.communication.file.model</groupId>
     <artifactId>promena-communication-file-model</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>pl.beone.promena.communication.file.model:promena-communication-file-model</name>
@@ -24,7 +24,7 @@
     </modules>
 
     <properties>
-        <promena-communication-memory-model.version>1.0.0</promena-communication-memory-model.version>
+        <promena-communication-file-model.version>1.0.1</promena-communication-file-model.version>
         <promena-communication-common.version>1.0.0</promena-communication-common.version>
     </properties>
 

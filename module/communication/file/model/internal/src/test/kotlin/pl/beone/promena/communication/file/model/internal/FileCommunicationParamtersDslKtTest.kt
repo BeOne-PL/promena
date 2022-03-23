@@ -8,8 +8,8 @@ class FileCommunicationParamtersDslKtTest {
 
     @Test
     fun fileCommunicationParameters() {
-        val directory = createTempDir()
-        with(fileCommunicationParameters(directory)) {
+        val directory = createTempDir() // TODO update
+        with(fileCommunicationParameters(directory, directory, directory, false)) {
             getId() shouldBe FileCommunicationParametersConstants.ID
             getDirectory() shouldBe directory
         }
