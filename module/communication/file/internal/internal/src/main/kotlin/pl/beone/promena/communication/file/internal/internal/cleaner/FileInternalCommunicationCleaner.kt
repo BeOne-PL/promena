@@ -12,9 +12,9 @@ import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
  */
 object FileInternalCommunicationCleaner : InternalCommunicationCleaner {
 
-    var isAlfdataMounted = true
+    var isSourceFileVolumeMounted = true
 
     override fun clean(dataDescriptor: DataDescriptor, transformedDataDescriptor: TransformedDataDescriptor) {
-        if (!isAlfdataMounted) FileDataDescriptorCleaner.clean(dataDescriptor, transformedDataDescriptor)
+        if (!isSourceFileVolumeMounted) FileDataDescriptorCleaner.clean(dataDescriptor, transformedDataDescriptor)
     }
 }

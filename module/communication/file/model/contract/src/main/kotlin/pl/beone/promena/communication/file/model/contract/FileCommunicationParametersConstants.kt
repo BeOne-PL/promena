@@ -4,7 +4,7 @@ object FileCommunicationParametersConstants {
 
     const val ID = "file"
     const val DIRECTORY_KEY = "directory"
-    const val IS_ALFDATA_MOUNTED_KEY = "Alfdata mount"
-    const val ALFDATA_MOUNT_PATH_KEY = "Alfdata mount path"
-    const val ALFDATA_ALFRESCO_MOUNT_PATH_KEY = "Alfdata Alfresco mount path"
+    const val IS_SOURCE_FILE_VOLUME_MOUNTED_KEY = "Source file volume mount"
+    const val SOURCE_FILE_VOLUME_MOUNT_PATH_KEY = "Source file volume mount path"
+    const val SOURCE_FILE_VOLUME_EXTERNAL_MOUNT_PATH_KEY = "Source file volume external mount path"
 }

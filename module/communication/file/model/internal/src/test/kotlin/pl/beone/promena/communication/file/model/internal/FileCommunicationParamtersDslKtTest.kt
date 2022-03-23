@@ -7,11 +7,27 @@ import pl.beone.promena.communication.file.model.contract.FileCommunicationParam
 class FileCommunicationParamtersDslKtTest {
 
     @Test
-    fun fileCommunicationParameters() {
-        val directory = createTempDir() // TODO update
-        with(fileCommunicationParameters(directory, directory, directory, false)) {
+    fun fileBasicCommunicationParameters() {
+        val directory = createTempDir()
+        with(fileCommunicationParameters(directory, false)) {
             getId() shouldBe FileCommunicationParametersConstants.ID
             getDirectory() shouldBe directory
+            getIsSourceFileVolumeMounted() shouldBe false
+        }
+    }
+
+    @Test
+    fun fileExtendedCommunicationParameters() {
+        val tempFileDirectory = createTempDir()
+        val sourceFileVolumeMountDirectory = createTempDir()
+        val externalSourceFileVolumeMountDirectory = createTempDir()
+        with(fileCommunicationParameters(tempFileDirectory, sourceFileVolumeMountDirectory,
+            externalSourceFileVolumeMountDirectory, true)) {
+            getId() shouldBe FileCommunicationParametersConstants.ID
+            getDirectory() shouldBe tempFileDirectory
+            getIsSourceFileVolumeMounted() shouldBe true
+            getSourceFileVolumeMountDirectory() shouldBe sourceFileVolumeMountDirectory
+            getSourceFileVolumeExternalMountDirectory() shouldBe externalSourceFileVolumeMountDirectory
         }
     }
 }

@@ -6,7 +6,7 @@ import pl.beone.promena.communication.file.model.common.extension.isSubPath
 import pl.beone.promena.communication.file.model.common.extension.notIncludedInPath
 import pl.beone.promena.communication.file.model.contract.FileCommunicationParametersConstants
 import pl.beone.promena.communication.file.model.internal.getDirectory
-import pl.beone.promena.communication.file.model.internal.getIsAlfdataMounted
+import pl.beone.promena.communication.file.model.internal.getIsSourceFileVolumeMounted
 import pl.beone.promena.core.applicationmodel.exception.communication.external.manager.ExternalCommunicationNotFoundException
 import pl.beone.promena.core.contract.communication.external.IncomingExternalCommunicationConverter
 import pl.beone.promena.core.contract.communication.internal.InternalCommunicationConverter
@@ -34,7 +34,7 @@ class FileIncomingExternalCommunicationConverter(
             if (!isFileCommunicationCompatible) {
                 throw ExternalCommunicationNotFoundException("Incompatible external communication. Please check properties.")
             }
-            if (!internalCommunicationParameters.getIsAlfdataMounted()) {
+            if (!internalCommunicationParameters.getIsSourceFileVolumeMounted()) {
                 logFileCommunicationsPotentialProblems(externalCommunicationParameters)
             }
         }
@@ -49,14 +49,14 @@ class FileIncomingExternalCommunicationConverter(
 
     private fun fileCommunicationsCompatible(externalFileCommunicationParameters: CommunicationParameters): Boolean {
         val id = externalFileCommunicationParameters.getId()
-        val internalIsAlfdataMounted = internalCommunicationParameters.getIsAlfdataMounted()
-        val externalIsAlfdataMounted = externalFileCommunicationParameters.getIsAlfdataMounted()
-        if (!internalIsAlfdataMounted && externalIsAlfdataMounted) {
-            logger.error { "Communication <$id>: Alfresco didn't send file data as it expected Alfdata to be mounted to Promena. Please check the properties." }
+        val internalIsSourceFileVolumeMounted = internalCommunicationParameters.getIsSourceFileVolumeMounted()
+        val externalIsSourceFileVolumeMounted = externalFileCommunicationParameters.getIsSourceFileVolumeMounted()
+        if (!internalIsSourceFileVolumeMounted && externalIsSourceFileVolumeMounted) {
+            logger.error { "Communication <$id>: Client didn't send file data as it expected volume with source files to be mounted to Promena. Please check the properties." }
             return false
         }
-        else if (internalIsAlfdataMounted && !externalIsAlfdataMounted) {
-            logger.error { "Communication <$id>: Alfresco sent file data unnecessarily as Alfdata is mounted to Promena. Transformation will not be executed. Please check the properties." }
+        else if (internalIsSourceFileVolumeMounted && !externalIsSourceFileVolumeMounted) {
+            logger.error { "Communication <$id>: Client sent file data unnecessarily as volume with source files is mounted to Promena. Transformation will not be executed. Please check the properties." }
             return false
         }
         return true

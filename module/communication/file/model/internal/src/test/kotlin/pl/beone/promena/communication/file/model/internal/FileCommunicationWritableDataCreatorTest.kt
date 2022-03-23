@@ -10,8 +10,8 @@ class FileCommunicationWritableDataCreatorTest {
 
     @Test
     fun create() {
-        val directory = createTempDir() // TODO update
-        with(FileCommunicationWritableDataCreator.create(fileCommunicationParameters(directory, directory, directory, false))) {
+        val directory = createTempDir()
+        with(FileCommunicationWritableDataCreator.create(fileCommunicationParameters(directory, false))) {
             this shouldBe instanceOf(FileWritableData::class)
             getBytes() shouldBe ByteArray(0)
             getLocation().path shouldStartWith directory.path

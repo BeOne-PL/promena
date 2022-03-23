@@ -13,21 +13,21 @@ import java.io.File
  */
 class FileInternalCommunicationConverter(
     directory: File,
-    alfdataAlfrescoMountPath: File,
-    alfdataPromenaMountPath: File,
-    private val isAlfdataMounted: Boolean
+    sourceFileVolumeExternalMountPath: File,
+    sourceFileVolumePromenaMountPath: File,
+    private val isSourceFileVolumeMounted: Boolean
 ) : InternalCommunicationConverter {
 
     private val fileDescriptorConverter = FileDescriptorConverter(directory)
-    private val mountedFileDescriptorConverter = MountedFileDescriptorConverter(alfdataAlfrescoMountPath, alfdataPromenaMountPath)
+    private val mountedFileDescriptorConverter = MountedFileDescriptorConverter(sourceFileVolumeExternalMountPath, sourceFileVolumePromenaMountPath)
 
     override fun convert(dataDescriptor: DataDescriptor, requireNewInstance: Boolean): DataDescriptor =
-        if (isAlfdataMounted) mountedFileDescriptorConverter.convert(dataDescriptor, requireNewInstance)
+        if (isSourceFileVolumeMounted) mountedFileDescriptorConverter.convert(dataDescriptor, requireNewInstance)
         else fileDescriptorConverter.convert(dataDescriptor, requireNewInstance)
 
     override fun convert(transformedDataDescriptor: TransformedDataDescriptor, requireNewInstance: Boolean): TransformedDataDescriptor =
-        if (!isAlfdataMounted) fileDescriptorConverter.convert(transformedDataDescriptor, requireNewInstance)
+        if (!isSourceFileVolumeMounted) fileDescriptorConverter.convert(transformedDataDescriptor, requireNewInstance)
         else if (!requireNewInstance) transformedDataDescriptor
-        else throw UnsupportedOperationException("Creating new instance with mounted Alfdata is not allowed because Alfdata is read only for Promena.")
+        else throw UnsupportedOperationException("Creating new instance with mounted SourceFileVolume is not allowed because SourceFileVolume is read only for Promena.")
 
 }

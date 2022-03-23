@@ -8,27 +8,27 @@ import pl.beone.promena.transformer.internal.communication.communicationParamete
 import pl.beone.promena.transformer.internal.communication.plus
 import java.io.File
 
-fun fileCommunicationParameters(directory: File, isAlfdataMounted: Boolean) =
+fun fileCommunicationParameters(directory: File, isSourceFileVolumeMounted: Boolean) =
     communicationParameters(FileCommunicationParametersConstants.ID) +
             (FileCommunicationParametersConstants.DIRECTORY_KEY to directory) +
-            (FileCommunicationParametersConstants.IS_ALFDATA_MOUNTED_KEY to isAlfdataMounted)
+            (FileCommunicationParametersConstants.IS_SOURCE_FILE_VOLUME_MOUNTED_KEY to isSourceFileVolumeMounted)
 
-fun fileCommunicationParameters(directory: File, alfDataMountDirectory: File,
-                                alfDataAlfrescoMountDirectory: File, isAlfdataMounted: Boolean): CommunicationParameters =
+fun fileCommunicationParameters(directory: File, sourceFileVolumeMountDirectory: File,
+                                sourceFileVolumeExternalMountDirectory: File, isSourceFileVolumeMounted: Boolean): CommunicationParameters =
     communicationParameters(FileCommunicationParametersConstants.ID) +
             (FileCommunicationParametersConstants.DIRECTORY_KEY to directory) +
-            (FileCommunicationParametersConstants.ALFDATA_MOUNT_PATH_KEY to alfDataMountDirectory) +
-            (FileCommunicationParametersConstants.ALFDATA_ALFRESCO_MOUNT_PATH_KEY to alfDataAlfrescoMountDirectory) +
-            (FileCommunicationParametersConstants.IS_ALFDATA_MOUNTED_KEY to isAlfdataMounted)
+            (FileCommunicationParametersConstants.SOURCE_FILE_VOLUME_MOUNT_PATH_KEY to sourceFileVolumeMountDirectory) +
+            (FileCommunicationParametersConstants.SOURCE_FILE_VOLUME_EXTERNAL_MOUNT_PATH_KEY to sourceFileVolumeExternalMountDirectory) +
+            (FileCommunicationParametersConstants.IS_SOURCE_FILE_VOLUME_MOUNTED_KEY to isSourceFileVolumeMounted)
 
 fun CommunicationParameters.getDirectory(): File =
     get(FileCommunicationParametersConstants.DIRECTORY_KEY, File::class.java)
 
-fun CommunicationParameters.getAlfdataMountDirectory(): File =
-    get(FileCommunicationParametersConstants.ALFDATA_MOUNT_PATH_KEY, File::class.java)
+fun CommunicationParameters.getSourceFileVolumeMountDirectory(): File =
+    get(FileCommunicationParametersConstants.SOURCE_FILE_VOLUME_MOUNT_PATH_KEY, File::class.java)
 
-fun CommunicationParameters.getAlfdataAlfrescoMountDirectory(): File =
-    get(FileCommunicationParametersConstants.ALFDATA_ALFRESCO_MOUNT_PATH_KEY, File::class.java)
+fun CommunicationParameters.getSourceFileVolumeExternalMountDirectory(): File =
+    get(FileCommunicationParametersConstants.SOURCE_FILE_VOLUME_EXTERNAL_MOUNT_PATH_KEY, File::class.java)
 
-fun CommunicationParameters.getIsAlfdataMounted(): Boolean =
-    get(FileCommunicationParametersConstants.IS_ALFDATA_MOUNTED_KEY, Boolean::class.java)
+fun CommunicationParameters.getIsSourceFileVolumeMounted(): Boolean =
+    get(FileCommunicationParametersConstants.IS_SOURCE_FILE_VOLUME_MOUNTED_KEY, Boolean::class.java)
