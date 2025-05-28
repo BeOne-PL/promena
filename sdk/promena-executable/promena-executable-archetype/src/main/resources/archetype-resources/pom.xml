@@ -20,7 +20,7 @@
         <java.version>11</java.version>
         <spring-boot.version>2.2.1.RELEASE</spring-boot.version>
 
-        <promena-core.version>1.0.0</promena-core.version>
+        <promena-core.version>1.0.2</promena-core.version>
 
         <promena-actor-creator-adaptive-load-balancing.version>1.0.0</promena-actor-creator-adaptive-load-balancing.version>
 

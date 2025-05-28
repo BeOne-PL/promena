@@ -20,6 +20,7 @@
         <dependency>
             <groupId>pl.beone.promena.base</groupId>
             <artifactId>promena-core-internal</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>

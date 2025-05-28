@@ -11,6 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>promena-core-internal-serialization</artifactId>
+    <version>1.0.2</version>
 
     <dependencies>
         <dependency>

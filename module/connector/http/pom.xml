@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-module-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>pl.beone.promena.connector</groupId>
     <artifactId>promena-connector-http</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>pl.beone.promena.connector:promena-connector-http</name>
@@ -25,13 +25,13 @@
     </modules>
 
     <properties>
-        <promena-connector-http.version>1.0.0</promena-connector-http.version>
+        <promena-connector-http.version>1.0.1</promena-connector-http.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

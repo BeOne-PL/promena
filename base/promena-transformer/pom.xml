@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>pl.beone.promena.base</groupId>
     <artifactId>promena-transformer</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>pl.beone.promena.base:promena-transformer</name>
@@ -25,17 +25,17 @@
     </modules>
 
     <properties>
-        <promena-transformer.version>1.0.0</promena-transformer.version>
+        <promena-transformer.version>1.0.1</promena-transformer.version>
 
         <type-converter.version>1.0.0</type-converter.version>
 
-        <kotlinx-coroutines-core.version>1.3.2</kotlinx-coroutines-core.version>
+        <kotlinx-coroutines-core.version>1.6.4</kotlinx-coroutines-core.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

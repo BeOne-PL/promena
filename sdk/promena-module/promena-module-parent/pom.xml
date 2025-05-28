@@ -7,11 +7,11 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>promena-module-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>pl.beone.promena.sdk.maven.parent:promena-module-parent</name>
@@ -19,8 +19,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <promena-core.version>1.0.0</promena-core.version>
-        <promena-transformer.version>1.0.0</promena-transformer.version>
+        <promena-core.version>1.0.2</promena-core.version>
+        <promena-transformer.version>1.0.1</promena-transformer.version>
     </properties>
 
     <dependencyManagement>

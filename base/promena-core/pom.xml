@@ -7,12 +7,12 @@
     <parent>
         <groupId>pl.beone.promena.sdk.maven.parent</groupId>
         <artifactId>promena-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>pl.beone.promena.base</groupId>
     <artifactId>promena-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
 
     <name>pl.beone.promena.base:promena-core</name>
@@ -34,14 +34,14 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <promena-core.version>1.0.1</promena-core.version>
-        <promena-transformer.version>1.0.0</promena-transformer.version>
+        <promena-core.version>1.0.2</promena-core.version>
+        <promena-transformer.version>1.0.1</promena-transformer.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -71,6 +71,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>1.5.13</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
